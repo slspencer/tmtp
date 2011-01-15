@@ -332,13 +332,12 @@ class DrawFrontBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Ex,Ey,Hx,Hy,patternline_color,patternline_width,'Front_EH')
            self.DrawMyDot(my_layer,Hx,Hy,dot_radius,dot_color,dot_width,dot_fill,'Front_H')
            #_______________
-           # Draw reference line DI front armpit distance/2 perpendicular to AB - front armpit line
-           # then draw top part of armscye pattern line HI
+           # Find point I armpit distance/2 horizontal from D --> front armpit line
            Ix = Dx - (fad/2)
            Iy = Dy
-           self.DrawMyLine(my_layer,Dx,Dy,Ix,Iy,referenceline_color,referenceline_width,'Front_DI')
-           self.DrawMyLine(my_layer,Hx,Hy,Ix,Iy,patternline_color,patternline_width,'Front_HI')           
-           self.DrawMyDot(my_layer,Ix,Iy,dot_radius,dot_color,dot_width,dot_fill,'Front_I')           
+           self.DrawMyDot(my_layer,Ix,Iy,dot_radius,dot_color,dot_width,dot_fill,'Front_I')  
+           self.DrawMyLine(my_layer,Dx,Dy,Ix,Iy,referenceline_color,referenceline_width,'Front_DI')          
+         
            #_______________
            # Draw bust circumference reference line CJ --> bust circumference/4 + 1cm perpendicular to AB at point C
            Jx = Cx - ((bc/4)+(1*cm_to_in*in_to_px))
@@ -415,7 +414,10 @@ class DrawFrontBodice(inkex.Effect):
            #_______________
            # Draw armscye curve from R to I
            my_pathdefinition='M '+str(Rx)+','+str(Ry)+'  Q '+str(Ix)+','+str(Ry)+' '+str(Ix)+','+str(Iy)  
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front_RI')         
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front_RI') 
+           
+           # Draw top armscye curve from   I to H  
+           self.DrawMyQCurve(my_layer,Ix,Iy,Hx,Hy,Ix,(Iy-abs(Iy-Hy)*.2),patternline_color,patternline_width,'IH')       
 
            ###############################################################################
            #_______________ 
