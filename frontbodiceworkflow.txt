@@ -1,0 +1,50 @@
+Here is the process workflow for the Bodice Front Block Pattern.
+
+    @* Draw line AB - center front length - Bodice Front Center line
+    @* mark midpoint of AB as point C (Bust Line) - bust line begin point
+    @* Mark point D at A+(1/3)AB along AB - armpit line begin point
+    @* mark point E at neck circumference/6 + .5cm from point A perpendicular to AB - neck width
+    @* mark point F at neck circumference/6 + 1cm from point A along AB - neck depth
+    @* Draw pattern curve from E to F - neck opening
+    @* Draw reference line AG shoulderwidth/2 from A perpendicular to AB. -shoulder reference line
+    @* Draw refernce line GH 3cm perpendicular to AG - shoulder slope reference line
+    @* Draw pattern line EH - This is the shoulder line
+    @* Draw reference line DI front armpit distance/2 perpendicular to AB - front armpit line
+    @* Draw pattern line HI - linear part of armscye
+    @* Draw reference line CJ bust circumference/4 + 1cm perpendicular to AB
+    @* Mark Point K bust distance/2 from point C along CJ
+    @* Draw reference line BP waist circumference/4 + 1cm + dart intake from point B perpendicular to AB
+    @* Mark Point L bust distance/2 from point B on BP (midpoint front waist dart)
+    @* Draw reference line KL
+    @* Mark point M dart intake from point M, (outer dart point)
+    @* Mark point N -dark intake from point M (inner dart point)
+    @* Mark point O bust length distance from point E to a point on KL
+    @* Draw bust dart leg pattern lines MO and line NO
+    @* Draw reference line JS perpendicular to CJ distance equal to KO + (bustcircumference/20) + 1.5cm - 1.5cm is B cup, max is 2.5 (Dcup?)
+    @* Mark point R from J on JS distance equal to KO
+    @* Draw reference line OR (basis for upper dart leg)
+    @* Draw reference line OS (basis for lower dart leg)
+    * Draw point Q 1cm from point P perpendicular to BP
+    * Draw pattern line curve from M to Q
+    * Draw pattern line from B to N 
+
+HERE'S THE TRICKY PART to form side dart & side seam
+
+    * Find point T --> midpointRS
+    * Find slope mQT
+    * Find point U --> midpointRT
+    * Find slope mOU
+    * Find point V --> intersect of OS and line from Q at slope mQT (lower bust dart leg point)
+    * Draw dart line OV (lower bust dart leg)
+    * Find point W --> intersect of OU and QV
+    * Find point X --> intersect of JW and OT
+    * Find point Y --> intersect of JW and OR
+    * Find point Z --> at slope mJW from Y, such that YZ +QV = side seam length
+    * Draw pattern line QV ( bottom half of side seam)
+    * Draw pattern line YZ (upper half of side seam)
+    * Draw dart line OY (upper dart leg)
+    * Draw dart line OV (lower dart leg)
+    * Draw dart line OX (dart midline)
+    * Draw pattern line YX (upper dart seam line)
+    * Draw pattern line XS (lower dart seam line)
+    * Draw curve from Z to I (completes armscye) 
