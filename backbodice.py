@@ -306,7 +306,6 @@ class DrawBackBodice(inkex.Effect):
            #_______________
            #Find point J perpendicular from AG, length = 4cm. (4cm is average depth of shoulder slope)
            #!!!! Change later to use an individual's actual shoulder slope
-           #Draw shoulder line from H to J
            Jx=Gx
            Jy=Gy+(4*cm_to_in)*(in_to_px)
            self.DrawMyDot(my_layer,Jx,Jy,dot_radius,dot_color,dot_width,dot_fill,'J')
@@ -314,7 +313,7 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Hx,Hy,Jx,Jy,patternline_color,patternline_width,'HJ')
            #_______________
            # Create top of armscye FJ
-           self.DrawMyLine(my_layer,Fx,Fy,Jx,Jy,patternline_color,patternline_width,'FJ')
+           #self.DrawMyLine(my_layer,Fx,Fy,Jx,Jy,patternline_color,patternline_width,'FJ')
            #_______________
            # Neck Curve Draw curve from H to I to form neck opening
            #controlx=Hx
@@ -390,7 +389,7 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Tx,Ty,Ux,Uy,patternline_color,patternline_width,'TD')
            self.DrawMyDot(my_layer,Ux,Uy,dot_radius,dot_color,dot_width,dot_fill,'U')   
            #_______________
-           # From U, draw smooth curve to F
+           # From U, draw bottom armscye curve to F
            # control point 1 is perpendicular to UT (side line)
            # control point 2 is perpendicular to FG (shoulder line)
            # Creates armscye and completes Back Bodice Block Pattern. 
@@ -399,6 +398,8 @@ class DrawBackBodice(inkex.Effect):
            my_pathdefinition='M '+str(Ux)+','+str(Uy)+' Q '+str(x1)+','+str(y1)+' '+str(Fx)+','+str(Fy)
            self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'UF')     
            #_______________ 
+           # Draw top armscye curve from   F to J  
+           self.DrawMyQCurve(my_layer,Fx,Fy,Jx,Jy,Fx,(Fy-abs(Fy-Jy)*.2),patternline_color,patternline_width,'FJ')   
            #                            
            # 
            # Next action: Add toggle to reveal/hide reference lines, this is saved as the reusable pattern block
