@@ -260,9 +260,9 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Cx,Cy,Dx,Dy,referenceline_color,referenceline_width,'CD')
            self.DrawMyDot(my_layer,Dx,Dy,dot_radius,dot_color,dot_width,dot_fill,'D') 
            #_______________
-           # Create armpit-line point E along AB, length = back-bodice-length/3. 
+           # Create armpit-line point E along AB, length = back-bodice-length/4. 
            Ex=Ax
-           Ey=Ay+(bbl/3)
+           Ey=Ay+(bbl/4)
            self.DrawMyDot(my_layer,Ex,Ey,dot_radius,dot_color,dot_width,dot_fill,'E') 
            # Create armpit reference line EF, length = bad/2 - 1cm
            Fx=Ex + (bad/2) - (1*cm_to_in*in_to_px)
@@ -365,7 +365,7 @@ class DrawBackBodice(inkex.Effect):
            Ty = (Oy-(1*cm_to_in*in_to_px))
            self.DrawMyDot(my_layer,Tx,Ty,dot_radius,dot_color,dot_width,dot_fill,'T')
            #_______________
-           # Draw waist curve from S to T, control points are relative to S, controlx is Sx+ 50% of length SxTx/2, control y is S- 20% of length SyTy
+           # Draw waist curve from S to T, control points are relative to S, 
            x1=(Sx+(abs(Tx-Sx)*(.15)))
            y1=Sy
            x2=(Sx+(abs(Tx-Sx)*(.50)))
@@ -373,12 +373,10 @@ class DrawBackBodice(inkex.Effect):
            my_pathdefinition='M '+str(Sx)+','+str(Sy)+' C '+str(x1)+','+str(y1)+' '+str(x2)+','+str(y2)+ ' ' + str(Tx) +','+str(Ty)
            self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'ST')
            #_______________
-           # At T, draw line through D to point U, length = side-seam-length - 2cm. Creates side seam, lowering side seam by 2cm leaves room for arm to move
-           self.DrawMyLine(my_layer,Tx,Ty,Dx,Dy,patternline_color,patternline_width,'TD')
-           #my_slope = self.GetMySlope(Tx,Ty,Dx,Dy,'normal')
-           my_length= (ssl-self.GetMyLineLength(Tx,Ty,Dx,Dy) - (2*cm_to_in*in_to_px))
-           Ux,Uy=self.GetCoordsFromSlope(my_layer,Dx,Dy,Tx,Ty,my_length,'normal')
-           self.DrawMyLine(my_layer,Dx,Dy,Ux,Uy,patternline_color, patternline_width,'DU')  
+           # At T, draw vertical line to point U, length = side-seam-length - 2cm. lowering side seam by 2cm leaves room for arm to move
+           Ux=Tx
+           Uy=Ty-(ssl-(2*cm_to_in*in_to_px))
+           self.DrawMyLine(my_layer,Tx,Ty,Ux,Uy,patternline_color,patternline_width,'TD')
            self.DrawMyDot(my_layer,Ux,Uy,dot_radius,dot_color,dot_width,dot_fill,'U')   
            #_______________
            # From U, draw smooth curve to F. Creates armscye and completes Back Bodice Block Pattern. 
