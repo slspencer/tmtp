@@ -1,0 +1,33 @@
+<inkscape-extension>
+ <_name>Back Bodice</_name>
+ <id>com.tusuzu.filter.backbodice</id>
+
+ <dependency type="executable" location="extensions">inkex.py</dependency>
+ <dependency type="executable" location="extensions">simpletransform.py</dependency>
+
+
+ <param name="neck_circumference" type="float" min="1.0" max="1000.0" _gui-text="Neck_circumference in inches">1.0</param>
+ <param name="shoulder_width" type="float" min="1.0" max="1000.0" _gui-text="Shoulder_width in inches">1.0</param>
+ <param name="front_armpit_distance" type="float" min="1.0" max="1000.0" _gui-text="Front_armpit_distance in inches">1.0</param>
+ <param name="back_armpit_distance" type="float" min="1.0" max="1000.0" _gui-text="Back_armpit_distance in inches">1.0</param>
+ <param name="bust_circumference" type="float" min="1.0" max="1000.0" _gui-text="Bust_circumference in inches">1.0</param>
+ <param name="bust_points_distance" type="float" min="1.0" max="1000.0" _gui-text="Bust_points_distance in inches">1.0</param>
+ <param name="bust_length" type="float" min="1.0" max="1000.0" _gui-text="Bust_length in inches">1.0</param>
+ <param name="front_bodice_length" type="float" min="1.0" max="1000.0" _gui-text="Front_bodice_length in inches">1.0</param>
+ <param name="back_bodice_length" type="float" min="1.0" max="1000.0" _gui-text="Back_bodice_length in inches">1.0</param>
+ <param name="waist_circumference" type="float" min="1.0" max="1000.0" _gui-text="Waist_circumference in inches">1.0</param>
+ <param name="upper_hip_circumference" type="float" min="1.0" max="1000.0" _gui-text="Upper_hip_circumference in inches">1.0</param>e
+ <param name="lower_hip_circumference" type="float" min="1.0" max="1000.0" _gui-text="Lower_hip_circumference in inches">1.0</param>
+ <param name="side_seam_length" type="float" min="1.0" max="1000.0" _gui-text="Side_seam_length in inches">1.0</param> 
+ <effect>
+  <object-type>all</object-type>
+  <effects-menu>
+     <submenu _name="Mine" />
+  </effects-menu>
+ </effect>
+
+ <script>
+   <command reldir="extensions" interpreter="python">backbodice.py</command>
+ </script>
+</inkscape-extension>
+
