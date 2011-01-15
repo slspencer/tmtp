@@ -1,10 +1,19 @@
+
+
 #!/usr/bin/python
-
+#
+# Front Bodice Block Pattern Inkscape extension
+#
+# Copyright:(C) Susan Spencer 2010
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
 import sys, copy
-
-# define directory where this script and frontbodice.inx are located
+# define directory where this script and backbodice.inx are located
 sys.path.append('/usr/share/inkscape/extensions')
-
 import inkex
 import re
 import simplestyle
@@ -17,8 +26,8 @@ from lxml import etree
 class DrawFrontBodice(inkex.Effect):
     def __init__(self):
           inkex.Effect.__init__(self)        
-          # Store measurements from Bodice.inx into object 'self'    
-          self.OptionParser.add_option('-n', '--neck_circumference', action='store', type='float', dest='neck_circumference', default=1.0, help='Neck-circumference')
+          # Store measurements from FrontBodice.inx into object 'self'    
+          self.OptionParser.add_option('--neck_circumference', action='store', type='float', dest='neck_circumference', default=1.0, help='Neck-circumference')
           self.OptionParser.add_option('--shoulder_width', action='store', type='float', dest='shoulder_width', default=1.0, help='Shoulder-width')
           self.OptionParser.add_option('--front_armpit_distance', action='store', type='float', dest='front_armpit_distance', default=1.0, help='Front-armpit-distance')
           self.OptionParser.add_option('--back_armpit_distance', action='store', type='float', dest='back_armpit_distance', default=1.0, help='Back-armpit-distance')
@@ -33,8 +42,8 @@ class DrawFrontBodice(inkex.Effect):
           self.OptionParser.add_option('--side_seam_length', action='store', type='float', dest='side_seam_length', default=1.0, help='Side-seam-length')
 
           
-    def DrawMyLine(self,mylayer,X1,Y1,X2,Y2,mycolor,mywidth,myid):
-           mystyle = { 'stroke': mycolor,'stroke-width': mywidth,'id':myid}
+    def DrawMyLine(self,mylayer,X1,Y1,X2,Y2,mycolor,mywidth,mylabel):
+           mystyle = { 'stroke': mycolor,'stroke-width': mywidth,'label':mylabel}
            myattribs = { 'style' : simplestyle.formatStyle(mystyle),
                               'x1' : str(X1),
                               'y1' : str(Y1),
@@ -42,138 +51,242 @@ class DrawFrontBodice(inkex.Effect):
                               'y2' : str(Y2)}
            inkex.etree.SubElement(mylayer,inkex.addNS('line','svg'),myattribs)
 
-    def DrawMyDottedLine(self,mylayer,X1,Y1,X2,Y2,myid):
-           mystyle = { 'fill':'none','stroke':'#00f800','stroke-width':'5'}
-           myattribs = { 'style' : simplestyle.formatStyle(mystyle),
-                              'x1' : str(X1),
-                              'y1' : str(Y1),
-                              'x2' : str(X2),
-                              'y2' : str(Y2)}
-           inkex.etree.SubElement(mylayer,inkex.addNS('line','svg'),myattribs)
-
-    def DrawMyDot(self,mylayer,X1,Y1,myradius,mycolor,mywidth,myfill,myid):
+    def DrawMyDot(self,mylayer,X1,Y1,myradius,mycolor,mywidth,myfill,mylabel):
            mystyle = { 'stroke' : mycolor, 'stroke-width' : mywidth, 'fill' : myfill}
            myattribs = {'style' : simplestyle.formatStyle(mystyle),
-                        inkex.addNS('id','inkscape') : myid,
+                        inkex.addNS('label','inkscape') : mylabel,
                         'cx': str(X1),
                         'cy': str(Y1),
                         'r' : str(myradius)}
            inkex.etree.SubElement(mylayer,inkex.addNS('circle','svg'),myattribs)
 
-    def DrawMyQCurve(self,mylayer,X1,Y1,X2,Y2,C1,C2,mycolor,mywidth,myid):
-           mypathstyle   = {'stroke': mycolor,  'stroke-width': mywidth+'px',  'fill': 'none', 'id' : myid}
+    def DrawMyQCurve(self,mylayer,X1,Y1,X2,Y2,C1,C2,mycolor,mywidth,mylabel):
+           mypathstyle   = {'stroke': mycolor,  'stroke-width': mywidth+'px',  'fill': 'none',}
            mypathattribs = {'d': 'M '+str(X1)+', '+str(Y1)+'  Q '+str(C1)+', '+str(C2)+'  '+str(X2)+', '+str(Y2), 'style': simplestyle.formatStyle(mypathstyle)}
            inkex.etree.SubElement(mylayer, inkex.addNS('path','svg'), mypathattribs)
 
-    def DrawMyCurve(self,mylayer,mypathdefinition,mycolor,mywidth,myid):
-           mypathstyle   = {'stroke': mycolor,  'stroke-width': mywidth+'px',  'fill': 'none', 'id' : myid}
+    def DrawMyCurve(self,mylayer,mypathdefinition,mycolor,mywidth,mylabel):
+           mypathstyle   = {'stroke': mycolor,  'stroke-width': mywidth+'px',  'fill': 'none', 'label' : mylabel}
            mypathattribs = {'d': mypathdefinition, 'style': simplestyle.formatStyle(mypathstyle)}
            inkex.etree.SubElement(mylayer, inkex.addNS('path','svg'), mypathattribs)
+
+    def DrawMyDottedLine(self,mylayer,X1,Y1,X2,Y2,mylabel):
+           mystyle = { 'fill':'none','stroke':'#00f800','stroke-width':'5','label':mylabel}
+           myattribs = { 'style' : simplestyle.formatStyle(mystyle),
+                              'x1' : str(X1),
+                              'y1' : str(Y1),
+                              'x2' : str(X2),
+                              'y2' : str(Y2)}
+           inkex.etree.SubElement(mylayer,inkex.addNS('line','svg'),myattribs)
           
 
-    def GetCoordsFromSlope(self,mylayer,x2,y2,myslope,mylength):
-           # line slope formula:     m = (y2-y1)/(x2-x1)
-           #                        (y2-y1) = m(x2-x1)                         /* we'll use this in circle formula
-           #                         y1 = y2-m(x2-x1)                          /* we'll use this after we solve circle formula
-           # circle radius formula: (x2-x1)^2 + (y2-y1)^2 = r^2                /* see (y2-y1) ?
-           #                        (x2-x1)^2 + (m(x2-x1))^2 = r^2             /* substitute m(x2-x1) for (y2-y1) from line slope formula 
-           #                        (x2-x1)^2 + (m^2)(x2-x1)^2 = r^2           /* 
-           #                        (1 + m^2)(x2-x1)^2 = r^2                   /* pull out common term (x2-x1)^2 - advanced algebra ding!
-           #                        (x2-x1)^2 = (r^2)/(1+m^2)
-           #                        (x2-x1) = r/((1+(m^2))^(.5))
-           #                         x1 = x2-(r/((1+(m^2))^(.5)))
+    def GetCoordsFromPoints(self,mylayer,x,y,px,py,mylength):
+           #if it's a line from a standalone point,then px=x, and py=y
+           # otherwise, x,y is point to measure from.   px,py are points on existing line with x,y
+           # !!!!!!!!!Change later to make dart to end at individual's back distance
+           # line slope formula:     m = (y-y1)/(x-x1)
+           #                        (y-y1) = m(x-x1)                         /* we'll use this in circle formula
+           #                         y1 = y-m(x-x1)                          /* we'll use this after we solve circle formula
+           # circle radius formula: (x-x1)^2 + (y-y1)^2 = r^2                /* see (y2-y1) ? 
+           #                        (x-x1)^2 + (m(x-x1))^2 = r^2             /* substitute m(x2-x1) from line slope formula for (y2-y1) 
+           #                        (x-x1)^2 + (m^2)(x-x1)^2 = r^2           /* distribute exponent in (m(x2-x1))^2
+           #                        (1 + m^2)(x-x1)^2 = r^2                   /* pull out common term (x2-x1)^2 - advanced algebra - ding!        
+           #                        (x-x1)^2 = (r^2)/(1+m^2)
+           #                        (x-x1) = r/sqrt(1+(m^2))
+           #                         x1 = x-r/sqrt(1+(m^2))
+           #                      OR x1 = x+r/sqrt(1+(m^2))
            # solve for (x1,y1)
-           m=myslope
+           m=self.GetMySlope(x,y,px,py,'normal')
            r=mylength
-           x1= x2-(r/((1+(m**2))**(.5)))
-           y1= y2-m*(x2-x1)
-           return (x1,y1)
+           #solve for x1 with circle formula, or right triangle formula
+           if (m=='undefined'):
+               x1=x
+               if (py <= y):
+                  y1=y+r
+               else:
+                  y1=y-r
+           else:
+               if (m==0):
+                   y1=y
+                   if (px <= x):
+                       x1=x+r
+                   else:
+                       x1=x-r
+               else:
+                   if (px <= x):
+      	               x1=(x+(r/(self.GetMySqrt(1+(m**2)))))
+                       y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula             
+                   else:
+      	               x1=(x-(r/(self.GetMySqrt(1+(m**2)))))
+                       y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula             
+           return x1,y1
+
+    def GetMyLineLength(self,ax,ay,bx,by):
+           #a^2 + b^2 = c^2
+           csq= ((ax-bx)**2) + ((ay-by)**2)
+           c=self.GetMySqrt(csq)
+           return c
+
+    def GetCoordsFromSlope(self,mylayer,x,y,px,py,mylength,mytypeslope):
+           #if it's a line from a standalone point,then px=x, and py=y
+           # otherwise, x,y is point to measure from.   px,py are points on existing line with x,y
+           # !!!!!!!!!Change later to make dart to end at individual's back distance
+           # line slope formula:     m = (y-y1)/(x-x1)
+           #                        (y-y1) = m(x-x1)                         /* we'll use this in circle formula
+           #                         y1 = y-m(x-x1)                          /* we'll use this after we solve circle formula
+           # circle radius formula: (x-x1)^2 + (y-y1)^2 = r^2                /* see (y2-y1) ? 
+           #                        (x-x1)^2 + (m(x-x1))^2 = r^2             /* substitute m(x2-x1) from line slope formula for (y2-y1) 
+           #                        (x-x1)^2 + (m^2)(x-x1)^2 = r^2           /* distribute exponent in (m(x2-x1))^2
+           #                        (1 + m^2)(x-x1)^2 = r^2                   /* pull out common term (x2-x1)^2 - advanced algebra - ding!        
+           #                        (x-x1)^2 = (r^2)/(1+m^2)
+           #                        (x-x1) = r/sqrt(1+(m^2))
+           #                         x1 = x-r/sqrt(1+(m^2))
+           #                      OR x1 = x+r/sqrt(1+(m^2))
+           # solve for (x1,y1)
+           m=self.GetMySlope(x,y,px,py,mytypeslope)
+           r=mylength
+           #solve for x1 with circle formula, or right triangle formula
+           if (m=='undefined'):
+               x1=x
+               if (py <= y):
+                  y1=y+r
+               else:
+                  y1=y-r
+           else:
+               if (m==0):
+                   y1=y
+                   if (px <= x):
+                       x1=x+r
+                   else:
+                       x1=x-r
+               else:
+                   if (px <= x):
+      	               x1=(x+(r/(self.GetMySqrt(1+(m**2)))))         
+                   else:
+      	               x1=(x-(r/(self.GetMySqrt(1+(m**2)))))
+               y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula             
+           return x1,y1
+
+    def GetMySlope(self,x1,y1,x2,y2,slopetype):
+           # slopetype can only be {'normal','inverse','perpendicular'}
+           if ((slopetype=='normal') or (slopetype=='inverse')):
+               if (x1==x2):
+                   myslope='undefined'
+               else:
+                   if (y2==y1):
+                       myslope=0
+                   else:
+                       if (slopetype=='inverse'):
+                           myslope=-((y2-y1)/(x2-x1))
+                       else:
+                           myslope=((y2-y1)/(x2-x1))
+           else:
+               if (x1==x2):
+                   myslope='0'
+               else:
+                   if ((y2-y1)==0):
+                       myslope='undefined'
+                   else:
+                       myslope=-((x2-x1)/(y2-y1))      
+           return myslope
+
+    def GetMyLineLength(self,ax,ay,bx,by):
+           #a^2 + b^2 = c^2
+           csq= ((ax-bx)**2) + ((ay-by)**2)
+           c=self.GetMySqrt(csq)
+           return c
+
+    def GetMySqrt(self,xsq):
+           x = abs((xsq)**(.5))
+           return x
 
     def GetIntersectFrom_Two_Lines(self,my_layer,x11,y11,x12,y12,x21,y21,x22,y22):
            # y=mx+b  --> looking for point x,y where m1*x+b1=m2*x+b2
            # b1=y1-m1*x1
            # !!!!!!!!!!!!Test later for parallel lines  and vertical lines
-           m1=(y12-y11)/(x12-x11)
-           b1=(y11-(m1*x11))
-           # b2=y2-m2*x2
-           m2=(y22-y21)/(x22-x21)
-           b2=(y21-(m2*x21))
-           # get x from m1(x)+b1=m2(x)+b2
-           # m1(x)+b1=m2(x)+b2
-           # m1(x)-m2(x)=b2-b1
-           # x(m1-m2)=b2-b1
-           x=(b2-b1)/(m1-m2)
-           # get y from y=m1(x)+b1
-           y=(m1*x)+b1
+           m1=(self.GetMySlope(x11,y11,x12,y12,'normal'))
+           m2=(self.GetMySlope(x21,y21,x22,y22,'normal'))
+           strm1=str(m1)
+           strm2=str(m2)
+           if (strm1=='undefined'):
+               x=x11
+               b2=y21+(m2*x21)
+               y=(m2*x11)+b2
+           if (strm2=='undefined'):
+               x=x21
+               b1=y11+(m1*x11)
+               y=(m1*x21)+b1
+           if (strm1!='undefined')and(strm2!='undefined'):
+               b1=((y11)-((m1)*(x11)))
+               b2=((y21)-((m2)*(x21)))
+               # get x from m1(x)+b1=m2(x)+b2
+               # m1(x)+b1=m2(x)+b2
+               # m1(x)-m2(x)=b2-b1
+               # x(m1-m2)=b2-b1
+               x=(b2-b1)/(m1-m2)
+               # get y from y=m1(x)+b1
+               y=(m1*x)+b1
            return x,y
- 
-            
-
-    
-
-           
            #______________
 
 
  
 
     def effect(self):
-           convert_to_pixels=(90)                    #convert inches to pixels - 90px/in
-           convert_to_inches=(1/(2.5))               #convert centimeters to inches - 1in/2.5cm
-           nc=self.options.neck_circumference*convert_to_pixels
-           sw=self.options.shoulder_width*convert_to_pixels
-           fad=self.options.front_armpit_distance*convert_to_pixels
-           bad=self.options.back_armpit_distance*convert_to_pixels
-           bc=self.options.bust_circumference*convert_to_pixels
-           bpd=self.options.bust_points_distance*convert_to_pixels
-           fbusl=self.options.bust_length*convert_to_pixels
-           fbl=self.options.front_bodice_length*convert_to_pixels
-           bbl=self.options.back_bodice_length*convert_to_pixels
-           wc=self.options.waist_circumference*convert_to_pixels
-           uhc=self.options.upper_hip_circumference*convert_to_pixels
-           lhc=self.options.lower_hip_circumference*convert_to_pixels
-           ssl=self.options.side_seam_length*convert_to_pixels
-
+           in_to_px=(90)                    #convert inches to pixels - 90px/in
+           cm_to_in=(1/(2.5))               #convert centimeters to inches - 1in/2.5cm
+           nc=self.options.neck_circumference*in_to_px
+           sw=self.options.shoulder_width*in_to_px
+           fad=self.options.front_armpit_distance*in_to_px
+           bad=self.options.back_armpit_distance*in_to_px
+           bc=self.options.bust_circumference*in_to_px
+           bpd=self.options.bust_points_distance*in_to_px
+           fbusl=self.options.bust_length*in_to_px
+           fbl=self.options.front_bodice_length*in_to_px
+           bbl=self.options.back_bodice_length*in_to_px
+           wc=self.options.waist_circumference*in_to_px
+           uhc=self.options.upper_hip_circumference*in_to_px
+           lhc=self.options.lower_hip_circumference*in_to_px
+           ssl=self.options.side_seam_length*in_to_px
+          
            referenceline_color='gray'
            referenceline_width='7'
            referenceline_fill='gray'
-           referencedot_radius = .07*convert_to_pixels                #pattern dot markers are .15" radius
-           referencedot_color = 'gray'
-           referencedot_width = .07
-           referencedot_fill = 'gray'
            patternline_color='black'
            patternline_width='10'
            patternline_fill='black'
-           dot_radius = .10*convert_to_pixels                #pattern dot markers are .15" radius
+           dot_radius = .15*in_to_px                #pattern dot markers are .15" radius
            dot_color = 'red'
-           dot_width = .10
+           dot_width = .15
            dot_fill = 'red'
-           dartline_color = 'pink'
-           dartline_width = '8'
-           dartline_fill = 'pink'
-           dartdot_radius = .08*convert_to_pixels
-           dartdot_color = 'pink'
-           dartdot_width = .08
-           dartdot_fill='pink'
+           dartline_color = 'black'
+           dartline_width = '10'
+           dartline_fill = 'black'
+           dartdot_radius = .10*in_to_px
+           dartdot_color = 'black'
+           dartdot_width = .10
+           dartdot_fill='black'
+
+           begin_pattern_x=1*in_to_px               #Pattern begins in upper left corner x=1"
+           begin_pattern_y=1*in_to_px               # same...y=1" 
            
 
-           # Define the special layer to draw the pattern.
+           # Create a special layer to draw the pattern.
            my_rootlayer = self.document.getroot()
            self.layer = inkex.etree.SubElement(my_rootlayer, 'g')
            self.layer.set(inkex.addNS('label', 'inkscape'), 'Pattern Layer')
            self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Group Layer')
-           my_layer=self.layer
-           #
-           begin_pattern_x=23*convert_to_pixels              #Front Bodice Pattern begins in upper right corner x=23"
-           begin_pattern_y=3*convert_to_pixels               #Front Bodice Pattern begins in upper right corner, but y is same as Back Bodice Pattern...y=3" 
+           my_layer=self.layer           #
+           begin_pattern_x=23*in_to_px              #Front Bodice Pattern begins in upper right corner x=23"
+           begin_pattern_y=3*in_to_px               #Front Bodice Pattern begins in upper right corner, but y is same as Back Bodice Pattern...y=3" 
            Ax=begin_pattern_x
            Ay=begin_pattern_y
            #_______________          
            # Create vertical line AB as Front Center Line 
            Bx=Ax
-           By=Ay+bbl     #fbl=front-bodice-length
+           By=Ay+fbl     #fbl=front-bodice-length
            self.DrawMyLine(my_layer,Ax,Ay,Bx,By,referenceline_color,referenceline_width,'Front_AB')
-           self.DrawMyDot(my_layer,Ax,Ay,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_B') 
+           self.DrawMyDot(my_layer,Ax,Ay,dot_radius,dot_color,dot_width,dot_fill,'Front_B') 
            self.DrawMyDot(my_layer,Bx,By,dot_radius,dot_color,dot_width,dot_fill,'Front_B')      
            #At A, draw horizontal line length = shoulderwidth/2. Mark endpoint as G. (no shoulder dart in front bodice)
            Gx=Ax-(sw/2)
@@ -182,13 +295,13 @@ class DrawFrontBodice(inkex.Effect):
            self.DrawMyDot(my_layer,Gx,Gy,dot_radius,dot_color,dot_width,dot_fill,'Front_G')
            #_______________
            #On AG, measuring from A, mark point E at length = (neck-circumference/6 + .5cm (.2in). E marks point for Neck opening.         
-           Ex=Ax-((nc/6)+(.5*convert_to_inches*convert_to_pixels))
+           Ex=Ax-((nc/6)+(.5*cm_to_in*in_to_px))
            Ey=Ay
            self.DrawMyDot(my_layer,Ex,Ey,dot_radius,dot_color,dot_width,dot_fill,'Front_E')
            #_______________
            #On AB, measuring from A, mark point F at length = (neck-circumference/6 + 1cm). F marks point for Neck depth.
            Fx=Ax
-           Fy=Ay+(nc/6 + 1*convert_to_inches*convert_to_pixels)
+           Fy=Ay+(nc/6 + 1*cm_to_in*in_to_px)
            #!!!!!Improve neck curve by making control parallel to shoulder slope, start curve 1cm from shoulder
            controlx=Ex
            controly=Fy
@@ -212,7 +325,7 @@ class DrawFrontBodice(inkex.Effect):
            # At G, draw line: length = 3cm, perpendicular to AG. Mark endpoint as H. (3cm is average depth of front shoulder slope)
            #!!!! Fix this later to an individual's actual shoulder slope
            Hx=Gx
-           Hy=Gy+(3*convert_to_inches)*(convert_to_pixels)
+           Hy=Gy+(3*cm_to_in)*(in_to_px)
            self.DrawMyLine(my_layer,Gx,Gy,Hx,Hy,referenceline_color,referenceline_width,'Front_GH')
            #_______________
            # Draw line from E to H. Creates sloped shoulder line EH.
@@ -228,7 +341,7 @@ class DrawFrontBodice(inkex.Effect):
            self.DrawMyDot(my_layer,Ix,Iy,dot_radius,dot_color,dot_width,dot_fill,'Front_I')           
            #_______________
            # Draw bust circumference reference line CJ --> bust circumference/4 + 1cm perpendicular to AB at point C
-           Jx = Cx - ((bc/4)+(1*convert_to_inches*convert_to_pixels))
+           Jx = Cx - ((bc/4)+(1*cm_to_in*in_to_px))
            Jy = Cy
            self.DrawMyLine(my_layer,Cx,Cy,Jx,Jy,referenceline_color,referenceline_width,'Front_CJ')           
            self.DrawMyDot(my_layer,Jx,Jy,dot_radius,dot_color,dot_width,dot_fill,'Front_J')  
@@ -236,19 +349,15 @@ class DrawFrontBodice(inkex.Effect):
            # Mark Point K bust point distance/2 from point C along CJ
            Kx = Cx-(bpd/2)
            Ky = Cy          
-           self.DrawMyDot(my_layer,Kx,Ky,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_K') 
+           self.DrawMyDot(my_layer,Kx,Ky,dot_radius,dot_color,dot_width,dot_fill,'Front_K') 
            #_______________
            # Draw waist reference line BP --> (waist circumference/4 + 1cm + 2 dart depths) from point B perpendicular to AB to point P
            # 2 dart depths = 1 dart
-           if (uhc > lhc):
-                hip_minus_waist = (uhc-wc)
-           else:
-                hip_minus_waist = (lhc-wc)
-           my_dart_depth=(hip_minus_waist/9)
-           Px = Bx - ((wc/4) + (1*convert_to_inches*convert_to_pixels)+(my_dart_depth*2))
+           my_dart_depth=((bc-wc)/8)
+           Px = Bx - ((wc/4) + (1*cm_to_in*in_to_px)+(my_dart_depth*2))
            Py = By   # horizontal line
            self.DrawMyLine(my_layer,Bx,By,Px,Py,referenceline_color,referenceline_width,'Front_BP')           
-           self.DrawMyDot(my_layer,Px,Py,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_P') 
+           self.DrawMyDot(my_layer,Px,Py,dot_radius,dot_color,dot_width,dot_fill,'Front_P') 
            #_______________
            # Mark Point L --> bust distance/2 from point B on BP (midpoint front waist dart) 
            Lx = Bx - (bpd/2)  
@@ -275,13 +384,10 @@ class DrawFrontBodice(inkex.Effect):
            # b^2 = (c^2 - a^2)
            # b = ((c^2 - a^2))^(.5)
            Ox = Kx
-           a = (Ex-Kx)
+           a = abs(Ex-Kx)
            c = fbusl       
-           bsquared = (c**2)-(a**2)   # do it this way to get only positive numbers
-           if (bsquared>0):
-              Oy=(bsquared)**(.5)
-           else:
-              Oy=(-(bsquared))**(.5)
+           bsquared = abs((c**2)-(a**2))   # do it this way to get only positive numbers
+           Oy=Ey+abs((bsquared)**(.5))
            # Draw bust dart leg pattern lines MO and line NO & Draw bust point O
            self.DrawMyLine(my_layer,Mx,My,Ox,Oy,dartline_color,dartline_width,'Front_MO')                     
            self.DrawMyLine(my_layer,Nx,Ny,Ox,Oy,dartline_color,dartline_width,'Front_NO')
@@ -289,98 +395,41 @@ class DrawFrontBodice(inkex.Effect):
            #_______________
            # Get waist point Q 1 cm up from point P
            Qx=Px
-           Qy=Py-(1*convert_to_inches*convert_to_pixels)  # subtract because  x increases to right, y increases towards bottom 
-           # Draw waist curve from M to Q, control point x is Qx+(Mx-Qx)*(3/4)
-           C1x=Mx-((Mx-Px)*(.25))
-           C1y=My-((My-Qy)*(.1))
-           C2x=Mx-((Mx-Px)*(.75))
-           C2y=My-((My-Qy)*(.4))
-           #my_pathdefinition='M '+str(Mx)+','+str(My)+'  C '+str(C1x)+','+str(C1y)+'  '+str(C2x)+','+str(C2y)+' '+str(Qx)+','+str(Qy)
-           #self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front_QM')
-           self.DrawMyLine(my_layer,Mx,My,Qx,Qy,patternline_color,patternline_width,'Front_MQ')
+           Qy=Py-(1*cm_to_in*in_to_px)  # subtract because  x increases to right, y increases towards bottom 
+           # Draw waist curve from M to Q
+           x1=(Mx-(abs(Mx-Qx)*(.15)))
+           y1= My
+           x2=(Mx-(abs(Mx-Qx)*(.50)))
+           y2=(My-(abs(My-Qy)*(.25)))
+           my_pathdefinition='M '+str(Mx)+','+str(My)+'  C '+str(x1)+','+str(y1)+'  '+str(x2)+','+str(y2)+' '+str(Qx)+','+str(Qy)
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front_QM')
+           #self.DrawMyLine(my_layer,Mx,My,Qx,Qy,patternline_color,patternline_width,'Front_MQ')
            self.DrawMyDot(my_layer,Qx,Qy,dot_radius,dot_color,dot_width,dot_fill,'Front_Q')
            #_______________
-           # find point R vertical to point J, perpendicular to point O
-           # draw reference lines JR and OR
-           Rx=Jx
-           Ry=Oy
-           self.DrawMyDottedLine(my_layer,Ox,Oy,Rx,Ry,'Front_OR')
-           self.DrawMyDottedLine(my_layer,Jx,Jy,Rx,Ry,'Front_JR')
-           self.DrawMyDot(my_layer,Rx,Ry,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_R')
-           # Extend line JR to point S by length = (bustcircumference/20) + 1.5cm --> 1.5cm is B cup, max is 2.5 (Dcup?)
-           Sx=Jx
-           Sy=Ry+(bc/20)+(1.5*convert_to_inches*convert_to_pixels)
-           self.DrawMyDottedLine(my_layer,Rx,Ry,Sx,Sy,'Front_RS')
-           self.DrawMyDottedLine(my_layer,Ox,Oy,Sx,Sy,'Front_OS')
-           self.DrawMyDot(my_layer,Sx,Sy,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_S')
-           # find point T at midpoint RS
-           Tx=Jx
-           Ty=Ry+((Sy-Ry)/2)
-           self.DrawMyDottedLine(my_layer,Ox,Oy,Tx,Ty,'Front_OT')
-           self.DrawMyDot(my_layer,Tx,Ty,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_T')
-           # find point U at midpoint RT
-           Ux=Jx
-           Uy=Ry+((Ty-Ry)/2)
-           self.DrawMyDottedLine(my_layer,Ox,Oy,Ux,Uy,'Front_OU')
-           self.DrawMyDot(my_layer,Ux,Uy,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_U')
-           # find point V at intersection of line OS and QT, Draw line QV
-           Vx,Vy = self.GetIntersectFrom_Two_Lines(my_layer,Qx,Qy,Tx,Ty,Ox,Oy,Sx,Sy)
-           self.DrawMyLine(my_layer,Qx,Qy,Vx,Vy,patternline_color,patternline_width,'Front_QV')
-           # find point W at intersection of line OU and QT
-           Wx,Wy = self.GetIntersectFrom_Two_Lines(my_layer,Ox,Oy,Ux,Uy,Qx,Qy,Tx,Ty)
-           # find point X at intersection of line OT and JW
-           Xx,Xy = self.GetIntersectFrom_Two_Lines(my_layer,Ox,Oy,Tx,Ty,Jx,Jy,Wx,Wy)
-           # find point Y at intersection of line OR and JW
-           Yx,Yy = self.GetIntersectFrom_Two_Lines(my_layer,Ox,Oy,Rx,Ry,Jx,Jy,Wx,Wy)
-           # find point Z on JW where JZ=sideseam-(JY + VQ)
-           length_sqVQ=(Qx-Vx)**2+(Qy-Vy)**2
-           length_VQ=(length_sqVQ)**(.5)
-           length_sqJY=(Yy-Jy)**2+(Yx-Jx)**2 
-           length_JY = (length_sqJY)**(.5)
-           length_JZ = ssl-(length_VQ+length_JY)
-           r = (ssl-(length_JY+length_VQ))
-           if (Yx!=Jx):
-                m=(-(Yy-Jy)/(Yx-Jx))
-                Zx= Jx+(r/((1+(m**2))**(.5)))
-                Zy= Jy-(m*(Zx-Jx))
-           else:
-                Zx=Jx
-                Zy=Jy-(r*convert_to_inches*convert_to_pixels)
+           # Draw side seam from Q to R
+           Rx=Qx
+           Ry=Qy-(ssl-(2*cm_to_in*in_to_px))
+           self.DrawMyLine(my_layer,Qx,Qy,Rx,Ry,patternline_color,patternline_width,'Front_QR') 
+           self.DrawMyDot(my_layer,Rx,Ry,dot_radius,dot_color,dot_width,dot_fill,'Front_R')                    
 
-           #Zx,Zy = self.GetCoordsFromSlope(my_layer,Jx,Jy,my_slope,my_length)
-           # Draw side seams ZY,YX, XV,VQ
-           self.DrawMyLine(my_layer,Jx,Jy,Yx,Yy,patternline_color,patternline_width,'Front_JY')
-           self.DrawMyLine(my_layer,Yx,Yy,Xx,Xy,patternline_color,patternline_width,'Front_YX')
-           self.DrawMyLine(my_layer,Xx,Xy,Vx,Vy,patternline_color,patternline_width,'Front_XV')
-           self.DrawMyLine(my_layer,Vx,Vy,Qx,Qy,patternline_color,patternline_width,'Front_VQ')
-           self.DrawMyLine(my_layer,Jx,Jy,Zx,Zy,patternline_color,patternline_width,'Front_JZ')
-           controlx,controly = self.GetIntersectFrom_Two_Lines(my_layer,Hx,Hy,Ix,Iy,Zx,Zy,Ax,Zy)
-           self.DrawMyQCurve(my_layer,Zx,Zy,Ix,Iy,controlx,controly,patternline_color,patternline_width,'Front_IZ') 
-           self.DrawMyDot(my_layer,Zx,Zy,dot_radius,dot_color,dot_width,dot_fill,'Front_Z')
-           # Draw dart legs OY, OX, OV
-           self.DrawMyLine(my_layer,Ox,Oy,Yx,Yy,dartline_color,dartline_width,'Front_OY')
-           self.DrawMyLine(my_layer,Ox,Oy,Xx,Xy,dartline_color,dartline_width,'Front_OX')           
-           self.DrawMyLine(my_layer,Ox,Oy,Vx,Vy,dartline_color,dartline_width,'Front_OV')
-           self.DrawMyDot(my_layer,Yx,Yy,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Front_Y')
-           self.DrawMyDot(my_layer,Xx,Xy,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Front_X')
-           self.DrawMyDot(my_layer,Vx,Vy,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Front_V')
-
-
-
+           #_______________
+           # Draw armscye curve from R to I
+           my_pathdefinition='M '+str(Rx)+','+str(Ry)+'  Q '+str(Ix)+','+str(Ry)+' '+str(Ix)+','+str(Iy)  
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front_RI')         
 
            ###############################################################################
-           #_______________
+           #_______________ 
            # On EH, find midpoint I. Creates midpoint of back shoulder dart.
            # Find dart points K and L where K and L are 1cm away from dart midpoint I 
            #Ix=Ex+((Hx-Ex)/2)
            #Iy=Ey+((Hy-Ey)/2)
            #my_slope = (Hy-Ey)/(Hx-Ex)
-           #my_radius = 1*convert_to_inches*convert_to_pixels
+           #my_radius = 1*cm_to_in*in_to_px
            #Kx,Ky = self.GetCoordsFromSlope(my_layer,Ix,Iy,my_slope,my_radius)
            #Lx,Ly = self.GetCoordsFromSlope(my_layer,Ix,Iy,my_slope,-my_radius)
            # Find dart end point J, 9cm perpendicular from EH at point I (9cm is average depth of back shoulder dart)
            #my_perpendicular_slope = -(1/my_slope)
-           #my_radius = 9*convert_to_inches*convert_to_pixels
+           #my_radius = 9*cm_to_in*in_to_px
            #Jx,Jy = self.GetCoordsFromSlope(my_layer,Ix,Iy,my_perpendicular_slope,my_radius) 
            # Draw lines KJ, LJ, and dots J,K,L
            #self.DrawMyLine(my_layer,Kx,Ky,Jx,Jy,dartline_color,dartline_width,'KJ')
@@ -426,10 +475,10 @@ class DrawFrontBodice(inkex.Effect):
            # Draw waist reference lines
            # Waist/4 -1cm + 2.5 Dart depths = waist reference line. End point is R. 
            # Mark point S 1cm vertical to point R
-           #Rx = Bx+ (wc/4)-(1*convert_to_inches*convert_to_pixels) + (2.5*my_dart_depth)
+           #Rx = Bx+ (wc/4)-(1*cm_to_in*in_to_px) + (2.5*my_dart_depth)
            # Ry = By
            #Sx = Rx
-           #Sy = Ry - (1*convert_to_inches*convert_to_pixels)
+           #Sy = Ry - (1*cm_to_in*in_to_px)
            #self.DrawMyLine(my_layer,Bx,By,Rx,Ry,referenceline_color,referenceline_width,'BR')
            #self.DrawMyDot(my_layer,Sx,Sy,dot_radius,dot_color,dot_width,dot_fill,'S')         
            ##_______________
@@ -468,7 +517,7 @@ class DrawFrontBodice(inkex.Effect):
            #m = (My-Fy)/(Mx-Fx)   #slope of FM
            #Vy=Cy  # horizontal line - y stays the same
            #Vx=Mx-((My-Vy)/m)
-           #Wx=Vx+(bc/4) - 1*convert_to_inches*convert_to_pixels
+           #Wx=Vx+(bc/4) - 1*cm_to_in*in_to_px
            #Wy=Vy # horizontal line - y stays the same
            #self.DrawMyLine(my_layer,Vx,Vy,Wx,Wy,referenceline_color,referenceline_width,'VW')  
            #self.DrawMyDot(my_layer,Vx,Vy,dot_radius,dot_color,dot_width,dot_fill,'V')         
@@ -476,7 +525,7 @@ class DrawFrontBodice(inkex.Effect):
            ##_______________
            ## At S, draw line through W to point X, length = side-seam-length - 2cm. Creates side seam, leaves room for arm to move
            #my_slope = (Sy-Wy)/(Sx-Wx)
-           #my_length=ssl - 2*convert_to_inches*convert_to_pixels
+           #my_length=ssl - 2*cm_to_in*in_to_px
            #Xx,Xy=self.GetCoordsFromSlope(my_layer,Sx,Sy,my_slope,my_length)
            #self.DrawMyLine(my_layer,Sx,Sy,Xx,Xy,patternline_color,patternline_width,'SX')  
            #self.DrawMyDot(my_layer,Xx,Xy,dot_radius,dot_color,dot_width,dot_fill,'X')   
