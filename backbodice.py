@@ -71,7 +71,7 @@ class DrawBackBodice(inkex.Effect):
            inkex.etree.SubElement(mylayer, inkex.addNS('path','svg'), mypathattribs)
           
 
-    def GetCoordsFromPoints(self,mylayer,x,y,px,py,mylength):
+    def GetCoordsFromPoints(self,x,y,px,py,mylength):
            #if it's a line from a standalone point,then px=x, and py=y
            # otherwise, x,y is point to measure from.   px,py are points on existing line with x,y
            # !!!!!!!!!Change later to make dart to end at individual's back distance
@@ -114,14 +114,17 @@ class DrawBackBodice(inkex.Effect):
 
     def GetMyLineLength(self,ax,ay,bx,by):
            #a^2 + b^2 = c^2
-           csq= ((ax-bx)**2) + ((ay-by)**2)
-           c=self.GetMySqrt(csq)
+           c_sq= ((ax-bx)**2) + ((ay-by)**2)
+           c=self.GetMySqrt(c_sq)
            return c
 
-    def GetCoordsFromSlope(self,mylayer,x,y,px,py,mylength,mytypeslope):
-           #if it's a line from a standalone point,then px=x, and py=y
-           # otherwise, x,y is point to measure from.   px,py are points on existing line with x,y
-           # !!!!!!!!!Change later to make dart to end at individual's back distance
+    def GetCoordsFromSlope(self,x,y,px,py,mylength,mytypeslope):
+           # x,y the point to measure from
+           # this function returns x1,y1 from the formulas below
+           # to find coordinates from a single point, parameters should have px=x, and py=y - coords might be in opposite direction of what you want !!! Change later
+           # otherwise, .   px,py are points on existing line with x,y
+
+           # !!!!!!!!!Change later to make dart to end at individual's shoulder-to-shoulder-tip
            # line slope formula:     m = (y-y1)/(x-x1)
            #                        (y-y1) = m(x-x1)                         /* we'll use this in circle formula
            #                         y1 = y-m(x-x1)                          /* we'll use this after we solve circle formula
@@ -134,16 +137,9 @@ class DrawBackBodice(inkex.Effect):
            #                         x1 = x-r/sqrt(1+(m^2))
            #                      OR x1 = x+r/sqrt(1+(m^2))
            # solve for (x1,y1)
-           m=self.GetMySlope(x,y,px,py,mytypeslope)
            r=mylength
-           #solve for x1 with circle formula, or right triangle formula
-           if (m=='undefined'):
-               x1=x
-               if (py <= y):
-                  y1=y+r
-               else:
-                  y1=y-r
-           else:
+           if (x!=px):
+               m=self.GetMySlope(x,y,px,py,mytypeslope)
                if (m==0):
                    y1=y
                    if (px <= x):
@@ -151,11 +147,28 @@ class DrawBackBodice(inkex.Effect):
                    else:
                        x1=x-r
                else:
+                   m_sq=(m**2)
+                   sqrt_1plusm_sq=self.GetMySqrt(1+(m_sq))
                    if (px <= x):
-      	               x1=(x+(r/(self.GetMySqrt(1+(m**2)))))         
+      	               x1=(x+(r/sqrt_1plusm_sq))        #solve for x1 with circle formula, or right triangle formula  
                    else:
-      	               x1=(x-(r/(self.GetMySqrt(1+(m**2)))))
-               y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula             
+      	               x1=(x-(r/sqrt_1plusm_sq))
+                   y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula         
+           elif  (mytypeslope=='normal') or (mytypeslope=='inverse'):
+               if (mytypeslope=='inverse'):
+                   x1=-x
+               else:
+                   x1=x
+               if (py <= y):
+                  y1=y+r
+               else:
+                  y1=y-r
+           else:    #perpendicular to undefined slope where x==px, so return points on horizontal slope=0 y
+               y1=y
+               if (px<=x):
+                  x1=x+r
+               else:
+                  x1=x-r   
            return x1,y1
 
     def GetMySlope(self,x1,y1,x2,y2,slopetype):
@@ -163,28 +176,25 @@ class DrawBackBodice(inkex.Effect):
            if ((slopetype=='normal') or (slopetype=='inverse')):
                if (x1==x2):
                    myslope='undefined'
+               elif (y2==y1):
+                   myslope=0    #force this to 0, Python might retain as a very small number
+               if (slopetype=='inverse'):
+                   myslope=-((y2-y1)/(x2-x1))
                else:
-                   if (y2==y1):
-                       myslope=0
-                   else:
-                       if (slopetype=='inverse'):
-                           myslope=-((y2-y1)/(x2-x1))
-                       else:
-                           myslope=((y2-y1)/(x2-x1))
-           else:
+                   myslope=((y2-y1)/(x2-x1))
+           else:    #perpendicular slope -(x2-x1)/(y2-y1)
                if (x1==x2):
                    myslope='0'
+               elif (y2==y1):
+                   myslope='undefined'
                else:
-                   if ((y2-y1)==0):
-                       myslope='undefined'
-                   else:
-                       myslope=-((x2-x1)/(y2-y1))      
+                   myslope=-((x2-x1)/(y2-y1))      
            return myslope
 
     def GetMyLineLength(self,ax,ay,bx,by):
            #a^2 + b^2 = c^2
-           csq= ((ax-bx)**2) + ((ay-by)**2)
-           c=self.GetMySqrt(csq)
+           c_sq= ((ax-bx)**2) + ((ay-by)**2)
+           c=self.GetMySqrt(c_sq)
            return c
 
 
@@ -284,31 +294,38 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Ax,Ay,Gx,Gy,referenceline_color,referenceline_width,'AG')
            self.DrawMyDot(my_layer,Gx,Gy,dot_radius,dot_color,dot_width,dot_fill,'G')
            #_______________
-           #On AG, measuring from A, mark point H at length = (neck-circumference/6 + .5cm (.2in). H marks point for Neck opening.         
+           # Neck
+           # On AG, measuring from A, mark point H at length = (neck-circumference/6 + .5cm (.2in). H marks point for Neck opening.         
            Hx=Ax+(nc/6)+(.5*cm_to_in*in_to_px)
            Hy=Ay
            self.DrawMyDot(my_layer,Hx,Hy,dot_radius,dot_color,dot_width,dot_fill,'H')
-           #_______________
-           #On AB, measuring from A, mark point I at length = 2.5cm, or 1 inch. I marks point for Neck depth.
+           # On AB, measuring from A, mark point I at length = 2.5cm, or 1 inch. I marks point for Neck depth.
            Ix=Ax
            Iy=Ay+(2.5*cm_to_in*in_to_px)
            self.DrawMyDot(my_layer,Ix,Iy,dot_radius,dot_color,dot_width,dot_fill,'I')          
-           # Draw curve from I to H to form neck opening
-           controlx=Hx
-           controly=Iy
-           self.DrawMyQCurve(my_layer,Ix,Iy,Hx,Hy,controlx,controly,patternline_color,patternline_width,'IH')
            #_______________
            #Find point J perpendicular from AG, length = 4cm. (4cm is average depth of shoulder slope)
            #!!!! Change later to use an individual's actual shoulder slope
+           #Draw shoulder line from H to J
            Jx=Gx
            Jy=Gy+(4*cm_to_in)*(in_to_px)
-           self.DrawMyLine(my_layer,Gx,Gy,Jx,Jy,referenceline_color,referenceline_width,'GJ')
-           #_______________
-           #Draw line from H to J. Creates sloped shoulder line HJ.
-           self.DrawMyLine(my_layer,Hx,Hy,Jx,Jy,patternline_color,patternline_width,'HJ')
            self.DrawMyDot(my_layer,Jx,Jy,dot_radius,dot_color,dot_width,dot_fill,'J')
-          # Create top of armscye FJ
+           self.DrawMyLine(my_layer,Gx,Gy,Jx,Jy,referenceline_color,referenceline_width,'GJ')
+           self.DrawMyLine(my_layer,Hx,Hy,Jx,Jy,patternline_color,patternline_width,'HJ')
+           #_______________
+           # Create top of armscye FJ
            self.DrawMyLine(my_layer,Fx,Fy,Jx,Jy,patternline_color,patternline_width,'FJ')
+           #_______________
+           # Neck Curve Draw curve from H to I to form neck opening
+           #controlx=Hx
+           #controly=Iy
+           #self.DrawMyQCurve(my_layer,Ix,Iy,Hx,Hy,controlx,controly,patternline_color,patternline_width,'IH')
+           my_length1=((abs(Hy-Iy))*(.75))
+           my_length2=((abs(Hx-Ix))*(.50))
+           x1,y1 = self.GetCoordsFromSlope(Hx,Hy,Jx,Jy,my_length1,'perpendicular')
+           x2,y2 = self.GetCoordsFromSlope(Ix,Iy,Ex,Ey,my_length2,'perpendicular')
+           my_pathdefinition='M '+str(Hx)+','+str(Hy)+' C '+str(x1)+','+str(y1)+' '+str(x2)+','+str(y2)+ ' ' + str(Ix) +','+str(Iy)
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'HI')
            #_______________
            #On HJ find midpoint K. Creates midpoint of back shoulder dart.
            # Find dart points L and M each are 1cm away from dart midpoint K
@@ -316,20 +333,13 @@ class DrawBackBodice(inkex.Effect):
            Ky=(Hy+(abs(Jy-Hy)/2))
            self.DrawMyDot(my_layer,Kx,Ky,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'K')
            my_length = (1*cm_to_in*in_to_px)
-           Lx,Ly = self.GetCoordsFromSlope(my_layer,Kx,Ky,Jx,Jy,my_length,'normal')
-           Mx,My = self.GetCoordsFromSlope(my_layer,Kx,Ky,Hx,Hy,my_length,'normal')
+           Lx,Ly = self.GetCoordsFromSlope(Kx,Ky,Jx,Jy,my_length,'normal')
+           Mx,My = self.GetCoordsFromSlope(Kx,Ky,Hx,Hy,my_length,'normal')
            self.DrawMyDot(my_layer,Lx,Ly,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'L')
            self.DrawMyDot(my_layer,Mx,My,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'M')
            # Find dart end point N, 9cm perpendicular from HJ at point K (9cm is average depth of back shoulder dart)
-           #if (my_slope=='undefined'):
-               #my_perpendicular_slope = 0               
-           #else:
-               #if (my_slope==0):
-                   #my_perpendicular_slope = 'undefined'
-               #else:
-                   #my_perpendicular_slope = -(1/my_slope)
            my_length = (9*cm_to_in*in_to_px)
-           Nx,Ny = self.GetCoordsFromSlope(my_layer,Kx,Ky,Jx,Jy,my_length,'perpendicular') 
+           Nx,Ny = self.GetCoordsFromSlope(Kx,Ky,Jx,Jy,my_length,'perpendicular') 
            self.DrawMyDot(my_layer,Nx,Ny,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'N')
            # Draw lines KN,LN,MN
            self.DrawMyLine(my_layer,Kx,Ky,Nx,Ny,dartline_color,dartline_width,'KN')
@@ -366,6 +376,7 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyDot(my_layer,Tx,Ty,dot_radius,dot_color,dot_width,dot_fill,'T')
            #_______________
            # Draw waist curve from S to T, control points are relative to S, 
+           # these are good percentages to draw the waist curve
            x1=(Sx+(abs(Tx-Sx)*(.15)))
            y1=Sy
            x2=(Sx+(abs(Tx-Sx)*(.50)))
@@ -379,11 +390,10 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Tx,Ty,Ux,Uy,patternline_color,patternline_width,'TD')
            self.DrawMyDot(my_layer,Ux,Uy,dot_radius,dot_color,dot_width,dot_fill,'U')   
            #_______________
-           # From U, draw smooth curve to F. Creates armscye and completes Back Bodice Block Pattern. 
-           # x1 control point is Fx- (25% of length Ux-Fx)
-           # y1 control point is Fy + (75% of length Uy-Fy)
-           # x2 control point is Fx - (75% of width Ux-Fx)
-           # y2 control point is Fy + (100% length Ux-Fx = Uy)
+           # From U, draw smooth curve to F
+           # control point 1 is perpendicular to UT (side line)
+           # control point 2 is perpendicular to FG (shoulder line)
+           # Creates armscye and completes Back Bodice Block Pattern. 
            x1=Fx
            y1=Uy
            my_pathdefinition='M '+str(Ux)+','+str(Uy)+' Q '+str(x1)+','+str(y1)+' '+str(Fx)+','+str(Fy)
