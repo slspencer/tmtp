@@ -260,12 +260,12 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Cx,Cy,Dx,Dy,referenceline_color,referenceline_width,'CD')
            self.DrawMyDot(my_layer,Dx,Dy,dot_radius,dot_color,dot_width,dot_fill,'D') 
            #_______________
-           # Create armpit-line point E along AB, length = back-bodice-length/4. 
+           # Create armpit-line point E along AB, length = back-bodice-length/3. 
            Ex=Ax
-           Ey=Ay+(bbl/4)
+           Ey=Ay+(bbl/3)
            self.DrawMyDot(my_layer,Ex,Ey,dot_radius,dot_color,dot_width,dot_fill,'E') 
-           # Create armpit reference line EF, length = bad/2 - 1cm
-           Fx=Ex + (bad/2) - (1*cm_to_in*in_to_px)
+           # Create armpit reference line EF, length = bad/2
+           Fx=Ex + (bad/2)
            Fy=Ey
            self.DrawMyLine(my_layer,Ex,Ey,Fx,Fy,referenceline_color,referenceline_width,'EF')
            self.DrawMyDot(my_layer,Fx,Fy,dot_radius,dot_color,dot_width,dot_fill,'F') 
