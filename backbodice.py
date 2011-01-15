@@ -120,10 +120,10 @@ class DrawBackBodice(inkex.Effect):
            dartline_color = 'black'
            dartline_width = '10'
            dartline_fill = 'black'
-           dartdot_radius = .15*convert_to_pixels
-           dartdot_color = 'gray'
-           dartdot_width = .15
-           dartdot_fill='gray'
+           dartdot_radius = .10*convert_to_pixels
+           dartdot_color = 'black'
+           dartdot_width = .10
+           dartdot_fill='black'
            
 
            # Create a special layer to draw the pattern.
@@ -215,23 +215,21 @@ class DrawBackBodice(inkex.Effect):
            # Make Center Back Dart point M horizontally from point B. Draw Center Back Dart line MF
            Mx=Bx+my_back_center_dart_depth
            My=By
-           self.DrawMyLine(my_layer,Mx,My,Fx,Fy,dartline_color,dartline_width,'FM')           
-           self.DrawMyDot(my_layer,Mx,My,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'M')
+           self.DrawMyLine(my_layer,Mx,My,Fx,Fy,patternline_color,patternline_width,'FM')           
+           self.DrawMyDot(my_layer,Mx,My,dot_radius,dot_color,dot_width,dot_fill,'M')
            #Make Waist Dart midpoint N horizontally from point B at bust distance. Dart ends at point O horizontally from C at bustpointdistance/2.
            #Find Dart Legs at points P & Q at my_dart_depth away from point N
            Nx=Bx+bpd/2
            Ny=By
            Ox=Cx+bpd/2
            Oy=Cy
-           self.DrawMyLine(my_layer,Nx,Ny,Ox,Oy,dartline_color,dartline_width,'NO')           
-           self.DrawMyDot(my_layer,Nx,Ny,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'N')
            # Draw lines PO, QO
            my_slope = 0    #horizontal line
            my_radius = my_dart_depth
            Px,Py = self.GetCoordsFromSlope(my_layer,Nx,Ny,my_slope,my_radius)
            Qx,Qy = self.GetCoordsFromSlope(my_layer,Nx,Ny,my_slope,-my_radius)
-           self.DrawMyLine(my_layer,Px,Py,Ox,Oy,dartline_color,dartline_width,'KJ')
-           self.DrawMyLine(my_layer,Qx,Qy,Ox,Oy,dartline_color,dartline_width,'LJ')
+           self.DrawMyLine(my_layer,Px,Py,Ox,Oy,dartline_color,dartline_width,'PO')
+           self.DrawMyLine(my_layer,Qx,Qy,Ox,Oy,dartline_color,dartline_width,'QO')
            self.DrawMyDot(my_layer,Ox,Oy,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'O')
            self.DrawMyDot(my_layer,Px,Py,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'P')
            self.DrawMyDot(my_layer,Qx,Qy,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Q')
@@ -304,7 +302,8 @@ class DrawBackBodice(inkex.Effect):
            #C2x=Ux+((Xx-Ux)*(.75))
            #C2y=Ux+((Xy-Uy)*(.5))
            my_pathdefinition='M '+str(Ux)+','+str(Uy)+'  Q '+str(Ux)+','+str(Xy)+' '+str(Xx)+','+str(Xy)
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'UX')                                 
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'UX')     
+           #_______________                            
 
            
            
