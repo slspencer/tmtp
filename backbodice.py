@@ -1,10 +1,19 @@
+
+
 #!/usr/bin/python
-
+#
+# Back Bodice Block Pattern Inkscape extension
+#
+# Copyright:(C) Susan Spencer 2010
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
 import sys, copy
-
 # define directory where this script and backbodice.inx are located
 sys.path.append('/usr/share/inkscape/extensions')
-
 import inkex
 import re
 import simplestyle
@@ -63,7 +72,7 @@ class DrawBackBodice(inkex.Effect):
           
 
     def GetCoordsFromSlope(self,mylayer,x2,y2,myslope,mylength):
-           # !!!!!!!!!Fix this later to make dart to end at individual's back distance
+           # !!!!!!!!!Change later to make dart to end at individual's back distance
            # line slope formula:     m = (y2-y1)/(x2-x1)
            #                        (y2-y1) = m(x2-x1)                         /* we'll use this in circle formula
            #                         y1 = y2-m(x2-x1)                          /* we'll use this after we solve circle formula
@@ -80,14 +89,8 @@ class DrawBackBodice(inkex.Effect):
            x1= x2-(r/((1+(m**2))**(.5)))
            y1= y2-m*(x2-x1)
            return (x1,y1)
-
-    
-
-           
            #______________
 
-
- 
 
     def effect(self):
            convert_to_pixels=(90)                    #convert inches to pixels - 90px/in
@@ -129,8 +132,8 @@ class DrawBackBodice(inkex.Effect):
            # Create a special layer to draw the pattern.
            my_rootlayer = self.document.getroot()
            self.layer = inkex.etree.SubElement(my_rootlayer, 'g')
-           self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Bodice Block 1')
-           self.layer.set(inkex.addNS('label', 'inkscape'), 'Back Bodice')
+           self.layer.set(inkex.addNS('label', 'inkscape'), 'Pattern Layer')
+           self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Group Layer')
            my_layer=self.layer
            #_______________
            # Create vertical line AB as Back Reference Line starting in upper left corner.
@@ -153,8 +156,8 @@ class DrawBackBodice(inkex.Effect):
            Dy=Ay+(bbl/3)
            self.DrawMyDot(my_layer,Dx,Dy,dot_radius,dot_color,dot_width,dot_fill,'D') 
            #_______________                
-           #At A, draw line length = shoulderwidth/2 + 2cm, perpendicular to AB. Mark endpoint as G. (2cm (4/5in) will be the width of the shoulder dart)
-           Gx=Ax +(sw/2) + ((2*convert_to_inches*convert_to_pixels)*2)
+           #At A, draw line length = shoulderwidth/2 + 2cm, perpendicular to AB. Mark endpoint as G. (2cm (2/3in) will be the width of the shoulder dart)
+           Gx=Ax+(sw/2)+(2*convert_to_inches*convert_to_pixels)
            Gy=Ay
            self.DrawMyLine(my_layer,Ax,Ay,Gx,Gy,referenceline_color,referenceline_width,'AG')
            self.DrawMyDot(my_layer,Gx,Gy,dot_radius,dot_color,dot_width,dot_fill,'G')
@@ -174,7 +177,7 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyQCurve(my_layer,Fx,Fy,Ex,Ey,controlx,controly,patternline_color,patternline_width,'FE')
            #_______________
            #At G, draw line: length = 4cm, perpendicular to AG. Mark endpoint as H. (4cm) is average depth of shoulder slope)
-           #!!!!Fix this later to an individual's actual shoulder slope
+           #!!!! Change later to use an individual's actual shoulder slope
            Hx=Gx
            Hy=Gy+(4*convert_to_inches)*(convert_to_pixels)
            self.DrawMyLine(my_layer,Gx,Gy,Hx,Hy,referenceline_color,referenceline_width,'GH')
@@ -183,7 +186,7 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyLine(my_layer,Ex,Ey,Hx,Hy,patternline_color,patternline_width,'EH')
            self.DrawMyDot(my_layer,Hx,Hy,dot_radius,dot_color,dot_width,dot_fill,'H')
            #_______________
-           # On EH, find midpoint I. Creates midpoint of back shoulder dart.
+           #On EH, find midpoint I. Creates midpoint of back shoulder dart.
            # Find dart points K and L where K and L are 1cm away from dart midpoint I 
            Ix=Ex+((Hx-Ex)/2)
            Iy=Ey+((Hy-Ey)/2)
@@ -245,15 +248,18 @@ class DrawBackBodice(inkex.Effect):
            self.DrawMyDot(my_layer,Sx,Sy,dot_radius,dot_color,dot_width,dot_fill,'S')         
            #_______________
            # Draw waist pattern line from M to Q
-           #self.DrawMyLine(my_layer,Mx,My,Qx,Qy,patternline_color,patternline_width,'MQ')
-           #_______________
+           self.DrawMyLine(my_layer,Mx,My,Qx,Qy,patternline_color,patternline_width,'MQ')
            # Draw waist curve from Q to S, control point x is Qx+(Rx-Qx)*(3/4)
-           #Qxcontrollength=2/3
-           #Qycontrolheight=1/3
-           controlx=Qx+((Sx-Qx)*(.66))
-           controly=Qy+((Sy-Qy)*(.33))
-           my_pathdefinition='M '+str(Mx)+','+str(My)+' L '+str(Qx)+','+str(Qy)+' Q '+str(controlx)+','+str(controly)+' '+str(Sx)+','+str(Sy)
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'QS')  
+           #Qxcontrollength=.25
+           #Qycontrolheight=0
+           C1x=Qx+((Sx-Qx)*(.25))
+           C1y=Qy+0
+           #Sxcontrollength=.75
+           #Sycontrolheight=.50
+           C2x=Qx+((Sx-Qx)*(.75))
+           C2y=Sy-((Sy-Ry)*(.5))
+           my_pathdefinition='M '+str(Qx)+','+str(Qy)+'  C '+str(C1x)+','+str(C1y)+'  '+str(C2x)+','+str(C2y)+' '+str(Sx)+','+str(Sy)
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'QS')
            #_______________
            # From D, find point T perpendicular to AB on FM.
            # Extend T horizontally, length = back-armpit-distance/2. Mark endpoint as U. Creates armpit line TU.
@@ -267,7 +273,7 @@ class DrawBackBodice(inkex.Effect):
            Ux=Tx+(bad/2)
            Uy=Ty # horizontal line
            self.DrawMyLine(my_layer,Tx,Ty,Ux,Uy,referenceline_color,referenceline_width,'TU')  
-           self.DrawMyLine(my_layer,Hx,Hy,Ux,Uy,patternline_color,patternline_width,'HU') 
+           self.DrawMyLine(my_layer,Hx,Hy,Ux,Uy,referenceline_color,referenceline_width,'HU') 
            self.DrawMyDot(my_layer,Tx,Ty,dot_radius,dot_color,dot_width,dot_fill,'T')         
            self.DrawMyDot(my_layer,Ux,Uy,dot_radius,dot_color,dot_width,dot_fill,'U') 
            #_______________
@@ -300,9 +306,12 @@ class DrawBackBodice(inkex.Effect):
            #C2y=Ux+((Xy-Uy)*(.5))
            my_pathdefinition='M '+str(Ux)+','+str(Uy)+'  Q '+str(Ux)+','+str(Xy)+' '+str(Xx)+','+str(Xy)
            self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'UX')     
-           #_______________                            
-           # Remove reference lines
-           #??? Turn reference lines opaque...TBD
+           #_______________ 
+           #                            
+           # 
+           # Next action: Add toggle to reveal/hide reference lines, this is saved as the reusable pattern block
+
+
            
 	   
 my_effect = DrawBackBodice()
