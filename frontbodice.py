@@ -63,7 +63,6 @@ class DrawFrontBodice(inkex.Effect):
           
 
     def GetCoordsFromSlope(self,mylayer,x2,y2,myslope,mylength):
-           # !!!!!!!!!Fix this later to make dart to end at individual's back distance
            # line slope formula:     m = (y2-y1)/(x2-x1)
            #                        (y2-y1) = m(x2-x1)                         /* we'll use this in circle formula
            #                         y1 = y2-m(x2-x1)                          /* we'll use this after we solve circle formula
@@ -80,6 +79,25 @@ class DrawFrontBodice(inkex.Effect):
            x1= x2-(r/((1+(m**2))**(.5)))
            y1= y2-m*(x2-x1)
            return (x1,y1)
+
+    def GetIntersectFrom_Two_Lines(self,my_layer,x11,y11,x12,y12,x21,y21,x22,y22):
+           # y=mx+b  --> looking for point x,y where m1*x+b1=m2*x+b2
+           # b1=y1-m1*x1
+           # !!!!!!!!!!!!Test later for parallel lines  and vertical lines
+           m1=(y12-y11)/(x12-x11)
+           b1=(y11-(m1*x11))
+           # b2=y2-m2*x2
+           m2=(y22-y21)/(x22-x21)
+           b2=(y21-(m2*x21))
+           # get x from m1(x)+b1=m2(x)+b2
+           # m1(x)+b1=m2(x)+b2
+           # m1(x)-m2(x)=b2-b1
+           # x(m1-m2)=b2-b1
+           x=(b2-b1)/(m1-m2)
+           # get y from y=m1(x)+b1
+           y=(m1*x)+b1
+           return x,y
+            
 
     
 
@@ -109,33 +127,35 @@ class DrawFrontBodice(inkex.Effect):
            referenceline_color='gray'
            referenceline_width='7'
            referenceline_fill='gray'
+           referencedot_radius = .07*convert_to_pixels                #pattern dot markers are .15" radius
+           referencedot_color = 'gray'
+           referencedot_width = .07
+           referencedot_fill = 'gray'
            patternline_color='black'
            patternline_width='10'
            patternline_fill='black'
-           dot_radius = .15*convert_to_pixels                #pattern dot markers are .15" radius
+           dot_radius = .10*convert_to_pixels                #pattern dot markers are .15" radius
            dot_color = 'red'
-           dot_width = .15
+           dot_width = .10
            dot_fill = 'red'
-           dartline_color = 'black'
-           dartline_width = '10'
-           dartline_fill = 'black'
-           dartdot_radius = .10*convert_to_pixels
-           dartdot_color = 'black'
-           dartdot_width = .10
-           dartdot_fill='black'
+           dartline_color = 'pink'
+           dartline_width = '8'
+           dartline_fill = 'pink'
+           dartdot_radius = .08*convert_to_pixels
+           dartdot_color = 'pink'
+           dartdot_width = .08
+           dartdot_fill='pink'
            
 
            # Define the special layer to draw the pattern.
            my_rootlayer = self.document.getroot()
            self.layer = inkex.etree.SubElement(my_rootlayer, 'g')
-           self.layer.set(inkex.addNS('label', 'inkscape'), 'Bodice Block Pattern Layer')
-           self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Front Bodice Block Group Layer')
+           self.layer.set(inkex.addNS('label', 'inkscape'), 'Pattern Layer')
+           self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Group Layer')
            my_layer=self.layer
            #
-           begin_pattern_x=45*convert_to_pixels               #Front Bodice Pattern begins in upper right corner x=45"
+           begin_pattern_x=40*convert_to_pixels              #Front Bodice Pattern begins in upper right corner x=40"
            begin_pattern_y=3*convert_to_pixels               #Front Bodice Pattern begins in upper right corner, but y is same as Back Bodice Pattern...y=3" 
-
-
            #_______________
            # Create vertical line AB as Front Reference Line starting in upper right corner.
            # Point A is (Ax,Ay), point B is (Bx,By).  
@@ -158,19 +178,20 @@ class DrawFrontBodice(inkex.Effect):
            self.DrawMyDot(my_layer,Dx,Dy,dot_radius,dot_color,dot_width,dot_fill,'Front_D') 
            #_______________                
            #At A, draw line length = shoulderwidth/2 perpendicular to AB. Mark endpoint as G. (no shoulder dart in front bodice)
-           Gx=Ax+(sw/2)+(2*convert_to_inches*convert_to_pixels)
+           Gx=Ax-((sw/2)+(2*convert_to_inches*convert_to_pixels))
            Gy=Ay
            self.DrawMyLine(my_layer,Ax,Ay,Gx,Gy,referenceline_color,referenceline_width,'Front_AG')
            self.DrawMyDot(my_layer,Gx,Gy,dot_radius,dot_color,dot_width,dot_fill,'Front_G')
            #_______________
            #On AG, measuring from A, mark point E at length = (neck-circumference/6 + .5cm (.2in). E marks point for Neck opening.         
-           Ex=Ax+(nc/6)+(.5*convert_to_inches*convert_to_pixels)
+           Ex=Ax-((nc/6)+(.5*convert_to_inches*convert_to_pixels))
            Ey=Ay
            self.DrawMyDot(my_layer,Ex,Ey,dot_radius,dot_color,dot_width,dot_fill,'Front_E')
            #_______________
            #On AB, measuring from A, mark point F at length = (neck-circumference/6 + 1cm). F marks point for Neck depth.
            Fx=Ax
            Fy=Ay+(nc/6 + 1*convert_to_inches*convert_to_pixels)
+           self.DrawMyLine(my_layer,Fx,Fy,Bx,By,patternline_color,patternline_width,'Front_FB')
            self.DrawMyDot(my_layer,Fx,Fy,dot_radius,dot_color,dot_width,dot_fill,'Front_F')          
            #_______________
            controlx=Ex
@@ -191,20 +212,20 @@ class DrawFrontBodice(inkex.Effect):
            # then draw top part of armscye pattern line HI
            Ix = Dx - (fad/2)
            Iy = Dy
-           self.DrawMyLine(my_layer,Dx,Dy,Ix,Iy,referenceline_color,patternline_width,'Front_DI')
+           self.DrawMyLine(my_layer,Dx,Dy,Ix,Iy,referenceline_color,referenceline_width,'Front_DI')
            self.DrawMyLine(my_layer,Hx,Hy,Ix,Iy,patternline_color,patternline_width,'Front_HI')           
            self.DrawMyDot(my_layer,Ix,Iy,dot_radius,dot_color,dot_width,dot_fill,'Front_I')           
            #_______________
            # Draw bust circumference reference line CJ --> bust circumference/4 + 1cm perpendicular to AB at point C
            Jx = Cx - ((bc/4)+(1*convert_to_inches*convert_to_pixels))
            Jy = Cy
-           self.DrawMyLine(my_layer,Cx,Cy,Jx,Jy,patternline_color,patternline_width,'Front_CJ')           
+           self.DrawMyLine(my_layer,Cx,Cy,Jx,Jy,referenceline_color,referenceline_width,'Front_CJ')           
            self.DrawMyDot(my_layer,Jx,Jy,dot_radius,dot_color,dot_width,dot_fill,'Front_J')  
            #_______________
            # Mark Point K bust point distance/2 from point C along CJ
-           Kx = (bpd/2)
+           Kx = Cx-(bpd/2)
            Ky = Cy          
-           self.DrawMyDot(my_layer,Kx,Ky,dot_radius,dot_color,dot_width,dot_fill,'Front_K') 
+           self.DrawMyDot(my_layer,Kx,Ky,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_K') 
            #_______________
            # Draw waist reference line BP --> (waist circumference/4 + 1cm + 2 dart depths) from point B perpendicular to AB
            if (uhc > lhc):
@@ -215,12 +236,12 @@ class DrawFrontBodice(inkex.Effect):
            Px = Bx - ((wc/4) + (1*convert_to_inches*convert_to_pixels)+(my_dart_depth*2))
            Py = By
            self.DrawMyLine(my_layer,Bx,By,Px,Py,referenceline_color,referenceline_width,'Front_BP')           
-           self.DrawMyDot(my_layer,Px,Py,dot_radius,dot_color,dot_width,dot_fill,'Front_P') 
+           self.DrawMyDot(my_layer,Px,Py,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_P') 
            #_______________
            # Mark Point L --> bust distance/2 from point B on BP (midpoint front waist dart) 
            Lx = Bx - (bpd/2)  
            Ly = By
-           self.DrawMyDot(my_layer,Px,Py,dot_radius,dot_color,dot_width,dot_fill,'Front_L') 
+           self.DrawMyDot(my_layer,Px,Py,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Front_L') 
            #_______________
            # Draw reference line KL --> front dart will be drawn on top of this line
            self.DrawMyLine(my_layer,Kx,Ky,Lx,Ly,referenceline_color,referenceline_width,'Front_KL')
@@ -231,8 +252,9 @@ class DrawFrontBodice(inkex.Effect):
            My = By
            Nx = Lx + my_dart_depth
            Ny = By
-           self.DrawMyDot(my_layer,Mx,My,dot_radius,dot_color,dot_width,dot_fill,'Front_M')
-           self.DrawMyDot(my_layer,Mx,My,dot_radius,dot_color,dot_width,dot_fill,'Front_N')  
+           self.DrawMyDot(my_layer,Mx,My,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Front_M')
+           self.DrawMyDot(my_layer,Mx,My,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Front_N') 
+           self.DrawMyLine(my_layer,Bx,By,Mx,My,patternline_color,patternline_width,'Front_BN')
            #_______________
            # Find point O bust length distance from point E to a point on line KL where all x = Kx 
            # KL is a vertical line, so x is known --> Ox = Kx, only have to solve for Oy
@@ -251,12 +273,34 @@ class DrawFrontBodice(inkex.Effect):
            # Draw bust dart leg pattern lines MO and line NO & Draw bust point O
            self.DrawMyLine(my_layer,Mx,My,Ox,Oy,dartline_color,dartline_width,'Front_MO')                     
            self.DrawMyLine(my_layer,Nx,Ny,Ox,Oy,dartline_color,dartline_width,'Front_NO')
-           self.DrawMyDot(my_layer,Ox,Oy,dot_radius,dot_color,dot_width,dot_fill,'Front_O')
+           self.DrawMyDot(my_layer,Ox,Oy,dartdot_radius,dartdot_color,dartdot_width,dartdot_fill,'Front_O')
            #_______________
            # Get waist point Q 1 cm up from point P
            Qx=Px
            Qy=Py-(1*convert_to_inches*convert_to_pixels)
-           self.DrawMyDot(my_layer,Qx,Qy,dot_radius,dot_color,dot_width,dot_fill,'Front_U')
+           # Draw waist curve from M to Q, control point x is Qx+(Mx-Qx)*(3/4)
+           #controlx=Px+(Mx-Px)*(3/4)
+           #controly=Py
+           C1x=Mx-((Mx-Qx)*(.25))
+           C1y=My-((My-Qy)*(.1))
+           C2x=Mx-((Mx-Qx)*(.75))
+           C2y=My-((My-Qy)*(.3))
+           #my_pathdefinition='M '+str(Mx)+'+'Qx,Qy C (Qx-((Qx-Mx)/3)),(Qy-((Qy-My)/3)) Mx,My'
+           my_pathdefinition='M '+str(Mx)+','+str(My)+'  C '+str(C1x)+','+str(C1y)+'  '+str(C2x)+','+str(C2y)+' '+str(Qx)+','+str(Qy)
+           #self.DrawMyQCurve(my_layer,Qx,Qy,Mx,My,controlx,controly,patternline_color,patternline_width,'Front_QM')
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front_QM')
+           self.DrawMyDot(my_layer,Qx,Qy,dot_radius,dot_color,dot_width,dot_fill,'Front_Q')
+          ## Draw waist curve from Q to S, control point x is Qx+(Rx-Qx)*(3/4)
+           ##Qxcontrollength=.25
+           ##Qycontrolheight=0
+           #C1x=Qx+((Sx-Qx)*(.25))
+           #C1y=Qy+0
+           ##Sxcontrollength=.75
+           ##Sycontrolheight=.50
+           #C2x=Qx+((Sx-Qx)*(.75))
+           #C2y=Sy-((Sy-Ry)*(.5))
+           #my_pathdefinition='M '+str(Qx)+','+str(Qy)+'  C '+str(C1x)+','+str(C1y)+'  '+str(C2x)+','+str(C2y)+' '+str(Sx)+','+str(Sy)
+           #self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'QS')
            #_______________
            # find point R vertical to point J, perpendicular to point O
            # draw reference lines JR and OR
@@ -273,17 +317,52 @@ class DrawFrontBodice(inkex.Effect):
            self.DrawMyDot(my_layer,Sx,Sy,dot_radius,dot_color,dot_width,dot_fill,'Front_S')
            # find point T at midpoint RS
            Tx=Jx
-           Ty=(Sy-Ry)/2
-           self.DrawMyDot(my_layer,Tx,Ty,dot_radius,dot_color,dot_width,dot_fill,'Front_T')
+           Ty=Ry+((Sy-Ry)/2)
+           self.DrawMyLine(my_layer,Ox,Oy,Tx,Ty,referenceline_color,referenceline_width,'Front_OT')
+           self.DrawMyDot(my_layer,Tx,Ty,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_T')
            # find point U at midpoint RT
            Ux=Jx
-           Uy=(Ty-Ry)/2
-           self.DrawMyDot(my_layer,Ux,Uy,dot_radius,dot_color,dot_width,dot_fill,'Front_U')
-           # get slope mQT
-           mQT=(Qy-Ty)/(Qx-Tx)
-           # get slope mOU
-           mOU=(Oy-Uy)/(Ox-Ux)
-           # find point V on line OS from Q at slope mQT
+           Uy=Ry+((Ty-Ry)/2)
+           self.DrawMyLine(my_layer,Ox,Oy,Ux,Uy,'Green','20px','Front_OU')
+           self.DrawMyDot(my_layer,Ux,Uy,referencedot_radius,referencedot_color,referencedot_width,referencedot_fill,'Front_U')
+           # find point V at intersection of line OS and QT, Draw line QV
+           Vx,Vy = self.GetIntersectFrom_Two_Lines(my_layer,Qx,Qy,Tx,Ty,Ox,Oy,Sx,Sy)
+           self.DrawMyLine(my_layer,Qx,Qy,Vx,Vy,patternline_color,patternline_width,'Front_QV')
+           self.DrawMyDot(my_layer,Vx,Vy,dot_radius,dot_color,dot_width,dot_fill,'Front_V')
+           # find point W at intersection of line OU and QT
+           Wx,Wy = self.GetIntersectFrom_Two_Lines(my_layer,Ox,Oy,Ux,Uy,Qx,Qy,Tx,Ty)
+           # find point X at intersection of line OT and JW
+           Xx,Xy = self.GetIntersectFrom_Two_Lines(my_layer,Ox,Oy,Tx,Ty,Jx,Jy,Wx,Wy)
+           # find point Y at intersection of line OR and JW
+           Yx,Yy = self.GetIntersectFrom_Two_Lines(my_layer,Ox,Oy,Rx,Ry,Jx,Jy,Wx,Wy)
+           # find point Z on JW where length YZ + length QV = sideseam
+           length_QV_sq=(Qx-Vx)**2+(Qy-Vy)**2
+           length_QV=(length_QV_sq)**(.5)
+           length_YJ_sq=(Yy-Jy)**2+(Yx-Jx)**2 
+           length_YJ = (length_YJ_sq)**(.5)
+           length_JZ = ssl-length_QV-length_YJ
+           r = (ssl-(length_YJ+length_QV))
+           if (Yx!=Jx):
+                m=(-(Yy-Jy)/(Yx-Jx))
+                Zx= Jx+(r/((1+(m**2))**(.5)))
+                Zy= Jy-(m*(Zx-Jx))
+           else:
+                Zx=Jx
+                Zy=Jy-(r*convert_to_inches*convert_to_pixels)
+
+           #Zx,Zy = self.GetCoordsFromSlope(my_layer,Jx,Jy,my_slope,my_length)
+           # Draw side seams ZY,YX, XV,VQ
+           self.DrawMyLine(my_layer,Zx,Zy,Yx,Yy,patternline_color,patternline_width,'Front_ZY')
+           self.DrawMyLine(my_layer,Yx,Yy,Xx,Xy,patternline_color,patternline_width,'Front_YX')
+           self.DrawMyLine(my_layer,Xx,Xy,Vx,Vy,patternline_color,patternline_width,'Front_XV')
+           self.DrawMyLine(my_layer,Vx,Vy,Qx,Qy,patternline_color,patternline_width,'Front_VQ')
+           # Draw dart legs OY, OX, OV
+           self.DrawMyLine(my_layer,Ox,Oy,Yx,Yy,dartline_color,dartline_width,'Front_OY')
+           self.DrawMyLine(my_layer,Ox,Oy,Xx,Xy,dartline_color,dartline_width,'Front_OX')           
+           self.DrawMyLine(my_layer,Ox,Oy,Vx,Vy,dartline_color,dartline_width,'Front_OV')
+
+
+
 
            ###############################################################################
            #_______________
