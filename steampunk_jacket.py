@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Matt's Jacket Pattern Inkscape extension
+# Steampunk Pattern Inkscape extension
 # steampunk_jacket.py
 # Copyright:(C) Susan Spencer 2010
 #
@@ -8,70 +8,94 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#
+
 import sys, copy
-# define directory where this script and steampunk_jacket.inx are located
-sys.path.append('/usr/share/inkscape/extensions')
 import inkex
 import re
 import simplestyle
 import simplepath
 import simpletransform
 import math
-#from lxml import etree
 import lxml
+import xml
+import py2geom
+from lxml import objectify
+from scour import removeNamespacedAttributes as removeNSAttrib
+from scour import removeNamespacedElements as removeNSElem
 
+
+# define directory where this script and steampunk_jacket.inx are located
+sys.path.append('/usr/share/inkscape/extensions')
+
+
+###############################
+######## Define globals #######
+###############################
+
+# NSS --> a dictionary of all of the xmlns prefixes in a standard inkscape doc
+NSS = {
+u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+u'cc'       :u'http://web.resource.org/cc/',
+u'svg'      :u'http://www.w3.org/2000/svg',
+u'dc'       :u'http://purl.org/dc/elements/1.1/',
+u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
+u'xlink'    :u'http://www.w3.org/1999/xlink',
+u'xml'      :u'http://www.w3.org/XML/1998/namespace',
+u'xpath'    :u'http://www.w3.org/TR/xpath',
+u'xsl'      :u'http://www.w3.org/1999/XSL/Transform'
+}
+
+# measurement constants
+in_to_px = ( 90 )                    #convert inches to pixels - 90px/in
+cm_to_in = ( 1 / 2.5 )               #convert centimeters to inches - 1in/2.5cm
+cm_to_px = ( 90 / 2.5 )              #convert centimeters to pixels
+
+# sewing constants
+quarter_seam_allowance = in_to_px * 1 / 4    # 1/4" seam allowance
+seam_allowance         = in_to_px * 5 / 8    # 5/8" seam allowance  
+hem_allowance          = in_to_px * 2        # 2" seam allowance   
 
 
 class DrawJacket(inkex.Effect):
+
     def __init__(self):
-          inkex.Effect.__init__(self)        
-          # Store measurements from BackBodice.inx into object 'self'   
-          self.OptionParser.add_option('--measureunit', action='store', type='str', dest='measureunit', default='cm', help='Select measurement unit:')
-          self.OptionParser.add_option('--height', action='store', type='float', dest='height', default=1.0, help='Height in inches') 
-          self.OptionParser.add_option('--chest', action='store', type='float', dest='chest', default=1.0, help='chest')
-          self.OptionParser.add_option('--chest_length', action='store', type='float', dest='chest_length', default=1.0, help='chest_length')
-          self.OptionParser.add_option('--waist', action='store', type='float', dest='waist', default=1.0, help='waist')
-          self.OptionParser.add_option('--back_waist_length', action='store', type='float', dest='back_waist_length', default=1.0, help='back_waist_length') 
-          self.OptionParser.add_option('--back_jacket_length', action='store', type='float', dest='back_jacket_length', default=1.0, help='back_jacket_length')
-          self.OptionParser.add_option('--back_shoulder_width', action='store', type='float', dest='back_shoulder_width', default=1.0, help='back_shoulder_width')
-          self.OptionParser.add_option('--back_shoulder_length', action='store', type='float', dest='back_shoulder_length', default=1.0, help='back_shoulder_length')
-          self.OptionParser.add_option('--back_underarm_width', action='store', type='float', dest='back_underarm_width', default=1.0, help='back_underarm_width')
-          self.OptionParser.add_option('--back_underarm_length', action='store', type='float', dest='back_underarm_length', default=1.0, help='back_underarm_length')
-          self.OptionParser.add_option('--seat', action='store', type='float', dest='seat', default=1.0, help='seat') 
-          self.OptionParser.add_option('--back_waist_to_seat_length', action='store', type='float', dest='back_waist_to_seat_length', default=1.0, help = 'back_waist_to_seat_length')
-          self.OptionParser.add_option('--nape_to_vneck', action='store', type='float', dest='nape_to_vneck', default=1.0, help='Nape around to about 11.5cm (4.5in) below front neck')
-          self.OptionParser.add_option('--sleeve_length', action='store', type='float', dest='sleeve_length', default=1.0, help='sleeve_length') 
+          inkex.Effect.__init__(self)    
+          # Store user measurements from steampunk_jacket.inx into object 'self'  
+          OP = self.OptionParser              # use 'OP' make code easier to read - much shorter!
+          OP.add_option('--measureunit', action='store', type='str', dest='measureunit', default='cm', help='Select measurement unit:')
+          OP.add_option('--height', action='store', type='float', dest='height', default=1.0, help='Height in inches') 
+          OP.add_option('--chest', action='store', type='float', dest='chest', default=1.0, help='chest')
+          OP.add_option('--chest_length', action='store', type='float', dest='chest_length', default=1.0, help='chest_length')
+          OP.add_option('--waist', action='store', type='float', dest='waist', default=1.0, help='waist')
+          OP.add_option('--back_waist_length', action='store', type='float', dest='back_waist_length', default=1.0, help='back_waist_length') 
+          OP.add_option('--back_jacket_length', action='store', type='float', dest='back_jacket_length', default=1.0, help='back_jacket_length')
+          OP.add_option('--back_shoulder_width', action='store', type='float', dest='back_shoulder_width', default=1.0, help='back_shoulder_width')
+          OP.add_option('--back_shoulder_length', action='store', type='float', dest='back_shoulder_length', default=1.0, help='back_shoulder_length')
+          OP.add_option('--back_underarm_width', action='store', type='float', dest='back_underarm_width', default=1.0, help='back_underarm_width')
+          OP.add_option('--back_underarm_length', action='store', type='float', dest='back_underarm_length', default=1.0, help='back_underarm_length')
+          OP.add_option('--seat', action='store', type='float', dest='seat', default=1.0, help='seat') 
+          OP.add_option('--back_waist_to_hip_length', action='store', type='float', dest='back_waist_to_hip_length', default=1.0, help = 'back_waist_to_hip_length')
+          OP.add_option('--nape_to_vneck', action='store', type='float', dest='nape_to_vneck',default=1.0,help='Nape around to about 11.5cm (4.5in) below front neck')
+          OP.add_option('--sleeve_length', action='store', type='float', dest='sleeve_length', default=1.0, help='sleeve_length') 
 
-    # from Lanier's phd Thesis "From Spiral to Spline: Optimal Techniques in Interactive Curve Design" 
-    # determines control point for
-    # def fit_euler(th0, th1):
-    #      k1_old = 0
-    #      e_old = th1 - th0
-    #      k0 = th0 + th1
-    #      k1 = 6 * (1 - ((.5 / pi) * k0) ** 3) * e_old
-    #      for i in range(10):
-    #          x, y = spiro(k0, k1, 0, 0)  ---> what is spiro function?
-    #          e = (th1 - th0) + 2 * atan2(y, x) - .25 * k1
-    #          if abs(e) 1e-9: break   ---> not proper python code
-    #          k1_old, e_old, k1 = k1, e, k1 + (k1_old - k1) * e / (e - e_old)
-    #      return k0, k1
+    def debug(self,what):
+           sys.stderr.write(str(what) + "\n")
+           return what
 
-
-    def Dot(self,layer,X1,Y1,name):
-           in_to_px=90
+    def GetDot(self,my_layer,x,y,name):
            style = { 'stroke':'red',  
                      'fill':'red',
                      'stroke-width':'8'}
            attribs = {'style' : simplestyle.formatStyle(style),
                         inkex.addNS('label','inkscape') : name,
-                        'cx': str(X1),
-                        'cy': str(Y1),
+                        'cx': str(x),
+                        'cy': str(y),
                         'r' : str(.05*in_to_px)}
-           inkex.etree.SubElement(layer,inkex.addNS('circle','svg'),attribs)
+           inkex.etree.SubElement(my_layer,inkex.addNS('circle','svg'),attribs)
+           return x,y,str(x)+','+str(y)
 
     def GetCircle(self,layer,x,y,radius,color,name):
-           cm_to_px=90
            style = { 'stroke': color,  
                      'fill':'none',
                      'stroke-width':'6'}
@@ -81,6 +105,107 @@ class DrawJacket(inkex.Effect):
                         'cy': str(y),
                         'r' : str(radius)}
            inkex.etree.SubElement(layer,inkex.addNS('circle','svg'),attribs)
+   
+    def sodipodidefs(self):
+
+           # get highest element of document  
+           # doc_root = self.document.getroot() --> works!
+           svg_root = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]       #lxml xpath method of getting document root
+           sodi_root = self.document.xpath('//sodipodi:namedview',namespaces=NSS)[0]
+           ink_root = self.document.xpath('//sodipodi:namedview/inkscape',namespaces=NSS) 
+ 
+           root_obj = lxml.objectify.Element('root')
+           sodi_obj = lxml.objectify.Element('namedview')
+	   #for i in range(attrList.length):
+	   #   attr = attrList.item(i)
+	   #   setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
+	   # sodi_root.removeElement('inkscape:window-y')
+           # sodi_root.setElement('window-y','')
+           # del sodi_root.inkscape:window-y
+           # del ink_root.window-y.attribs
+
+           attribs = {  inkex.addNS('sodipodi-insensitive')        : 'false', 
+                        inkex.addNS('window-y','inkscape')         : "26",
+                        inkex.addNS('window-x','inkscape')         : "42",
+                        inkex.addNS('window-height','inkscape')    : "800",
+                        inkex.addNS('window-width','inkscape')     : "1226",
+                        inkex.addNS('current-layer','inkscape')    : "layer1",
+                        inkex.addNS('document-units','inkscape')   : "cm",
+                        inkex.addNS('window-maximized','inkscape') : "1", 
+                        inkex.addNS('cy','inkscape')               : "9.3025513",
+                        inkex.addNS('cx','inkscape')               : "9",
+                        inkex.addNS('zoom','inkscape')             : "16",
+                        'pageshadow'              : "1",
+                        'pageopacity'             : "0.0",
+                        'borderopacity'           : "0.5",
+                        'bordercolor'             : "#666666",
+                        'pagecolor'               : "#fffaaa",
+                        'id'                      : "base2" }
+           inkex.etree.SubElement(svg_root,inkex.addNS('namedview','sodipodi'),attribs)
+
+
+           # define 3-inch document borders   --> works! :)   
+           border = str( 4 * in_to_px )
+           svg_root.set( "margin-top", border )    
+           svg_root.set( "margin-bottom", border ) 
+           svg_root.set( "margin-left", border )   
+           svg_root.set( "margin-right", border ) 
+
+           # add pattern name                 --> works! :)     
+           svg_root.set( "pattern-name","Steampunk Jacket")
+
+
+           # set center of document
+           # inkex.etree.SubElement(doc_root,inkex.addNS('namedview','sodipodi'),attribs)
+           #xattr = self.document.xpath.Evaluate('//sodipodi:namedview/@inkscape:cx',self.document,context=ctx)
+           #yattr = lxml.xpath.Evaluate('//sodipodi:namedview/@inkscape:cy',self.document,context=ctx)
+           xattr = sodi_root.xpath('//@inkscape:cx',namespaces=NSS)    #lxml xpath lookup relative // to self.document or /svg:svg
+           yattr = sodi_root.xpath('//@inkscape:cy',namespaces=NSS)
+           self.debug(xattr)
+           self.debug(yattr)
+           if xattr and yattr:
+               x = xattr[0]
+               y = yattr[0]
+               if x and y:
+                   self.view_center = (float(x),float(y))
+
+           # define document units
+           uattr = sodi_root.xpath('//@inkscape:document-units', namespaces=NSS)  # no error, returns 'px'
+           self.debug(uattr)      #'px' 'cm'
+           unode = sodi_root.xpath('//inkscape:document-units', namespaces=NSS) # returns null
+           self.debug(unode)
+           if uattr:
+               u0 = uattr[0]       #px
+               self.debug(u0)
+
+    def sodipodiview(self):
+           xattr      = self.document.xpath('//sodipodi:namedview/@inkscape:cx', namespaces=NSS)
+           yattr      = self.document.xpath('//sodipodi:namedview/@inkscape:cy', namespaces=NSS)
+           zoom       = self.document.xpath('//sodipodi:namedview/@inkscape:zoom', namespaces=NSS)
+           doc_height = (self.document.getroot().get('height'))
+           doc_width  = (self.document.getroot().get('width'))
+           if xattr and yattr:
+               x = xattr[0]
+               y = yattr[0]
+               if x and y:
+                   xattr[0]=float(doc_width)/2
+                   self.debug(xattr[0])
+                   yattr[0]=float(doc_height)/2
+                   self.debug(xattr[0])
+                   self.view_center = (float(doc_width)/2,float(doc_height)/2)
+           if zoom:
+               zoom[0]=''
+           else:
+               attribs = { 'inkscape:zoom':'5'}
+               inkex.etree.SubElement(mylayer,inkex.addNS('namedview','sodipodi'),attribs)
+
+    def GetNewLayer(self,mylayer,name):
+           self.layer = inkex.etree.SubElement( mylayer, 'g' )
+           self.layer.set( inkex.addNS( 'label', 'inkscape'), name+' Pattern' )
+           self.layer.set( inkex.addNS( 'layer', 'inkscape'), name+' Layer')
+           self.layer.set( inkex.addNS( 'groupmode', 'inkscape'), name+' Group' )
+           return self.layer
+
 
     def Path(self,layer,pathdefinition,pathtype,name,trans):
            if (pathtype=='reference'):
@@ -307,10 +432,6 @@ class DrawJacket(inkex.Effect):
     def Sqrt(self,xsq):
            x = abs((xsq)**(.5))
            return x
-
-    def GetDot(self,my_layer,x,y,name):
-           self.Dot(my_layer,x,y,name)
-           return x,y,str(x)+','+str(y)
                
     def Arrow(self,layer,x1,y1,x2,y2):
            arrow_height=30
@@ -342,8 +463,6 @@ class DrawJacket(inkex.Effect):
            self.Arrow(mylayer,x2,y2,x1,y1)
 
     def Buttons(self,mylayer,bx,by,button_number,button_distance,button_size):
-           cm_to_px=(90/2.5)
-           in_to_px=90
            buttonline='M '+str(bx)+' '+str(by)+' L '+str(bx)+' '+str(by+(button_number*button_distance))
            self.Path(mylayer,buttonline,'foldline','Button Line','')
            i=1
@@ -355,60 +474,49 @@ class DrawJacket(inkex.Effect):
             i=i+1
             y=y+button_distance
 
-           #i=1
-           #while (i<=button_number):
-             #self.GetCircle(mylayer,x,y,button_size,'green','B'+str(i))
-             #y=y+button_distance
-             #i=i-1
-
            #______________
 
 
     def effect(self):
-           in_to_px=(90)                    #convert inches to pixels - 90px/in
-           cm_to_in=(1/(2.5))               #convert centimeters to inches - 1in/2.5cm
-           cm_to_px=(90/2.5)              #convert centimeters to pixels
-           if (self.options.measureunit=='cm') :
-               conversion=cm_to_px
+
+           # get root of document
+           doc_root  = self.document.getroot()     
+
+           # set inkscape preferences definitions using sodipodi:namedview
+           self.sodipodidefs()
+
+           # set value to convert user measurement to pixels
+           if ( self.options.measureunit == 'cm'):
+               conversion = cm_to_px
            else:
-               conversion=in_to_px
-           height=(self.options.height)*conversion                         #Pattern was written for someone 5'9 or 176cm, 38" chest or 96cm
-           chest=self.options.chest*conversion
-           chest_length=self.options.chest_length*conversion
-           waist=self.options.waist*conversion
-           back_waist_length=self.options.back_waist_length*conversion                #((.25)*height)                        # (44.5/176cm) 
-           back_jacket_length=self.options.back_jacket_length*conversion               #(((.173)*height)+back_waist_length)  # (30.5cm/176cm) 
-           back_shoulder_width=self.options.back_shoulder_width*conversion    #((.233)*height)                     # (41/176)   
-           back_shoulder_length=self.options.back_shoulder_length*conversion           #((.042)*height)                    # (7.5/176cm)
-           back_underarm_width=self.options.back_underarm_width*conversion
-           back_underarm_length=self.options.back_underarm_length*conversion           #((.14)*height)                     # (24/176)cm 
-           back_waist_to_seat_length=self.options.back_waist_to_seat_length*conversion   #(.112*height)               # (20/176)cm  
-           nape_to_vneck=self.options.nape_to_vneck*conversion
-           sleeve_length=self.options.sleeve_length*conversion
+               conversion = in_to_px
+
+           # convert user measurements to pixels
+           height                     = self.options.height * conversion                         #Pattern was written for someone 5'9 or 176cm, 38" chest or 96cm
+           chest                      = self.options.chest*conversion
+           chest_length               = self.options.chest_length*conversion
+           waist                      = self.options.waist*conversion
+           back_waist_length          = self.options.back_waist_length*conversion                #((.25)*height)                        # (44.5/176cm) 
+           back_jacket_length         = self.options.back_jacket_length*conversion               #(((.173)*height)+back_waist_length)  # (30.5cm/176cm) 
+           back_shoulder_width        = self.options.back_shoulder_width*conversion              #((.233)*height)                     # (41/176)   
+           back_shoulder_length       = self.options.back_shoulder_length*conversion             #((.042)*height)                    # (7.5/176cm)
+           back_underarm_width        = self.options.back_underarm_width*conversion
+           back_underarm_length       = self.options.back_underarm_length*conversion             #((.14)*height)                     # (24/176)cm 
+           back_waist_to_hip_length   = self.options.back_waist_to_hip_length*conversion         #(.112*height)               # (20/176)cm  
+           nape_to_vneck              = self.options.nape_to_vneck*conversion
+           sleeve_length              = self.options.sleeve_length*conversion
            
-           begin_x=5*cm_to_px               #Pattern begins in upper left corner x=5cm
-           begin_y=nape_to_vneck/2               #Start at nape to neck measurement down on left side of document   
-           seam_allowance=(5*in_to_px)/8   #5/8" seam allowance  
-           hem_allowance=5*cm_to_px        #5cm or 2" seam allowance   
-           border=3*in_to_px
-           borderstr=str(border)
+           begin_x = 5*cm_to_px               #Pattern begins in upper left corner x=5cm
+           begin_y = nape_to_vneck/2               #Start at nape to neck measurement down on left side of document   
 
-           # Create a base layer to draw the pattern.
-           rootlayer = self.document.getroot()
-           rootlayer.set("margin-top",borderstr)
-           rootlayer.set("margin-bottom",borderstr)
-           rootlayer.set("margin-left",borderstr)
-           rootlayer.set("margin-right",borderstr)
-           self.view_center = (0.0,0.0)
-           self.layer = inkex.etree.SubElement(rootlayer, 'g')
-           self.layer.set(inkex.addNS('label', 'inkscape'), 'Pattern Layer')
-           self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Group')
-           base_layer=self.layer
 
-           ######### Back Jacket ######
+           # Create a base layer 'g' to hold all pattern pieces
+           base_layer = self.GetNewLayer( doc_root , 'g' )
+           pattern_layer = self.GetNewLayer( base_layer, 'Pattern')
+           mydotx,mydoty,mydot=self.GetDot(base_layer,'0','0','mydot')
+
+           ######### Back Jacket #####
            my_layer=base_layer
-           self.layer.set(inkex.addNS('layer', 'inkscape'), 'Back Jacket Layer')
-           self.layer.set(inkex.addNS('groupmode','inkscape'), 'Back Jacket Group')
            # 'Nape'
            A1x,A1y,A1=self.GetDot(my_layer,begin_x,begin_y,'A1')
            # 'High Shoulder Point'
@@ -436,7 +544,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+D1+' L '+D4
            self.Path(my_layer,my_path,'reference','Back Waist Reference Line D1D4','')
            # 'Back Hip Reference Line'
-           E1x,E1y,E1=self.GetDot(my_layer,A1x,(D1y+back_waist_to_seat_length),'E1')
+           E1x,E1y,E1=self.GetDot(my_layer,A1x,(D1y+back_waist_to_hip_length),'E1')
            E2x,E2y,E2=self.GetDot(my_layer,E1x+(2*cm_to_px),E1y,'E2')
            E3x,E3y,E3=self.GetDot(my_layer,A3x-(2*cm_to_px),E1y,'E3')
            E4x,E4y,E4=self.GetDot(my_layer,A3x,E1y,'E4')
@@ -509,14 +617,13 @@ class DrawJacket(inkex.Effect):
            # Grainline
            G1x,G1y,G1=self.GetDot(my_layer,A2x,I3y,'G1')
            G2x,G2y,G2=self.GetDot(my_layer,G1x,G1y+40*cm_to_px,'G2')
+
            ################################
            ### Draw Back Jacket Pattern ###
            ################################
-           self.back_jacket_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.back_jacket_layer.set(inkex.addNS('label', 'inkscape'), 'Jacket Back Label')
-           self.back_jacket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Back Group')
-           back_jacket_layer=self.back_jacket_layer   
-           my_layer=back_jacket_layer       
+
+           my_layer = self.GetNewLayer( pattern_layer, 'Jacket Back')
+
            Back_Pattern_Path=Back_Center+' '+Back_Neck+ ' '+Back_Shoulder+' '+Back_Armhole+' '+Back_Side+' '+Hem_Line+' z'
            self.Path(my_layer,Hem_Line,'foldline','Jacket Back Hemline','')
            self.Path(my_layer,Back_Pattern_Path,'seamline','Jacket Back Seamline','')
@@ -856,13 +963,13 @@ class DrawJacket(inkex.Effect):
            self.Path(my_layer,Collar_Path,'reference','Collar Pattern','')
            self.Path(my_layer,Collar_Roll_Line,'reference','Collar Roll Line','')
            self.Path(my_layer,Collar_Midline,'reference','Collar Midline','')
+
            ##################################
            ###  Draw Front Jacket Pattern ###
            ##################################
-           self.jacket_front_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.jacket_front_layer.set(inkex.addNS('label', 'inkscape'), 'Jacket Front Label')
-           self.jacket_front_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Front Group')
-           my_layer=self.jacket_front_layer
+
+           my_layer = self.GetNewLayer( base_layer, 'Jacket Front')
+
            Jacket_Front_Pattern_Piece=Front_Side+' '+Front_Armhole1+' '+Front_Armhole2+' '+Front_Shoulder+' '+Front_Collar_and_Lapel+' '+Hem_Line+' z'
            self.Path(my_layer,Front_Side_Dart,'dart','Jacket Front Side Dart','')
            self.Path(my_layer,Front_Side_Dart_Foldline,'foldline','Jacket Front Side Dart Foldline','')
@@ -880,34 +987,31 @@ class DrawJacket(inkex.Effect):
            #################################
            ### Draw Upper Pocket Pattern ###
            ################################# 
-           self.upper_pocket_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.upper_pocket_layer.set(inkex.addNS('label', 'inkscape'), 'Upper Pocket Label')
-           self.upper_pocket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Upper Pocket Group')
-           my_layer=self.upper_pocket_layer         
+
+           my_layer=self.GetNewLayer(pattern_layer,'Upper Pocket')
+
            self.Path(my_layer,Upper_Pocket_Foldline,'foldline','Upper Pocket Foldline','')
            self.Path(my_layer,Upper_Pocket_Pattern,'seamline','Upper Pocket Seamline','')
            self.Path(my_layer,Upper_Pocket_Pattern,'pattern','Upper Pocket Cuttingline','')
            self.Grainline(my_layer,UPG1x,UPG1y,UPG2x,UPG2y,'Upper Pocket Grainline')
-           # Draw the test pocket part (use grainline for contrast)
-           #self.Path(my_layer,Upper_Pocket_Newpart, 'grainline','Upper Pocket Newpart','')
+
            #################################
            ### Draw Lower Pocket Pattern ###
            #################################  
-           self.lower_pocket_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.lower_pocket_layer.set(inkex.addNS('label', 'inkscape'), 'Lower Pocket Label')
-           self.lower_pocket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Lower Pocket Group')
-           my_layer=self.lower_pocket_layer         
+
+           my_layer=self.GetNewLayer(pattern_layer,'Lower Pocket')
+
            self.Path(my_layer,Lower_Pocket_Foldline,'foldline','Lower Pocket Foldline','')
            self.Path(my_layer,Lower_Pocket_Pattern,'seamline','Lower Pocket Seamline','')
            self.Path(my_layer,Lower_Pocket_Pattern,'pattern','Lower Pocket Cuttingline','')
            self.Grainline(my_layer,LPG1x,LPG1y,LPG2x,LPG2y,'Lower Pocket Grainline')
+
            ###########################
            ### Draw Collar Pattern ###
            ########################### 
-           self.collar_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.collar_layer.set(inkex.addNS('label', 'inkscape'), 'Collar Label')
-           self.collar_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Collar Group')
-           my_layer=self.collar_layer  
+
+           my_layer=self.GetNewLayer(pattern_layer,'Collar')
+
            self.Path(my_layer,CP_Path,'seamline','Collar Seamline','')                  
            self.Path(my_layer,CP_Path,'pattern','Collar Cuttingline','')
            self.Path(my_layer,CP_Roll_Line,'fold','Collar Roll Line','')
@@ -1046,26 +1150,26 @@ class DrawJacket(inkex.Effect):
            # Grainline
            G1x,G1y,G1=self.GetDot(my_layer,SC2x,SC2y,'G1')
            G2x,G2y,G2=self.GetDot(my_layer,SC2x,SC1y+40*cm_to_px,'G2')
+
            #################################
            ### Draw Upper Sleeve Pattern ###
            #################################
-           self.upper_sleeve_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.upper_sleeve_layer.set(inkex.addNS('label', 'inkscape'), 'Upper Sleeve Label')
-           self.upper_sleeve_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Upper Sleeve Group')
-           my_layer=self.upper_sleeve_layer    
+
+           my_layer=self.GetNewLayer(pattern_layer,'Upper Sleeve')
+  
            Upper_Sleeve_Pattern=Sleeve_Side_1+' '+Upper_Sleeve_Curve+' '+Sleeve_Side_2+' '+Cuff_Hem_Line+' z'
            self.Path(my_layer,Upper_Sleeve_Pattern,'seamline','Upper Sleeve Seamline','')
            self.Path(my_layer,Upper_Sleeve_Pattern,'pattern','Upper Sleeve Cuttingline','')
            self.Path(my_layer,Cuff_Placement_Line1,'foldline','Upper Sleeve Cuff Placement Line','')
            self.Path(my_layer,Cuff_Fold_Line,'foldline','Upper Sleeve Cuff Fold Line','')
            self.Grainline(my_layer,G1x,G1y,G2x,G2y,'Upper Sleeve Grainline')
+
            #################################
            ### Draw Upper Cuff Pattern ###
            #################################
-           self.upper_cuff_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.upper_cuff_layer.set(inkex.addNS('label', 'inkscape'), 'Upper Cuff Label')
-           self.upper_cuff_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Upper Cuff Group')
-           my_layer=self.upper_cuff_layer  
+
+           my_layer=self.GetNewLayer(pattern_layer,'Upper Cuff')
+
            self.Path(my_layer,Cuff_Pattern_Fold_Line,'foldline','Fold Line','')
            self.Path(my_layer,Cuff_Pattern,'seamline','Upper Cuff Seamline','')  
            self.Path(my_layer,Cuff_Pattern,'pattern','Upper Cuff Cuttingline','')
@@ -1122,26 +1226,26 @@ class DrawJacket(inkex.Effect):
            #Under Sleeve Grainline
            G1x,G1y,G1=self.GetDot(my_layer,SC7x,SC7y+6*cm_to_px,'G1')
            G2x,G2y,G2=self.GetDot(my_layer,G1x,G1y+40*cm_to_px,'G2')
+
            #################################
            ### Draw Under Sleeve Pattern ###
            #################################
-           self.under_sleeve_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.under_sleeve_layer.set(inkex.addNS('label', 'inkscape'), 'Under Sleeve Label')
-           self.under_sleeve_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Under Sleeve Group')
-           my_layer=self.under_sleeve_layer    
+
+           my_layer=self.GetNewLayer(pattern_layer,'Under Sleeve')
+ 
            Under_Sleeve_Pattern=Sleeve_Side_3+' '+Underarm+' '+Sleeve_Side_4+' '+Cuff_Hem_Line+' z '
            self.Path(my_layer,Under_Sleeve_Pattern,'seamline','Seamline','')
            self.Path(my_layer,Under_Sleeve_Pattern,'pattern','Cuttingline','')
            self.Path(my_layer,Cuff_Placement_Line2,'foldline','Cuff Placement Line','')
            self.Path(my_layer,Cuff_Fold_Line,'foldline','Cuff Fold Line','')
            self.Grainline(my_layer,G1x,G1y,G2x,G2y,'Grainline')
+
            ###############################
            ### Draw Under Cuff Pattern ###
            ###############################
-           self.under_cuff_layer = inkex.etree.SubElement(base_layer, 'g')
-           self.under_cuff_layer.set(inkex.addNS('label', 'inkscape'), 'Under Cuff Label')
-           self.under_cuff_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Under Cuff Group')
-           my_layer=self.under_cuff_layer
+
+           my_layer=self.GetNewLayer(pattern_layer,'Under Cuff')
+
            self.Path(my_layer,Cuff_Pattern_Fold_Line,'foldline','Fold Line','')
            self.Path(my_layer,Cuff_Pattern,'seamline','Seam Line','')  
            self.Path(my_layer,Cuff_Pattern,'pattern','Cutting Line','')
@@ -1150,6 +1254,7 @@ class DrawJacket(inkex.Effect):
            ###################################
            ### Resize Document, Reset View ###
            ###################################
+
            root = self.document.getroot()
            my_layer=root
            border = 3*in_to_px
@@ -1160,22 +1265,23 @@ class DrawJacket(inkex.Effect):
            heightstr = str(height)
            root.set("width", widthstr)
            root.set("height",heightstr)
-           #root.set("currentScale","1 : 1")
+           root.set("currentScale","0.09 : 1")  # doesn't work
            #x=self.document.getElementById('svg2').getAttribute('viewBox')
+           
 
 
-           #root.set("preserveAspectRatio","xMidYMid meet")
-           #root.set("width","auto")
-           #root.set("viewBox", "0 0"+" "+widthstr+" "+heightstr)
-           #root.set("fitBoxtoViewport","True")
+           root.set("preserveAspectRatio","xMidYMid meet")   #doesn't work
+           root.set("width","auto")  #doesn't work
+           root.set("fitBoxtoViewport","True")   #doesn't work
 
            #x = self.document.location.reload()
            #root.set("width", "90in" % document_width)
            #root.set("height", "%sin" % document_height)
-           viewbox=str(0)+' '+str(0)+str(width)+' '+str(height)
-           root.set("viewBox", viewbox)      # 5 sets view/zoom to page width
+           #viewbox='0 0 '+widthstr+' '+heightstr
+           #root.set("viewBox", viewbox)      # 5 sets view/zoom to page width
            #x=self.document.getElementById('svg2')
            #x.setAttribute('preserveAspectRatio',"xMidyMid meet")
+           
 
 
 
