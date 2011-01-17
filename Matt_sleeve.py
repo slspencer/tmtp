@@ -110,21 +110,23 @@ class DrawJacket(inkex.Effect):
            # x,y the point to measure from, px&py are points on the line, mylength will be appended to x,y at slope of (x,y)(px,py)
            # mylength should be positive to measure away from px,py, or negative to move towards px,py
            # this function returns x1,y1 from the formulas below
-           # to find coordinates from a single point, parameters should have px=x, and py=y - coords might be in opposite direction of what you want !!! Change later
-           # otherwise, .   px,py are points on existing line with x,y
-
-           # !!!!!!!!!Change later to make dart to end at individual's shoulder-to-shoulder-tip
+           # --->to find coordinates 45degrees from a single point, add or subtract N from both x & y. I usually use 100, just over an inch.
+           #     for finding point 2cm 45degrees from x,y, px=x+100, py=y-100 (Inkscape's pixel canvas's y decreases as you go up, increases down. 
+           #     0,0 is upper top left corner.  Useful for finding curves in armholes, necklines, etc.
+           #     check whether to add or subtract from x and y, else x1,y1 might be in opposite direction of what you want !!! 
+           # 
            # line slope formula:     m = (y-y1)/(x-x1)
            #                        (y-y1) = m(x-x1)                         /* we'll use this in circle formula
            #                         y1 = y-m(x-x1)                          /* we'll use this after we solve circle formula
-           # circle radius formula: (x-x1)^2 + (y-y1)^2 = r^2                /* see (y2-y1) ? 
-           #                        (x-x1)^2 + (m(x-x1))^2 = r^2             /* substitute m(x2-x1) from line slope formula for (y2-y1) 
-           #                        (x-x1)^2 + (m^2)(x-x1)^2 = r^2           /* distribute exponent in (m(x2-x1))^2
-           #                        (1 + m^2)(x-x1)^2 = r^2                   /* pull out common term (x2-x1)^2 - advanced algebra - ding!        
+           #
+           # circle radius formula: (x-x1)^2 + (y-y1)^2 = r^2                /* see (y-y1) ? 
+           #                        (x-x1)^2 + (m(x-x1))^2 = r^2             /* substitute m(x-x1) from line slope formula for (y-y1) 
+           #                        (x-x1)^2 + (m^2)(x-x1)^2 = r^2           /* distribute exponent in (m(x-x1))^2
+           #                        (1 + m^2)(x-x1)^2 = r^2                  /* pull out common term (x-x1)^2 -     
            #                        (x-x1)^2 = (r^2)/(1+m^2)
            #                        (x-x1) = r/sqrt(1+(m^2))
-           #                         x1 = x-r/sqrt(1+(m^2))
-           #                      OR x1 = x+r/sqrt(1+(m^2))
+           #                         x1 = x-(r/sqrt(1+(m^2)))                /* if adding to left end of line, subtract from x
+           #                      OR x1 = x+(r/sqrt(1+(m^2)))                /* if adding to right end of line, add to x
            # solve for (x1,y1)
            r=length
            if (x!=px):
@@ -217,7 +219,7 @@ class DrawJacket(inkex.Effect):
            x = abs((xsq)**(.5))
            return x
 
-    def Point(self,my_layer,pointname):
+    def GetDot(self,my_layer,dotname):
            in_to_px=(90)                    #convert inches to pixels - 90px/in
            cm_to_in=(1/(2.5))               #convert centimeters to inches - 1in/2.5cm
            cm_to_px=(90/(2.5))              #convert centimeters to pixels
@@ -225,11 +227,13 @@ class DrawJacket(inkex.Effect):
            dot_color = 'red'
            dot_width = .15
            dot_fill = 'red'
-           x = pointname+'x'
-           y = pointname+'y'
-           pointstr = x+','+y
-           self.Dot(my_layer,x,y,dot_radius,dot_color,dot_width,dot_fill,pointstr)
-           return pointstr
+           x = dotname+'x'
+           y = dotname+'y'
+           dotstr = x+','+y
+           # Draw the dot
+           self.Dot(my_layer,x,y,dot_radius,dot_color,dot_width,dot_fill,dotstr)
+           # returns the 'A1x,A1y' string to name the Dot
+           return dotstr
            #______________
 
 
@@ -251,19 +255,23 @@ class DrawJacket(inkex.Effect):
            back_waist_to_seat_length=self.options.back_waist_to_seat_length*in_to_px   #(.112*height)               # (20/176)cm  
            nape_to_vneck=self.options.nape_to_vneck*in_to_px
            sleeve_length=self.options.sleeve_length*in_to_px
-          
+
+           pattern_color='green'
+           pattern_width='10'
+           seamline_color='black'
+           seamline_width='7'
            ref_color='gray'
            refline_width='6'
            refline_fill='gray'
-           line_color='black'
-           line_width='10'
-           line_fill='black'
+           line_color='pink'
+           line_width='8'
+           line_fill='pink'
            dot_radius = .15*in_to_px                #pattern dot markers are .15" radius
            dot_color = 'red'
            dot_width = .15
            dot_fill = 'red'
            dart_color = 'black'
-           dart_width = '10'
+           dart_width = '7'
            dart_fill = 'black'
            dartdot_radius = .08*in_to_px
            dartdot_color = 'black'
@@ -281,12 +289,14 @@ class DrawJacket(inkex.Effect):
            my_layer=self.layer
 
            ######### Back Piece #######
+           self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Group')
            self.layer.set(inkex.addNS('groupmode','inkscape'), 'Back Jacket Pattern Piece')
            # 'Nape'
            A1x=begin_pattern_x
            A1y=begin_pattern_y   
-           A1=str(A1x)+','+str(A1y)
-           self.Dot(my_layer,A1x,A1y,dot_radius,dot_color,dot_width,dot_fill,'A1')
+           A1=GetDot(my_layer,'A1')
+           #A1=str(A1x)+','+str(A1y)
+           #self.Dot(my_layer,A1x,A1y,dot_radius,dot_color,dot_width,dot_fill,'A1')
 
            # 'High Shoulder Point'
            A2x=A1x+((chest/2)/8)+2*cm_to_px
@@ -426,8 +436,10 @@ class DrawJacket(inkex.Effect):
            c2=str(x2)+','+str(y2)
 	   my_nodetypes='csszsc'
            #my_path='M '+A1+' L '+B1+' C '+c1+' '+c2+' '+ C2+' L '+D2+' L '+E2+' L '+F2
-           my_path='M '+A1+' L '+B1+' L '+C2+' L '+D2+' L '+E2+' L '+F2
+           #my_path='M '+A1+' L '+B1+' L '+C2+' L '+D2+' L '+E2+' L '+F2
+           my_path='M '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Back Center Seam A1B1C2D2E2F2')
+           Back_Center_Seam='L '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1
 
            #===============
            # 'Back Shoulder Reference Line'
@@ -444,21 +456,25 @@ class DrawJacket(inkex.Effect):
            y1=I1y+(B3y-I1y)*(.4)
            x2=I1x+(B3x-I1x)*(.6)
            y2=I1y+(B3y-I1y)*(.66)
-           c1=str(x1)+','+str(y1)
-           c2=str(x2)+','+str(y2)
-           my_path= 'M '+I1+' C '+c1+' '+c2+' '+B3
+           bsc1=str(x1)+','+str(y1)
+           bsc2=str(x2)+','+str(y2)
+           my_path= 'M '+I1+' C '+bsc1+' '+bsc2+' '+B3
            my_nodetypes='cc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Back Shoulder Line')
+           Back_Shoulder_Seam=my_path
+
            # Back Neck Curve
            my_length1=((abs(I1y-A1y))*(.75))
            my_length2=(-((abs(I1x-A1x))*(.50)))    #opposite direction
            x1,y1 = self.XYwithSlope(I1x,I1y,B3x,B3y,my_length1,'perpendicular')
            x2,y2 = self.XYwithSlope(A1x,A1y,A2x,A2y,my_length2,'normal')
-           c1=str(x1)+','+str(y1)
-           c2=str(x2)+','+str(y2)
-           my_path='M '+I1+' C '+c1+' '+c2+ ' '+A1
+           bnc1=str(x1)+','+str(y1)
+           bnc2=str(x2)+','+str(y2)
+           #my_path='M '+I1+' C '+c1+' '+c2+ ' '+A1
+           my_path='M '+A1+' C '+bnc2+' '+bnc1+ ' '+I1
            my_nodetypes='cc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Back Neck Curve')
+           Back_Neck_Curve=my_path
 
 
            # 'Back Sleeve Balance Point'
@@ -472,18 +488,21 @@ class DrawJacket(inkex.Effect):
            I3y=(C4y-(6*cm_to_px))
            I3=str(I3x)+','+str(I3y)
            self.Dot(my_layer,I3x,I3y,dot_radius,dot_color,dot_width,dot_fill,'I3')
-           # 'Top Armscye Curve'
-           c1=str(I2x)+','+str(I2y)
-           c2=c1         
-           my_path='M '+B3+' C '+c1+' '+c2+' '+I3
+           # 'Back Armscye Curve'
+           bac1=str(I2x)+','+str(I2y)         
+           bac2=bac1
+           my_path='M '+B3+' C '+bac1+' '+bac2+' '+I3
            my_nodetypes='cc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Top Armscye Curve')
+           Back_Armhole_Curve=my_path
 
            #===============
            # 'Back Side Seam'
            my_path='M '+I3+' L '+C3+' L '+D3+' L '+E3+' L '+F3+' L '+F2
            my_nodetypes='casacc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Back Side Seam I3C3D3E3F3')
+           Back_Side_Seam=my_path
+
 
 
            ######### Front Piece #######
@@ -512,6 +531,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+I4+' L '+C5+' L '+D5+' L '+E5+' L '+F5
            my_nodetypes='casac'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Front Side Seam I4C5D5E5F5')
+           Front_Side_Seam=my_path
 
            # 'Front Reference Points'
            # chest
@@ -624,6 +644,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+J2+' L '+A5
            my_nodetypes='cc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Front Shoulder Line J2A5')
+           Front_Shoulder_Seam=my_path
 
            # Armhole
            J3x=C8x
@@ -671,6 +692,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+J2+' C '+c1+','+c2+' '+J3+'  '+c3+','+c4+' '+C7
            my_nodetypes='cac'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Front Armhole Curve1 J2J3C7')
+           Front_Armhole_Curve_1=my_path
 
            X=(C5x-100)
            Y=(C5y+100)
@@ -691,6 +713,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+C6+' C '+c1+','+c2+' '+I4
            my_nodetypes='cc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Front Armhole Curve2 C6I4')
+           Front_Armhole_Curve_2=my_path
 
            # Front Collar
            K1x=C10x
@@ -718,7 +741,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+A5+' L '+K8+' L '+C10
            my_nodetypes='csc'
            self.Path(my_layer,my_nodetypes,my_path,ref_color,refline_width,'Front Collar reference Line A5K8C10')
-
+   
 
            my_path='M '+A5+' L '+K6+' L '+K1+' L '+C10
            my_nodetypes='cccc'
@@ -745,7 +768,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+L1+' L '+L2+' L '+L3+' L '+L4+' z'
            my_nodetypes='cccc'
            self.Path(my_layer,my_nodetypes,my_path,ref_color,refline_width,'Front Jacket Upper Pocket L1L2L3L4')
-
+           Front_Upper_Pocket=my_path
 
            #Upper Dart
            length=9*cm_to_px
@@ -805,6 +828,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+M2+' L '+M3+' L '+M4+' L '+M5+' z'
            my_nodetypes='cccc'
            self.Path(my_layer,my_nodetypes,my_path,ref_color,refline_width,'Front Jacket Lower Pocket M2M3M4M5')
+           Front_Lower_Pocket=my_path
            
            #Collar Pattern Line
            P1=str(D10x)+','+str(D10y+(5*cm_to_px))   # halfway bw D10 & E6
@@ -819,6 +843,7 @@ class DrawJacket(inkex.Effect):
            my_path='M '+A5+' Q '+K6+' '+K9+' L '+K4+' L '+K5+' L '+K2+' L '+K1+' L '+C10+' L '+D10+' C '+E6+' '+F8+ ' '+F9+' L '+F5
            my_nodetypes='csssscsssssc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Front Jacket Collar and Front Line')  
+           Front_Collar_and_Lapel=my_path
 
            # Side Dart
            O1x,O1y=self.XY(M1x,M1y,M2x,M2y,-(4*cm_to_px))
@@ -847,6 +872,34 @@ class DrawJacket(inkex.Effect):
            my_path='M '+C6+' L '+O4+' L '+O1+' L '+O5+' L '+C7
            my_nodetypes='cscsc'
            self.Path(my_layer,my_nodetypes,my_path,line_color,line_width,'Side Dart')
+           Front_Side_Dart=my_path
+
+
+           ########################################################
+           self.back_jacket_layer = inkex.etree.SubElement(my_layer, 'g')
+           self.back_jacket_layer.set(inkex.addNS('label', 'inkscape'), 'Steampunk Mens Jacket Pattern')
+           self.back_jacket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Back Jacket Piece')
+           back_jacket_layer=self.back_jacket_layer
+           
+           my_nodetypes=' '
+           Back_Pattern_Piece='M '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1+' C '+bnc2+' '+bnc1+ ' '+I1+' C '+bsc1+' '+bsc2+' '+B3+' C '+bac1+' '+bac2+' '+I3+' L '+C3+' L '+D3+' L '+E3+' L '+F3+' z'
+           #Back_Pattern_Piece=Back_Neck_Curve+' '+Back_Shoulder_Seam+' '+Back_Armhole_Curve+' '+Back_Side_Seam+' '+Back_Center_Seam
+           ##Back_Pattern_Piece=Back_Center_Seam+' '+Back_Shoulder_Seam+' '+Back_Neck_Curve+' '+Back_Armhole_Curve+' '+Back_Side_Seam
+           self.Path(back_jacket_layer,my_nodetypes,Back_Pattern_Piece,pattern_color,line_width,'Back Jacket')
+           # To Do - Smooth nodes, copy this path with id='Back Jacket Seam Allowance, paste in place, create 56.25px Outset of solid black for the cutting line, 
+           # Then select for id='Back Jacket', change stroke type to dash
+
+           ################
+
+           self.front_jacket_layer = inkex.etree.SubElement(my_layer, 'g')
+           self.front_jacket_layer.set(inkex.addNS('label', 'inkscape'), 'Steampunk Mens Jacket Pattern')
+           self.front_jacket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Front Jacket Piece')
+           front_jacket_layer=self.front_jacket_layer
+
+           my_nodetypes=' '
+           Front_Pattern_Piece=Front_Side_Seam+' '+Front_Shoulder_Seam+' '+Front_Armhole_Curve_1+' '+Front_Armhole_Curve_2+' '+Front_Upper_Pocket+' '+Front_Lower_Pocket+' '+Front_Collar_and_Lapel+' '+Front_Side_Dart
+           self.Path(front_jacket_layer,my_nodetypes,Front_Pattern_Piece,seamline_color,seamline_width,'Front Jacket')
+
 
            # Sleeve
            # Top sleeve
@@ -859,9 +912,9 @@ class DrawJacket(inkex.Effect):
            #length=(3*cm_to_px)
            #slopetype='normal'
            #SA2x,SA2y = self.XYwithSlope(SA1x, SA1y,px,py,length,slopetype)
-           #SA2=self.Point(my_layer,'SA2')
+           #SA2=self.GetDot(my_layer,'SA2')
            #SA4x, SA4y = SA1x+(chest/4)-(3*cm_to_px), SA1y
-           #SA4=self.Point(my_layer,'SA4')
+           #SA4=self.GetDot(my_layer,'SA4')
            #my_path = 'M '+SA1+' L '+SA4
            #self.Path(my_layer,my_path,ref_color,refline_width,'Topsleeve top reference line')
            #SB1x, SB1y = SA1x, SA1y+((chest/16)-2*cm_to_px)
