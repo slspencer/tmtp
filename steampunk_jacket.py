@@ -23,16 +23,13 @@ from lxml import objectify
 from scour import removeNamespacedAttributes as removeNSAttrib
 from scour import removeNamespacedElements as removeNSElem
 
-
 # define directory where this script and steampunk_jacket.inx are located
 sys.path.append('/usr/share/inkscape/extensions')
-
 
 ###############################
 ######## Define globals #######
 ###############################
-# Namespaces
-# NSS --> a dictionary of all of the xmlns prefixes in a standard inkscape doc
+# Namespaces dictionary
 NSS = {
        u'cc'       :u'http://creativecommons.org/ns#',
        u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -45,23 +42,35 @@ NSS = {
        u'xpath'    :u'http://www.w3.org/TR/xpath',
        u'xsl'      :u'http://www.w3.org/1999/XSL/Transform'
         }
-NS = inkex.NSS
 
 # measurement constants
 in_to_px = ( 90 )                    #convert inches to pixels - 90px/in
 cm_to_in = ( 1 / 2.5 )               #convert centimeters to inches - 1in/2.5cm
 cm_to_px = ( 90 / 2.5 )              #convert centimeters to pixels
+border   = ( 3 * in_to_px)           # 3" document borders
 
 # sewing constants
 quarter_seam_allowance = in_to_px * 1 / 4    # 1/4" seam allowance
 seam_allowance         = in_to_px * 5 / 8    # 5/8" seam allowance  
-hem_allowance          = in_to_px * 2        # 2" seam allowance   
+hem_allowance          = in_to_px * 2        # 2" seam allowance
+pattern_offset         = in_to_px * 3        # 3" between patterns   
+
+SVG_OPTIONS = {  'width' :  "auto",
+                'height' : "auto",
+          'currentScale' : "0.05 : 1",
+      'fitBoxtoViewport' : "True",
+   'preserveAspectRatio' : "xMidYMid meet",
+         'margin-bottom' : str(3*cm_to_px),
+           'margin-left' : str(3*cm_to_px),
+          'margin-right' : str(3*cm_to_px),
+            'margin-top' : str(3*cm_to_px),   
+          'pattern-name' : "Steampunk Jacket"}
 
 
 class DrawJacket(inkex.Effect):
 
     def __init__(self):
-          inkex.Effect.__init__(self)    
+          inkex.Effect.__init__(self,**SVG_OPTIONS)    
           # Store user measurements from steampunk_jacket.inx into object 'self'  
           OP = self.OptionParser              # use 'OP' make code easier to read
           OP.add_option('--measureunit', 
@@ -156,10 +165,14 @@ class DrawJacket(inkex.Effect):
            return msg
 
     def GetDot(self, layer, x, y, name):
-           attribs = { 'r'              : str( (.05) * in_to_px ), 
-                       'stroke'       : 'red',  
+           style = {   'stroke'       : 'red',  
                        'fill'         : 'red',
                        'stroke-width' : '8' }
+           attribs = { 'style'        : simplestyle.formatStyle( style ),
+                        inkex.addNS( 'label', 'inkscape' ) : name,
+                        'cx'           : str(x),
+                        'cy'           : str(y),
+                        'r'           : str( (.05) * in_to_px ) }
            inkex.etree.SubElement( layer, inkex.addNS( 'circle', 'svg' ),  attribs )
            return x, y, str(x) + ',' + str(y)
 
@@ -211,22 +224,21 @@ class DrawJacket(inkex.Effect):
                      }
            inkex.etree.SubElement( svg_root, inkex.addNS( 'namedview', 'sodipodi'), attribs)
 
-           # confirm document units
-           uattr = self.document.xpath('//@inkscape:document-units', namespaces = inkex.NSS )  # returns 'px'
-           self.debug(uattr)        # returns initial & added values of inkscape:document-units
-           self.debug(uattr[0])      # returns initial value of inkscape:documents
+           #svg = doc.getroot()
+           #group = inkex.etree.Element(inkex.addNS('g','svg'))
+           #in-width = inkex.unittouu(svg.get('width'))
+           #in-height = inkex.unittouu(svg.get('height'))
+           #in-view = map(inkex.unittouu, svg.get('viewBox').split())
+           #group.set('transform',"translate(%f,%f) scale(%f,%f)" % (-in-view[0], -in-view[1], scale*in-width/(in-view[2]-in-view[0]), scale*in-height/(in-view[3]-in-view[1])))
 
-    def svg_svg(self):
+    def svg_svg(self, width, height ):
 
            svg_root  = self.document.xpath('//svg:svg', namespaces = inkex.NSS)[0]   
-           svg_root.set( "currentScale", "0.09 : 1") 
+           svg_root.set( "width",  width )
+           svg_root.set( "height", height )
+           svg_root.set( "currentScale", "0.05 : 1") 
            svg_root.set( "fitBoxtoViewport", "True") 
-           #height = border + abs( Collartopy - Jacket_Bottomy ) + border
-           #heightstr = str(height)
-           #width =  border + abs( SF10x - S1x ) + border
-           #widthstr = str( width )
-           #root.set( "width",  widthstr)
-           #root.set( "height", heightstr)
+           svg_root.set( "preserveAspectRatio", "xMidYMid meet")
 
            # define 3-inch document borders   --> works 
            border = str(  3 * in_to_px )
@@ -237,24 +249,31 @@ class DrawJacket(inkex.Effect):
 
            # add pattern name                 --> works     
            svg_root.set( "pattern-name", "Steampunk Jacket") 
-           svg_root.set("preserveAspectRatio","xMidYMid meet")   #doesn't work  
+
 
            # set document center --> self.view_center
            xattr = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS )  
            yattr = self.document.xpath('//@inkscape:cy', namespaces=inkex.NSS )
            if xattr[0] and yattr[0]:
-               self.debug( xattr )   # returns initial & added values of inkscape:cx
-               self.debug( yattr )   # returns initial & added values of inkscape:cx
-               self.view_center = (float(xattr[0]),float(yattr[0]))    # set document center
-               self.debug( self.view_center ) # returns initial values of xattr & yattr
+               #self.view_center = (float(xattr[0]),float(yattr[0]))    # set document center
+               self.view_center = ( ( float(width) / 2 ),( float(height) / 2 ) )    # set document center
+           self.debug(self.view_center)
+           self.debug(xattr)
+           self.debug(yattr)
   
-           #x=self.document.getElementById('svg2').getAttribute('viewBox')
+           #x = self.document.xpath('//@viewPort', namespaces=inkex.NSS)
            #viewbox='0 0 '+widthstr+' '+heightstr
            #root.set("viewBox", viewbox)      # 5 sets view/zoom to page width
            #root.set("width","auto")  #doesn't work
            #x = self.document.location.reload()
            #root.set("width", "90in" % document_width)
            #root.set("height", "%sin" % document_height)
+           #x.set("width",widthstr(border*2 + self.options.back_shoulder_width
+    
+           #height = border + abs( Collartopy - Jacket_Bottomy ) + border
+           #heightstr = str(height)
+           #width =  border + abs( SF10x - S1x ) + border
+           #widthstr = str( width )
 
     def GetNewLayer(self,mylayer,name):
            self.layer = inkex.etree.SubElement( mylayer, 'g' )
@@ -531,7 +550,7 @@ class DrawJacket(inkex.Effect):
               i = i + 1
               y = y + button_distance
 
-    def Text(self, parent, x, y, name, font_size):
+    def Text(self, parent, x, y, name, font_size, string):
 
            style = {'text-align'     : 'center', 
                     'vertical-align' : 'top',
@@ -551,25 +570,24 @@ class DrawJacket(inkex.Effect):
            label         = inkex.etree.SubElement( parent, inkex.addNS( 'text', 'svg'), attribs)
            label.text    = string
 
-
            #______________
 
 
     def effect(self):
 
-           # set value to convert user measurement to pixels
+           ######################
+           ### Get Parameters ### 
+           ######################
            if ( self.options.measureunit == 'cm'):
                conversion = cm_to_px
            else:
                conversion = in_to_px
-
-           # convert user measurements to pixels
-           height                     = self.options.height * conversion                         #Pattern was written for height=5'9 or 176cm, 38" chest or 96cm
+           height                     = self.options.height * conversion        #Pattern was written for height=5'9 or 176cm, 38" chest or 96cm
            chest                      = self.options.chest*conversion
            chest_length               = self.options.chest_length*conversion
            waist                      = self.options.waist*conversion
            back_waist_length          = self.options.back_waist_length*conversion                
-           back_jacket_length         = self.options.back_jacket_length*conversion               #(((.173)*height)+back_waist_length)  # (30.5cm/176cm) 
+           back_jacket_length         = self.options.back_jacket_length*conversion               
            back_shoulder_width        = self.options.back_shoulder_width*conversion              
            back_shoulder_length       = self.options.back_shoulder_length*conversion             
            back_underarm_width        = self.options.back_underarm_width*conversion
@@ -577,251 +595,346 @@ class DrawJacket(inkex.Effect):
            back_waist_to_hip_length   = self.options.back_waist_to_hip_length*conversion         
            nape_to_vneck              = self.options.nape_to_vneck*conversion
            sleeve_length              = self.options.sleeve_length*conversion
-           
-           self.svg_svg()    
-           self.sodipodi_namedview()
+
+           neck_width  = chest/16 + (2*cm_to_px)     # replace chest/16 with new parameter back_neck_width, front_neck_width, neck_circumference
+           nape_length = 2*cm_to_px                  # replace 2*cm_to_px with new parameter nape_length
+           bp_width    = back_shoulder_width/2       # back pattern width is relative to back_shoulder_width/2  (plus 1cm)
+
+           #######################
+           ### Define Document ###
+           #######################  
+           #self.svg_svg( str( (border*2 )+ ( chest * 2.25 ) ) , str( ( border*2 ) + ( nape_to_vneck / 4) + back_jacket_length + hem_allowance) )
+           #self.sodipodi_namedview()
+  
+           ####################################
+           ### Create base & pattern layers ###
+           ####################################
            base_layer      = self.GetNewLayer( self.document.getroot() , 'g' )      # base_layer = reference information 
            pattern_layer   = self.GetNewLayer( base_layer, 'Pattern')               # pattern_layer = pattern lines & marks
 
-           begin_x  = float( self.document.xpath('//@margin-top',  namespaces=NSS )[0] )
-           self.debug( begin_x )
-           begin_y  = float( self.document.xpath('//@margin-left', namespaces=NSS )[0] ) + ( 8 * cm_to_px )  
-           self.debug( begin_y)
-  
-           #############################
-           ### Jacket Back Reference ###
-           #############################
+           begin_x  = border
+           begin_y  = border + ( nape_to_vneck / 4 )
+
+           ###################
+           ### Jacket Back ###
+           ###################
+
            my_layer = base_layer
-           # 'Nape'
-           A1x,A1y,A1 = self.GetDot( my_layer, begin_x, begin_y, 'A1')
-           # 'High Shoulder Point'
-           A2x,A2y,A2 = self.GetDot( my_layer, (A1x+((chest/2)/8) + 2*cm_to_px ), A1y, 'A2')
-           # 'Back Shoulder Width Reference Point'
-           A3x,A3y,A3 = self.GetDot(my_layer,(A1x + ( back_shoulder_width / 2)), A1y, 'A3')
-           # 'Back Shoulder Reference Line'
-           B1x,B1y,B1 = self.GetDot( my_layer, A1x, (A1y  + back_shoulder_length ), 'B1' ) 
-           B2x,B2y,B2 = self.GetDot( my_layer, B1x + (( back_shoulder_width)/2 ), B1y, 'B2') 
-           B3x,B3y,B3 = self.GetDot( my_layer, (B2x + (1*cm_to_px)), B1y, 'B3') 
-           my_path = 'M ' + B1 + ' L ' + B3
-           self.Path( my_layer, my_path, 'reference', 'Back Shoulder Reference Line B1B3', '' )
-           # 'Back Chest Reference Line'
-           C1x,C1y,C1=self.GetDot(my_layer,A1x,(A1y+chest_length),'C1')
-           C2x,C2y,C2=self.GetDot(my_layer,(C1x+(1*cm_to_px)),C1y,'C2')
-           C3x,C3y,C3=self.GetDot(my_layer,(A3x-(1*cm_to_px)),C1y,'C3')
-           C4x,C4y,C4=self.GetDot(my_layer,A3x,C1y,'C4')
-           my_path='M '+C1+' L '+C4
-           self.Path(my_layer,my_path,'reference','Back Chest Reference Line C1C4','')
-           #'Back Waist Reference Line'
-           D1x,D1y,D1=self.GetDot(my_layer,A1x,A1y+back_waist_length,'D1')
-           D2x,D2y,D2=self.GetDot(my_layer,D1x+(2.5*cm_to_px),D1y,'D2')
-           D3x,D3y,D3=self.GetDot(my_layer,A3x-(3*cm_to_px),D1y,'D3')
-           D4x,D4y,D4=self.GetDot(my_layer,A3x,D1y,'D4')
-           my_path='M '+D1+' L '+D4
-           self.Path(my_layer,my_path,'reference','Back Waist Reference Line D1D4','')
-           # 'Back Hip Reference Line'
-           E1x,E1y,E1=self.GetDot(my_layer,A1x,(D1y+back_waist_to_hip_length),'E1')
-           E2x,E2y,E2=self.GetDot(my_layer,E1x+(2*cm_to_px),E1y,'E2')
-           E3x,E3y,E3=self.GetDot(my_layer,A3x-(2*cm_to_px),E1y,'E3')
-           E4x,E4y,E4=self.GetDot(my_layer,A3x,E1y,'E4')
-           my_path='M '+E1+' L '+E4
-           self.Path(my_layer,my_path,'reference','Back Hip Reference E1E4','')
-           # 'Back Hem Reference Line'
-           F1x,F1y,F1=self.GetDot(my_layer,A1x,A1y+back_jacket_length,'A1')
-           F2x,F2y,F2=self.GetDot(my_layer,F1x+(1.5*cm_to_px),F1y,'F2')
-           F3x,F3y,F3=self.GetDot(my_layer,A3x-(1.5*cm_to_px),F1y,'F3')
-           F4x,F4y,F4=self.GetDot(my_layer,A3x,F1y,'F4')
-           my_path='M '+F1+' L '+F4
-           self.Path(my_layer,my_path,'reference','Back Hem Reference F1F4','')
-           # Squared top,sides,bottom Reference Lines
-           my_path='M '+A1+' L '+A3
-           self.Path(my_layer,my_path,'reference','Back Top Reference A1A3','')
-           my_path='M '+A1+' L '+F1
-           self.Path(my_layer,my_path,'reference','Back Reference A1F1','')
-           my_path='M '+A3+' L '+F4
-           self.Path(my_layer,my_path,'reference','Back Side Reference A3F4','')
-           # 'Back Shoulder Reference Line'
-           I1x,I1y,I1=self.GetDot(my_layer,A2x,A2y-(2*cm_to_px),'I1')
-           my_path='M '+I1+' L '+A2
-           self.Path(my_layer,my_path,'reference','Back Shoulder Reference I1A2','')
-           # 'Back Sleeve Balance Point'
-           chest_to_balance_point=(12*cm_to_px)      
-           I2x,I2y,I2=self.GetDot(my_layer,A3x,C4y-chest_to_balance_point,'I2')
-           # 'Chest/Underarm point'
-           I3x,I3y,I3=self.GetDot(my_layer,A3x,C4y-(6*cm_to_px),'I3')
-           # Back Center
-           x1,y1=self.XYwithSlope(E2x,E2y,F2x,F2y,abs(E2y-D2y)*(.5),'normal')
-           c1x,c1y,c1=self.GetDot(my_layer,x1,y1,'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,D2x,E2y-abs(D2y-E2y)*(.3),'c2')
-           c3x,c3y,c3=self.GetDot(my_layer,D2x,D2y-abs(D2y-C2y)*(.3),'c3')
-           x1,y1=self.XYwithSlope(C2x,C2y,B1x,B1y,abs(C2y-D2y)*(.5),'normal')
-           c4x,c4y,c4=self.GetDot(my_layer,x1,y1,'c4')
-           c5x,c5y,c5=self.GetDot(my_layer,B1x+(abs(C2x-B1x)*(.6)),B1y+(abs(C2y-B1y)*(.80)),'c5')
-           c6x,c6y,c6=self.GetDot(my_layer,B1x,B1y+(abs(C2y-B1y)*(.10)),'c6')
-           Back_Center='M '+F2+' L '+E2+' C '+c1+' '+c2+' '+D2+' C '+c3+' '+c4+' '+C2+' C '+c5+' '+c6+','+B1+' L '+A1
-           # Back Neck
-           my_length1=((abs(I1y-A1y))*(.75))
-           my_length2=(-((abs(I1x-A1x))*(.50)))    #opposite direction
-           x1,y1=self.XYwithSlope(I1x,I1y,B3x,B3y,my_length1,'perpendicular')
-           c1x,c1y,c1=self.GetDot(my_layer,x1,y1,'c1')
-           x1,y1=self.XYwithSlope(A1x,A1y,A2x,A2y,my_length2,'normal')
-           c2x,c2y,c2=self.GetDot(my_layer,x1,y1,'c2')
-           #my_path='M '+A1+' C '+c2+' '+c1+ ' '+I1
-           Back_Neck=' C '+c2+' '+c1+' '+I1
-           # 'Back Shoulder Line'
-           c1x,c1y,c1=self.GetDot(my_layer,I1x+(B3x-I1x)*(.33),I1y+(B3y-I1y)*(.4),'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,I1x+(B3x-I1x)*(.6),I1y+(B3y-I1y)*(.66),'c2')
-           #my_path= 'M '+I1+' C '+c1+' '+c2+' '+B3
-           Back_Shoulder=' C '+c1+' '+c2+' '+B3
-           # Back Armhole 
-           #my_path='M '+B3+' Q '+I2+' '+I3
-           Back_Armhole=' Q '+I2+' '+I3
-           # Back Side
-           x1,y1=self.XYwithSlope(C3x,C3y,I3x,I3y,abs(C3y-D3y)*(.5),'normal')
-           c1x,c1y,c1=self.GetDot(my_layer,x1,y1,'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,D3x,C3y+abs(D3y-C3y)*(.7),'c2')
-           c3x,c3y,c3=self.GetDot(my_layer,D3x,D3y+abs(D3y-E3y)*(.3),'c3')
-           x1,y1=self.XYwithSlope(E3x,E3y,F3x,F3y,abs(E3y-D3y)*(.5),'normal')
-           c4x,c4y,c4=self.GetDot(my_layer,x1,y1,'c4')
-           #my_path='M '+I3+' L '+C3+' C '+c1+' '+c2+' '+D3+' C '+c2+' '+c3+' '+E3+' L '+F3
-           Back_Side=' L '+C3+' C '+c1+' '+c2+' '+D3+' C '+c3+' '+c4+' '+E3+' L '+F3
-           # Hem Line & Allowance
-           Hem_Line=' M '+F2+' L '+F3
-           Hem1x,Hem1y,Hem1=self.GetDot(my_layer,F2x,F2y+hem_allowance,'Hem1')
-           Hem2x,Hem2y,Hem2=self.GetDot(my_layer,F3x,F3y+hem_allowance,'Hem2')
-           Hem_Line=' L '+Hem2+' '+Hem1        
+
+           # Top
+           napex, napey, nape = self.GetDot( my_layer, begin_x, begin_y + nape_length, 'nape' ) 
+           back_pattern_startx, back_pattern_starty, back_pattern_start = self.GetDot( my_layer, napex, napey, 'back_pattern_start')
+           back_pattern_widthx, back_pattern_widthy, back_pattern_width = self.GetDot( my_layer, begin_x + bp_width, napey, 'back_pattern_width')
+ 
+           d = 'M '+ nape + ' L '+ back_pattern_width
+           self.Path( my_layer, d, 'reference', 'Back Top Reference Line', '' )
+
+           # Shoulder
+           shoulder_startx, shoulder_starty, shoulder_start = self.GetDot(my_layer,back_pattern_startx, back_pattern_starty + back_shoulder_length, 'shoulder_start')
+           shoulder_endx, shoulder_endy, shoulder_end = self.GetDot( my_layer, back_pattern_widthx, shoulder_starty, 'shouder_end')
+           back_shoulder_topx, back_shoulder_topy, back_shoulder_top =self.GetDot(my_layer, ( begin_x + neck_width ), begin_y, 'back_shoulder_top')
+           back_shoulder_endx, back_shoulder_endy, back_shoulder_end =self.GetDot(my_layer,(back_pattern_widthx +(1*cm_to_px)), shoulder_starty, 'back_shoulder_end') 
+           d = 'M '+ shoulder_start +' L '+ shoulder_end 
+           self.Path( my_layer, d, 'reference', 'Back Shoulder Reference Line', '' )
+           d = 'M '+ back_shoulder_top +' v '+ str(nape_length)
+           self.Path( my_layer, d, 'reference', 'Back Shoulder Top Reference Line', '' )
+
+           # Chest
+           chest_startx, chest_starty, chest_start = self.GetDot( my_layer, napex, (napey + chest_length ),'chest_start')
+           chest_back_centerx,chest_back_centery,chest_back_center = self.GetDot( my_layer, chest_startx + (1*cm_to_px), chest_starty, 'chest_back_center')
+           chest_back_sidex,chest_back_sidey,chest_back_side = self.GetDot( my_layer, back_pattern_widthx-(1*cm_to_px), chest_starty, 'chest_back_side')
+           chest_back_endx, chest_back_endy, chest_back_end = self.GetDot( my_layer, back_pattern_widthx, chest_starty, 'chest_back_end')
+           d ='M '+ chest_start +' L '+ chest_back_end
+           self.Path(my_layer, d , 'reference', 'Back Chest Reference Line','')
+
+           # Waist
+           waist_startx, waist_starty, waist_start = self.GetDot( my_layer, napex, napey + back_waist_length, 'waist_start')
+           waist_back_centerx, waist_back_centery, waist_back_center = self.GetDot( my_layer, waist_startx + (2.5*cm_to_px), waist_starty, 'waist_back_center')
+           waist_back_sidex, waist_back_sidey, waist_back_side = self.GetDot( my_layer, back_pattern_widthx - (3*cm_to_px), waist_starty, 'waist_back_side')
+           waist_back_endx, waist_back_endy, waist_back_end = self.GetDot( my_layer, back_pattern_widthx, waist_starty, 'waist_back_end')
+           d = 'M '+ waist_start +' L '+ waist_back_end
+           self.Path( my_layer, d, 'reference', 'Back Waist Reference Line', '' ) 
+
+           # Hip 
+           hip_startx, hip_starty, hip_start = self.GetDot( my_layer, napex, waist_starty + back_waist_to_hip_length, 'hip_start' )
+           hip_back_centerx, hip_back_centery, hip_back_center = self.GetDot( my_layer, hip_startx + (2*cm_to_px), hip_starty, 'hip_back_center' )
+           hip_back_sidex, hip_back_sidey, hip_back_side = self.GetDot( my_layer, back_pattern_widthx -(2*cm_to_px), hip_starty, 'hip_back_side' )
+           hip_back_endx, hip_back_endy, hip_back_end = self.GetDot( my_layer, back_pattern_widthx, waist_starty + back_waist_to_hip_length, 'hip_back_end' )    
+           d = 'M '+ hip_start +' L '+ hip_back_end
+           self.Path( my_layer, d ,'reference', 'Back Hip Reference Line', '' )
+
+           # Hem fold
+           hem_startx, hem_starty, hem_start = self.GetDot( my_layer, napex, napey + back_jacket_length, 'hem_start')
+           hem_back_centerx, hem_back_centery, hem_back_center = self.GetDot( my_layer, hem_startx + (1.5*cm_to_px), hem_starty, 'hem_back_start')
+           hem_back_sidex, hem_back_sidey, hem_back_side = self.GetDot( my_layer, back_pattern_widthx -(1.5*cm_to_px), hem_starty, 'hem_back_center')
+           hem_back_endx, hem_back_endy, hem_back_end = self.GetDot( my_layer, back_pattern_widthx, hem_back_sidey, 'hem_back_end' )
+           d = 'M '+ hem_start +' L '+ hem_back_end
+           self.Path( my_layer, d, 'reference', 'Hem Fold Reference Line', '' )
+           Hem_Fold_Line = 'M '+ hem_back_center +' L '+ hem_back_side
+
+           # Hem Allowance 
+           hem_back_allowance_startx, hem_back_allowance_starty, hem_back_allowance_start = self.GetDot(my_layer, hem_back_centerx, hem_back_centery + hem_allowance, 'hem_allowance_start' )
+           hem_back_allowance_endx, hem_back_allowance_endy, hem_back_allowance_end = self.GetDot( my_layer, hem_back_sidex, hem_back_sidey + hem_allowance, 'hem_allowance_end')
+           Back_Hem_Allowance = 'L '+ hem_back_allowance_end +' L '+ hem_back_allowance_start   # moving right to left with path
+
+           # Back Center & Side
+           d = 'M '+ nape + ' L ' + hem_start
+           self.Path(my_layer, d , 'reference' , 'Back Center Reference Line','')
+           d = 'M '+ back_pattern_width + ' L ' + hem_back_end
+           self.Path(my_layer, d , 'reference' , 'Back Center Reference Line','')
+
+           # Back Sleeve Balance Point
+           sleeve_back_balance_pointx, sleeve_back_balance_pointy, sleeve_back_balance_point=self.GetDot( my_layer, back_pattern_widthx, chest_back_endy - (12*cm_to_px), 'sleeve_back_balance_point')     
+
+           # Back Underarm point
+           back_underarm_pointx, back_underarm_pointy, back_underarm_point = self.GetDot( my_layer, back_pattern_widthx, chest_back_endy - (6*cm_to_px), 'back_underarm_point')
+
+           # Back Center seam line
+           x1,y1      = self.XYwithSlope( hip_back_centerx, hip_back_centery, hem_back_centerx, hem_back_centery, ( abs(hip_back_centery-waist_back_centery) * (.5) ) , 'normal' )
+           c1x, c1y, c1 = self.GetDot( my_layer, x1, y1, 'c1' )
+           c2x, c2y, c2 = self.GetDot( my_layer, waist_back_centerx, hip_back_centery - ( abs(waist_back_centery-hip_back_centery) * (.3)) , 'c2' )
+           c3x, c3y, c3 = self.GetDot( my_layer, waist_back_centerx, waist_back_centery -( abs(waist_back_centery-chest_back_centery) * (.3)) , 'c3' )
+           x1, y1       = self.XYwithSlope( chest_back_centerx,chest_back_centery,shoulder_startx,shoulder_starty,( abs(chest_back_centery-waist_back_centery) * (.5) ), 'normal' )
+           c4x, c4y, c4 = self.GetDot( my_layer, x1, y1, 'c4' )
+           c5x, c5y, c5 = self.GetDot( my_layer, shoulder_startx + ( abs(chest_back_centerx-shoulder_startx) * (.6) ) , shoulder_starty + ( abs(chest_back_centery - shoulder_starty ) * (.80) ), 'c5' )
+           c6x, c6y, c6 = self.GetDot( my_layer, shoulder_startx, shoulder_starty + ( abs(chest_back_centery-shoulder_starty) * (.10) ) , 'c6' )
+           Back_Center  = 'M '+ hem_back_center +' L '+ hip_back_center +' C '+ c1 +' '+ c2 +' '+ waist_back_center +' C '+ c3 +' '+ c4 +' '+ chest_back_center +' C '+ c5 +' '+ c6+','+ shoulder_start +' L '+ nape
+
+
+           # Back Neck seam line
+           my_length1   = ( abs(back_shoulder_topy - napey)  * (.75)  )
+           x1, y1       = self.XYwithSlope( back_shoulder_topx, back_shoulder_topy, back_shoulder_endx, back_shoulder_endy, my_length1, 'perpendicular')
+           c1x, c1y, c1 = self.GetDot( my_layer, x1, y1, 'c1')
+           my_length2   = ( -(abs( back_shoulder_topx - napex ) ) * (.50) )    #opposite direction
+           x1, y1       = self.XYwithSlope( napex, napey, back_shoulder_topx, napey, my_length2, 'normal')
+           c2x, c2y, c2 = self.GetDot( my_layer, x1, y1, 'c2')
+           Back_Neck    = ' C '+ c2 +' '+ c1 +' '+ back_shoulder_top
+
+           # Back Shoulder seam line
+           c1x, c1y, c1  = self.GetDot( my_layer, back_shoulder_topx + ( abs( back_shoulder_endx - back_shoulder_topx ) * (.33) ) , back_shoulder_topy + ( abs( back_shoulder_endy - back_shoulder_topy ) * (.4) ), 'c1' )
+           c2x, c2y, c2  = self.GetDot( my_layer, back_shoulder_topx + ( abs( back_shoulder_endx - back_shoulder_topx ) * (.6) ), back_shoulder_topy + ( abs( back_shoulder_endy - back_shoulder_topy ) * (.66) ), 'c2' )
+           Back_Shoulder = ' C '+ c1 +' '+ c2 +' '+ back_shoulder_end
+
+           # Back Armhole seam line 
+           Back_Armhole  = ' Q '+ sleeve_back_balance_point +' '+ back_underarm_point
+
+           # Back Side seam line
+           x1, y1       = self.XYwithSlope( chest_back_sidex, chest_back_sidey, back_underarm_pointx, back_underarm_pointy, abs(chest_back_sidey - waist_back_sidey) * (.5) , 'normal')
+           c1x, c1y, c1 = self.GetDot( my_layer, x1, y1, 'c1' )
+           c2x, c2y, c2 = self.GetDot( my_layer, waist_back_sidex, chest_back_sidey + ( abs( waist_back_sidey - chest_back_sidey ) * (.7) ), 'c2' )
+           c3x, c3y, c3 = self.GetDot( my_layer, waist_back_sidex, waist_back_sidey + ( abs( waist_back_sidey - hip_back_sidey ) * (.3) ), 'c3' )
+           x1, y1       = self.XYwithSlope( hip_back_sidex, hip_back_sidey, hem_back_sidex, hem_back_sidey, abs(hip_back_sidey - waist_back_sidey) * (.5) , 'normal')
+           c4x, c4y, c4 = self.GetDot( my_layer, x1, y1, 'c4' )
+           Back_Side    = ' L '+ chest_back_side +' C '+ c1+ ' '+ c2 +' '+ waist_back_side +' C '+ c3 +' '+ c4 +' '+ hip_back_side +' L '+ hem_back_side 
+       
            # Grainline
-           G1x,G1y,G1=self.GetDot(my_layer,A2x,I3y,'G1')
-           G2x,G2y,G2=self.GetDot(my_layer,G1x,G1y+40*cm_to_px,'G2')
+           G1x, G1y, G1 = self.GetDot( my_layer, back_shoulder_topx, back_underarm_pointy, 'G1' )
+           G2x, G2y, G2 = self.GetDot( my_layer, G1x, G1y + (40*cm_to_px), 'G2' )
 
            ################################
            ### Draw Back Jacket Pattern ###
            ################################
-
            my_layer = self.GetNewLayer( pattern_layer, 'Jacket Back')
+           Back_Pattern_Path = Back_Center +' '+ Back_Neck + ' '+ Back_Shoulder +' '+ Back_Armhole +' '+ Back_Side +' '+ Back_Hem_Allowance +' z'
+           self.Path( my_layer, Hem_Fold_Line, 'foldline', 'Jacket Back Hemline', '' )
+           self.Path( my_layer, Back_Pattern_Path, 'seamline', 'Jacket Back Seamline', '')
+           self.Path( my_layer, Back_Pattern_Path, 'pattern', 'Jacket Back Cuttingline', '')
+           self.Grainline( my_layer, G1x, G1y, G2x, G2y, 'Jacket Back Grainline' )
 
-           Back_Pattern_Path=Back_Center+' '+Back_Neck+ ' '+Back_Shoulder+' '+Back_Armhole+' '+Back_Side+' '+Hem_Line+' z'
-           self.Path(my_layer,Hem_Line,'foldline','Jacket Back Hemline','')
-           self.Path(my_layer,Back_Pattern_Path,'seamline','Jacket Back Seamline','')
-           self.Path(my_layer,Back_Pattern_Path,'pattern','Jacket Back Cuttingline','')
-           self.Grainline(my_layer,G1x,G1y,G2x,G2y,'Jacket Back Grainline')
+           ####################
+           ### Front Jacket ###
+           ####################
+           my_layer = base_layer
+         
 
-           ######### Front Jacket #######
-           my_layer=base_layer
-           # 'Front Side Seam'   - offset from back side reference line, so do this first.
-           C5x,C5y,C5=self.GetDot(my_layer,C4x+(10*cm_to_px),C4y,'C5')
-           D5x,D5y,D5=self.GetDot(my_layer,D4x+(10*cm_to_px),D4y,'D5')
-           E5x,E5y,E5=self.GetDot(my_layer,E4x+(7*cm_to_px),E1y,'E5')
-           F5x,F5y,F5=self.GetDot(my_layer,F4x+(5.5*cm_to_px),F1y,'F1')
-           I4x,I4y,I4=self.GetDot(my_layer,I3x+(11*cm_to_px),I3y,'I4')
-           x1,y1=self.XYwithSlope(E5x,E5y,F5x,F5y,abs(E5y-D5y)*(.3),'normal')
-           c1x,c1y,c1=self.GetDot(my_layer,x1,y1,'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,D5x,D5y+abs(D5y-E5y)*(.3),'c2')
-           c3x,c3y,c3=self.GetDot(my_layer,D5x,D5y-abs(D5y-C5y)*(.3),'c3')
-           x1,y1=self.XYwithSlope(C5x,C5y,I4x,I4y,abs(D5y-C5y)*(.3),'normal')
-           c4x,c4y,c4=self.GetDot(my_layer,x1,y1,'c4')
-           c5x,c5y,c5=self.GetDot(my_layer,C5x+abs(C5x-I4x)*(.2),C5y-abs(C5y-I4y)*(.3),'c5')
-           Front_Side='M '+F5+' L '+E5+' C '+c1+' '+c2+' '+D5+' C '+c3+' '+c4+' '+C5+' Q '+c5+' '+I4
-           # shoulder
-           A4x,A4y,A4=self.GetDot(my_layer,C5x+((chest/2)/4)+(2*cm_to_px),A1y,'A4')
-           A5x,A5y,A5=self.GetDot(my_layer,A4x+(chest/16)+(1*cm_to_px),A1y,'A5')
-           # chest
-           C8x,C8y,C8=self.GetDot(my_layer,A4x,C1y,'C8')
-           C7x,C7y,C7=self.GetDot(my_layer,C8x-(5.5*cm_to_px),C1y,'C7')
-           C6x,C6y,C6=self.GetDot(my_layer,C7x-(1*cm_to_px),C1y,'C6')
-           C9x,C9y,C9=self.GetDot(my_layer,C8x+((chest)*(.25))-(3.5*cm_to_px),C1y,'C9')
-           C10x,C10y,C10=self.GetDot(my_layer,C9x+(2*cm_to_px),C1y,'C10')
-           # waist
-           D9x,D9y,D9=self.GetDot(my_layer,C9x,D1y,'D9')
-           D10x,D10y,D10=self.GetDot(my_layer,D9x+(2*cm_to_px),D1y,'D10')
-           D11x,D11y,D11=self.GetDot(my_layer,D10x,D10y+abs((D10y-E1y)/2)+(2.5*cm_to_px),'D11')
-           # hip
-           E6x,E6y,E6=self.GetDot(my_layer,C9x,E1y,'E6')
-           E7x,E7y,E7=self.GetDot(my_layer,E6x+(2*cm_to_px),E1y,'E7')
-           # hem
-           F7x,F7y,F7=self.GetDot(my_layer,C9x,F1y,'F7')
-           F6x,F6y,F6=self.GetDot(my_layer,F7x-(6.5*cm_to_px),F1y,'F6')
-           F8x,F8y,F8=self.GetDot(my_layer,C9x,F7y+(2.5*cm_to_px),'F8')
-           # Reference Grid
-           my_path='M '+A3+' L '+A5
-           self.Path(my_layer,my_path,'reference','Front Top Reference A3A5','')        
-           my_path='M '+C4+' L '+C10
-           self.Path(my_layer,my_path,'reference','Front Chest Reference C4C10','')
-           my_path='M '+D4+' L '+D10
-           self.Path(my_layer,my_path,'reference','Front Waist Reference D4D10','')
-           my_path='M '+E4+' L '+E7
-           self.Path(my_layer,my_path,'reference','Front Hip Reference E4E7','')
-           my_path='M '+F4+' L '+F7
-           self.Path(my_layer,my_path,'reference','Front Hem Reference1 F5F7 ','')    
-           my_path='M '+F5+' L '+F8
-           self.Path(my_layer,my_path,'reference','Front Hem Reference2 F5F8','')
-           my_path='M '+C9+' L '+F8
-           self.Path(my_layer,my_path,'reference','Front Buttonhole Reference C9F8','') 
-           #Draw Seam Lines
-           #Front Shoulder
-           J1x,J1y,J1=self.GetDot(my_layer,A4x,A4y+(1.3*cm_to_px),'J1')
-           my_length=(self.LineLength(B3x,B3y,I1x,I1y))-((.5)*cm_to_px)    #length of back shoulder line-.5cm
-           x1,y1=self.XYwithSlope(A5x,A5y,J1x,J1y,-my_length,'normal')
-           J2x,J2y,J2=self.GetDot(my_layer,x1,y1,'J2')
-           c1x,c1y,c1=self.GetDot(my_layer,A5x-abs(J2x-A5x)*(.85),A5y+abs(J2y-A5y)*(.7),'c1')           
-           c2x,c2y,c2=self.GetDot(my_layer,A5x-abs(J2x-A5x)*(.45),A5y+abs(J2y-A5y)*(.15),'c2')
-           #my_path='M '+J2+' C '+c1+' '+c2+' '+A5
-           Front_Shoulder=' C '+c1+' '+c2+' '+A5
+           front_waist_start_offset = 7.5*cm_to_px
+           front_hip_start_offset   = 4.5*cm_to_px
+           front_hem_start_offset   = 3*cm_to_px
+
+
+
+           chest_scale = (chest*0.5)   #scale (width) of half the pattern is chest/2, assume chest is max(chest,waist,hip)
+           front_chest_start_offset = 7.5*cm_to_px
+           front_chest_width_offset = ( chest_scale / 4 ) + (2*cm_to_px)          # one_fourth chest_scale + 2cm
+           front_chest_center_offset = ( chest_scale / 2 ) - (3.5*cm_to_px)       # half chest_scale - 3.5cm
+           front_chest_underarm_offset = (5.5*cm_to_px)
+           front_pattern_end_offset = (2*cm_to_px)
+           front_button_offset = (2*cm_to_px)   # same as front_pattern_end_offset
+ 
+
+           back_shoulder_ease = (1*cm_to_px)
+           front_shoulder_adjustment = (1*cm_to_px)
+           front_shoulder_middle_offset = (1.3*cm_to_px)
+           front_shoulder_length = ( self.LineLength(back_shoulder_endx,back_shoulder_endy,back_shoulder_topx,back_shoulder_topy) - front_shoulder_adjustment  )
+           front_shoulder_top_offset = ( chest_scale / 8 ) + front_shoulder_adjustment    # one-eigth scale + 1cm
+
+           front_armhole_point_offset = 8.5*cm_to_px  
+           front_armhole_depth_1 = ( 4*cm_to_px )
+           front_armhole_curve_3_offset = ( 2.5*cm_to_px )
+           front_armhole_depth_2 = ( 2*cm_to_px )
+           front_armhole_depth_3 = ( 2*cm_to_px )
+
+           front_hem_offset = ( 6.5*cm_to_px )
+           front_hem_curve_reference_offset = ( 2.5*cm_to_px )
+
+           side_dart_width_1 = ( 1*cm_to_px )
+           side_dart_width_2 = ( 1*cm_to_px )
+           side_dart_widest_point_offset = ( 2*cm_to_px )
+
+           lapel_height = ( 16.5*cm_to_px )
+
+           collar_dart_width = ( 1.3*cm_to_px )
+           collar_dart_height = ( 9*cm_to_px )
+
+           upper_pocket_offset = (3.7*cm_to_px )
+           upper_pocket_width  = (10*cm_to_px )
+           upper_pocket_height = (2*cm_to_px)
+           upper_pocket_height_offset = (3*cm_to_px )
+
+           lower_pocket_width = ( 15*cm_to_px )
+           lower_pocket_height = ( 5.5*cm_to_px )           
+
+           # Reference Line points
+           front_pattern_startx, front_pattern_starty, front_pattern_start = self.GetDot( my_layer, back_pattern_widthx + pattern_offset, napey, 'front_pattern_start' )
+           front_pattern_endx, front_pattern_endy, front_pattern_end = self.GetDot( my_layer, front_pattern_startx + front_chest_start_offset + front_chest_width_offset + front_chest_center_offset + front_pattern_end_offset, napey, 'front_pattern_end' )
+           front_centerx, front_centery, front_center = self.GetDot( my_layer, front_pattern_endx - front_pattern_end_offset, front_pattern_endy, 'front_center' )
+           front_chest_startx, front_chest_starty, front_chest_start = self.GetDot( my_layer, front_pattern_startx + front_chest_start_offset , chest_starty, 'front_chest_start' )
+           front_chest_widthx, front_chest_widthy, front_chest_width = self.GetDot( my_layer, front_chest_startx + front_chest_width_offset, napey, 'front_chest_width' ) 
+           front_chest_endx, front_chest_endy, front_chest_end = self.GetDot( my_layer, front_pattern_endx , chest_starty, 'front_chest_end' )
+           front_waist_startx, front_waist_starty, front_waist_start = self.GetDot( my_layer, front_pattern_startx + front_waist_start_offset, waist_back_endy, 'front_waist_start' )
+           front_waist_endx, front_waist_endy, front_waist_end = self.GetDot( my_layer, front_pattern_endx , waist_starty, 'front_waist_end' ) 
+           front_hip_startx, front_hip_starty, front_hip_start = self.GetDot( my_layer, front_pattern_startx + front_hip_start_offset, hip_starty, 'front_hip_start' ) 
+           front_hip_endx, front_hip_endy, front_hip_end = self.GetDot( my_layer, front_pattern_endx , hip_starty, 'front_hip_end' )
+           front_hem_startx, front_hem_starty, front_hem_start = self.GetDot( my_layer, front_pattern_startx + front_hem_start_offset, hem_starty, 'front_hem_start' )
+           front_hem_endx, front_hem_endy, front_hem_end = self.GetDot( my_layer, front_pattern_endx , hem_starty, 'front_hem_end' )
+
+           # horizontal reference lines
+           d = 'M '+ back_pattern_width + ' L ' + front_pattern_end
+           self.Path( my_layer, d, 'reference', 'Front Top Reference', '' )           
+           d = 'M '+ chest_back_end +' L ' + front_chest_end
+           self.Path( my_layer, d, 'reference', 'Front Chest Reference', '' )           
+           d = 'M '+ waist_back_end + ' L ' + front_waist_end
+           self.Path( my_layer, d, 'reference', 'Front Waist Reference', '' )
+           d = 'M '+ hip_back_end + ' L ' + front_hip_end
+           self.Path( my_layer, d, 'reference', 'Front Hip Reference', '' )
+           d = 'M '+ hem_back_end + ' L ' + front_hem_end
+           self.Path( my_layer, d, 'reference', 'Front Hem Reference', '' )
+
+           # vertical reference lines
+           d = 'M '+ front_pattern_start + ' L ' + front_hem_start
+           self.Path( my_layer, d, 'reference', 'Front Start Reference', '' )
+           d = 'M '+ front_pattern_end + ' L ' + front_hem_end
+           self.Path( my_layer, d, 'reference', 'Front End Reference', '' )
+           d = 'M '+ front_center + ' L ' + str(front_centerx) + ' ' + str(hem_starty)
+           self.Path( my_layer, d, 'reference', 'Front Center Reference', '' )
+           d = 'M '+ front_chest_width + ' L ' + str(front_chest_widthx) + ' ' + str(hem_starty)
+           self.Path( my_layer, d, 'reference', 'Front Chest Width Reference', '' )
+
+           # Points on Chest Reference Line
+           front_chest_underarmx, front_chest_underarmy, front_chest_underarm = self.GetDot( my_layer, front_chest_widthx, chest_starty, 'front_chest_underarm' )
+           front_dart_1x, front_dart_1y, front_dart_1 = self.GetDot( my_layer, front_chest_underarmx - front_chest_underarm_offset, chest_starty, 'front_dart_1' )
+           front_dart_5x, front_dart_5y, front_dart_5 = self.GetDot( my_layer, front_dart_1x - (1*cm_to_px), chest_starty, 'front_dart_5' )
+           front_button_topx , front_button_topy, front_button_top = self.GetDot( my_layer, front_centerx, chest_starty, 'front_button_top')
+           front_armhole_pointx, front_armhole_pointy, front_armhole_point = self.GetDot( my_layer, front_pattern_startx + front_armhole_point_offset, back_underarm_pointy, 'front_armhole_point' )   #replace (11*cm_to_px)
+           upper_pocket_startx, upper_pocket_starty, upper_pocket_start = self.GetDot( my_layer, front_chest_widthx + upper_pocket_offset, chest_starty, 'upper_pocket_start' )
+
+           # Front Side Path 
+           x1, y1 = self.XYwithSlope( front_hip_startx, front_hip_starty, front_hem_startx, front_hem_starty, abs(front_hip_starty-front_waist_starty)*(.3) , 'normal' )
+           c1x, c1y, c1 = self.GetDot( my_layer, x1, y1, 'c1')
+           c2x, c2y, c2 = self.GetDot( my_layer, front_waist_startx, front_waist_starty + ( abs(front_waist_starty-front_hip_starty) * (.3) ), 'c2' )
+           c3x, c3y, c3 = self.GetDot( my_layer, front_waist_startx, front_waist_starty - ( abs(front_waist_starty-front_chest_starty) * (.3) ), 'c3' )
+           x1, y1 = self.XYwithSlope( front_chest_startx, front_chest_starty, front_armhole_pointx, front_armhole_pointy, ( abs(front_waist_starty-front_chest_starty) * (.3) ), 'normal' )
+           c4x, c4y, c4 = self.GetDot( my_layer, x1, y1, 'c4' )
+           c5x, c5y, c5 = self.GetDot( my_layer, front_chest_startx + ( abs(front_chest_startx - front_armhole_pointx) * (.2) ), front_chest_starty - ( abs(front_chest_starty - front_armhole_pointy) * (.3) ), 'c5' )
+           Front_Side = 'M '+ front_hem_start +' L '+ front_hip_start +' C '+ c1 +' '+ c2 +' '+ front_waist_start +' C '+ c3 +' '+ c4 +' '+ front_chest_start +' Q '+ c5 +' '+ front_armhole_point
+
+           # Shoulder
+           front_shoulder_topx, front_shoulder_topy, front_shoulder_top = self.GetDot( my_layer, front_chest_widthx + front_shoulder_top_offset, napey, 'front_shoulder_top') 
+           x1, y1 = self.XYwithSlope( front_shoulder_topx, front_shoulder_topy, front_chest_widthx, front_chest_widthy + front_shoulder_middle_offset, -front_shoulder_length, 'normal' )
+           front_shoulder_endx, front_shoulder_endy, front_shoulder_end = self.GetDot( my_layer, x1, y1, 'front_shoulder_end' )
+           c1x, c1y, c1 = self.GetDot( my_layer, front_shoulder_topx - abs( front_shoulder_endx - front_shoulder_topx ) * (.85), front_shoulder_topy + abs( front_shoulder_endy - front_shoulder_topy ) * (.7), 'c1' )           
+           c2x, c2y, c2 = self.GetDot( my_layer, front_shoulder_topx - abs( front_shoulder_endx - front_shoulder_topx ) * (.45), front_shoulder_topy + abs( front_shoulder_endy - front_shoulder_topy ) * (.15), 'c2' )
+           #my_path='M '+front_shoulder_end+' C '+c1+' '+c2+' '+front_shoulder_top
+           Front_Shoulder = ' C '+ c1 +' '+ c2 +' '+ front_shoulder_top
+
+
+           # front curve & front curve hem reference line
+           front_curve_startx, front_curve_starty, front_curve_start = self.GetDot( my_layer, front_pattern_endx, waist_starty + ( abs( waist_starty - hip_starty ) * (.5) ), 'front_curve_start')
+           front_hem_curve_reference_endx, front_hem_curve_reference_endy, front_hem_curve_reference_end = self.GetDot( my_layer, front_pattern_endx, front_hem_endy+ front_hem_curve_reference_offset , 'front_hem_curve_reference_end')
+           d = 'M '+ front_hem_start +' L '+ front_hem_curve_reference_end
+           self.Path( my_layer, d, 'reference', 'Front Curved Hem Reference', '' )
+
+           #######################
+           ### Draw Seam Lines ###
+           #######################
+
            # Armhole
-           x1,y1=self.XYwithSlope(C8x,C8y,C8x+100,C8y+100,2*cm_to_px,'normal')
-           I6x,I6y,I6=self.GetDot(my_layer,x1,y1,'I6')
-           my_path='M '+C8+' L '+I6
-           self.Path(my_layer,my_path,'reference','Armhole Reference C8I6','')
-           J3x,J3y,J3=self.GetDot(my_layer,C8x,C8y-(2.5*cm_to_px),'J3')
-           my_path='M '+J2+' L '+J3
-           self.Path(my_layer,my_path,'reference','Armhole Reference J2J3','')
-           my_length=self.LineLength(J2x,J2y,J3x,J3y)/2
-           x1,y1=self.XYwithSlope(J3x,J3y,J2x,J2y,-my_length,'normal')
-           J4x,J4y,J4=self.GetDot(my_layer,x1,y1,'J4')
-           my_length=2*cm_to_px 
-           x1,y1=self.XYwithSlope(J4x,J4y,J2x,J2y,my_length,'perpendicular')
+           x1, y1 = self.XYwithSlope( front_chest_underarmx, front_chest_underarmy, front_chest_underarmx + 100, front_chest_underarmy + 100, front_armhole_depth_2, 'normal')  
+           front_armhole_curve_2x, front_armhole_curve_2y, front_armhole_curve_2 = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_2' )
+           my_path='M '+front_chest_underarm+' L '+front_armhole_curve_2
+           self.Path(my_layer,my_path,'reference','front_armhole_depth_2 Reference Line','')
+
+           front_armhole_curve_3x, front_armhole_curve_3y, front_armhole_curve_3 = self.GetDot( my_layer, front_chest_underarmx, front_chest_underarmy-front_armhole_curve_3_offset, 'front_armhole_curve_3' )
+           my_path = 'M '+ front_shoulder_end +' L '+ front_armhole_curve_3
+           self.Path( my_layer, my_path, 'reference', 'front_armhole_curve_3 Reference Line','')
+
+           my_length = self.LineLength( front_shoulder_endx, front_shoulder_endy, front_armhole_curve_3x, front_armhole_curve_3y ) * (0.5)
+           x1 , y1 = self.XYwithSlope( front_armhole_curve_3x, front_armhole_curve_3y, front_shoulder_endx, front_shoulder_endy, -my_length, 'normal' )
+           front_armhole_curve_3_ref_midptx, front_armhole_curve_3_ref_midpty, front_armhole_curve_3_ref_midpt = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_3_ref_midpt' )
+
+           my_length = 2*cm_to_px 
+           x1,y1=self.XYwithSlope(front_armhole_curve_3_ref_midptx,front_armhole_curve_3_ref_midpty,front_shoulder_endx,front_shoulder_endy,my_length,'perpendicular')
            J5x,J5y,J5=self.GetDot(my_layer,x1,y1,'J5')
-           my_path='M '+J4+' L '+J5
-           self.Path(my_layer,my_path,'reference','Armhole Reference J4J5','')
-           c1x,c1y,c1=self.GetDot(my_layer,J2x,J2y,'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,J3x+abs(J2x-J3x)*(.3),J3y-abs(J2y-J3y)*(.3),'c2')
-           c3x,c3y,c3=self.GetDot(my_layer,J3x+(abs(J3x-C8x)*(.7)),J3y+(abs(C8y-C7y)*(.2)),'c3')
-           c4x,c4y,c4=self.GetDot(my_layer,C7x+(abs(C8x-C7x)*(.8)),C7y,'c4')
-           #my_path='M '+C7+' C '+c4+' '+c3+' '+J3+' C '+c2+' '+c1+' '+J2
-           Front_Armhole2=' C '+c4+' '+c3+' '+J3+' C '+c2+' '+c1+' '+J2
+           my_path='M '+front_armhole_curve_3_ref_midpt+' L '+J5
+           self.Path(my_layer,my_path,'reference','Armhole Reference front_armhole_curve_3_ref_midptJ5','')
+           c1x,c1y,c1=self.GetDot(my_layer,front_shoulder_endx,front_shoulder_endy,'c1')
+           c2x,c2y,c2=self.GetDot(my_layer,front_armhole_curve_3x+abs(front_shoulder_endx-front_armhole_curve_3x)*(.3),front_armhole_curve_3y-abs(front_shoulder_endy-front_armhole_curve_3y)*(.3),'c2')
+           c3x,c3y,c3=self.GetDot(my_layer,front_armhole_curve_3x+(abs(front_armhole_curve_3x-front_chest_underarmx)*(.7)),front_armhole_curve_3y+(abs(front_chest_underarmy-front_dart_1y)*(.2)),'c3')
+           c4x,c4y,c4=self.GetDot(my_layer,front_dart_1x+(abs(front_chest_underarmx-front_dart_1x)*(.8)),front_dart_1y,'c4')
+           #my_path='M '+front_dart_1+' C '+c4+' '+c3+' '+front_armhole_curve_3+' C '+c2+' '+c1+' '+front_shoulder_end
+           Front_Armhole2_Curve=' C '+c4+' '+c3+' '+front_armhole_curve_3+' C '+c2+' '+c1+' '+front_shoulder_end
+
            # Front Armhole #1
            my_length=(4*cm_to_px)
-           x1,y1=self.XYwithSlope(C5x,C5y,C5x-100,C5y+100,my_length,'normal')
+           x1,y1=self.XYwithSlope(front_chest_startx,front_chest_starty,front_chest_startx-100,front_chest_starty+100,my_length,'normal')
            I5x,I5y,I5=self.GetDot(my_layer,x1,y1,'I5')
-           my_path='M '+C5+' L '+I5
-           self.Path(my_layer,my_path,'reference','Front Armhole Depth 1 Reference C5I5','')
-           c1x,c1y,c1=self.GetDot(my_layer,C6x-(abs(C6x-I4x)*(.5)),C6y,'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,C6x-(abs(C6x-I4x)*(.9)),C6y-(abs(C6y-I4y)*(.8)),'c2')
-           #my_path='M '+I4+' C '+c2+' '+c1+' '+C6+' L '+C7
-           Front_Armhole1=' C '+c2+' '+c1+' '+C6+' L '+C7
+           my_path='M '+front_chest_start+' L '+I5
+           self.Path(my_layer,my_path,'reference','Front Armhole Depth 1 Reference front_chest_startI5','')
+
+           c1x,c1y,c1=self.GetDot(my_layer,front_dart_5x-(abs(front_dart_5x-front_armhole_pointx)*(.5)),front_dart_5y,'c1')
+           c2x,c2y,c2=self.GetDot(my_layer,front_dart_5x-(abs(front_dart_5x-front_armhole_pointx)*(.9)),front_dart_5y-(abs(front_dart_5y-front_armhole_pointy)*(.8)),'c2')
+           #my_path='M '+front_armhole_point+' C '+c2+' '+c1+' '+front_dart_5+' L '+front_dart_1
+           Front_Armhole1_Curve=' C '+c2+' '+c1+' '+front_dart_5+' L '+front_dart_1
+
            # Front Collar
-           K1x,K1y,K1=self.GetDot(my_layer,C10x,C10y-(16.5*cm_to_px),'K1')
-           K6x,K6y,K6=self.GetDot(my_layer,A5x,A5y+(6.5*cm_to_px),'K6')
+           K1x,K1y,K1=self.GetDot(my_layer,front_chest_endx,front_chest_endy-(16.5*cm_to_px),'K1')
+           K6x,K6y,K6=self.GetDot(my_layer,front_shoulder_topx,front_shoulder_topy+(6.5*cm_to_px),'K6')
            length=(2.5*cm_to_px)
            x1,y1=self.XYwithSlope(K6x,K6y,K6x-100,K6y+100,length,'normal')
            K7x,K7y,K7=self.GetDot(my_layer,x1,y1,'K7')
+
            my_path='M '+K6+' L '+K7
            self.Path(my_layer,my_path,'reference','Front Collar Reference K6K7','')
+
            length=(2.5*cm_to_px)
-           x1,y1=self.XY(A5x,A5y,J2x,J2y,length)
+           x1,y1=self.XY(front_shoulder_topx,front_shoulder_topy,front_shoulder_endx,front_shoulder_endy,length)
            K8x,K8y,K8=self.GetDot(my_layer,x1,y1,'K8')
-           x1,y1=self.Intersect(K6x,K6y,K1x,K1y,K8x,K8y,C10x,C10y)
+           x1,y1=self.Intersect(K6x,K6y,K1x,K1y,K8x,K8y,front_chest_endx,front_chest_endy)
            K9x,K9y,K9=self.GetDot(my_layer,x1,y1,'K9y')
-           my_path='M '+K1+' L '+K6+' L '+A5+' '+K8+' '+C10
-           self.Path(my_layer,my_path,'reference','Front Collar Reference K1K6A5K8C10','')
+
+           my_path='M '+K1+' L '+K6+' L '+front_shoulder_top+' '+K8+' '+front_chest_end
+           self.Path(my_layer,my_path,'reference','Front Neck & Collar Reference','')
+
            #collar dart
            K3x,K3y,K3=self.GetDot(my_layer,K1x-((K1x-K9x)/2),K1y,'K3')               #K3=dart midpoint
            K2x,K2y,K2=self.GetDot(my_layer,K3x+((1.3*cm_to_px)*(.5)),K1y,'K2')       #dart leg  - dart is 1.3cm total width
            K4x,K4y,K4=self.GetDot(my_layer,K3x-((1.3*cm_to_px)*(.5)),K1y,'K4')       #dart leg   - dart is 1.3cm total
+
            #Upper Pocket Placement reference lines
            ph=2*cm_to_px    #pocket height
            pw=10*cm_to_px   #pocket width
            slantheight=3*cm_to_px    #y offset to determine slant of pocket
-           L1x,L1y,L1=self.GetDot(my_layer,C8x+(3.7*cm_to_px),C8y,'L1')    # Place Upper Pocket on Jacket Front 3.7cm to the right of armhole/armpit C8
+           L1x,L1y,L1=self.GetDot(my_layer,front_chest_underarmx+(3.7*cm_to_px),front_chest_underarmy,'L1')    # Place Upper Pocket on Jacket Front 3.7cm to the right of armhole/armpit front_chest_underarm
            L2x,L2y,L2=self.GetDot(my_layer,L1x,L1y-ph,'L2')
            L3x,L3y,L3=self.GetDot(my_layer,L2x+pw,L2y+slantheight,'L3')
            L4x,L4y,L4=self.GetDot(my_layer,L3x,L3y+ph,'L4')
@@ -864,16 +977,14 @@ class DrawJacket(inkex.Effect):
            pw=15*cm_to_px   # pocket width
            dx,dy=1*cm_to_px,ph    # x offset to make pocket diagonal 
            flap=1.3*cm_to_px      # extension required to sew pocket into Jacket
-           M1x,M1y,M1=self.GetDot(my_layer,C8x,C8y+(28*cm_to_px),'M1')
-           m=self.Slope(F5x,F5y,F8x,F8y,'normal')
-           b=F5y-(m*F5x)
-           N1x,N1y,N1=self.GetDot(my_layer,C8x,b+(m*C8x),'N1')
-           x1,y1 = self.XYwithSlope(N1x,N1y,F8x,F8y,(pw*.5),'normal')
+           M1x,M1y,M1=self.GetDot(my_layer,front_chest_underarmx,front_chest_underarmy+(28*cm_to_px),'M1')
+           m=self.Slope(front_hem_startx,front_hem_starty,front_hem_curve_reference_endx,front_hem_curve_reference_endy,'normal')
+           b=front_hem_starty-(m*front_hem_startx)
+           N1x,N1y,N1=self.GetDot(my_layer,front_chest_underarmx,b+(m*front_chest_underarmx),'N1')
+           x1,y1 = self.XYwithSlope(N1x,N1y,front_hem_curve_reference_endx,front_hem_curve_reference_endy,(pw*.5),'normal')
            N2x,N2y,N2=self.GetDot(my_layer,x1,y1,'N2')
-           x1,y1 = self.XYwithSlope(N1x,N1y,F8x,F8y,-(pw*.5),'normal')
+           x1,y1 = self.XYwithSlope(N1x,N1y,front_hem_curve_reference_endx,front_hem_curve_reference_endy,-(pw*.5),'normal')
            N3x,N3y,N3=self.GetDot(my_layer,x1,y1,'N3')
-           my_path='M '+A4+' L '+N1
-           self.Path(my_layer,my_path,'reference','Front Jacket Reference A4N1','') 
            M2x,M2y,M2=self.GetDot(my_layer,N2x,N2y-abs(N1y-M1y),'M2')
            my_path='M '+N2+' L '+M2
            self.Path(my_layer,my_path,'reference','Lower Pocket Reference N2M2','')
@@ -887,8 +998,8 @@ class DrawJacket(inkex.Effect):
            b=M5y-(m*M5x)
            M6x,M6y,M6=self.GetDot(my_layer,M4x-abs(M4x-M5x)*(.25),b+m*(M4x-abs(M4x-M5x)*(.25)),'M6')
            LP_placement='M '+M2+' L '+M3+' Q '+M4+' '+M6+' L '+M5+' z'
-           dx1,dy1=(C10x-M2x)+(12*cm_to_px),(I4y-M2y)      # place pocket at x= C10x+12cm-->C10x is rightmost point of jacket front plus 12cm between pattern pieces
-                                                           #                 y= I4y --> arbitrary y point, equal to point at beginning of jacket front armhole
+           dx1,dy1=(front_chest_endx-M2x)+(12*cm_to_px),(front_armhole_pointy-M2y)      # place pocket at x= front_chest_endx+12cm-->front_chest_endx is rightmost point of jacket front plus 12cm between pattern pieces
+                                                           #                 y= front_armhole_pointy --> arbitrary y point, equal to point at beginning of jacket front armhole
            LP1x, LP1y,LP1 =self.GetDot(my_layer, M1x+dx1,M1y+dy1,'LP1')
            LP2x, LP2y,LP2 =self.GetDot(my_layer, M2x+dx1,M2y+dy1,'LP2')
            LP2ax,LP2ay,LP2a=self.GetDot(my_layer,LP2x-seam_allowance,LP2y,'LP2a')
@@ -907,60 +1018,63 @@ class DrawJacket(inkex.Effect):
            # Side Dart
            x1,y1=self.XY(M1x,M1y,M2x,M2y,-(4*cm_to_px))
            O1x,O1y,O1=self.GetDot(my_layer,x1,y1,'O1')
-           O2x,O2y,O2=self.GetDot(my_layer,C6x+(abs(C7x-C6x)/2),C6y,'O2')
+           O2x,O2y,O2=self.GetDot(my_layer,front_dart_5x+(abs(front_dart_1x-front_dart_5x)/2),front_dart_5y,'O2')
            x,y=self.XY(O2x,O2y,O1x,O1y,seam_allowance)
            O2ax,O2ay,O2a=self.GetDot(my_layer,x,y,'O2a')
            my_path='M '+O1+' L '+O2
            self.Path(my_layer,my_path,'reference','Side Dart Reference Line','')
            m=(O1y-O2y)/(O1x-O2x)
            b=O1y-(O1x*m)
-           y1=D5y-(2*cm_to_px)
+           y1=front_waist_starty-(2*cm_to_px)
            O3x,O3y,O3=self.GetDot(my_layer,(y1-b)/m,y1,'O3')
            O4x,O4y,O4=self.GetDot(my_layer,O3x-(1*cm_to_px),O3y,'O4')
            O5x,O5y,O5=self.GetDot(my_layer,O3x+(1*cm_to_px),O3y,'O5')
-           c1x,c1y,c1=self.GetDot(my_layer,O4x-30,C6y+(abs(C6y-O4y))*(.80),'c1')     #sidedartcontrol1,2, etc - c1, c2
+           c1x,c1y,c1=self.GetDot(my_layer,O4x-30,front_dart_5y+(abs(front_dart_5y-O4y))*(.80),'c1')     #sidedartcontrol1,2, etc - c1, c2
            c2x,c2y,c2=self.GetDot(my_layer,O4x,O4y+(abs(O4y-O1y))*(.20),'c2')
-           c3x,c3y,c3=self.GetDot(my_layer,O5x+20,C7y+(abs(C7y-O5y))*(.85),'c3')
+           c3x,c3y,c3=self.GetDot(my_layer,O5x+20,front_dart_1y+(abs(front_dart_1y-O5y))*(.85),'c3')
            c4x,c4y,c4=self.GetDot(my_layer,O5x,O5y+(abs(O5y-O1y))*(.20),'c4')
-           x,y=self.XY(C6x,C6y,c1x,c1y,seam_allowance)
-           C6ax,C6ay,C6a=self.GetDot(my_layer,x,y,'C6a')
-           x,y=self.XY(C7x,C7y,c3x,c3y,seam_allowance)
-           C7ax,C7ay,C7a=self.GetDot(my_layer,x,y,'C7a')        
-           Front_Side_Dart='M '+C6a+' L '+C6+' C '+c1+' '+c2+' '+O1+' C '+c4+' '+c3+' '+C7+' L '+C7a
+           x,y=self.XY(front_dart_5x,front_dart_5y,c1x,c1y,seam_allowance)
+           front_dart_5ax,front_dart_5ay,front_dart_5a=self.GetDot(my_layer,x,y,'front_dart_5a')
+           x,y=self.XY(front_dart_1x,front_dart_1y,c3x,c3y,seam_allowance)
+           front_dart_1ax,front_dart_1ay,front_dart_1a=self.GetDot(my_layer,x,y,'front_dart_1a')        
+           Front_Side_Dart='M '+front_dart_5a+' L '+front_dart_5+' C '+c1+' '+c2+' '+O1+' C '+c4+' '+c3+' '+front_dart_1+' L '+front_dart_1a
            x1,y1=O4x-1.5*cm_to_px,O4y
            x2,y2=O5x+1.5*cm_to_px,O5y
            Front_Side_Dart_Foldline='M '+O1+' L '+O2a +' M '+ str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)    
            #Collar Pattern Line
-           m=self.Slope(F5x,F5y,F8x,F8y,'normal')
-           b=F5y-(m*F5x)
+           m = self.Slope( front_hem_startx, front_hem_starty, front_hem_curve_reference_endx, front_hem_curve_reference_endy, 'normal' )
+           b=front_hem_starty-(m*front_hem_startx)
            F9x,F9y,F9=self.GetDot(my_layer,K8x,b+(m*K8x),'F9')
-           control_length=self.LineLength(A5x,A5y,K9x,K9y)*0.33
-           c1x,c1y,c1=self.GetDot(my_layer,A5x,A5y+control_length,'c1')    #control point 1 for neck curve between A5 & K9
-           c2x,c2y,c2=self.GetDot(my_layer,K9x-control_length,K9y,'c2')    #control point 2 for neck curve between A5 & K9
-           c3x,c3y,c3=self.GetDot(my_layer,K1x+1*cm_to_px,K1y+abs(K1y-C10y)/2,'c3')     #control point between K1 (top of lapel) and C10 (point of first buttonhole)
-           #my_path='M '+A5+' Q '+K6+' '+K9+' L '+K1+' Q '+c1+' '+C10+' '+D11+' C '+E7+' '+F7+ ' '+F9+' L '+F5
-           Front_Collar_and_Lapel = ' C '+c1+' '+c2+' '+K9+' L '+K1+' Q '+c3+' '+C10+' L '+D11+' C '+E7+' '+F7+ ' '+F9
+           control_length=self.LineLength(front_shoulder_topx,front_shoulder_topy,K9x,K9y)*0.33
+           c1x,c1y,c1=self.GetDot(my_layer,front_shoulder_topx,front_shoulder_topy+control_length,'c1')    #c1 neck curve between front_shoulder_top & K9
+           c2x,c2y,c2=self.GetDot(my_layer,K9x-control_length,K9y,'c2')    #c2 neck curve between front_shoulder_top & K9
+           c3x,c3y,c3=self.GetDot(my_layer,K1x+1*cm_to_px,K1y+abs(K1y-front_pattern_endy)/2,'c3')     #c3 curve between K1 and front_buttonhole_top 
+           c4x, c4y, c4 = self.GetDot( my_layer, front_pattern_endx, hip_starty, 'c4' ) # c4 b/w front_curve_start and front_curve_end
+           c5x, c5y, c5 = self.GetDot( my_layer, front_pattern_endx, hem_starty, 'c5' ) # c5 b/w front_curve_start and front_curve_end
+           #my_path='M '+front_shoulder_top+' Q '+K6+' '+K9+' L '+K1+' Q '+c1+' '+front_chest_end+' '+front_curve_start+' C '+c4+' '+c5+ ' '+F9+' L '+front_hem_start
+           Front_Collar_and_Lapel = ' C '+c1+' '+c2+' '+K9+' L '+K1+' Q '+c3+' '+front_chest_end+' L '+front_curve_start+' C '+ c4 +' '+c5+ ' '+F9
+
            # Buttons and Buttonholes        
-           Button_x = C9x
-           Button_y = C9y
+           Button_x = front_button_topx
+           Button_y = front_button_topy
            Button_number = 4
-           Button_distance=(abs(C9y-D9y)/2)
+           Button_distance=(abs(front_button_topy-waist_starty)/2)
            Button_size=(.75*in_to_px)
            #Hem Line & Allowance
-           Hem_Line=' M '+F5+' L '+F9
-           x,y=self.XY(F5x,F5y,E5x,E5y,hem_allowance)
-           Hem1x,Hem1y,Hem1=self.GetDot(my_layer,x,y,'Hem1')
+           Hem_Line=' M '+front_hem_start+' L '+F9
+           #x,y=self.XY(front_hem_startx,front_hem_starty,front_hip_startx,front_hip_starty,hem_allowance)
+           Hem1x, Hem1y, Hem1 = self.GetDot( my_layer, front_hem_startx, front_hem_starty + hem_allowance, 'Hem1' )
            Hem2x,Hem2y,Hem2=self.GetDot(my_layer,F9x,F9y+hem_allowance,'Hem2')
            Hem_Line=' L '+Hem2+' '+Hem1 
            Jacket_Bottomy=Hem2y       
            # Grainline
-           G1x,G1y,G1=self.GetDot(my_layer,C8x+(C10x-C8x)/2,L4y+5*cm_to_px,'G1')
+           G1x,G1y,G1=self.GetDot(my_layer,front_chest_underarmx+(front_pattern_endx-front_chest_underarmx)/2,L4y+5*cm_to_px,'G1')
            G2x,G2y,G2=self.GetDot(my_layer,G1x,G1y+40*cm_to_px,'G2')
            # collar #
 
            # offset = dx, dy from far right corner of upper pocket UP,+ 8cm to make room for seam allowances, etc
            # point K9 from the front neck begins curve around back neck, so K9=>Collarcurvestart
-           # back neck A1 to I1 is half length of collar, so length A1-I1=>Collarlength, line goes through A5=>Collarshoulderpoint
+           # back neck nape to back_shoulder_top is half length of collar, so length nape-back_shoulder_top=>Collarlength, line goes through front_shoulder_top=>Collarshoulderpoint
            # so Collarstart+Collarlength=Collarend
            # Collar is 7cm wide at back neck, so 3cm squared down from Collarend is Collarbottom, 4cm squared up&.6cm back is Collartop
            # Collar bottom edge is a line from Collarbottom to Uppershoulderpoint, then curved around to Collarstart
@@ -969,13 +1083,17 @@ class DrawJacket(inkex.Effect):
            # Collar top edge is line from Collarcorner to Collartop
            # Draw reference lines on jacket piece
            my_layer=base_layer
-           Collarbacklength=self.LineLength(A1x,A1y,I1x,I1y)
-           dx,dy=abs(UP6x-A4x)+8*cm_to_px,abs(A4y-J5y)
-           #Collarfrontlength=self.LineLength(K9x,K9y,K2x,K2y)+self.LineLength(K4x,K4y,K1x,K1y)-3*cm_to_px
+
+           small_pattern_startx, small_pattern_starty, small_pattern_start = self.GetDot( my_layer, front_pattern_endx + pattern_offset, front_pattern_endy, 'small_pattern_start' )
+           dx, dy = abs( front_pattern_endx - front_chest_widthx ), (-2*cm_to_px)
+
+           Collarbacklength=self.LineLength(napex,napey,back_shoulder_topx,back_shoulder_topy)
+
            Collarfrontlength=abs(K1x-K9x)-3*cm_to_px-(1.3*cm_to_px/2.0)
+
            Collarcurvestartx,Collarcurvestarty,Collarcurvestart=K9x,K9y,str(K9x)+' '+str(K9y)
-           CP_startx,CP_starty,CP_start=Collarcurvestartx+dx,Collarcurvestarty+dy,str(Collarcurvestartx+dx)+' '+str(Collarcurvestarty+dy)
-           Collarneckpointx,Collarneckpointy,Collarneckpoint=A5x,A5y,str(A5x)+' '+str(A5y)
+           CP_startx, CP_starty, CP_start = Collarcurvestartx + dx, Collarcurvestarty + dy, str(Collarcurvestartx + dx) +' '+str(Collarcurvestarty + dy)
+           Collarneckpointx,Collarneckpointy,Collarneckpoint=front_shoulder_topx,front_shoulder_topy,str(front_shoulder_topx)+' '+str(front_shoulder_topy)
            CP_neckx,CP_necky,CP_neck=Collarneckpointx+dx,Collarneckpointy+dy,str(Collarneckpointx+dx)+' '+str(Collarneckpointy+dy)
             
            x,y=self.XY(Collarneckpointx,Collarneckpointy,Collarcurvestartx,Collarcurvestarty,Collarbacklength)
@@ -987,16 +1105,19 @@ class DrawJacket(inkex.Effect):
            x,y=self.XYwithSlope(Collarendx,Collarendy,Collarcurvestartx,Collarcurvestarty,3*cm_to_px,'perpendicular')
            Collarbottomx,Collarbottomy,Collarbottom=self.GetDot(my_layer,x,y,"Collarbottom")
            CP_bottomx,CP_bottomy,CP_bottom=Collarbottomx+dx,Collarbottomy+dy,str(Collarbottomx+dx)+' '+str(Collarbottomy+dy)
+
            x1,y1=self.XYwithSlope(Collarendx,Collarendy,Collarcurvestartx,Collarcurvestarty,-3*cm_to_px,'perpendicular')
            x,y=self.XYwithSlope(x1, y1,Collarendx,Collarendy,-0.6*cm_to_px,'perpendicular')
            Collartopx,Collartopy,Collartop=self.GetDot(my_layer,x,y,"Collartop")
            CP_topx,CP_topy,CP_top=Collartopx+dx,Collartopy+dy,str(Collartopx+dx)+' '+str(Collartopy+dy)
+
            Collar_Back_Line=' L '+Collarend+' '+Collartop
            CP_Back_Line=' L '+CP_end+' '+CP_top
 
            x,y=self.XY(Collarcurvestartx,Collarcurvestarty,K1x,K1y,-Collarfrontlength)
            Collarfrontx,Collarfronty,Collarfront=self.GetDot(my_layer,x,y,'Collarfront')
            CP_frontx,CP_fronty,CP_front=Collarfrontx+dx,Collarfronty+dy,str(Collarfrontx+dx)+' '+str(Collarfronty+dy)
+
            rise=-3*cm_to_px
            run=1*cm_to_px
            Collarcornerx,Collarcornery,Collarcorner=self.GetDot(my_layer,Collarfrontx+run,Collarfronty+rise,'Collarcorner')
@@ -1014,6 +1135,7 @@ class DrawJacket(inkex.Effect):
            control_lengthy=abs(Collarcurvestarty-Collarbottomy)/3
            c1x,c1y,c1=self.GetDot(my_layer,Collarcurvestartx-control_lengthx,Collarcurvestarty,'c1')
            CP_c1x,CP_c1y,CP_c1=c1x+dx,c1y+dy,str(c1x+dx)+' '+str(c1y+dy)
+
            x1,y1=self.XYwithSlope(Collarbottomx,Collarbottomy,Collarendx,Collarendy,100,'perpendicular')
            x,y=self.XY(Collarbottomx,Collarbottomy,x1,y1,control_lengthy)
            c2x,c2y,c2=self.GetDot(my_layer,x,y,'c2')
@@ -1022,13 +1144,15 @@ class DrawJacket(inkex.Effect):
            CP_Curve_Line=' C '+CP_c1+' '+CP_c2+' '+CP_bottom
 
            control_length=self.LineLength(Collarcurvestartx,Collarcurvestarty,Collarendx,Collarendy)*(0.25)  
-           x,y=self.XY(Collarcurvestartx,Collarcurvestarty,C10x,C10y,control_length)  
+           x,y=self.XY(Collarcurvestartx,Collarcurvestarty,front_chest_endx,front_chest_endy,control_length)  
            c1x,c1y,c1=self.GetDot(my_layer,x,y,'c1')  
            CP_c1x,CP_c1y,CP_c1=c1x+dx,c1y+dy,str(c1x+dx)+' '+str(c1y+dy) 
+
            x,y=self.XYwithSlope(Collarendx,Collarendy,Collartopx,Collartopy,-control_length,'perpendicular')   
            c2x,c2y,c2=self.GetDot(my_layer,x,y,'c2')   
            CP_c2x,CP_c2y,CP_c2=c2x+dx,c2y+dy,str(c2x+dx)+' '+str(c2y+dy)
            Collar_Roll_Line='M '+Collarcurvestart+' C '+c1+' '+c2+' '+Collarend
+
            CP_Roll_Line='M '+CP_start+' C '+CP_c1+' '+CP_c2+' '+CP_end
            CP_Gr1x,CP_Gr1y,P_GR=CP_topx + (abs(CP_startx-CP_topx)/2),CP_bottomy+1*cm_to_px,str((CP_bottomx)+ (abs(CP_startx-CP_topx)/2))+' '+str(CP_bottomy)
            CP_Gr2x,CP_Gr2y,CP_Gr2=CP_Gr1x, CP_Gr1y+(6*cm_to_px) , str(CP_Gr1x) +' '+ str(CP_Gr1y+(6*cm_to_px) )
@@ -1045,7 +1169,7 @@ class DrawJacket(inkex.Effect):
 
            my_layer = self.GetNewLayer( base_layer, 'Jacket Front')
 
-           Jacket_Front_Pattern_Piece=Front_Side+' '+Front_Armhole1+' '+Front_Armhole2+' '+Front_Shoulder+' '+Front_Collar_and_Lapel+' '+Hem_Line+' z'
+           Jacket_Front_Pattern_Piece=Front_Side+' '+ Front_Armhole1_Curve +' '+ Front_Armhole2_Curve +' '+Front_Shoulder+' '+Front_Collar_and_Lapel+' '+Hem_Line+' z'
            self.Path(my_layer,Front_Side_Dart,'dart','Jacket Front Side Dart','')
            self.Path(my_layer,Front_Side_Dart_Foldline,'foldline','Jacket Front Side Dart Foldline','')
            self.Path(my_layer,Collar_Dart,'dart','Collar Dart','')
@@ -1098,11 +1222,11 @@ class DrawJacket(inkex.Effect):
            # Upper Sleeve
            my_layer=base_layer
            begin_x=2*K1x     #rightmost point of jacket + width of lower pocket + 10cm
-           begin_y=A1y                               #top of curve place at neckline from jacket back
+           begin_y=napey                               #top of curve place at neckline from jacket back
            # Reference Lines
            SA1x,SA1y,SA1=self.GetDot(my_layer,begin_x,begin_y,'SA1')
            SB1x,SB1y,SB1=self.GetDot(my_layer, SA1x,(SA1y+((chest/16)-2*cm_to_px)),'SB1')
-           SC1x,SC1y,SC1=self.GetDot(my_layer,SA1x,SB1y+(C4y-I2y),'SC1')
+           SC1x,SC1y,SC1=self.GetDot(my_layer,SA1x,SB1y+(chest_back_endy-sleeve_back_balance_pointy),'SC1')
            SD1x,SD1y,SD1=self.GetDot(my_layer,SA1x,SC1y+19*cm_to_px,'SD1')
            SF1x,SF1y,SF1=self.GetDot(my_layer,SA1x,SB1y+(sleeve_length),'SF1')
            c1x,c1y,c1=self.GetDot(my_layer,SC1x,SC1y-(abs(SC1y-SB1y)*(.3)),'c1')
@@ -1121,9 +1245,9 @@ class DrawJacket(inkex.Effect):
            SB3x,SB3y,SB3=self.GetDot(my_layer,SA4x,SB1y,'SB3')
            SB4x,SB4y,SB4=self.GetDot(my_layer,(SB3x+8*cm_to_px),SB1y,'SB4')
            SB5x,SB5y,SB5=self.GetDot(my_layer,(SB4x+1.3*cm_to_px),SB1y,'SB5')
-           SB6x,SB6y,SB6=self.GetDot(my_layer,SB4x+(SA3x-SA1x),SB4y+((C4y-I2y)-(2*cm_to_px)),'SB6')
+           SB6x,SB6y,SB6=self.GetDot(my_layer,SB4x+(SA3x-SA1x),SB4y+((chest_back_endy-sleeve_back_balance_pointy)-(2*cm_to_px)),'SB6')
            SB7x,SB7y,SB7=self.GetDot(my_layer,SB6x+((SB6x-SB4x)/2),SB6y+1*cm_to_px,'SB7')
-           SB8x,SB8y,SB8=self.GetDot(my_layer,SB6x+((SB6x-SB4x)),SB4y+((C4y-I2y)-(C8y-J3y)),'SB8')
+           SB8x,SB8y,SB8=self.GetDot(my_layer,SB6x+((SB6x-SB4x)),SB4y+((chest_back_endy-sleeve_back_balance_pointy)-(front_chest_underarmy-front_armhole_curve_3y)),'SB8')
            my_path='M '+SB1+' L '+SB5+' '+SB6+' '+SB7+' '+SB8
            self.Path(my_layer,my_path,'reference','Sleeve Reference SB','')
            c1x,c1y,c1=self.GetDot(my_layer,SB1x+abs(SA2x-SB1x)*(.6),SB1y-abs(SA2y-SB1y)*(.7),'c1')
@@ -1133,7 +1257,7 @@ class DrawJacket(inkex.Effect):
            c5x,c5y,c5=self.GetDot(my_layer,SA3x+abs(SA3x-SB2x)*(.7),SA3y+abs(SA3y-SB2y)*(.45),'c5')
            SC2x,SC2y,SC2=self.GetDot(my_layer,SC1x+((SA4x-SA1x)/2),SC1y,'SC2')
            SC3x,SC3y,SC3=self.GetDot(my_layer,SA4x,SC1y,'SC3')
-           SC4x,SC4y,SC4=self.GetDot(my_layer,SA4x,SC3y-(C8y-J3y),'SC4')
+           SC4x,SC4y,SC4=self.GetDot(my_layer,SA4x,SC3y-(front_chest_underarmy-front_armhole_curve_3y),'SC4')
            SC5x,SC5y,SC5=self.GetDot(my_layer,SB4x,SC1y,'SC5')
            SC6x,SC6y,SC6=self.GetDot(my_layer,SC5x+1*cm_to_px,SC1y,'SC6')
            SC7x,SC7y,SC7=self.GetDot(my_layer,SB6x,SC1y,'SC7')
@@ -1198,7 +1322,7 @@ class DrawJacket(inkex.Effect):
            Hem1x,Hem1y,Hem1 = self.GetDot(my_layer,x,y,'Hem1')
            Cuff_Hem_Line=' L '+Hem2+' '+Hem1
            # Matching Cuff Piece
-           dx,dy=(SE1x-C10x-(8*cm_to_px)),(SE1y-LP5y-12*cm_to_px)
+           dx,dy=(SE1x-front_pattern_endx-(8*cm_to_px)),(SE1y-LP5y-12*cm_to_px)
            c1x,c1y,c1=self.GetDot(my_layer,SF2x-dx,SF2y-dy,'c1')
            c2x,c2y,c2=self.GetDot(my_layer,SE1x-dx,SE1y-dy,'c2')
            c3x,c3y,c3=self.GetDot(my_layer,SE2x-dx,SE2y-dy,'c3')
@@ -1287,7 +1411,7 @@ class DrawJacket(inkex.Effect):
            Hem1x,Hem1y,Hem1 = self.GetDot(my_layer,x,y,'Hem1')
            Cuff_Hem_Line=' L '+Hem2+' '+Hem1
            # Matching Cuff Piece
-           dx,dy=(SE3x-C10x-(8*cm_to_px)),0
+           dx,dy=(SE3x-front_pattern_endx-(8*cm_to_px)),0
            c1x,c1y,c1=self.GetDot(my_layer,SF7x-dx,SF7y-dy,'c1')
            c2x,c2y,c2=self.GetDot(my_layer,SE3x-dx,SE3y-dy,'c2')
            c3x,c3y,c3=self.GetDot(my_layer,SE4x-dx,SE4y-dy,'c3')
@@ -1330,15 +1454,8 @@ class DrawJacket(inkex.Effect):
            ### Resize Document, Reset View ###
            ###################################
 
-           root = self.document.getroot()
-           my_layer=root
-
-           
-
-
-
-
-
+           self.layer = base_layer
+                
 
 my_effect = DrawJacket()
 my_effect.affect()
