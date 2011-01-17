@@ -16,13 +16,13 @@
 # 3. Define 'placement' type of line - place in def module & change 'dart' to 'placement'
 # 4. Narrow line widths - printed lines are quite large
 # 5. Learn 'marker' technique
-# 6. Define 'notch' marker
-# 7. Define 'small sewing dot' marker
-# 8. Define 'large sewing dot' marker
-# 9. Define 'small sewing square' marker
-#10. Define 'large sewing square' marker
+# 6. Define 'notch' marker - Place matching notches perpendicular to slope at a given a pair of points on seamlines on different pieces, outset by the given seam allowance appropriate for each piece.
+# 7. Define 'small sewing dot' marker - place marker at given point
+# 8. Define 'large sewing dot' marker - place marker at given point
+# 9. Define 'small sewing square' marker - place marker at given point
+#10. Define 'large sewing square' marker - place marker at given point
 #11. After outset - remove unwanted seamlines, extend seamlines where necessary.
-#12. Define dart's seam allowance function
+#12. Define dart's seam allowance extension function
 #13. Reverse jacket calculations - all body patterns to start at center front and extend to side seams.
 #14. Remove original pattern creation reference lines & dots for upper pocket & lower pocket - checked - when reference layer set to invisible all unwanted marks are unseen
 #15. Remove button line segment below bottom button.
@@ -32,6 +32,17 @@
 #16b1. - cuff interior (part that is machine sewn to end of sleeve)
 #16b2. - cuff exterior (part that machine sewn to cuff interior, then wrapped around to inside of sleeve and hand hemmed.
 #17. Change side dart point names from O1, O2, to meaningful
+#18. Zoom document to fit page on screen
+#19. Auto-smooth/auto-symmetric selected nodes - function
+#20. Create cuttingline along selected path or path segments
+#21. Read client data from database
+#22. Develop client database
+#23. Lining
+#24. Curve intersect w/ curve
+#25. Line intersect w/ curve
+#25. Find point along curve - distance or %?
+#26. Find point of slope change on curve
+
 
 
 
@@ -76,10 +87,10 @@ pattern_number = '1870-M-J-1'
 client_name    = 'Matt Conklin'
 
 # measurement constants
-in_to_pt     = ( 72.72 / 1  )             #convert inches to printer's points - 72.72pt = 1in
-cm_to_pt     = ( 72.72 / 2.5 )           #convert centimeters to printer's points
-paper_width  = ( 32*in_to_pt )           
-border       = (7.5 * cm_to_pt)          # 7.5cm (3") document borders
+in_to_pt     = ( 72.72 / 1    )          #convert inches to printer's points - 72.72pt = 1in
+cm_to_pt     = ( 72.72 / 2.5  )          #convert centimeters to printer's points
+paper_width  = ( 32*in_to_pt  )           
+border       = ( 7.5*cm_to_pt )          # 7.5cm (3") document borders
 
 # sewing constants
 quarter_seam_allowance = ( in_to_pt * 1 / 4 )   # 1/4" seam allowance
@@ -89,23 +100,21 @@ pattern_offset         = ( in_to_pt * 4     )   # 4" between patterns
 
 # svg constants
 svgNameText = []
-no_transform    = ''   # no transform required 
-SVG_OPTIONS = {  'width' : "auto",
+no_transform = ''   # no transform required 
+SVG_OPTIONS  = { 'width' : "auto",
                 'height' : "auto",
           'currentScale' : "0.05 : 1",
       'fitBoxtoViewport' : "True",
    'preserveAspectRatio' : "xMidYMid meet",
-         'margin-bottom' : str(3*cm_to_pt),
-           'margin-left' : str(3*cm_to_pt),
-          'margin-right' : str(3*cm_to_pt),
-            'margin-top' : str(3*cm_to_pt),  
+         'margin-bottom' : str(border),
+           'margin-left' : str(border),
+          'margin-right' : str(border),
+            'margin-top' : str(border),  
           'company-name' : company_name, 
        'patttern-number' : pattern_number,
           'pattern-name' : pattern_name,
            'client-name' : client_name
                 }
-
-
 
 class DrawJacket( inkex.Effect ):
 
@@ -113,8 +122,8 @@ class DrawJacket( inkex.Effect ):
 
           inkex.Effect.__init__( self, **SVG_OPTIONS ) 
    
-          # Store user measurements from steampunk_jacket.inx into object 'self'  
-          OP = self.OptionParser              # use 'OP' make code easier to read
+          # Store data from steampunk_jacket.inx into object 'self'  
+          OP = self.OptionParser   #use 'OP' - make code easier to read
           OP.add_option('--measureunit', 
                         action='store', 
                         type='str', 
@@ -151,51 +160,53 @@ class DrawJacket( inkex.Effect ):
                          default=1.0, 
                          help='back_waist_length') 
           OP.add_option('--back_jacket_length', 
-                         action='store', 
-                         type='float', 
-                         dest='back_jacket_length', 
-                         default=1.0, help='back_jacket_length')
+                         action  = 'store', 
+                         type    = 'float', 
+                         dest    = 'back_jacket_length', 
+                         default = 1.0, 
+                         help    = 'back_jacket_length')
           OP.add_option('--back_shoulder_width', 
-                         action='store', 
-                         type='float', 
-                         dest='back_shoulder_width', 
-                         default=1.0, 
-                         help='back_shoulder_width')
+                         action  = 'store', 
+                         type    = 'float', 
+                         dest    = 'back_shoulder_width', 
+                         default = 1.0, 
+                         help    = 'back_shoulder_width')
           OP.add_option('--back_shoulder_length', 
-                         action='store', 
-                         type='float', 
-                         dest='back_shoulder_length', 
-                         default=1.0, 
-                         help='back_shoulder_length')
+                         action  = 'store', 
+                         type    = 'float', 
+                         dest    = 'back_shoulder_length', 
+                         default = 1.0, 
+                         help    = 'back_shoulder_length')
           OP.add_option('--back_underarm_width', 
-                         action='store', 
-                         type='float', 
-                         dest='back_underarm_width', 
-                         default=1.0, 
-                         help='back_underarm_width')
+                         action  = 'store', 
+                         type    = 'float', 
+                         dest    = 'back_underarm_width', 
+                         default = 1.0, 
+                         help    = 'back_underarm_width')
           OP.add_option('--back_underarm_length', 
-                         action='store', 
-                         type='float', 
-                         dest='back_underarm_length', 
-                         default=1.0, 
-                         help='back_underarm_length')
+                         action  = 'store', 
+                         type    = 'float', 
+                         dest    = 'back_underarm_length', 
+                         default = 1.0, 
+                         help    = 'back_underarm_length')
           OP.add_option('--seat', 
-                         action='store', 
-                         type='float', 
-                         dest='seat', 
-                         default=1.0, 
-                         help='seat') 
+                         action  = 'store', 
+                         type    = 'float', 
+                         dest    = 'seat', 
+                         default = 1.0, 
+                         help    = 'seat') 
           OP.add_option('--back_waist_to_hip_length', 
-                         action='store', 
-                         type='float', 
-                         dest='back_waist_to_hip_length', 
-                         default=1.0, help = 'back_waist_to_hip_length')
+                         action  = 'store', 
+                         type    =' float', 
+                         dest    = 'back_waist_to_hip_length', 
+                         default = 1.0, 
+                         help    = 'back_waist_to_hip_length')
           OP.add_option('--nape_to_vneck', 
-                         action='store', 
-                         type='float',                          
-                         dest='nape_to_vneck',
-                         default=1.0,
-                         help='Nape around to about 11.5cm (4.5in) below front neck')
+                         action  = 'store', 
+                         type    = 'float',                          
+                         dest    = 'nape_to_vneck',
+                         default = 1.0,
+                         help    = 'Nape around to about 11.5cm (4.5in) below front neck')
           OP.add_option('--sleeve_length', 
                          action  = 'store', 
                          type    = 'float', 
@@ -203,10 +214,110 @@ class DrawJacket( inkex.Effect ):
                          default =  1.0, 
                          help    = 'sleeve_length') 
 
+    ###################################################
+    def AngleFromSlope( self, rise, run ) :
+        # works with both positive and negative values of rise and run
+        # returns angle in radians
+        return math.atan2( rise, run )
+
+    ###################################################
+    def Arrow( self, layer, x1, y1, x2, y2, name, trans ):
+           arrow_height=30
+           arrow_width=10
+           rise=abs(y2-y1)
+           run=abs(x2-x1)
+           line_angle=self.AngleFromSlope(rise, run)
+           if (y2>y1):
+               angle=line_angle
+               arrow_number = '1'
+           else:
+               angle=(line_angle - math.pi)
+               arrow_number = '2'
+           perpendicular_angle=(-self.AngleFromSlope(run, rise))
+           hx,hy = self.PointFromDistanceAndAngle(x1, y1, arrow_height, angle)
+           w1x,w1y = self.PointFromDistanceAndAngle(x1, y1, arrow_width, perpendicular_angle)
+           w2x,w2y = self.PointFromDistanceAndAngle(x1, y1,-arrow_width, perpendicular_angle)
+           style = { 'fill':'green',
+                     'stroke':'green',
+                     'stroke-width':'8',
+                     'stroke-linejoin':'miter',
+                     'stroke-miterlimit':'4'} 
+           my_path='M '+str(x1)+' '+str(y1)+' '+str(w1x)+' '+str(w1y)+' L '+str(hx)+' '+str(hy)+' L '+str(w2x)+' '+str(w2y)+' z'
+           pathattribs = { inkex.addNS('label','inkscape') : 'Arrow',
+                                                      'id' : 'arrow_' + name +'_'+ str(arrow_number),
+                                               'transform' : trans,
+                                                        'd': my_path, 
+                                                    'style': simplestyle.formatStyle(style) }
+           inkex.etree.SubElement( layer, inkex.addNS('path','svg'), pathattribs)
+
+
+    ###################################################
+    def BoundingBox( self, element_id, dx, dy ) :
+
+          x_array = []
+          y_array = []
+          x_array.append(1.2345)  # initialize with dummy float value
+          y_array.append(1.2345)  # initialize with dummy float value
+
+          my_element       = self.getElementById( element_id )       # returns 'element g at ...' --> a pointer into the document
+          my_path          = my_element.get( 'd' )                   # returns the whole path  'M ..... z'
+          path_coords_xy   = my_path.split( ' ' )                    # split path into pieces, separating at each 'space'
+    
+          for i in range( len( path_coords_xy ) ) :
+   
+              coords_xy = path_coords_xy[i].replace( ' ', '' )       # strip out remaining white spaces & put coordinate pair <x>,<y> (or command letter) into 'coords_xy'
+                                                                            
+              if ( len(coords_xy)  > 0 ) :                                                                                            # if coords_xy not empty, then process
+    
+                  if ( coords_xy not in [ 'M','m','L','l','H','h','V','v','C','c','S','s','Q','q','T','t','A','a','Z','z',' ' ] ) :   # don't process command letters
+    
+                      xy = coords_xy.split(',')                                                                                       # split apart x & y coordinates
+    
+                      for j in range( len( xy ) ) :                                                                                  
+    
+                          if ( ( j % 2 ) == 0 ) :        # j starts with 0, so if mod(j,2)=0 then xy[j] is an x point -- in case there are more than 2 elements in xy array
+                              x_array.append( float( xy[ j ] ) )      
+                          else :                         # mod(j,2)<>0, so xy[j] is a y point
+                              y_array.append( float( xy[ j ] ) ) 
+
+          x_array.remove(1.2345) 
+          y_array.remove(1.2345)
+
+          return min(x_array) + dx, min(y_array) + dy, max(x_array) + dx, max(y_array) + dy
+
+    ###################################################
+    def Buttons( self, parent, bx, by, button_number, button_distance, button_size ):
+           # can only do vertical button lines at this time...button line doesn't need extension past last button, so use ( button_number -1 )
+           buttonline ='M ' + str(bx) +' '+ str(by) +' L '+ str(bx) +' '+ str( by + ( (button_number - 1) *button_distance) )  
+           self.Path( parent, buttonline, 'foldline', 'Button Line', no_transform)
+           i = 1
+           y = by
+           while i<=button_number :
+              self.Circle( parent, bx, y, (button_size / 2), 'green', 'Button_'+ str(i))
+              buttonhole_path = 'M '+ str(bx) +' '+ str(y) +' L '+ str(bx-button_size) +' '+ str(y)
+              self.Path( parent, buttonhole_path, 'buttonhole', 'Button Hole '+ str(i), no_transform )
+              i = i + 1
+              y = y + button_distance
+
+    ###################################################
+    def Circle(self, layer, x, y, radius, color, name, ):
+           style = {   'stroke'       : color,  
+                       'fill'         :'none',
+                       'stroke-width' :'6' }
+           attribs = { 'style'        : simplestyle.formatStyle( style ),
+                        inkex.addNS( 'label', 'inkscape' ) : name,
+                        'id'          : 'circle_' + name,
+                        'cx'          : str(x),
+                        'cy'          : str(y),
+                        'r'           : str(radius) }
+           inkex.etree.SubElement( layer, inkex.addNS( 'circle', 'svg' ), attribs )
+   
+    ###################################################
     def Debug( self, msg ):
            sys.stderr.write( str( msg ) + '\n' )
            return msg
 
+    ###################################################
     def Dot( self, dot_layer, x, y, name):
            style = {   'stroke'       : 'red',  
                        'fill'         : 'red',
@@ -221,108 +332,59 @@ class DrawJacket( inkex.Effect ):
            c = inkex.etree.SubElement( dot_layer, inkex.addNS( 'circle', 'svg' ),  attribs )
            return x, y, str(x) + ',' + str(y)
 
-    def Visibility( self, name, value ):
-           visibility = "document.getElementById('%s').setAttribute('visibility', '%%s')" % name, value
+    ###################################################
+    def Grainline( self, parent, x1, y1, x2, y2, name, trans ):
+           grain_path = 'M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
+           self.Path( parent, grain_path, 'grainline', name, trans )
+           self.Arrow( parent, x1, y1, x2, y2, name, trans )
+           self.Arrow( parent, x2, y2, x1, y1, name, trans )
 
-    def Circle(self, layer, x, y, radius, color, name, ):
-           style = {   'stroke'       : color,  
-                       'fill'         :'none',
-                       'stroke-width' :'6' }
-           attribs = { 'style'        : simplestyle.formatStyle( style ),
-                        inkex.addNS( 'label', 'inkscape' ) : name,
-                        'id'          : 'circle_' + name,
-                        'cx'          : str(x),
-                        'cy'          : str(y),
-                        'r'           : str(radius) }
-           inkex.etree.SubElement( layer, inkex.addNS( 'circle', 'svg' ), attribs )
-   
-    def sodipodi_namedview(self):
-           svg_root   = self.document.xpath('//svg:svg', namespaces = inkex.NSS)[0]
-           #sodi_root = self.document.xpath('//sodipodi:namedview', namespaces = inkex.NSS)[0]
-           #ink_root  = self.document.xpath('//sodipodi:namedview/inkscape',  namespaces = inkex.NSS)
- 
-           #root_obj = lxml.objectify.Element('root')
-           #sodi_obj = lxml.objectify.Element('namedview')
-           #attrList = namedview.Attributes()
-	   #for i in range(attrList.length):
-	   #   attr = attrList.item(i)
+    ###################################################
+    def IntersectLineLine( self, x11, y11, x12, y12, x21, y21, x22, y22 ) :
+           # y = mx + b  --> looking for point x,y where midpoint*x+b1=top_left*x+b2
+           # b = y - mx
+           # !!!!!!!!!!!!Test later for parallel lines  and vertical lines !!!!!!!!!
+           # Calulations for line 1:
+           m1 = self.Slope( x11, y11, x12, y12, 'normal' )
+           if (m1 == 'undefined' ) :
+               x = x11
+           b1 = ( y11 - ( m1 * x11 ) )
+           # Calculations for line 2:
+           m2 = self.Slope( x21, y21, x22, y22, 'normal' )
+           if (m2 == 'undefined' ) :
+               x = x21
+           b2 = ( y21 - ( m2 * x21 ) )
+           # get x that satisfies both m1*x1 + b1 = m2*x2 + b2
+           # m1*x + b1        = m2*x + b2
+           # m1*x - m2*x      = ( b2 - b1 )
+           # ( m1 - m2 )*x    = ( b2 - b1 )
+           x = ( ( b2 - b1 ) / ( m1 - m2 ) )
+           # get y --> y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
+           y = ( ( m1 * x ) + b1 )
+           return x, y 
+
+    ###################################################
+    def LineLength( self, ax, ay, bx, by ):
+           #a^2 + b^2 = c^2
+           c_sq = ( ( ax - bx )**2 ) + ( ( ay - by )**2 )
+           c = self.Sqrt( c_sq )
+           return c
+
+    ###################################################
+    def ListAttributes( self, my_object ) :
+           self.Debug( my_object )
+           # my_object_attributes_list = my_object.attrib
+           # my_object_attributes_list  = my_object.Attributes()
+           # my_object_attributes_list  = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS ) /*   ---> @ will look up an attribute
+           # this_object = self.document.xpath('//@'+my_object, namespaces=inkex.NSS ) 
+           # my_object_attributes_list  = my_object.Attributes()
+	   # for i in range( my_object.length ):
+	   #    my_current_attribute = my_object.item(i)
+           #    debug( my_current_attribute )
+           #    debug( "current_attribute %i is %s" % (i, my_current_attribute ) )
 	   #   setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
-	   # sodi_root.removeElement('inkscape:window-y')
-           # sodi_root.setElement('window-y','')
-           # del sodi_root.inkscape:window-y
-           # del ink_root.window-y.attribs
 
-           attribs = {  inkex.addNS('sodipodi-insensitive')        : 'false', 
-                        'bordercolor'                              : "#666666",
-                        'borderopacity'                            : "0.5",
-                        'id'                                       : 'sodipodi_namedview',
-                        inkex.addNS('current-layer','inkscape')    : 'layer1',
-                        inkex.addNS('cy','inkscape')               : "9.3025513",
-                        inkex.addNS('cx','inkscape')               : "9",
-                        inkex.addNS('document-units','inkscape')   : "cm",
-                        inkex.addNS('pageopacity','inkscape')      : "0.0",
-                        inkex.addNS('pageshadow','inkscape')       : "1",
-                        inkex.addNS('window-height','inkscape')    : "800",
-                        inkex.addNS('window-maximized','inkscape') : "1", 
-                        inkex.addNS('window-width','inkscape')     : "1226",
-                        inkex.addNS('window-y','inkscape')         : "26",
-                        inkex.addNS('window-x','inkscape')         : "42",
-                        inkex.addNS('zoom','inkscape')             : "16",
-                        'pagecolor'                                : "#fffaaa",
-                        'showgrid'                                 : 'false'
-                     }
-           inkex.etree.SubElement( svg_root, inkex.addNS( 'namedview', 'sodipodi'), attribs)
-
-           #svg = doc.getroot()
-           #group = inkex.etree.Element(inkex.addNS('g','svg'))
-           #in-width = inkex.unittouu(svg.get('width'))
-           #in-height = inkex.unittouu(svg.get('height'))
-           #in-view = map(inkex.unittouu, svg.get('viewBox').split())
-           #group.set('transform',"translate(%f,%f) scale(%f,%f)" % (-in-view[0], -in-view[1], scale*in-width/(in-view[2]-in-view[0]), scale*in-height/(in-view[3]-in-view[1])))
-
-    def svg_svg(self, width, height, border ):
-
-           svg_root  = self.document.xpath('//svg:svg', namespaces = inkex.NSS)[0]   
-           svg_root.set( "width",  '100%' )
-           svg_root.set( "height", '100%' )
-           svg_root.set( "x", '0%' )
-           svg_root.set( "y", '0%' )
-           svg_root.set( "currentScale", "0.05 : 1") 
-           svg_root.set( "fitBoxtoViewport", "True") 
-           svg_root.set( "preserveAspectRatio", "xMidYMid meet")
-           svg_root.set( "zoomAndPan", "magnify" )
-           svg_root.set( "viewBox", '0 0 '+str(width) +' '+ str(height) )
-
-           # define 3-inch document borders   --> works 
-           border = str(  3 * in_to_pt )
-           svg_root.set( "margin-bottom", border ) 
-           svg_root.set( "margin-left",   border ) 
-           svg_root.set( "margin-right",  border ) 
-           svg_root.set( "margin-top",    border ) 
-
-           # add pattern name & number                --> works     
-           svg_root.set( "pattern-name", pattern_name )
-           svg_root.set( "pattern-number", pattern_number ) 
-
-           # set document center --> self.view_center
-           xattr = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS )  
-           yattr = self.document.xpath('//@inkscape:cy', namespaces=inkex.NSS )
-           if xattr[0] and yattr[0]:
-               #self.view_center = (float(xattr[0]),float(yattr[0]))    # set document center
-               self.view_center = ( ( float(width) / 2 ),( float(height) / 2 ) )    # set document center
-           #self.Debug(self.view_center)
-           #self.Debug(xattr)
-           #self.Debug(yattr)
-  
-           #x = self.document.xpath('//@viewPort', namespaces=inkex.NSS)
-           #viewbox='0 0 '+widthstr+' '+heightstr
-           #root.set("viewBox", viewbox)      # 5 sets view/zoom to page width
-           #root.set("width","auto")  #doesn't work
-           #x = self.document.location.reload()
-           #root.set("width", "90in" % document_width)
-           #root.set("height", "%sin" % document_height)
-           #x.set("width",widthstr(border*2 + self.options.back_shoulder_width   
-
+    ###################################################
     def NewLayer( self, parent, object_type, name ):
            self.layer = inkex.etree.SubElement( parent, 'g' )
            self.layer.set( inkex.addNS( 'label',     'inkscape'), name + '_Label' )
@@ -331,6 +393,7 @@ class DrawJacket( inkex.Effect ):
            self.layer.set( 'id', name + '_'+object_type+'_Id'  )
            return self.layer
 
+    ###################################################
     def Path( self, parent, pathdefinition, pathtype, name, trans ):
 
            if ( pathtype == 'reference' )    :
@@ -407,7 +470,15 @@ class DrawJacket( inkex.Effect ):
                           'd'         : pathdefinition, 
                           'style'     : simplestyle.formatStyle( style ) }
            inkex.etree.SubElement( parent, inkex.addNS('path','svg'), pathattribs )
-           
+
+    ###################################################
+    def PointFromDistanceAndAngle(self, x1, y1, distance, angle):
+        # http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
+        x2 = x1 + (distance * math.cos(angle))
+        y2 = y1 - (distance * math.sin(angle))
+        return (x2, y2)
+
+    ###################################################           
     def PointOnLine(self,x,y,px,py,length):
            # x,y is point to measure from to find XY
            # if mylength>0, XY will be extended from xy away from pxpy
@@ -451,12 +522,7 @@ class DrawJacket( inkex.Effect ):
                        y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula             
            return x1,y1
 
-    def LineLength(self,ax,ay,bx,by):
-           #a^2 + b^2 = c^2
-           c_sq= ((ax-bx)**2) + ((ay-by)**2)
-           c=self.Sqrt(c_sq)
-           return c
-
+    ###################################################
     def PointwithSlope( self, x, y, px, py, length, slopetype ) :
            # x,y the point to measure from, px&py are points on the line, length will be appended to x,y at slope of (x,y)(px,py)
            # length should be positive to extend line away from x, y, or negative to find a point on the line between x,y and  px,py
@@ -514,6 +580,7 @@ class DrawJacket( inkex.Effect ):
                   x1=x-r   
            return x1,y1
 
+    ###################################################
     def Slope(self,x1,y1,x2,y2,slopetype):
            # slopetype can only be {'normal','inverse','perpendicular'}
            if ((slopetype=='normal') or (slopetype=='inverse')):
@@ -534,98 +601,100 @@ class DrawJacket( inkex.Effect ):
                    slope=-((x2-x1)/(y2-y1))      
            return slope
 
-    def AngleFromSlope(self, rise, run):
-        # works with both positive and negative values of rise and run
-        # returns angle in radians
-        return math.atan2(rise, run)
+    ###################################################
+    def sodipodi_namedview(self):
+           svg_root   = self.document.xpath('//svg:svg', namespaces = inkex.NSS)[0]
+           #sodi_root = self.document.xpath('//sodipodi:namedview', namespaces = inkex.NSS)[0]
+           #ink_root  = self.document.xpath('//sodipodi:namedview/inkscape',  namespaces = inkex.NSS)
+ 
+           #root_obj = lxml.objectify.Element('root')
+           #sodi_obj = lxml.objectify.Element('namedview')
+           #attrList = namedview.Attributes()
+	   #for i in range(attrList.length):
+	   #   attr = attrList.item(i)
+	   #   setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
+	   # sodi_root.removeElement('inkscape:window-y')
+           # sodi_root.setElement('window-y','')
+           # del sodi_root.inkscape:window-y
+           # del ink_root.window-y.attribs
 
-    def PointFromDistanceAndAngle(self, x1, y1, distance, angle):
-        # http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
-        x2 = x1 + (distance * math.cos(angle))
-        y2 = y1 - (distance * math.sin(angle))
-        return (x2, y2)
+           attribs = {  inkex.addNS('sodipodi-insensitive')        : 'false', 
+                        'bordercolor'                              : "#666666",
+                        'borderopacity'                            : "0.5",
+                        'id'                                       : 'sodipodi_namedview',
+                        inkex.addNS('current-layer','inkscape')    : 'layer1',
+                        inkex.addNS('cy','inkscape')               : "9.3025513",
+                        inkex.addNS('cx','inkscape')               : "9",
+                        inkex.addNS('document-units','inkscape')   : "cm",
+                        inkex.addNS('pageopacity','inkscape')      : "0.0",
+                        inkex.addNS('pageshadow','inkscape')       : "1",
+                        inkex.addNS('window-height','inkscape')    : "800",
+                        inkex.addNS('window-maximized','inkscape') : "1", 
+                        inkex.addNS('window-width','inkscape')     : "1226",
+                        inkex.addNS('window-y','inkscape')         : "26",
+                        inkex.addNS('window-x','inkscape')         : "42",
+                        inkex.addNS('zoom','inkscape')             : "16",
+                        'pagecolor'                                : "#fffaaa",
+                        'showgrid'                                 : 'false'
+                     }
+           inkex.etree.SubElement( svg_root, inkex.addNS( 'namedview', 'sodipodi'), attribs)
 
-    def IntersectLineLine( self, x11, y11, x12, y12, x21, y21, x22, y22 ) :
-           # y = mx + b  --> looking for point x,y where midpoint*x+b1=top_left*x+b2
-           # b = y - mx
-           # !!!!!!!!!!!!Test later for parallel lines  and vertical lines !!!!!!!!!
-           # Calulations for line 1:
-           m1 = self.Slope( x11, y11, x12, y12, 'normal' )
-           if (m1 == 'undefined' ) :
-               x = x11
-           b1 = ( y11 - ( m1 * x11 ) )
-           # Calculations for line 2:
-           m2 = self.Slope( x21, y21, x22, y22, 'normal' )
-           if (m2 == 'undefined' ) :
-               x = x21
-           b2 = ( y21 - ( m2 * x21 ) )
-           # get x that satisfies both m1*x1 + b1 = m2*x2 + b2
-           # m1*x + b1        = m2*x + b2
-           # m1*x - m2*x      = ( b2 - b1 )
-           # ( m1 - m2 )*x    = ( b2 - b1 )
-           x = ( ( b2 - b1 ) / ( m1 - m2 ) )
-           # get y --> y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
-           y = ( ( m1 * x ) + b1 )
-           return x, y 
-            
-    def LineLength( self, ax, ay, bx, by ):
-           #a^2 + b^2 = c^2
-           c_sq = ( ( ax - bx )**2 ) + ( ( ay - by )**2 )
-           c = self.Sqrt( c_sq )
-           return c
+           #svg = doc.getroot()
+           #group = inkex.etree.Element(inkex.addNS('g','svg'))
+           #in-width = inkex.unittouu(svg.get('width'))
+           #in-height = inkex.unittouu(svg.get('height'))
+           #in-view = map(inkex.unittouu, svg.get('viewBox').split())
+           #group.set('transform',"translate(%f,%f) scale(%f,%f)" % (-in-view[0], -in-view[1], scale*in-width/(in-view[2]-in-view[0]), scale*in-height/(in-view[3]-in-view[1])))
 
-    def Sqrt( self, xsq ):
+    ###################################################
+    def Sqrt( self, xsq ) :
            x = abs( ( xsq )**( .5 ) )
            return x
-               
-    def Arrow( self, layer, x1, y1, x2, y2, name, trans ):
-           arrow_height=30
-           arrow_width=10
-           rise=abs(y2-y1)
-           run=abs(x2-x1)
-           line_angle=self.AngleFromSlope(rise, run)
-           if (y2>y1):
-               angle=line_angle
-               arrow_number = '1'
-           else:
-               angle=(line_angle - math.pi)
-               arrow_number = '2'
-           perpendicular_angle=(-self.AngleFromSlope(run, rise))
-           hx,hy = self.PointFromDistanceAndAngle(x1, y1, arrow_height, angle)
-           w1x,w1y = self.PointFromDistanceAndAngle(x1, y1, arrow_width, perpendicular_angle)
-           w2x,w2y = self.PointFromDistanceAndAngle(x1, y1,-arrow_width, perpendicular_angle)
-           style = { 'fill':'green',
-                     'stroke':'green',
-                     'stroke-width':'8',
-                     'stroke-linejoin':'miter',
-                     'stroke-miterlimit':'4'} 
-           my_path='M '+str(x1)+' '+str(y1)+' '+str(w1x)+' '+str(w1y)+' L '+str(hx)+' '+str(hy)+' L '+str(w2x)+' '+str(w2y)+' z'
-           pathattribs = { inkex.addNS('label','inkscape') : 'Arrow',
-                                                      'id' : 'arrow_' + name +'_'+ str(arrow_number),
-                                               'transform' : trans,
-                                                        'd': my_path, 
-                                                    'style': simplestyle.formatStyle(style) }
-           inkex.etree.SubElement( layer, inkex.addNS('path','svg'), pathattribs)
 
-    def Grainline( self, parent, x1, y1, x2, y2, name, trans ):
-           grain_path = 'M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
-           self.Path( parent, grain_path, 'grainline', name, trans )
-           self.Arrow( parent, x1, y1, x2, y2, name, trans )
-           self.Arrow( parent, x2, y2, x1, y1, name, trans )
+    ###################################################
+    def svg_svg( self, width, height, border ) :
+           svg_root  = self.document.xpath('//svg:svg', namespaces = inkex.NSS)[0]   
+           svg_root.set( "width",  '100%' )
+           svg_root.set( "height", '100%' )
+           svg_root.set( "x", '0%' )
+           svg_root.set( "y", '0%' )
+           svg_root.set( "currentScale", "0.05 : 1") 
+           svg_root.set( "fitBoxtoViewport", "True") 
+           svg_root.set( "preserveAspectRatio", "xMidYMid meet")
+           svg_root.set( "zoomAndPan", "magnify" )
+           svg_root.set( "viewBox", '0 0 '+str(width) +' '+ str(height) )
 
-    def Buttons( self, parent, bx, by, button_number, button_distance, button_size ):
-           # can only do vertical button lines at this time...button line doesn't need extension past last button, so use ( button_number -1 )
-           buttonline ='M ' + str(bx) +' '+ str(by) +' L '+ str(bx) +' '+ str( by + ( (button_number - 1) *button_distance) )  
-           self.Path( parent, buttonline, 'foldline', 'Button Line', no_transform)
-           i = 1
-           y = by
-           while i<=button_number :
-              self.Circle( parent, bx, y, (button_size / 2), 'green', 'Button_'+ str(i))
-              buttonhole_path = 'M '+ str(bx) +' '+ str(y) +' L '+ str(bx-button_size) +' '+ str(y)
-              self.Path( parent, buttonhole_path, 'buttonhole', 'Button Hole '+ str(i), no_transform )
-              i = i + 1
-              y = y + button_distance
+           # define 3-inch document borders   --> works 
+           border = str(  3 * in_to_pt )
+           svg_root.set( "margin-bottom", border ) 
+           svg_root.set( "margin-left",   border ) 
+           svg_root.set( "margin-right",  border ) 
+           svg_root.set( "margin-top",    border ) 
 
+           # add pattern name & number                --> works     
+           svg_root.set( "pattern-name", pattern_name )
+           svg_root.set( "pattern-number", pattern_number ) 
+
+           # set document center --> self.view_center
+           xattr = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS )  
+           yattr = self.document.xpath('//@inkscape:cy', namespaces=inkex.NSS )
+           if xattr[0] and yattr[0]:
+               #self.view_center = (float(xattr[0]),float(yattr[0]))    # set document center
+               self.view_center = ( ( float(width) / 2 ),( float(height) / 2 ) )    # set document center
+           #self.Debug(self.view_center)
+           #self.Debug(xattr)
+           #self.Debug(yattr)
+  
+           #x = self.document.xpath('//@viewPort', namespaces=inkex.NSS)
+           #viewbox='0 0 '+widthstr+' '+heightstr
+           #root.set("viewBox", viewbox)      # 5 sets view/zoom to page width
+           #root.set("width","auto")  #doesn't work
+           #x = self.document.location.reload()
+           #root.set("width", "90in" % document_width)
+           #root.set("height", "%sin" % document_height)
+           #x.set("width",widthstr(border*2 + self.options.back_shoulder_width   
+
+    ###################################################
     def Text( self, parent, x, y, font_size, label, string, trans ):
 
            text_align         = 'right'
@@ -651,57 +720,16 @@ class DrawJacket( inkex.Effect ):
                     }
            t         = inkex.etree.SubElement( parent, inkex.addNS( 'text', 'svg'), attribs)
            t.text    = string
+    ###################################################
+    def Visibility( self, name, value ):
+           visibility = "document.getElementById('%s').setAttribute('visibility', '%%s')" % name, value
 
-    def ListAttributes( self, my_object ) :
-           self.Debug( my_object )
 
-           # my_object_attributes_list = my_object.attrib
-           # my_object_attributes_list  = my_object.Attributes()
-           # my_object_attributes_list  = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS ) /*   ---> @ will look up an attribute
-           # this_object = self.document.xpath('//@'+my_object, namespaces=inkex.NSS ) 
-           # my_object_attributes_list  = my_object.Attributes()
-	   # for i in range( my_object.length ):
-	   #    my_current_attribute = my_object.item(i)
-           #    debug( my_current_attribute )
-           #    debug( "current_attribute %i is %s" % (i, my_current_attribute ) )
-	   #   setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
-
-    def BoundingBox( self, element_id, dx, dy ) :
-
-          x_array = []
-          y_array = []
-          x_array.append(1.2345)  # initialize with dummy float value
-          y_array.append(1.2345)  # initialize with dummy float value
-
-          my_element       = self.getElementById( element_id )       # returns 'element g at ...' --> a pointer into the document
-          my_path          = my_element.get( 'd' )                   # returns the whole path  'M ..... z'
-          path_coords_xy   = my_path.split( ' ' )                    # split path into pieces, separating at each 'space'
-    
-          for i in range( len( path_coords_xy ) ) :
-   
-              coords_xy = path_coords_xy[i].replace( ' ', '' )       # strip out remaining white spaces & put coordinate pair <x>,<y> (or command letter) into 'coords_xy'
-                                                                            
-              if ( len(coords_xy)  > 0 ) :                                                                                            # if coords_xy not empty, then process
-    
-                  if ( coords_xy not in [ 'M','m','L','l','H','h','V','v','C','c','S','s','Q','q','T','t','A','a','Z','z',' ' ] ) :   # don't process command letters
-    
-                      xy = coords_xy.split(',')                                                                                       # split apart x & y coordinates
-    
-                      for j in range( len( xy ) ) :                                                                                  
-    
-                          if ( ( j % 2 ) == 0 ) :        # j starts with 0, so if mod(j,2)=0 then xy[j] is an x point -- in case there are more than 2 elements in xy array
-                              x_array.append( float( xy[ j ] ) )      
-                          else :                         # mod(j,2)<>0, so xy[j] is a y point
-                              y_array.append( float( xy[ j ] ) ) 
-
-          x_array.remove(1.2345) 
-          y_array.remove(1.2345)
-
-          return min(x_array) + dx, min(y_array) + dy, max(x_array) + dx, max(y_array) + dy
-
-    ########################################################################################### 
-
+    #!###############################################!#
     def effect(self):
+
+           # main module called in body of short program at bottom of this file
+           # this module calls modules listed above to get the work done
 
            ######################
            ### Get Parameters ### 
@@ -711,30 +739,93 @@ class DrawJacket( inkex.Effect ):
            else:
                conversion = in_to_pt
 
-           height                     = self.options.height * conversion        #Pattern was written for height=5'9 or 176cm, 38" chest or 96cm
-           chest                      = self.options.chest * conversion
-           chest_length               = self.options.chest_length * conversion
-           waist                      = self.options.waist * conversion
-           back_waist_length          = self.options.back_waist_length * conversion                
-           back_jacket_length         = self.options.back_jacket_length * conversion               
-           back_shoulder_width        = self.options.back_shoulder_width * conversion              
-           back_shoulder_length       = self.options.back_shoulder_length * conversion             
-           back_underarm_width        = self.options.back_underarm_width * conversion
-           back_underarm_length       = self.options.back_underarm_length * conversion             
-           back_waist_to_hip_length   = self.options.back_waist_to_hip_length * conversion         
-           back_nape_to_vneck         = self.options.nape_to_vneck * conversion
-           sleeve_length              = self.options.sleeve_length * conversion
+           height                     = self.options.height                     * conversion        #Pattern was written for height=5'9 or 176cm, 38" chest or 96cm
+           chest                      = self.options.chest                      * conversion
+           chest_length               = self.options.chest_length               * conversion
+           waist                      = self.options.waist                      * conversion
+           back_waist_length          = self.options.back_waist_length          * conversion                
+           back_jacket_length         = self.options.back_jacket_length         * conversion               
+           back_shoulder_width        = self.options.back_shoulder_width        * conversion              
+           back_shoulder_length       = self.options.back_shoulder_length       * conversion             
+           back_underarm_width        = self.options.back_underarm_width        * conversion
+           back_underarm_length       = self.options.back_underarm_length       * conversion             
+           back_waist_to_hip_length   = self.options.back_waist_to_hip_length   * conversion         
+           back_nape_to_vneck         = self.options.nape_to_vneck              * conversion
+           sleeve_length              = self.options.sleeve_length              * conversion
 
            neck_width           = chest/16 + (2*cm_to_pt)     # replace chest/16 with new parameter back_neck_width, front_neck_width, neck_circumference
            back_shoulder_height = 2*cm_to_pt                  # replace 2*cm_to_pt with new parameter back_shoulder_height
            bp_width             = (back_shoulder_width * 0.5)   # back pattern width is relative to back_shoulder_width/2  (plus 1cm)
+
+           #####
+           # Back Horizontal
+           back_neck_width		= 3.125
+           back_shoulder_width		= 10
+           back_balance_width		= 9.5
+           back_underarm_width		= 11.5
+           back_chest_width		= 11.5
+           back_waist_width		= 10.5
+           back_pelvic_width		= 10.5
+           back_hip_width		= 12.5
+           back_jacket_width            = 0	
+           back_thigh_width             = 0	
+           back_knee_width	        = 0
+           back_small_width	        = 0
+           back_calf_width	        = 0
+           # Back Vertical
+           back_neck_length		= 1
+           back_shoulder_length		= 3.5
+           back_balance_length		= 8.5
+           back_underarm_length		= 11.5
+           back_chest_length		= 11.5
+           back_waist_length		= 18.75
+           back_pelvic_length		= 5.75
+           back_hip_length		= 8
+           back_jacket_length		= 0
+           back_knee_length		= 27
+           back_calf_length		= 0
+           back_ground_length		= 0
+           outside_leg_length		= 0
+           inside_leg_length		= 0
+           sleeve_length		= 26
+           # Front Horizontal
+           front_neck_width		= 2.75
+           front_shoulder_width		= 9
+           front_pectoral_width		= 8.25
+           front_underarm_width		= 10
+           front_chest_width		= 10
+           front_waist_width		= 11
+           front_pelvic_width		= 9.5
+           front_hip_width		= 10
+           front_jacket_width		= 0
+           front_thigh_width		= 0
+           front_knee_width		= 0
+           front_small_width		= 0
+           front_calf_width		= 0
+           # Front Vertical
+           front_neck_length		= 4.75
+           front_shoulder_length	= 2
+           front_pectoral_length	= 4.5
+           front_underarm_length	= 7
+           front_chest_length		= 7
+           front_waist_length		= 15
+           front_pelvic_length		= 7.5
+           front_hip_length		= 9.5
+           front_jacket_length		= 0
+           front_knee_length		= 0
+           front_calf_length		= 27.5
+           front_ground_length		= 0
+           # Diagonal
+           nape_to_vneck                = 14.75
+           shoulder_top_width           = 7.5
+           front_scoop_to_shoulder_end  = 
+
   
            #########################################
            ### Create reference & pattern layers ###
            #########################################
            reference_layer = self.NewLayer( self.document.getroot(), 'layer', 'Reference' )        # reference_layer = reference information 
            pattern_layer   = self.NewLayer( self.document.getroot(), 'layer', 'Steampunk_Jacket') # pattern_layer = pattern lines & marks
-
 
            #################################
            ### Signature & Pattern Start ###
