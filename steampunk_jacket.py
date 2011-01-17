@@ -803,10 +803,8 @@ class DrawJacket(inkex.Effect):
            tsc15x,tsc15y,tsc15=self.GetDot(my_layer,SD3x+abs(SD3x-SE2x)*(.5),SD3y+abs(SD3y-SE2y)*(.8),'tsc15')
            Sleeve_Side_2=' C '+tsc12+' '+tsc13+' '+SD3+' C '+tsc14+' '+tsc15+' '+SE2+' L '+SF5
            # Draw Cuff Placement reference lines
-           my_path='M '+SE1+' L '+SE2
-           Cuff1=my_path
-           my_path='M '+SE3+' L '+SE4
-           Cuff2=my_path
+           Cuff1='M '+SE1+' L '+SE2
+           Cuff2='M '+SE3+' L '+SE4
            # Grainline
            Grainline1='M '+SC2+' L '+str(SC2x)+','+str(SD1y+8*in_to_px)
            # Draw Top Sleeve Pattern
@@ -843,6 +841,9 @@ class DrawJacket(inkex.Effect):
            Under_Sleeve_Pattern=Sleeve_Side_3+' '+Underarm+' '+Sleeve_Side_4+' z '+Grainline2
            self.Path(my_layer,Under_Sleeve_Pattern,'pattern','Under Sleeve Pattern','')
            self.Path(my_layer,Cuff2,'foldline','Cuff Placement line 2','')
+
+           #Cuff Pattern
+           #translate from upper & lower sleeves, add some ease at top line
 
 my_effect = DrawJacket()
 my_effect.affect()
