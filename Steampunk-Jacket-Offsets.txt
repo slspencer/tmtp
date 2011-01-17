@@ -1,0 +1,52 @@
+Offsets
+         
+           front_waist_start_offset = 7.5*cm_to_px
+           front_hip_start_offset   = 4.5*cm_to_px
+           front_hem_start_offset   = 3*cm_to_px
+
+           chest_scale = (chest*0.5)   #scale (width) of half the pattern is chest/2, 
+           front_chest_start_offset = 7.5*cm_to_px
+           front_chest_width_offset = ( chest_scale / 4 ) + (2*cm_to_px)          # one_fourth chest_scale + 2cm
+           front_chest_center_offset = ( chest_scale / 2 ) - (3.5*cm_to_px)       # half chest_scale - 3.5cm
+           front_chest_underarm_offset = (5.5*cm_to_px)
+           front_pattern_end_offset = (2*cm_to_px)
+           front_button_offset = (2*cm_to_px)   # same as front_pattern_end_offset
+ 
+           back_shoulder_ease = (1*cm_to_px)
+           front_shoulder_adjustment = ( 1*cm_to_px )
+           front_shoulder_middle_offset = ( 1.3*cm_to_px )
+           front_shoulder_length = ( self.LineLength( back_shoulder_endx, back_shoulder_endy, back_shoulder_topx, back_shoulder_topy ) - front_shoulder_adjustment  )
+           front_shoulder_top_offset = ( chest_scale / 8 ) + front_shoulder_adjustment    # one-eigth scale + 1cm
+
+           front_armhole_point_offset = 8.5*cm_to_px  
+           front_armhole_depth_1 = ( 4*cm_to_px )
+           front_armhole_depth_2 = ( 2*cm_to_px )
+           front_armhole_depth_3 = ( 5*cm_to_px )
+           front_armhole_depth_4 = ( 2*cm_to_px )
+           front_armhole_curve_3x_offset = ( 0.5*cm_to_px )
+           front_armhole_curve_3y_offset = ( 3.5*cm_to_px )
+
+
+           front_hem_offset = ( 6.5*cm_to_px )
+           front_hem_curve_reference_offset = ( 2.5*cm_to_px )
+
+           side_dart_width_1 = ( 1*cm_to_px )
+           side_dart_width_2 = ( 1*cm_to_px )
+           side_dart_widest_point_offset = ( 2*cm_to_px )
+
+           lapel_height = ( 16.5*cm_to_px )
+           neck_height  = ( 6.5*cm_to_px )
+           neck_curve_offset = ( 2.5*cm_to_px )
+
+           lapel_dart_width = ( 1.3*cm_to_px )
+           lapel_dart_height = ( 9*cm_to_px )
+
+           upper_pocket_width_offset = (3.7*cm_to_px )
+           upper_pocket_width  = (10*cm_to_px )
+           upper_pocket_height = (2*cm_to_px)
+           upper_pocket_height_offset = (3*cm_to_px )
+
+           lower_pocket_width = ( 15*cm_to_px )
+           lower_pocket_height = ( 5.5*cm_to_px )     
+           lower_pocket_flap_height = (1.3*cm_to_px )      
+
