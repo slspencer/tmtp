@@ -635,7 +635,7 @@ class DrawJacket( inkex.Effect ):
            #    debug( "current_attribute %i is %s" % (i, my_current_attribute ) )
 	   #   setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
 
-    def BoundingBox( self, element_id ) :
+    def BoundingBox( self, element_id, dx, dy ) :
 
           x_array = []
           y_array = []
@@ -666,7 +666,7 @@ class DrawJacket( inkex.Effect ):
           x_array.remove(1.2345) 
           y_array.remove(1.2345)
 
-          return min(x_array), min(y_array), max(x_array), max(y_array)
+          return min(x_array) + dx, min(y_array) + dy, max(x_array) + dx, max(y_array) + dy
 
     ########################################################################################### 
 
@@ -855,12 +855,12 @@ class DrawJacket( inkex.Effect ):
            my_layer          = self.NewLayer( pattern_layer, 'layer', 'Jacket_Back')
            Jacket_Back_Layer = my_layer
            # pattern
+           dx, dy = 0 , 0
            back_trans        = ''
-           trans             = back_trans
-           self.Path( my_layer, Back_Hem,     'hemline',     'Jacket_Back_Hemline',                   trans )
-           self.Path( my_layer, Back_Pattern, 'seamline',    'Jacket_Back_Seamline',                  trans )
-           self.Path( my_layer, Back_Pattern, 'cuttingline', 'Jacket_Back_Cuttingline',               trans )
-           self.Grainline( my_layer, back_g1x, back_g1y, back_g2x, back_g2y, 'Jacket_Back_Grainline', trans )
+           self.Path( my_layer, Back_Hem,     'hemline',     'Jacket_Back_Hemline',                   back_trans )
+           self.Path( my_layer, Back_Pattern, 'seamline',    'Jacket_Back_Seamline',                  back_trans )
+           self.Path( my_layer, Back_Pattern, 'cuttingline', 'Jacket_Back_Cuttingline',               back_trans )
+           self.Grainline( my_layer, back_g1x, back_g1y, back_g2x, back_g2y, 'Jacket_Back_Grainline', back_trans )
            # text
            x               = back_shoulder_highx - 3*cm_to_pt
            y               = shoulder_starty
@@ -873,14 +873,17 @@ class DrawJacket( inkex.Effect ):
            self.Text( my_layer, x, ( y + 3*font_size + 5 ), font_size, 'Pattern_name',  'Jacket_Back - A',  text_trans )
            self.Text( my_layer, x, ( y + 4*font_size + 5 ), font_size, 'Cut_fabric',    'Cut 2',            text_trans )
            # document calculations
-           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Jacket_Back_Cuttingline' )
+           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Jacket_Back_Cuttingline', dx, dy )
            lowest_x  = min( lowest_x, current_lowest_x )
            lowest_y  = min( lowest_y, current_lowest_y )
            highest_x = max( highest_x, current_highest_x )
            highest_y = max( highest_y, current_highest_y )
+           self.Debug ( 'path_Jacket_Back_Cuttingline')
+           self.Debug ( str(current_lowest_x) +', '+ str(current_lowest_y) + ' '+ str( current_highest_x)+', '+ str( current_highest_y) )
+           self.Debug ( str(lowest_x) +', '+ str(lowest_y) + ' '+ str(highest_x)+', '+ str(highest_y) )
            # next pattern piece calculations
            pattern_piece_number = pattern_piece_number + 1
-           pattern_startx, pattern_starty, pattern_start = self.Dot( reference_layer, current_highest_x + pattern_offset, lowest_y, 'pattern_start_' + str( pattern_piece_number ) ) 
+           pattern_startx, pattern_starty, pattern_start = self.Dot( reference_layer, current_highest_x + pattern_offset, pattern_starty, 'pattern_start_' + str( pattern_piece_number ) ) 
 
            ####################
            ### Front Jacket ###
@@ -1137,15 +1140,15 @@ class DrawJacket( inkex.Effect ):
            my_layer           = self.NewLayer( pattern_layer, 'layer', 'Jacket_Front' )
            Jacket_Front_Layer = my_layer
            # pattern
+           dx, dy = 0, 0
            front_trans = ''
-           trans       = front_trans
-           self.Path( my_layer, Front_Side_Dart_Foldline,'foldline',    'Jacket_Front_Side_Dart_Foldline', trans )
-           self.Path( my_layer, Front_Side_Dart,         'dart',        'Jacket_Front_Side_Dart',          trans )
-           self.Path( my_layer, Lapel_Dart,              'dart',        'Jacket_Front_Lapel_Dart',         trans )
-           self.Path( my_layer, Front_Hem_Line,          'hemline',     'Jacket_Front_Hemline',            trans )
-           self.Path( my_layer, Front_Pattern,           'seamline',    'Jacket_Front_Seamline',           trans )
-           self.Path( my_layer, Front_Pattern,           'cuttingline', 'Jacket_Front_Cuttingline',        trans )
-           self.Grainline( my_layer, front_g1x, front_g1y, front_g2x, front_g2y, 'Jacket_Front_Grainline', trans )
+           self.Path( my_layer, Front_Side_Dart_Foldline,'foldline',    'Jacket_Front_Side_Dart_Foldline', front_trans )
+           self.Path( my_layer, Front_Side_Dart,         'dart',        'Jacket_Front_Side_Dart',          front_trans )
+           self.Path( my_layer, Lapel_Dart,              'dart',        'Jacket_Front_Lapel_Dart',         front_trans )
+           self.Path( my_layer, Front_Hem_Line,          'hemline',     'Jacket_Front_Hemline',            front_trans )
+           self.Path( my_layer, Front_Pattern,           'seamline',    'Jacket_Front_Seamline',           front_trans )
+           self.Path( my_layer, Front_Pattern,           'cuttingline', 'Jacket_Front_Cuttingline',        front_trans )
+           self.Grainline( my_layer, front_g1x, front_g1y, front_g2x, front_g2y, 'Jacket_Front_Grainline', front_trans )
            self.Buttons(   my_layer, Button_x, Button_y, Button_number, Button_distance, Button_size )
            # text
            x = front_shoulder_highx - 2.5*cm_to_pt
@@ -1153,27 +1156,31 @@ class DrawJacket( inkex.Effect ):
            font_size = 40
            front_text_trans = ''
            text_trans = front_text_trans
-           self.Text( my_layer, x,   y,                     font_size, 'Company',        company_name,       text_trans )
-           self.Text( my_layer, x, ( y + 1*font_size + 5 ), font_size, 'Pattern_number', pattern_number,    text_trans )
-           self.Text( my_layer, x, ( y + 2*font_size + 5 ), font_size, 'Client',         client_name,       text_trans )
-           self.Text( my_layer, x, ( y + 3*font_size + 5 ), font_size, 'Pattern_name',  'Jacket_Front-B', text_trans )
-           self.Text( my_layer, x, ( y + 4*font_size + 5 ), font_size, 'Cut_fabric',    'Cut_2',            text_trans )
+           self.Text( my_layer, x,   y,                     font_size, 'Company',        company_name,     text_trans )
+           self.Text( my_layer, x, ( y + 1*font_size + 5 ), font_size, 'Pattern_number', pattern_number,   text_trans )
+           self.Text( my_layer, x, ( y + 2*font_size + 5 ), font_size, 'Client',         client_name,      text_trans )
+           self.Text( my_layer, x, ( y + 3*font_size + 5 ), font_size, 'Pattern_name',  'Jacket_Front-B',  text_trans )
+           self.Text( my_layer, x, ( y + 4*font_size + 5 ), font_size, 'Cut_fabric',    'Cut_2',           text_trans )
            # document calculations
-           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Jacket_Front_Cuttingline' )
+           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Jacket_Front_Cuttingline', dx, dy )
            lowest_x  = min( lowest_x,  current_lowest_x  )
            lowest_y  = min( lowest_y,  current_lowest_y  )
            highest_x = max( highest_x, current_highest_x )
            highest_y = max( highest_y, current_highest_y )
+           self.Debug ( 'path_Jacket_Front_Cuttingline')
+           self.Debug ( str(current_lowest_x) +', '+ str(current_lowest_y) + ' '+ str( current_highest_x)+', '+ str( current_highest_y) )
+           self.Debug ( str(lowest_x) +', '+ str(lowest_y) + ' '+ str(highest_x)+', '+ str(highest_y) )
+
            # next pattern piece calculations
            pattern_piece_number = ( pattern_piece_number + 1 )
            if ( current_highest_x + pattern_offset ) > ( paper_width ) :
                # then go to next row...
                x = lowest_x
-               y = current_highest_y + pattern_offset
+               y = highest_y + pattern_offset
            else :
                # stay on this row...
                x = current_highest_x + pattern_offset
-               y = current_lowest_y          
+               y = pattern_starty         
            pattern_startx,  pattern_starty, pattern_start = self.Dot( reference_layer, x, y, 'pattern_start_' + str( pattern_piece_number ) )
 
            ####################
@@ -1215,14 +1222,14 @@ class DrawJacket( inkex.Effect ):
            ################################# 
            my_layer           = self.NewLayer( pattern_layer, 'layer', 'Upper_Pocket')
            Upper_Pocket_Layer = my_layer
+
            # pattern
            dx, dy        = -abs( pattern_startx - upocket_startx ), abs( pattern_starty - upocket_starty )
            upocket_trans = 'translate(' + str(dx) +', '+ str(dy) + ' ) rotate( -15, '+ str( upocket_startx ) + ', '+ str( upocket_starty ) + ' )'
-           trans         = upocket_trans
-           self.Path( Jacket_Front_Layer, UP_Placement, 'placement', 'Upper_Pocket_Placement', '' )   # draw placement lines on the jacket front pattern piece - no transform by definition
-           self.Path( my_layer, UP_Foldline, 'foldline',   'Upper_Pocket_Foldline',    trans )        # draw pattern separately using translate & rotate
-           self.Path( my_layer, UP_Pattern,  'seamline',   'Upper_Pocket_Seamline',    trans )
-           self.Path( my_layer, UP_Pattern,  'cuttingline','Upper_Pocket_Cuttingline', trans )
+           self.Path( Jacket_Front_Layer, UP_Placement, 'placement',  'Upper_Pocket_Placement', '' )   # draw placement lines on the jacket front pattern piece - no transform by definition
+           self.Path( my_layer,           UP_Foldline,  'foldline',   'Upper_Pocket_Foldline',    upocket_trans )  # draw pattern separately using translate & rotate
+           self.Path( my_layer,           UP_Pattern,   'seamline',   'Upper_Pocket_Seamline',    upocket_trans )
+           self.Path( my_layer,           UP_Pattern,   'cuttingline','Upper_Pocket_Cuttingline', upocket_trans )
            self.Grainline( my_layer, upocket_g1x, upocket_g1y, upocket_g2x, upocket_g2y, 'Upper_Pocket_Grainline', trans )
            # text
            x                  = upocket_flap_top_leftx  + ( abs( upocket_flap_top_leftx - upocket_flap_top_rightx ) * .4 )
@@ -1238,17 +1245,21 @@ class DrawJacket( inkex.Effect ):
            self.Text( my_layer, x, ( y + 4*text_space ), font_size, 'Cut fabric',      'Cut 1 - fabric',        text_trans )
            self.Text( my_layer, x, ( y + 5*text_space ), font_size, 'Cut interfacing', 'Cut 1 - interfacing',   text_trans )
            # document calculations
-           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Upper_Pocket_Cuttingline' )
+           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Upper_Pocket_Cuttingline', dx, dy )
            lowest_x  = min( lowest_x,  current_lowest_x  )
            lowest_y  = min( lowest_y,  current_lowest_y  )
            highest_x = max( highest_x, current_highest_x )
            highest_y = max( highest_y, current_highest_y )
+           self.Debug ( 'path_Upper_Pocket_Cuttingline')
+           self.Debug ( str(current_lowest_x) +', '+ str(current_lowest_y) + ' '+ str( current_highest_x)+', '+ str( current_highest_y) )
+           self.Debug ( str(lowest_x) +', '+ str(lowest_y) + ' '+ str(highest_x)+', '+ str(highest_y) )
+
            # next pattern piece calculations
            pattern_piece_number = ( pattern_piece_number + 1 )
            if ( current_highest_x + pattern_offset ) > ( paper_width ) :
                # then go to next row...
                x = lowest_x
-               y = current_highest_y + pattern_offset
+               y = highest_y + pattern_offset
            else :
                # stay on this row...
                x = current_highest_x + pattern_offset
@@ -1300,9 +1311,9 @@ class DrawJacket( inkex.Effect ):
            lp_trans = 'translate( ' + str(dx) +' '+ str(dy) + ' )' 
            trans    = lp_trans
            self.Path( Jacket_Front_Layer , LPocket_Placement, 'dart',       'Lower_Pocket_Placement',      '' )   # draw placement lines on jacket front pattern - no trans by definition     
-           self.Path( my_layer, LPocket_Foldline,            'foldline',    'Lower_Pocket_Foldline',    trans )   # draw pocket piece separately using transform
-           self.Path( my_layer, LPocket_Pattern,             'seamline',    'Lower_Pocket_Seamline',    trans )
-           self.Path( my_layer, LPocket_Pattern,             'cuttingline', 'Lower_Pocket_Cuttingline', trans )
+           self.Path( my_layer, LPocket_Foldline,            'foldline',    'Lower_Pocket_Foldline',    lp_trans )   # draw pocket piece separately using transform
+           self.Path( my_layer, LPocket_Pattern,             'seamline',    'Lower_Pocket_Seamline',    lp_trans )
+           self.Path( my_layer, LPocket_Pattern,             'cuttingline', 'Lower_Pocket_Cuttingline', lp_trans )
            self.Grainline( my_layer, lpocket_g1x, lpocket_g1y, lpocket_g2x, lpocket_g2y, 'Lower_Pocket_Grainline', lp_trans )
            # text
            x             =  ( lpocket_startx + ( abs( lpocket_startx - lpocket_stopx ) * (.3) ) )
@@ -1311,28 +1322,31 @@ class DrawJacket( inkex.Effect ):
            text_space    = font_size*1.2
            lp_text_trans = lp_trans
            text_trans    = lp_text_trans
-           self.Text( my_layer, x,   y,                  font_size, 'Company',         company_name,          text_trans )
-           self.Text( my_layer, x, ( y + 1*text_space ), font_size, 'Pattern number',  pattern_number,        text_trans )
-           self.Text( my_layer, x, ( y + 2*text_space ), font_size, 'Client',          client_name,           text_trans )
+           self.Text( my_layer, x,   y,                  font_size, 'Company',         company_name,        text_trans )
+           self.Text( my_layer, x, ( y + 1*text_space ), font_size, 'Pattern number',  pattern_number,      text_trans )
+           self.Text( my_layer, x, ( y + 2*text_space ), font_size, 'Client',          client_name,         text_trans )
            self.Text( my_layer, x, ( y + 3*text_space ), font_size, 'Pattern_name',    'Lower_Pocket-D',    text_trans )
            self.Text( my_layer, x, ( y + 4*text_space ), font_size, 'Cut_fabric',      'Cut_2-Fabric',      text_trans ) 
            self.Text( my_layer, x, ( y + 5*text_space ), font_size, 'Cut_interfacing', 'Cut_1-Interfacing', text_trans ) 
            # document calculations
-           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Lower_Pocket_Cuttingline' )
+           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Lower_Pocket_Cuttingline', dx, 0 )
            lowest_x  = min( lowest_x,  current_lowest_x  )
            lowest_y  = min( lowest_y,  current_lowest_y  )
            highest_x = max( highest_x, current_highest_x )
            highest_y = max( highest_y, current_highest_y )
+           self.Debug ( 'path_Lower_Pocket_Cuttingline' )
+           self.Debug ( str(current_lowest_x) +', '+ str(current_lowest_y) + ' '+ str( current_highest_x)+', '+ str( current_highest_y) )
+           self.Debug ( str(lowest_x) +', '+ str(lowest_y) + ' '+ str(highest_x)+', '+ str(highest_y) )
            # next pattern piece calculations
            pattern_piece_number = ( pattern_piece_number + 1 )
            if ( current_highest_x + pattern_offset ) > ( paper_width ) :
                # then go to next row...
                x = lowest_x
-               y = current_highest_y + pattern_offset
+               y = highest_y + pattern_offset
            else :
                # stay on this row...
                x = current_highest_x + pattern_offset
-               y = current_lowest_y          
+               y = pattern_starty          
            pattern_startx,  pattern_starty, pattern_start = self.Dot( reference_layer, x, y, 'pattern_start_' + str( pattern_piece_number ) )
 
            ##############
@@ -1368,8 +1382,7 @@ class DrawJacket( inkex.Effect ):
            c3x, c3y, c3 = self.Dot( my_layer, x, y, 'c3_????' )  
            x, y = self.PointwithSlope( collar_endx, collar_endy, collar_topx, collar_topy, -control_length, 'perpendicular' )   
            c4x, c4y, c4 = self.Dot( my_layer, x, y, 'c4_????' )
-           # collar grainline
-           
+           # collar grainline          
            collar_g1x, collar_g1y, collar_g1 = self.Dot( my_layer, collar_pointx - 400, collar_pointy-200, 'collar_g1' )
            collar_g2x, collar_g2y, collar_g2 = self.Dot( my_layer, collar_frontx - 400, collar_fronty-200, 'collar_g2' )
            # collar paths
@@ -1383,47 +1396,53 @@ class DrawJacket( inkex.Effect ):
            # layer
            my_layer     = self.NewLayer( pattern_layer, 'layer', 'Collar')
            Collar_Layer = my_layer
+           Collar_Group = self.NewLayer( pattern_layer, 'group', 'Collar' )
            # pattern
            dx, dy   = -abs( pattern_startx - collar_bottomx ), abs( pattern_starty - collar_topy ) 
            c_trans  = 'translate(' + str(dx) +', '+ str(dy) + ' ) rotate( -35, '+ str( collar_topx ) + ', '+ str( collar_topy ) + ' )'
-           trans    = c_trans
-           self.Path( my_layer, Collar_Roll, 'foldline',    'Collar Roll Line',    trans)
-           self.Path( my_layer, Collar,      'seamline',    'Collar Seamline',     trans )  
-           self.Path( my_layer, Collar,      'cuttingline', 'Collar Cutting Line', trans )
-           self.Grainline( my_layer, collar_g1x, collar_g1y, collar_g2x, collar_g2y, 'Grainline', trans )
+           self.Path( my_layer, Collar_Roll, 'foldline',    'Collar_Roll_Line',   c_trans)
+           self.Path( my_layer, Collar,      'seamline',    'Collar_Seamline',    c_trans )  
+           self.Path( my_layer, Collar,      'cuttingline', 'Collar_Cuttingline', c_trans )
+           self.Grainline( my_layer, collar_g1x, collar_g1y, collar_g2x, collar_g2y, 'Collar_Grainline', c_trans )
            # text
            x            =  collar_bottomx + ( abs( collar_bottomx - collar_pointx ) * .7 )
            y            =  collar_endy    #+ ( abs( collar_topy    - collar_fronty ) * .5 )
            c_text_trans =  'translate(' + str(dx) +', '+ str(dy) + ' )'
-           text_trans   =  c_text_trans
-           self.Text( my_layer, x,   y,              20, 'Company',         company_name,         text_trans )
-           self.Text( my_layer, x, ( y + 1*20 + 5 ), 20, 'Pattern number',  pattern_number,       text_trans )
-           self.Text( my_layer, x, ( y + 2*20 + 5 ), 20, 'Client',          client_name,          text_trans )
-           self.Text( my_layer, x, ( y + 3*20 + 5 ), 20, 'Pattern name',   'Collar - E',          text_trans )
-           self.Text( my_layer, x, ( y + 4*20 + 5 ), 20, 'Cut fabric',     'Cut 2 - fabric',      text_trans )
-           self.Text( my_layer, x, ( y + 5*20 + 5 ), 20, 'Cut interfacing','Cut 2 - interfacing', text_trans )
+           self.Text( my_layer, x,   y,              20, 'Company',         company_name,         c_text_trans )
+           self.Text( my_layer, x, ( y + 1*20 + 5 ), 20, 'Pattern number',  pattern_number,       c_text_trans )
+           self.Text( my_layer, x, ( y + 2*20 + 5 ), 20, 'Client',          client_name,          c_text_trans )
+           self.Text( my_layer, x, ( y + 3*20 + 5 ), 20, 'Pattern name',   'Collar - E',          c_text_trans )
+           self.Text( my_layer, x, ( y + 4*20 + 5 ), 20, 'Cut fabric',     'Cut 2 - fabric',      c_text_trans )
+           self.Text( my_layer, x, ( y + 5*20 + 5 ), 20, 'Cut interfacing','Cut 2 - interfacing', c_text_trans )
            # document calculations
-           lowest_x             = lowest_x
-           lowest_y             = lowest_y
-           highest_x            = highest_x
-           highest_y            = collar_fronty + dy     
+           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Collar_Cuttingline', dx, 0 )
+           lowest_x  = min( lowest_x,  current_lowest_x  )
+           lowest_y  = min( lowest_y,  current_lowest_y  )
+           highest_x = max( highest_x, current_highest_x )
+           highest_y = max( highest_y, current_highest_y )
+           self.Debug ( 'path_Collar_Cuttingline' )
+           self.Debug ( str(current_lowest_x) +', '+ str(current_lowest_y) + ' '+ str( current_highest_x)+', '+ str( current_highest_y) )
+           self.Debug ( str(lowest_x) +', '+ str(lowest_y) + ' '+ str(highest_x)+', '+ str(highest_y) )
            # next pattern piece calculations
-           current_pattern_lowest_x   = collar_bottomx + dx
-           current_pattern_lowest_y   = collar_topy    + dy
-           current_pattern_highest_x  = collar_pointx  + dx
-           current_pattern_highest_y  = collar_fronty  + dy
-           pattern_piece_number       = pattern_piece_number + 1
-           pattern_startx, pattern_starty, pattern_start = self.Dot( reference_layer, lowest_x, highest_y + pattern_offset, 'pattern_start_' + str( pattern_piece_number ) ) 
-           self.Dot( my_layer, lowest_x, highest_y, 'start upper sleeve' )
+           pattern_piece_number = ( pattern_piece_number + 1 )
+           if ( current_highest_x + pattern_offset ) > ( paper_width ) :
+               # then go to next row...
+               x = lowest_x
+               y = highest_y + pattern_offset
+           else :
+               # stay on this row...
+               x = current_highest_x + pattern_offset
+               y = pattern_starty          
+           pattern_startx,  pattern_starty, pattern_start = self.Dot( reference_layer, x, y, 'pattern_start_' + str( pattern_piece_number ) )
 
            ####################
            ### Upper Sleeve ###
            ####################
            # layer
-           my_layer = reference_layer
+           my_layer           = reference_layer
            Upper_Sleeve_Layer = my_layer
            # upper sleeve
-           up_sleeve_beginx, up_sleeve_beginy, up_sleeve_begin = self.Dot( my_layer, pattern_startx, pattern_starty, str( pattern_startx ) +' '+ str( pattern_starty ) )   
+           up_sleeve_beginx, up_sleeve_beginy, up_sleeve_begin = self.Dot( my_layer, pattern_startx, pattern_starty, 'up_sleeve_begin' )   
 
            SA1x, SA1y, SA1 = self.Dot( my_layer, up_sleeve_beginx, up_sleeve_beginy, 'SA1' )
            SB1x,SB1y,SB1=self.Dot( my_layer, SA1x,(SA1y+((chest/16)-2*cm_to_pt)),'SB1')
@@ -1560,16 +1579,16 @@ class DrawJacket( inkex.Effect ):
            #################################
            ### Draw Upper Sleeve Pattern ###
            #################################
-           my_layer          = self.NewLayer( pattern_layer, 'layer', 'Upper_Sleeve') 
+           my_layer           = self.NewLayer( pattern_layer, 'layer', 'Upper_Sleeve') 
            Upper_Sleeve_Layer = my_layer
-           UP_Sleeve_Pattern = UP_Sleeve_Side_1 +' '+ UP_Sleeve_Curve +' '+ UP_Sleeve_Side_2 +' '+ UP_Sleeve_Hem_Line + ' z'
-           up_sleeve_trans   = ''
-           trans             = up_sleeve_trans
-           self.Path( my_layer, UP_Cuff_Placement_Line, 'placement',   'Upper Sleeve Cuff Placement Line', trans )
-           self.Path( my_layer, UP_Cuff_Fold_Line,      'foldline',    'Upper Sleeve Cuff Fold Line',      trans )
-           self.Path( my_layer, UP_Sleeve_Pattern,      'seamline',    'Upper Sleeve Seamline',            trans )
-           self.Path( my_layer, UP_Sleeve_Pattern,      'cuttingline', 'Upper Sleeve Cuttingline',         trans )
-           self.Grainline( my_layer, up_sleeve_g1x, up_sleeve_g1y, up_sleeve_g2x, up_sleeve_g2y, 'Upper Sleeve Grainline', trans )
+           UP_Sleeve_Pattern  = UP_Sleeve_Side_1 +' '+ UP_Sleeve_Curve +' '+ UP_Sleeve_Side_2 +' '+ UP_Sleeve_Hem_Line + ' z'
+           dx, dy = 0, 0
+           up_sleeve_trans    = ''
+           self.Path( my_layer, UP_Cuff_Placement_Line, 'placement',   'Upper_Sleeve_Cuff_Placement', up_sleeve_trans )
+           self.Path( my_layer, UP_Cuff_Fold_Line,      'foldline',    'Upper_Sleeve_Cuff_Foldline',  up_sleeve_trans )
+           self.Path( my_layer, UP_Sleeve_Pattern,      'seamline',    'Upper_Sleeve_Seamline',       up_sleeve_trans )
+           self.Path( my_layer, UP_Sleeve_Pattern,      'cuttingline', 'Upper_Sleeve_Cuttingline',    up_sleeve_trans )
+           self.Grainline( my_layer, up_sleeve_g1x, up_sleeve_g1y, up_sleeve_g2x, up_sleeve_g2y, 'Upper_Sleeve_Grainline', up_sleeve_trans )
 
            x                    = SA3x - 5*cm_to_pt
            y                    = SC4y 
@@ -1581,6 +1600,27 @@ class DrawJacket( inkex.Effect ):
            self.Text( my_layer, x, ( y + 2*font_size + 5 ), font_size, 'Client',         client_name,       text_trans )
            self.Text( my_layer, x, ( y + 3*font_size + 5 ), font_size, 'Pattern name',  'Upper Sleeve - F', text_trans )
            self.Text( my_layer, x, ( y + 4*font_size + 5 ), font_size, 'Cut',           'Cut 2',            text_trans )
+           # document calculations
+           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Upper_Sleeve_Cuttingline', dx, dy )
+           lowest_x  = min( lowest_x,  current_lowest_x  )
+           lowest_y  = min( lowest_y,  current_lowest_y  )
+           highest_x = max( highest_x, current_highest_x )
+           highest_y = max( highest_y, current_highest_y )
+           self.Debug ( 'path_Upper_Sleeve_Cuttingline' )
+           self.Debug ( str(current_lowest_x) +', '+ str(current_lowest_y) + ' '+ str( current_highest_x)+', '+ str( current_highest_y) )
+           self.Debug ( str(lowest_x) +', '+ str(lowest_y) + ' '+ str(highest_x)+', '+ str(highest_y) )
+           # next pattern piece calculations
+           pattern_piece_number = ( pattern_piece_number + 1 )
+           if ( current_highest_x + pattern_offset ) > ( paper_width ) :
+               # then go to next row...
+               x = lowest_x
+               y = highest_y + pattern_offset
+           else :
+               # stay on this row...
+               x = current_highest_x + pattern_offset
+               y = pattern_starty          
+           pattern_startx,  pattern_starty, pattern_start = self.Dot( reference_layer, x, y, 'pattern_start_' + str( pattern_piece_number ) )
+
 
            ####################
            ### Under Sleeve ###
@@ -1629,10 +1669,13 @@ class DrawJacket( inkex.Effect ):
 
            x, y   = self.PointwithSlope( un_hem_ref2x, un_hem_ref2y, un_hem_ref1x, un_hem_ref1y, 1*cm_to_pt, 'normal' )
            un_sleeve_hem2x, un_sleeve_hem2y, un_sleeve_hem2 = self.Dot( my_layer, x, y, 'un_sleeve_hem2' )
+
            x, y   = self.PointwithSlope( un_hem_ref1x, un_hem_ref1y, un_hem_ref2x, un_hem_ref2y, 1*cm_to_pt, 'normal' )
            un_sleeve_hem1x, un_sleeve_hem1y, un_sleeve_hem1 = self.Dot( my_layer, x, y, 'un_sleeve_hem1' )
+
            x, y = self.PointwithSlope( un_sleeve_hem1x, un_sleeve_hem1y, un_sleeve_hem2x, un_sleeve_hem2y, -( self.LineLength( un_sleeve_hem1x, un_sleeve_hem1y, un_sleeve_hem2x, un_sleeve_hem2y ) * (.7) ), 'normal' )
            un_sleeve_hem1ax, un_sleeve_hem1ay, un_sleeve_hem1a = self.Dot( my_layer, x, y, 'un_sleeve_hem1a' )
+
            x, y = self.PointwithSlope( un_sleeve_hem1x, un_sleeve_hem1y, SF7x, SF7y, -( cuff_height * (.8) ), 'normal' )
            un_sleeve_hem1bx, un_sleeve_hem1by, un_sleeve_hem1b = self.Dot( my_layer, x, y, 'un_sleeve_hem1b' )
 
@@ -1647,13 +1690,14 @@ class DrawJacket( inkex.Effect ):
            my_layer           = self.NewLayer( pattern_layer, 'layer', 'Under_Sleeve')
            Under_Sleeve_Layer = my_layer
            UN_Sleeve_Pattern  = UN_Sleeve_Side_1 +' '+ UN_Underarm_Curve + ' '+ UN_Sleeve_Side_2 +' '+ UN_Sleeve_Hem_Line + ' z '
+           dx, dy = 0, 0
            un_sleeve_trans = ''
            trans = un_sleeve_trans
-           self.Path( my_layer, UN_Cuff_Placement_Line, 'placement',   'Under Sleeve Cuff Placement Line', trans )
-           self.Path( my_layer, UN_Cuff_Fold_Line,      'foldline',    'Under Sleeve Cuff Fold Line',      trans )
-           self.Path( my_layer, UN_Sleeve_Pattern,      'seamline',    'Under Sleeve Seamline',            trans )
-           self.Path( my_layer, UN_Sleeve_Pattern,      'cuttingline', 'Under Sleeve Cuttingline',         trans )
-           self.Grainline( my_layer, un_sleeve_g1x, un_sleeve_g1y, un_sleeve_g2x, un_sleeve_g2y, 'Under Sleeve Grainline', '' )
+           self.Path( my_layer, UN_Cuff_Placement_Line, 'placement',   'Under_Sleeve_Cuff_Placement', trans )
+           self.Path( my_layer, UN_Cuff_Fold_Line,      'foldline',    'Under_Sleeve_Cuff_Foldline',  trans )
+           self.Path( my_layer, UN_Sleeve_Pattern,      'seamline',    'Under_Sleeve_Seamline',       trans )
+           self.Path( my_layer, UN_Sleeve_Pattern,      'cuttingline', 'Under_Sleeve_Cuttingline',    trans )
+           self.Grainline( my_layer, un_sleeve_g1x, un_sleeve_g1y, un_sleeve_g2x, un_sleeve_g2y, 'Under_Sleeve_Grainline', '' )
 
            x                    = SC7x - 5*cm_to_pt
            y                    = SC7y + 3*cm_to_pt 
@@ -1665,7 +1709,28 @@ class DrawJacket( inkex.Effect ):
            self.Text( my_layer, x, ( y + 2*font_size + 5 ), font_size, 'Client',         client_name,       text_trans )
            self.Text( my_layer, x, ( y + 3*font_size + 5 ), font_size, 'Pattern name',  'Under Sleeve - G', text_trans )
            self.Text( my_layer, x, ( y + 4*font_size + 5 ), font_size, 'Cut',           'Cut 2',            text_trans )
-           highest_y = un_sleeve_hem1y
+           # document calculations
+           current_lowest_x, current_lowest_y, current_highest_x, current_highest_y = self.BoundingBox( 'path_Under_Sleeve_Cuttingline', dx, dy )
+           lowest_x  = min( lowest_x,  current_lowest_x  )
+           lowest_y  = min( lowest_y,  current_lowest_y  )
+           highest_x = max( highest_x, current_highest_x )
+           highest_y = max( highest_y, current_highest_y )
+           self.Debug ( 'path_Under_Sleeve_Cuttingline' )
+           self.Debug ( str(current_lowest_x) +', '+ str(current_lowest_y) + ' '+ str( current_highest_x)+', '+ str( current_highest_y) )
+           self.Debug ( str(lowest_x) +', '+ str(lowest_y) + ' '+ str(highest_x)+', '+ str(highest_y) )
+           ###next pattern piece calculations
+           ##pattern_piece_number = ( pattern_piece_number + 1 )
+           ##if ( current_highest_x + pattern_offset ) > ( paper_width ) :
+           ##    # then go to next row...
+           ##    x = lowest_x
+           ##    y = highest_y + pattern_offset
+           ##else :
+           ##    # stay on this row...
+           ##    x = current_highest_x + pattern_offset
+           ##    y = pattern_starty          
+           ##pattern_startx,  pattern_starty, pattern_start = self.Dot( reference_layer, x, y, 'pattern_start_' + str( pattern_piece_number ) )
+
+
            ###################################
            ### Resize Document, Reset View ###
            ###################################
