@@ -26,6 +26,16 @@ I6 = front_armhole_curve_2
 J3 = front_armhole_curve_3
 J4 = front_armhole_curve_3_ref_midpt
 J5 = front_armhole_curve_4
+K1 - lapel_point
+K2 = lapel_dart_1
+K3 = lapel_dart_midpoint
+K4 = lapel_dart_3
+K5 = lapel_dart_2
+K6 = neck_ref_point
+K8 = lapel_reference_point
+K9 = lapel_neck_intersect
+L1 = u_pocket_1
+M1 = lower_pocket_midpoint
 
 
 

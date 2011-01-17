@@ -47,6 +47,5 @@ Offsets
            upper_pocket_height_offset = (3*cm_to_px )
 
            lower_pocket_width = ( 15*cm_to_px )
-           lower_pocket_height = ( 5.5*cm_to_px )     
-           lower_pocket_flap_height = (1.3*cm_to_px )      
+           lower_pocket_height = ( 5.5*cm_to_px )           
 
