@@ -1,6 +1,6 @@
 <inkscape-extension>
- <_name>Matt Back Jacket</_name>
- <id>com.tusuzu.filter.Matt_backjacket</id>
+ <_name>Matt Jacket</_name>
+ <id>com.tusuzu.tmtp.Matt_jacket</id>
 
  <dependency type="executable" location="extensions">inkex.py</dependency>
  <dependency type="executable" location="extensions">simpletransform.py</dependency>
@@ -27,7 +27,7 @@
  </effect>
 
  <script>
-   <command reldir="extensions" interpreter="python">Matt_backjacket.py</command>
+   <command reldir="extensions" interpreter="python">Matt_jacket.py</command>
  </script>
 </inkscape-extension>
 
