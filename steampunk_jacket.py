@@ -57,7 +57,7 @@ border   = ( 3 * in_to_px)           # 3" document borders
 quarter_seam_allowance = in_to_px * 1 / 4    # 1/4" seam allowance
 seam_allowance         = in_to_px * 5 / 8    # 5/8" seam allowance  
 hem_allowance          = in_to_px * 2        # 2" seam allowance
-pattern_offset         = in_to_px * 4        # 3" between patterns   
+pattern_offset         = in_to_px * 4        # 4" between patterns   
 
 SVG_OPTIONS = {  'width' : "auto",
                 'height' : "auto",
@@ -71,10 +71,12 @@ SVG_OPTIONS = {  'width' : "auto",
           'pattern-name' : "Steampunk Jacket"
                 }
 
-class DrawJacket(inkex.Effect):
+class DrawJacket( inkex.Effect ):
 
     def __init__(self):
-          inkex.Effect.__init__(self,**SVG_OPTIONS)    
+
+          inkex.Effect.__init__( self, **SVG_OPTIONS ) 
+   
           # Store user measurements from steampunk_jacket.inx into object 'self'  
           OP = self.OptionParser              # use 'OP' make code easier to read
           OP.add_option('--measureunit', 
@@ -261,9 +263,9 @@ class DrawJacket(inkex.Effect):
            if xattr[0] and yattr[0]:
                #self.view_center = (float(xattr[0]),float(yattr[0]))    # set document center
                self.view_center = ( ( float(width) / 2 ),( float(height) / 2 ) )    # set document center
-           #self.Debug(self.view_center)
-           #self.Debug(xattr)
-           #self.Debug(yattr)
+           self.Debug(self.view_center)
+           self.Debug(xattr)
+           self.Debug(yattr)
   
            #x = self.document.xpath('//@viewPort', namespaces=inkex.NSS)
            #viewbox='0 0 '+widthstr+' '+heightstr
@@ -507,7 +509,7 @@ class DrawJacket(inkex.Effect):
            x = abs((xsq)**(.5))
            return x
                
-    def Arrow(self,layer,x1,y1,x2,y2):
+    def Arrow( self, layer, x1, y1, x2, y2, trans ):
            arrow_height=30
            arrow_width=10
            rise=abs(y2-y1)
@@ -527,16 +529,17 @@ class DrawJacket(inkex.Effect):
                      'stroke-linejoin':'miter',
                      'stroke-miterlimit':'4'} 
            my_path='M '+str(x1)+' '+str(y1)+' '+str(w1x)+' '+str(w1y)+' L '+str(hx)+' '+str(hy)+' L '+str(w2x)+' '+str(w2y)+' z'
-           pathattribs = { inkex.addNS('label','inkscape') : 'Arrow', 
+           pathattribs = { inkex.addNS('label','inkscape') : 'Arrow',
+                                               'transform' : trans,
                                                         'd': my_path, 
                                                     'style': simplestyle.formatStyle(style) }
-           inkex.etree.SubElement(layer, inkex.addNS('path','svg'), pathattribs)
+           inkex.etree.SubElement( layer, inkex.addNS('path','svg'), pathattribs)
 
-    def Grainline(self,mylayer,x1,y1,x2,y2,name):
-           grain_path='M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
-           self.Path(mylayer,grain_path,'grainline',name,'')
-           self.Arrow(mylayer,x1,y1,x2,y2)
-           self.Arrow(mylayer,x2,y2,x1,y1)
+    def Grainline( self, parent, x1, y1, x2, y2, name, trans ):
+           grain_path = 'M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
+           self.Path( parent, grain_path, 'grainline', name, trans )
+           self.Arrow( parent,x1,y1,x2,y2, trans )
+           self.Arrow( parent,x2,y2,x1,y1, trans )
 
     def Buttons( self, mylayer, bx, by, button_number, button_distance, button_size ):
            buttonline='M '+ str(bx) +' '+ str(by) +' L '+ str(bx) +' '+ str( by + (button_number*button_distance) )  # vertical button line only! at this time...
@@ -550,7 +553,7 @@ class DrawJacket(inkex.Effect):
               i = i + 1
               y = y + button_distance
 
-    def Text(self, parent, x, y, font_size, label, string):
+    def Text(self, parent, x, y, font_size, label, string, trans ):
 
            style = {'text-align'     : 'center', 
                     'vertical-align' : 'top',
@@ -562,15 +565,16 @@ class DrawJacket(inkex.Effect):
                     'font-style'     : 'normal', 
                     'fill'           : '#000000' 
                    }
-           attribs = {'style'   : simplestyle.formatStyle( style ),
+           attribs = {'style'    : simplestyle.formatStyle( style ),
                      inkex.addNS( 'label', 'inkscape' ) : label,
-                     'x'       :str(x), 
-                     'y'       :str(y)
+                     'transform' : trans,
+                     'x'         : str(x), 
+                     'y'         : str(y)
                     }
            label         = inkex.etree.SubElement( parent, inkex.addNS( 'text', 'svg'), attribs)
            label.text    = string
 
-           ############################################################################################################################
+           ###################### ###################### ###################### ###################### 
 
     def effect(self):
 
@@ -609,6 +613,7 @@ class DrawJacket(inkex.Effect):
            my_layer = reference_layer
 
            begin_x, begin_y, begin  = self.GetDot( my_layer, border, ( border + ( nape_to_vneck * .25 ) ), 'Begin Pattern Calculations Here')  # wider at top to draw collar reference lines
+           self.Debug( back_shoulder_height )
 
            ###################
            ### Jacket Back ###
@@ -651,9 +656,9 @@ class DrawJacket(inkex.Effect):
            back_hem_allowance_endx, back_hem_allowance_endy, back_hem_allowance_end = self.GetDot( my_layer, back_hem_endx, back_hem_endy + hem_allowance, 'back_hem_allowance_end')
            Back_Hem_Allowance = 'L '+ back_hem_allowance_end +' L '+ back_hem_allowance_start   # moving right to left with path 
 
-           #####################################
+           ############################
            ### Back Reference Lines ###
-           #####################################
+           ############################
            # Pattern Start
            d = 'M '+ nape + ' L ' + hem_start
            self.Path(my_layer, d , 'reference' , 'Pattern Start Vertical Reference','')
@@ -675,9 +680,9 @@ class DrawJacket(inkex.Effect):
            # Back Underarm point
            back_underarm_pointx, back_underarm_pointy, back_underarm_point = self.GetDot( my_layer, back_pattern_endx, chest_starty - (6*cm_to_px), 'back_underarm_point')
 
-           ##########################
-           ### Back Pattern Lines ###
-           ##########################
+           #######################
+           ### Back Seam Lines ###
+           #######################
            # Back Center seam line: clockwise from bottom left: hem up to nape
            x1, y1       = self.XYwithSlope( back_hip_startx, back_hip_starty, back_hem_startx, back_hem_starty, ( abs( back_hip_starty - back_waist_starty ) * (.5) ) , 'normal' )
            c1x, c1y, c1 = self.GetDot( my_layer, x1, y1, 'c1' ) 
@@ -717,24 +722,25 @@ class DrawJacket(inkex.Effect):
            G2x, G2y, G2 = self.GetDot( my_layer, G1x, G1y + (40*cm_to_px), 'G2' )
 
            ################################
-           ### Draw Back Jacket Pattern ###
+           ### Draw Jacket Back Pattern ###
            ################################
            my_layer = self.GetNewLayer( pattern_layer, 'Jacket Back')
            Back_Pattern_Path = Back_Center +' '+ Back_Neck + ' '+ Back_Shoulder +' '+ Back_Armhole +' '+ Back_Side +' '+ Back_Hem_Allowance +' z'
            self.Path( my_layer, Hem_Fold_Line, 'fold', 'Jacket Back Hemline', '' )
            self.Path( my_layer, Back_Pattern_Path, 'seam', 'Jacket Back Seamline', '')
            self.Path( my_layer, Back_Pattern_Path, 'pattern', 'Jacket Back Cuttingline', '')
-           self.Grainline( my_layer, G1x, G1y, G2x, G2y, 'Jacket Back Grainline' )
-           self.Text( my_layer, back_shoulder_highx, shoulder_starty, 40, 'Company', 'New Day Patterns' )
-           self.Text( my_layer, back_shoulder_highx, shoulder_starty + 45, 40, 'Pattern number', pattern_number )
-           self.Text( my_layer, back_shoulder_highx, shoulder_starty + 2*45, 40, 'Pattern name', 'Jacket Back - A' )
-           self.Text( my_layer, back_shoulder_highx, shoulder_starty + 3*45, 40, 'Cut', 'Cut 2' )
+           self.Grainline( my_layer, G1x, G1y, G2x, G2y, 'Jacket Back Grainline', '' )
+           self.Text( my_layer, back_shoulder_highx, shoulder_starty, 40, 'Company', 'New Day Patterns', '' )
+           self.Text( my_layer, back_shoulder_highx, shoulder_starty + 45, 40, 'Pattern number', pattern_number, '' )
+           self.Text( my_layer, back_shoulder_highx, shoulder_starty + 2*45, 40, 'Pattern name', 'Jacket Back - A', '' )
+           self.Text( my_layer, back_shoulder_highx, shoulder_starty + 3*45, 40, 'Cut', 'Cut 2', '' )
 
            ####################
            ### Front Jacket ###
            ####################
            my_layer = reference_layer
 
+           # constants
            front_armhole_point_offset    = ( 5.5*cm_to_px )
            front_chest_start_offset      = ( 4.5*cm_to_px )
            front_waist_start_offset      = ( 4.5*cm_to_px )
@@ -753,7 +759,7 @@ class DrawJacket(inkex.Effect):
            front_shoulder_adjustment     = ( 1*cm_to_px )
            front_shoulder_middle_offset  = ( 1.3*cm_to_px )
            front_shoulder_length         = ( self.LineLength( back_shoulder_lowx, back_shoulder_lowy, back_shoulder_highx, back_shoulder_highy ) - front_shoulder_adjustment  )
-           front_shoulder_top_offset     = ( chest_scale / 8 ) + front_shoulder_adjustment    # one-eigth scale + 1cm
+           front_shoulder_high_offset     = ( chest_scale / 8 ) + front_shoulder_adjustment    # one-eigth scale + 1cm
 
 
            front_armhole_depth_1         = ( 4*cm_to_px )
@@ -789,7 +795,7 @@ class DrawJacket(inkex.Effect):
            lp_slant_offset     = ( 1*cm_to_px )      # x offset to make pocket diagonal
            lp_placement_offset = ( 28*cm_to_px )
 
-           # Reference Line points
+           # Reference points
            front_pattern_startx, front_pattern_starty, front_pattern_start = self.GetDot( my_layer, back_pattern_endx + pattern_offset, napey, 'front_pattern_start' )
            front_pattern_endx, front_pattern_endy, front_pattern_end = self.GetDot( my_layer, front_pattern_startx + front_chest_start_offset + front_armscye_width_offset + front_chest_center_offset + front_pattern_end_offset, napey, 'front_pattern_end' )   # later -> add diff between front_pattern and value related to max(chest,waist,hip), then calculate everything by subtraction from front_pattern_end
            front_centerx, front_centery, front_center = self.GetDot( my_layer, front_pattern_endx - front_pattern_end_offset, front_pattern_endy, 'front_center' )
@@ -841,7 +847,7 @@ class DrawJacket(inkex.Effect):
            front_button_topx , front_button_topy, front_button_top = self.GetDot( my_layer, front_centerx, chest_starty, 'front_button_top' )  
            front_armhole_pointx, front_armhole_pointy, front_armhole_point = self.GetDot( my_layer, front_pattern_startx + front_armhole_point_offset, back_underarm_pointy, 'front_armhole_point' )   
 
-           # Front Side Seam Line 
+           # Front Side Seam Line - clockwise from side hem
            x1, y1 = self.XYwithSlope( front_hip_startx, front_hip_starty, front_hem_startx, front_hem_starty, abs(front_hip_starty-front_waist_starty)*(.3) , 'normal' )
            c1x, c1y, c1 = self.GetDot( my_layer, x1, y1, 'c1')
            c2x, c2y, c2 = self.GetDot( my_layer, front_waist_startx, front_waist_starty + ( abs(front_waist_starty-front_hip_starty) * (.3) ), 'c2' )
@@ -852,17 +858,17 @@ class DrawJacket(inkex.Effect):
 
            Front_Side = 'M '+ front_hem_start +' L '+ front_hip_start +' C '+ c1 +' '+ c2 +' '+ front_waist_start +' C '+ c3 +' '+ c4 +' '+ front_chest_start +' Q '+ c5 +' '+ front_armhole_point
 
-           # Front Shoulder Seam Line
-           front_shoulder_topx, front_shoulder_topy, front_shoulder_top = self.GetDot( my_layer, front_armscye_widthx + front_shoulder_top_offset, napey, 'front_shoulder_top') 
-           x1, y1 = self.XYwithSlope( front_shoulder_topx, front_shoulder_topy, front_armscye_widthx, front_armscye_widthy + front_shoulder_middle_offset, -front_shoulder_length, 'normal' )
-           front_shoulder_endx, front_shoulder_endy, front_shoulder_end = self.GetDot( my_layer, x1, y1, 'front_shoulder_end' )
-           c1x, c1y, c1 = self.GetDot( my_layer, front_shoulder_topx - abs( front_shoulder_endx - front_shoulder_topx ) * (.85), front_shoulder_topy + abs( front_shoulder_endy - front_shoulder_topy ) * (.7), 'c1' )           
-           c2x, c2y, c2 = self.GetDot( my_layer, front_shoulder_topx - abs( front_shoulder_endx - front_shoulder_topx ) * (.45), front_shoulder_topy + abs( front_shoulder_endy - front_shoulder_topy ) * (.15), 'c2' )
+           # Front Shoulder Seam Line - clockwise from low shoulder to high shoulder
+           front_shoulder_highx, front_shoulder_highy, front_shoulder_high = self.GetDot( my_layer, front_armscye_widthx + front_shoulder_high_offset, napey, 'front_shoulder_high') 
+           x1, y1 = self.XYwithSlope( front_shoulder_highx, front_shoulder_highy, front_armscye_widthx, front_armscye_widthy + front_shoulder_middle_offset, -front_shoulder_length, 'normal' )
+           front_shoulder_lowx, front_shoulder_lowy, front_shoulder_low = self.GetDot( my_layer, x1, y1, 'front_shoulder_low' )
+           c1x, c1y, c1 = self.GetDot( my_layer, front_shoulder_highx - abs( front_shoulder_lowx - front_shoulder_highx ) * (.85), front_shoulder_highy + abs( front_shoulder_lowy - front_shoulder_highy ) * (.7), 'c1' )           
+           c2x, c2y, c2 = self.GetDot( my_layer, front_shoulder_highx - abs( front_shoulder_lowx - front_shoulder_highx ) * (.45), front_shoulder_highy + abs( front_shoulder_lowy - front_shoulder_highy ) * (.15), 'c2' )
 
-           #my_path='M '+front_shoulder_end+' C '+c1+' '+c2+' '+front_shoulder_top
-           Front_Shoulder = ' C '+ c1 +' '+ c2 +' '+ front_shoulder_top
+           #my_path='M '+front_shoulder_low+' C '+c1+' '+c2+' '+front_shoulder_high
+           Front_Shoulder = ' C '+ c1 +' '+ c2 +' '+ front_shoulder_high
 
-           # Armhole Points, Paths & reference lines        
+           # Armhole/Armscye Points, Paths & reference lines       
            x1, y1 = self.XYwithSlope( front_chest_startx, front_chest_starty, front_chest_startx-100, front_chest_starty+100, front_armhole_depth_1, 'normal' )   # create right angle with same dx & dy for 2nd point.  Used 100px, arbitrarily chosen #.
            front_armhole_curve_1x, front_armhole_curve_1y, front_armhole_curve_1 = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_1' )
            d = 'M '+ front_chest_start +' L '+ front_armhole_curve_1
@@ -881,40 +887,37 @@ class DrawJacket(inkex.Effect):
            self.Path( my_layer, d, 'reference', 'front_armhole_depth_2 Reference Line', '' )
 
            front_armhole_curve_2bx, front_armhole_curve_2by, front_armhole_curve_2b = self.GetDot( my_layer, front_chest_underarmx, front_chest_underarmy - front_armhole_depth_2, 'front_armhole_curve_2b' )
-           d = 'M '+ front_shoulder_end +' L '+ front_armhole_curve_2b
+           d = 'M '+ front_shoulder_low +' L '+ front_armhole_curve_2b
            self.Path( my_layer, d, 'reference', 'front_armhole_curve_2b Reference Line', '' )
 
-           mid_point = ( self.LineLength( front_shoulder_endx, front_shoulder_endy, front_armhole_curve_2bx, front_armhole_curve_2by ) * (0.5) )
-           x1 , y1   = self.XYwithSlope( front_armhole_curve_2bx, front_armhole_curve_2by, front_shoulder_endx, front_shoulder_endy, -mid_point, 'normal' )
+           mid_point = ( self.LineLength( front_shoulder_lowx, front_shoulder_lowy, front_armhole_curve_2bx, front_armhole_curve_2by ) * (0.5) )
+           x1 , y1   = self.XYwithSlope( front_armhole_curve_2bx, front_armhole_curve_2by, front_shoulder_lowx, front_shoulder_lowy, -mid_point, 'normal' )
            front_armhole_curve_2b_midptx, front_armhole_curve_2b_midpty, front_armhole_curve_2b_midpt = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_2b_midpt' )
-
            front_armhole_curve_3x, front_armhole_curve_3y, front_armhole_curve_3 = self.GetDot( my_layer, front_chest_underarmx, front_chest_underarmy - front_armhole_depth_3, 'front_armhole_curve_3' )
-
-           x1, y1 = self.XYwithSlope( front_armhole_curve_2b_midptx, front_armhole_curve_2b_midpty, front_shoulder_endx, front_shoulder_endy, front_armhole_depth_4, 'perpendicular' ) 
+           x1, y1 = self.XYwithSlope( front_armhole_curve_2b_midptx, front_armhole_curve_2b_midpty, front_shoulder_lowx, front_shoulder_lowy, front_armhole_depth_4, 'perpendicular' ) 
            front_armhole_curve4x, front_armhole_curve_4y, front_armhole_curve_4 = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_4' )
-
            d = 'M '+ front_armhole_curve_2b_midpt +' L '+ front_armhole_curve_4
            self.Path( my_layer, d, 'reference', 'front_armhole_curve_4 Reference Line','')
 
            c1x, c1y, c1 = self.GetDot( my_layer, front_dart_5x + ( abs( front_dart_5x - front_armhole_curve_3x )* (.364) ),  front_dart_5y + ( abs( front_dart_5y - front_armhole_curve_3y ) * (.084) ), 'c1' ) 
            c2x, c2y, c2 = self.GetDot( my_layer, front_armhole_curve_3x + ( abs( front_dart_5x - front_armhole_curve_3x )  * (0.182) ) ,front_armhole_curve_3y + ( abs( front_dart_5y - front_armhole_curve_3y ) * (0.8) ), 'c2' )
-           c3x, c3y, c3 = self.GetDot( my_layer, front_armhole_curve_3x - ( abs( front_armhole_curve_3x - front_shoulder_endx ) * (0.1) ), front_armhole_curve_3y - ( abs( front_armhole_curve_3y - front_shoulder_endy ) * (.4) ), 'c3' )
-           c4x, c4y, c4 = self.GetDot( my_layer, front_shoulder_endx + ( abs( front_armhole_curve_3x - front_shoulder_endx ) * (.2) ), front_shoulder_endy + ( abs( front_armhole_curve_3y - front_shoulder_endy ) * (.12) ), 'c4' )
+           c3x, c3y, c3 = self.GetDot( my_layer, front_armhole_curve_3x - ( abs( front_armhole_curve_3x - front_shoulder_lowx ) * (0.1) ), front_armhole_curve_3y - ( abs( front_armhole_curve_3y - front_shoulder_lowy ) * (.4) ), 'c3' )
+           c4x, c4y, c4 = self.GetDot( my_layer, front_shoulder_lowx + ( abs( front_armhole_curve_3x - front_shoulder_lowx ) * (.2) ), front_shoulder_lowy + ( abs( front_armhole_curve_3y - front_shoulder_lowy ) * (.12) ), 'c4' )
 
-           Front_Armscye_2 = 'L '+ front_dart_5 +' C '+ c1+ ' ' + c2 +' '+ front_armhole_curve_3 + ' C '+ c3 +' '+ c4 +' '+ front_shoulder_end
+           Front_Armscye_2 = 'L '+ front_dart_5 +' C '+ c1+ ' ' + c2 +' '+ front_armhole_curve_3 + ' C '+ c3 +' '+ c4 +' '+ front_shoulder_low
 
-           # neck curve, lapel intersection with neck curve, lapel point, and lapel roll line
+           # neck curve, lapel intersection with neck curve, lapel point, and lapel roll line - clockwise from high shoulder around neck curve to lapel point then down slightly curved lapel to chest line/top button
            lapel_pointx, lapel_pointy, lapel_point = self.GetDot( my_layer, front_chest_endx, front_chest_endy - lapel_height, 'lapel_point' )
-           neck_ref_pointx, neck_ref_pointy, neck_ref_point = self.GetDot( my_layer, front_shoulder_topx, front_shoulder_topy + neck_height, 'neck_ref_point' )
+           neck_ref_pointx, neck_ref_pointy, neck_ref_point = self.GetDot( my_layer, front_shoulder_highx, front_shoulder_highy + neck_height, 'neck_ref_point' )
            x1, y1 = self.XYwithSlope( neck_ref_pointx, neck_ref_pointy, neck_ref_pointx - 100, neck_ref_pointy + 100, neck_curve_offset, 'normal' )
            neck_curve_1x, neck_curve_1y, neck_curve_1 = self.GetDot( my_layer, x1, y1, 'neck_curve_1' )
-           x1, y1 = self.XY( front_shoulder_topx, front_shoulder_topy, front_shoulder_endx, front_shoulder_endy, neck_curve_offset )   # neck curve offset is same as lapel offset extended from shoulder top
+           x1, y1 = self.XY( front_shoulder_highx, front_shoulder_highy, front_shoulder_lowx, front_shoulder_lowy, neck_curve_offset )   # neck curve offset is same as lapel offset extended from high shoulder
            lapel_reference_pointx, lapel_reference_pointy, lapel_reference_point = self.GetDot( my_layer, x1, y1, 'lapel_reference_point' )
            x1, y1 = self.Intersect( neck_ref_pointx, neck_ref_pointy, lapel_pointx, lapel_pointy, lapel_reference_pointx, lapel_reference_pointy, front_chest_endx, front_chest_endy )
            lapel_neck_intersectx, lapel_neck_intersecty, lapel_neck_intersect = self.GetDot( my_layer, x1, y1, 'lapel_neck_intersecty' )
            d = 'M '+ neck_ref_point + ' L '+ neck_curve_1
            self.Path( my_layer, d, 'reference', 'neck_curve_1 reference line', '' )
-           Lapel_Roll_Line = 'M '+ lapel_point +' L '+ neck_ref_point +' L '+ front_shoulder_top +' '+ lapel_reference_point +' '+ front_chest_end  # lapel ends at horizontal chest ref line
+           Lapel_Roll_Line = 'M '+ lapel_point +' L '+ neck_ref_point +' L '+ front_shoulder_high +' '+ lapel_reference_point +' '+ front_chest_end  # lapel ends at horizontal chest ref line
 
            # lapel dart & reference line
            lapel_dart_midpointx, lapel_dart_midpointy, lapel_dart_midpoint = self.GetDot( my_layer, lapel_pointx - ( ( lapel_pointx - lapel_neck_intersectx ) * (.5) ), lapel_pointy, 'lapel_dart_midpoint' ) 
@@ -1014,13 +1017,13 @@ class DrawJacket(inkex.Effect):
            m = self.Slope( front_hem_startx, front_hem_starty, front_hem_curve_reference_endx, front_hem_curve_reference_endy, 'normal' )
            b = front_hem_starty - ( m * front_hem_startx )
            front_curve_endx, front_curve_endy, front_curve_end = self.GetDot( my_layer, lapel_reference_pointx, ( ( m * lapel_reference_pointx ) + b ), 'front_curve_end' )
-           control_length = (  self.LineLength( front_shoulder_topx, front_shoulder_topy, lapel_neck_intersectx, lapel_neck_intersecty ) * ( 0.33 ) )
-           c1x, c1y, c1 = self.GetDot( my_layer, front_shoulder_topx, ( front_shoulder_topy + control_length ), 'c1' ) #c1-neck curve between front_shoulder_top & lapel_neck_intersect
-           c2x, c2y, c2 = self.GetDot( my_layer, ( lapel_neck_intersectx - control_length ), lapel_neck_intersecty, 'c2') #c2-neck curve between front_shoulder_top & lapel_neck_intersect
+           control_length = (  self.LineLength( front_shoulder_highx, front_shoulder_highy, lapel_neck_intersectx, lapel_neck_intersecty ) * ( 0.33 ) )
+           c1x, c1y, c1 = self.GetDot( my_layer, front_shoulder_highx, ( front_shoulder_highy + control_length ), 'c1' ) #c1-neck curve between front_shoulder_high & lapel_neck_intersect
+           c2x, c2y, c2 = self.GetDot( my_layer, ( lapel_neck_intersectx - control_length ), lapel_neck_intersecty, 'c2') #c2-neck curve between front_shoulder_high & lapel_neck_intersect
            c3x, c3y, c3 = self.GetDot( my_layer, lapel_pointx + 1*cm_to_px, lapel_pointy + ( abs( lapel_pointy - front_pattern_endy ) * 0.5 ), 'c3' ) #c3-curved lapel edgebetween lapel_point and front_buttonhole_top 
            c4x, c4y, c4 = self.GetDot( my_layer, front_pattern_endx, hip_starty, 'c4' ) # c4 for curve at front hem --> b/w front_curve_start and front_curve_end
            c5x, c5y, c5 = self.GetDot( my_layer, front_pattern_endx, hem_starty, 'c5' ) # c5 for curve at front hem --> b/w front_curve_start and front_curve_end
-           #my_path='M '+front_shoulder_top+' C '+c1+' '+c2+' '+lapel_neck_intersect+' L '+lapel_point+' Q '+c1+' '+front_chest_end+' '+front_curve_start+' C '+c4+' '+c5+ ' '+front_curve_end+' L '+front_hem_start
+           #my_path='M '+front_shoulder_high+' C '+c1+' '+c2+' '+lapel_neck_intersect+' L '+lapel_point+' Q '+c1+' '+front_chest_end+' '+front_curve_start+' C '+c4+' '+c5+ ' '+front_curve_end+' L '+front_hem_start
            Front_Shoulder_to_Hem = ' C '+c1+' '+c2+' '+lapel_neck_intersect+' L '+lapel_point+' Q '+c3+' '+front_chest_end+' L '+front_curve_start+' C '+ c4 +' '+c5+ ' '+front_curve_end
 
            # Buttons and Buttonholes        
@@ -1035,97 +1038,53 @@ class DrawJacket(inkex.Effect):
            hem_allow_1x, hem_allow_1y, hem_allow_1 = self.GetDot( my_layer, front_hem_startx, front_hem_starty + hem_allowance, 'hem_allow_1' )
            hem_allow_2x, hem_allow_2y, hem_allow_2 = self.GetDot( my_layer, front_curve_endx, front_curve_endy + hem_allowance, 'hem_allow_2' )
            Hem_Allowance_Line = ' L ' + hem_allow_2 + ' ' + hem_allow_1
-           Jacket_Bottomy     = hem_allow_2y  
+           lowest_y     = hem_allow_2y  
      
            # Grainline
            G1x, G1y, G1 = self.GetDot( my_layer, front_chest_underarmx + ( ( front_pattern_endx - front_chest_underarmx ) * (.5) ), ( upper_pocket_4y +  5*cm_to_px ), 'G1' )
            G2x, G2y, G2 = self.GetDot( my_layer, G1x, G1y + 40*cm_to_px , 'G2' )
 
-           # collar #
-           # offset = dx, dy from far right corner of upper pocket UP,+ 8cm to make room for seam allowances, etc
-           # point lapel_neck_intersect from the front neck begins curve around back neck, so lapel_neck_intersect=>Collarcurvestart
-           # back neck nape to back_shoulder_high is half length of collar, so length nape-back_shoulder_high=>Collarlength, line goes through front_shoulder_top=>Collarshoulderpoint
-           # so Collarstart+Collarlength=Collarend
-           # Collar is 7cm wide at back neck, so 3cm squared down from Collarend is Collarbottom, 4cm squared up&.6cm back is Collartop
-           # Collar bottom edge is a line from Collarbottom to Uppershoulderpoint, then curved around to Collarstart
-           # Collarfront is 3cm back from front point of neck curve lapel_point, lapel_point-3cm=>Collarfront
-           # Collarcorner is slope rise=2.5cm, run=1cm from Collarfront
-           # Collar top edge is line from Collarcorner to Collartop
-           # Draw reference lines on jacket piece
-           my_layer=reference_layer
-
+           # collar 
+           my_layer = reference_layer
            rise = -3*cm_to_px
            run  = 1*cm_to_px
+           collar_back_length  = self.LineLength( napex, napey, back_shoulder_highx, back_shoulder_highy )
+           collar_front_length = abs( lapel_pointx - lapel_neck_intersectx ) - 3*cm_to_px - ( lapel_dart_width / 2.0 )
+           collar_neck_curvex, collar_neck_curvey, collar_neck_curve = lapel_neck_intersectx, lapel_neck_intersecty, str( lapel_neck_intersectx ) + ' ' + str( lapel_neck_intersecty )
+           x, y = self.XY( collar_neck_curvex, collar_neck_curvey, lapel_pointx, lapel_pointy, -collar_front_length )
+           collar_frontx,  collar_fronty,  collar_front  = self.GetDot( my_layer, x, y, 'collar_front' )
+           collar_cornerx, collar_cornery, collar_corner = self.GetDot( my_layer, ( collar_frontx + run ), ( collar_fronty + rise ), 'collar_corner' )
+           collar_neck_pointx, collar_neck_pointy, collar_neck_point = front_shoulder_highx,front_shoulder_highy, str(front_shoulder_highx) + ' ' + str(front_shoulder_highy)
+           x, y = self.XY(collar_neck_pointx, collar_neck_pointy, collar_neck_curvex, collar_neck_curvey, collar_back_length )
+           collar_endx, collar_endy, collar_end = self.GetDot( my_layer, x, y, "collar_end" )
+           x, y = self.XYwithSlope ( collar_endx, collar_endy, collar_neck_curvex, collar_neck_curvey, 3*cm_to_px, 'perpendicular' )
+           collar_bottomx, collar_bottomy, collar_bottom = self.GetDot( my_layer, x, y, "collar_bottom" )
+           a, b = self.XYwithSlope( collar_endx, collar_endy, collar_neck_curvex, collar_neck_curvey, -3*cm_to_px, 'perpendicular' )
+           x, y = self.XYwithSlope( a, b, collar_endx, collar_endy, -0.6*cm_to_px, 'perpendicular' )
+           collar_topx, collar_topy, collar_top = self.GetDot( my_layer, x, y, "collar_top" )
+           control_length = self.LineLength( collar_neck_curvex, collar_neck_curvey, collar_endx, collar_endy ) * (0.25) 
+           highest_y = collar_topy
+           c1x, c1y, c1 = self.GetDot( my_layer, collar_neck_curvex - ( abs( collar_neck_curvex - collar_bottomx )/3  ), collar_neck_curvey, 'c1' )
+           a, b = self.XYwithSlope( collar_bottomx, collar_bottomy, collar_endx, collar_endy, 100, 'perpendicular' )
+           x, y = self.XY( collar_bottomx, collar_bottomy, a, b, ( abs( collar_neck_curvey - collar_bottomy ) / 3 ) )
+           c2x, c2y, c2  = self.GetDot( my_layer, x, y, 'c2' )
+           x, y = self.XY( collar_neck_curvex, collar_neck_curvey, front_chest_endx, front_chest_endy, control_length )  
+           c3x, c3y, c3 = self.GetDot( my_layer, x, y, 'c3' )  
+           x, y = self.XYwithSlope( collar_endx, collar_endy, collar_topx, collar_topy, -control_length, 'perpendicular' )   
+           c4x, c4y, c4 = self.GetDot( my_layer, x, y, 'c4' )
+           cg1x, cg1y, cg1 = collar_topx + ( abs( collar_neck_curvex - collar_topx ) / 2 ), collar_bottomy + 1*cm_to_px, str( collar_bottomx + ( abs( collar_neck_curvex - collar_topx ) * 0.5 ) ) + ' '+ str( collar_bottomy )
+           cg2x, cg2y, cg2 = cg1x, cg1y + ( 6*cm_to_px ) , str( cg1x ) + ' ' + str( cg1y + ( 6*cm_to_px ) )
 
-           Collarbacklength  = self.LineLength( napex, napey, back_shoulder_highx, back_shoulder_highy )
-           Collarfrontlength = abs( lapel_pointx - lapel_neck_intersectx ) - 3*cm_to_px - (1.3*cm_to_px/2.0)
-
-           Collarcurvestartx,Collarcurvestarty,Collarcurvestart=lapel_neck_intersectx,lapel_neck_intersecty,str(lapel_neck_intersectx)+' '+str(lapel_neck_intersecty)
-           Collarneckpointx,Collarneckpointy,Collarneckpoint=front_shoulder_topx,front_shoulder_topy,str(front_shoulder_topx)+' '+str(front_shoulder_topy)
-           x,y=self.XY(Collarneckpointx,Collarneckpointy,Collarcurvestartx,Collarcurvestarty,Collarbacklength)
-           Collarendx,Collarendy,Collarend=self.GetDot(my_layer,x,y,"Collarend")
-           Collar_Midline='M '+Collarcurvestart+' L '+Collarend
-           x,y=self.XYwithSlope(Collarendx,Collarendy,Collarcurvestartx,Collarcurvestarty,3*cm_to_px,'perpendicular')
-           Collarbottomx,Collarbottomy,Collarbottom=self.GetDot(my_layer,x,y,"Collarbottom")
-           x1,y1=self.XYwithSlope(Collarendx,Collarendy,Collarcurvestartx,Collarcurvestarty,-3*cm_to_px,'perpendicular')
-           x,y=self.XYwithSlope(x1, y1,Collarendx,Collarendy,-0.6*cm_to_px,'perpendicular')
-           Collartopx,Collartopy,Collartop=self.GetDot(my_layer,x,y,"Collartop")
-           Collar_Back_Line=' L '+Collarend+' '+Collartop
-           x,y=self.XY(Collarcurvestartx,Collarcurvestarty,lapel_pointx,lapel_pointy,-Collarfrontlength)
-           Collarfrontx,Collarfronty,Collarfront=self.GetDot(my_layer,x,y,'Collarfront')
-           Collarcornerx,Collarcornery,Collarcorner=self.GetDot(my_layer,Collarfrontx+run,Collarfronty+rise,'Collarcorner')
-           Collar_Top_Line   = ' L '+ Collarcorner
-           Collar_Front_Line = ' L '+ Collarfront
-           Collar_Start_Line = 'M '+ Collarfront +' L '+ Collarcurvestart 
-
-           dx, dy = abs(pattern_offset_2x - Collartopx), 0
-           c_startx, c_starty, c_start = Collarcurvestartx + dx, Collarcurvestarty + dy, str(Collarcurvestartx + dx) +' '+str(Collarcurvestarty + dy)
-           c_neckx, c_necky, c_neck = Collarneckpointx + dx,Collarneckpointy+dy,str(Collarneckpointx+dx)+' '+str(Collarneckpointy+dy)
-           c_endx,c_endy,c_end=Collarendx+dx,Collarendy+dy,str(Collarendx+dx)+' '+str(Collarendy+dy)
-           C_Midline='M '+c_start+' L '+c_end
-
-           c_bottomx,c_bottomy,c_bottom=Collarbottomx+dx,Collarbottomy+dy,str(Collarbottomx+dx)+' '+str(Collarbottomy+dy)
-           c_topx,c_topy,c_top=Collartopx+dx,Collartopy+dy,str(Collartopx+dx)+' '+str(Collartopy+dy)
-           C_Back_Line=' L '+c_end+' '+c_top
-
-           c_frontx,c_fronty,c_front=Collarfrontx+dx,Collarfronty+dy,str(Collarfrontx+dx)+' '+str(Collarfronty+dy)
-           c_cornerx,c_cornery,c_corner=Collarcornerx+dx,Collarcornery+dy,str(Collarcornerx+dx)+' '+str(Collarcornery+dy)
-           C_Top_Line=' L '+c_corner
-
-           C_Front_Line='L '+ c_front
-           C_Start_Line='M '+c_front+' L '+c_start   
-
-           control_lengthx=abs(Collarcurvestartx-Collarbottomx)/3
-           control_lengthy=abs(Collarcurvestarty-Collarbottomy)/3
-           c1x,c1y,c1=self.GetDot(my_layer,Collarcurvestartx-control_lengthx,Collarcurvestarty,'c1')
-           C_c1x,C_c1y,C_c1=c1x+dx,c1y+dy,str(c1x+dx)+' '+str(c1y+dy)
-
-           x1,y1=self.XYwithSlope(Collarbottomx,Collarbottomy,Collarendx,Collarendy,100,'perpendicular')
-           x,y=self.XY(Collarbottomx,Collarbottomy,x1,y1,control_lengthy)
-           c2x,c2y,c2=self.GetDot(my_layer,x,y,'c2')
-           C_c2x,C_c2y,C_c2=c2x+dx,c2y+dy,str(c2x+dx)+' '+str(c2y+dy)
-           Collar_Curve_Line=' C '+c1+' '+c2+' '+Collarbottom
-           C_Curve_Line=' C '+C_c1+' '+C_c2+' '+c_bottom
-
-           control_length=self.LineLength(Collarcurvestartx,Collarcurvestarty,Collarendx,Collarendy)*(0.25)  
-           x,y=self.XY(Collarcurvestartx,Collarcurvestarty,front_chest_endx,front_chest_endy,control_length)  
-           c1x,c1y,c1=self.GetDot(my_layer,x,y,'c1')  
-           C_c1x,C_c1y,C_c1=c1x+dx,c1y+dy,str(c1x+dx)+' '+str(c1y+dy) 
-
-           x,y=self.XYwithSlope(Collarendx,Collarendy,Collartopx,Collartopy,-control_length,'perpendicular')   
-           c2x,c2y,c2=self.GetDot(my_layer,x,y,'c2')   
-           C_c2x,C_c2y,C_c2=c2x+dx,c2y+dy,str(c2x+dx)+' '+str(c2y+dy)
-           Collar_Roll_Line='M '+Collarcurvestart+' C '+c1+' '+c2+' '+Collarend
-
-           C_Roll_Line='M '+c_start+' C '+C_c1+' '+C_c2+' '+c_end
-           C_Gr1x,C_Gr1y,P_GR=c_topx + (abs(c_startx-c_topx)/2),c_bottomy+1*cm_to_px,str((c_bottomx)+ (abs(c_startx-c_topx)/2))+' '+str(c_bottomy)
-           C_Gr2x,C_Gr2y,C_Gr2=C_Gr1x, C_Gr1y+(6*cm_to_px) , str(C_Gr1x) +' '+ str(C_Gr1y+(6*cm_to_px) )
-
-           Collar_Path=Collar_Start_Line+' '+Collar_Curve_Line +' '+Collar_Back_Line+' '+Collar_Top_Line+' '+Collar_Front_Line+' z'
-           C_Path=C_Start_Line+' '+C_Curve_Line+' '+C_Back_Line+' '+C_Top_Line+' '+C_Front_Line+' z'
-           self.Path(my_layer,Collar_Path,'reference','Collar Pattern','')
-           self.Path(my_layer,Collar_Roll_Line,'reference','Collar Roll Line','')
-           self.Path(my_layer,Collar_Midline,'reference','Collar Midline','')
+           Collar_Back  = ' L ' + collar_end + ' ' + collar_top
+           Collar_Top   = ' L '+ collar_corner
+           Collar_Front = ' L '+ collar_front
+           Collar_Start = 'M '+ collar_front +' L '+ collar_neck_curve
+           Collar_Curve = ' C '+ c1 +' '+ c2 +' '+collar_bottom
+           Collar_Roll  = 'M ' + collar_neck_curve + ' C ' + c3 + ' ' + c4 + ' ' + collar_end
+           Collar       = Collar_Start +' '+ Collar_Curve +' '+ Collar_Back +' '+ Collar_Top +' '+ Collar_Front +' z'
+ 
+           self.Path( my_layer, Collar, 'reference', 'Collar', '' )
+           self.Path( my_layer, Collar_Roll, 'reference', 'Collar Roll Line', '' )
 
            ##################################
            ###  Draw Front Jacket Pattern ###
@@ -1139,15 +1098,14 @@ class DrawJacket(inkex.Effect):
            self.Path(my_layer,Upper_Pocket_Placement,'dart','Upper Pocket placement','')
            self.Path(my_layer,Lower_Pocket_Placement,'dart','Lower Pocket placement','')
            self.Path(my_layer,Hem_Line,'fold','Jacket Front Hemline','')
-           #self.Buttons(my_layer,Button_Line,Button_Start_x,Button_Start_y,Button_Number,Button_Distance,Button_Size)
            self.Buttons(my_layer,Button_x,Button_y,Button_number,Button_distance,Button_size)
-           self.Grainline(my_layer,G1x,G1y,G2x,G2y,'Jacket Front Grainline')
+           self.Grainline(my_layer,G1x,G1y,G2x,G2y,'Jacket Front Grainline', '')
            self.Path(my_layer,Jacket_Front_Pattern_Piece,'seam','Jacket Front Seamline','')
            self.Path(my_layer,Jacket_Front_Pattern_Piece,'pattern','Jacket Front Cuttingline','')
-           self.Text( my_layer, front_shoulder_topx, front_armhole_curve_4y, 40, 'Company', 'New Day Patterns' )
-           self.Text( my_layer, front_shoulder_topx, front_armhole_curve_4y + 45, 40, 'Pattern number', pattern_number )
-           self.Text( my_layer, front_shoulder_topx, front_armhole_curve_4y + 2*45, 40, 'Pattern name', 'Jacket Front - B' )
-           self.Text( my_layer, front_shoulder_topx, front_armhole_curve_4y + 3*45, 40, 'Cut', 'Cut 2' )
+           self.Text( my_layer, front_shoulder_highx, front_armhole_curve_4y, 40, 'Company', 'New Day Patterns', '' )
+           self.Text( my_layer, front_shoulder_highx, front_armhole_curve_4y + 45, 40, 'Pattern number', pattern_number, '' )
+           self.Text( my_layer, front_shoulder_highx, front_armhole_curve_4y + 2*45, 40, 'Pattern name', 'Jacket Front - B', '' )
+           self.Text( my_layer, front_shoulder_highx, front_armhole_curve_4y + 3*45, 40, 'Cut', 'Cut 2', '' )
 
            #################################
            ### Draw Upper Pocket Pattern ###
@@ -1156,13 +1114,13 @@ class DrawJacket(inkex.Effect):
            self.Path(my_layer,Upper_Pocket_Foldline,'fold','Upper Pocket Foldline','')
            self.Path(my_layer,Upper_Pocket_Pattern,'seam','Upper Pocket Seamline','')
            self.Path(my_layer,Upper_Pocket_Pattern,'pattern','Upper Pocket Cuttingline','')
-           self.Grainline(my_layer,up_g1x,up_g1y,up_g2x,up_g2y,'Upper Pocket Grainline')
+           self.Grainline(my_layer,up_g1x,up_g1y,up_g2x,up_g2y,'Upper Pocket Grainline', '')
            x = up_4x - ( ( up_4x - up_2x ) * .5 )
            y = up_6y - ( ( up_6y - up_3y ) * .5 )
-           self.Text( my_layer, x, y, 12, 'Company', 'New Day Patterns' )
-           self.Text( my_layer, x, ( y + 15 ), 12, 'Pattern number', pattern_number )
-           self.Text( my_layer, x, ( y + 2*15 ), 12, 'Pattern name', 'Upper Pocket - C' )
-           self.Text( my_layer, x, ( y + 3*15 ), 12, 'Cut', 'Cut 1' )
+           self.Text( my_layer, x, y, 12, 'Company', 'New Day Patterns', '' )
+           self.Text( my_layer, x, ( y + 15 ), 12, 'Pattern number', pattern_number, '' )
+           self.Text( my_layer, x, ( y + 2*15 ), 12, 'Pattern name', 'Upper Pocket - C', '' )
+           self.Text( my_layer, x, ( y + 3*15 ), 12, 'Cut', 'Cut 1', '' )
 
            #################################
            ### Draw Lower Pocket Pattern ###
@@ -1171,28 +1129,30 @@ class DrawJacket(inkex.Effect):
            self.Path(my_layer,Lower_Pocket_Foldline,'fold','Lower Pocket Foldline','')
            self.Path(my_layer,Lower_Pocket_Pattern,'seam','Lower Pocket Seamline','')
            self.Path(my_layer,Lower_Pocket_Pattern,'pattern','Lower Pocket Cuttingline','')
-           self.Grainline(my_layer,lp_G1x,lp_G1y,lp_G2x,lp_G2y,'Lower Pocket Grainline')
+           self.Grainline(my_layer,lp_G1x,lp_G1y,lp_G2x,lp_G2y,'Lower Pocket Grainline', '')
            x =  lp_flap_top_rightx - ( ( lp_flap_top_rightx - lp_flap_top_leftx ) * .8 )
            y =  lp_bottom_righty - ( ( lp_bottom_righty - lp_flap_top_righty ) * .7 )
-           self.Text( my_layer, x, y, 20, 'Company', 'New Day Patterns' )
-           self.Text( my_layer, x, ( y + 25 ), 20, 'Pattern number', pattern_number )
-           self.Text( my_layer, x, ( y + 2*25 ), 20, 'Pattern name', 'Lower Pocket - D' )
-           self.Text( my_layer, x, ( y + 3*25 ), 20, 'Cut', 'Cut 2' )
+           self.Text( my_layer, x, y, 20, 'Company', 'New Day Patterns', '' )
+           self.Text( my_layer, x, ( y + 25 ), 20, 'Pattern number', pattern_number, '' )
+           self.Text( my_layer, x, ( y + 2*25 ), 20, 'Pattern name', 'Lower Pocket - D', '' )
+           self.Text( my_layer, x, ( y + 3*25 ), 20, 'Cut', 'Cut 2', '' )
 
            ###########################
            ### Draw Collar Pattern ###
            ########################### 
-           my_layer=self.GetNewLayer(pattern_layer,'Collar')
-           self.Path(my_layer,C_Path,'seam','Collar Seamline','')                  
-           self.Path(my_layer,C_Path,'pattern','Collar Cuttingline','')
-           self.Path(my_layer,C_Roll_Line,'fold','Collar Roll Line','')
-           self.Grainline(my_layer,C_Gr1x,C_Gr1y,C_Gr2x,C_Gr2y,'Grainline')
-           x =  c_frontx - ( ( c_frontx - c_topx ) * .8 )
-           y =  c_fronty - ( ( c_fronty - c_topy ) * .5 )
-           self.Text( my_layer, x, y, 20, 'Company', 'New Day Patterns' )
-           self.Text( my_layer, x, ( y + 25 ), 20, 'Pattern number', pattern_number )
-           self.Text( my_layer, x, ( y + 2*25 ), 20, 'Pattern name', 'Collar - E' )
-           self.Text( my_layer, x, ( y + 3*25 ), 20, 'Cut', 'Cut 2' )
+           my_layer = self.GetNewLayer( pattern_layer, 'Collar' )
+           dx, dy =  ( border - collar_bottomx ), ( border + lowest_y - collar_topy )
+           trans = 'translate(' + str(dx) + ' ' + str(dy) + ')'
+           self.Path( my_layer, Collar, 'seam', 'Collar Seamline', trans )  
+           self.Path( my_layer, Collar, 'pattern', 'Collar Cutting Line', trans )
+           self.Path( my_layer, Collar_Roll, 'fold', 'Collar Roll Line', trans)
+           self.Grainline( my_layer, cg1x, cg1y, cg2x, cg2y, 'Grainline', trans )
+           x =  collar_neck_curvex - ( ( collar_neck_curvex - collar_endx ) * .15 )
+           y =  collar_neck_curvey - ( ( collar_neck_curvey - collar_topy ) * .4 )
+           self.Text( my_layer, x, y, 20, 'Company', 'New Day Patterns', trans )
+           self.Text( my_layer, x, ( y + 25 ), 20, 'Pattern number', pattern_number, trans )
+           self.Text( my_layer, x, ( y + 2*25 ), 20, 'Pattern name', 'Collar - E', trans )
+           self.Text( my_layer, x, ( y + 3*25 ), 20, 'Cut', 'Cut 2', trans )
          
            ####################
            ### Upper Sleeve ###
@@ -1344,13 +1304,13 @@ class DrawJacket(inkex.Effect):
            self.Path( my_layer, Upper_Sleeve_Pattern, 'pattern', 'Upper Sleeve Cuttingline', '' )
            self.Path( my_layer, Uppersleeve_Cuff_Placement_Line, 'fold', 'Upper Sleeve Cuff Placement Line', '' )
            self.Path( my_layer, Uppersleeve_Cuff_Fold_Line, 'fold', 'Upper Sleeve Cuff Fold Line', '' )
-           self.Grainline( my_layer, G1x, G1y, G2x, G2y, 'Upper Sleeve Grainline' )
+           self.Grainline( my_layer, G1x, G1y, G2x, G2y, 'Upper Sleeve Grainline', '' )
            x = SA3x
            y =  SC4y 
-           self.Text( my_layer, x, y, 40, 'Company', 'New Day Patterns' )
-           self.Text( my_layer, x, ( y + 45 ), 40, 'Pattern number', pattern_number )
-           self.Text( my_layer, x, ( y + 2*45 ), 40, 'Pattern name', 'Upper Sleeve - F' )
-           self.Text( my_layer, x, ( y + 3*45 ), 40, 'Cut', 'Cut 2' )
+           self.Text( my_layer, x, y, 40, 'Company', 'New Day Patterns', '' )
+           self.Text( my_layer, x, ( y + 45 ), 40, 'Pattern number', pattern_number, '' )
+           self.Text( my_layer, x, ( y + 2*45 ), 40, 'Pattern name', 'Upper Sleeve - F', '' )
+           self.Text( my_layer, x, ( y + 3*45 ), 40, 'Cut', 'Cut 2', '' )
 
            ####################
            ### Under Sleeve ###
@@ -1411,19 +1371,19 @@ class DrawJacket(inkex.Effect):
            self.Path( my_layer, Under_Sleeve_Pattern, 'pattern', 'Cuttingline', '' )
            self.Path( my_layer, Undersleeve_Cuff_Placement_Line, 'fold', 'Cuff Placement Line', '' )
            self.Path( my_layer, Undersleeve_Cuff_Fold_Line, 'fold', 'Cuff Fold Line', '' )
-           self.Grainline( my_layer, G1x, G1y, G2x, G2y, 'Grainline' )
+           self.Grainline( my_layer, G1x, G1y, G2x, G2y, 'Grainline', '' )
            x = SC7x
            y = SC7y + 6*cm_to_px 
-           self.Text( my_layer, x, y, 40, 'Company', 'New Day Patterns' )
-           self.Text( my_layer, x, ( y + 45 ), 40, 'Pattern number', pattern_number )
-           self.Text( my_layer, x, ( y + 2*45 ), 40, 'Pattern name', 'Upper Sleeve - F' )
-           self.Text( my_layer, x, ( y + 3*45 ), 40, 'Cut', 'Cut 2' )
+           self.Text( my_layer, x, y, 40, 'Company', 'New Day Patterns', '' )
+           self.Text( my_layer, x, ( y + 45 ), 40, 'Pattern number', pattern_number, '' )
+           self.Text( my_layer, x, ( y + 2*45 ), 40, 'Pattern name', 'Upper Sleeve - F', '' )
+           self.Text( my_layer, x, ( y + 3*45 ), 40, 'Cut', 'Cut 2', '' )
 
            ###################################
            ### Resize Document, Reset View ###
            ###################################
            self.layer = reference_layer
-           height = border + abs( Collartopy - Jacket_Bottomy ) + border
+           height = border + abs( highest_y - lowest_y ) + border
            width  = border + abs( undersleeve_hem2x - begin_x ) + border
            self.svg_svg( str( width ), str( height ), str( border ) )
 
