@@ -1,0 +1,49 @@
+
+### Jacket Front ###
+new - front_pattern_start
+front_pattern_end
+front_chest_start
+front_chest_end
+front_waist_start
+front_waist_end
+front_hip_start
+front_hip_end
+front_hem_start
+front_hem_end
+front_center
+
+
+A4 = front_chest_width
+A5 = front_shoulder_top
+
+C5 = front_chest_side
+D5 = front_waist_side
+E5 = front_hip_side
+F5 = front_hem_side
+I4 = front_underarm_point
+J2 = front_shoulder_end
+I6 = front_armhole_curve_2
+J3 = front_armhole_curve_3
+J4 = front_armhole_curve_3_ref_midpt
+J5 = front_armhole_curve_4
+
+
+
+#front chest
+C8 = front_chest_underarm
+C7 = front_dart_1
+C6 = front_dart_5
+C9 = front_button_top
+C10 = front_chest_edge
+
+
+deleted F7 - same as front_hem_end  & used as control point for curve
+F6 - replaced with control point for curve
+D9 - replaced with calculation
+D10 - replaced with calculation
+D11 - replaced with calculation
+J1 - replaced with calculation
+
+
+
+
