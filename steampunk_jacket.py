@@ -52,7 +52,7 @@ class DrawJacket(inkex.Effect):
                         'r' : str(.05*in_to_px)}
            inkex.etree.SubElement(layer,inkex.addNS('circle','svg'),attribs)
 
-    def Path(self,layer,nodetypes,pathdefinition,pathtype,name,trans):
+    def Path(self,layer,pathdefinition,pathtype,name,trans):
            if (pathtype=='reference'):
                style = { 'fill':'none',
                          'stroke':'gray',
@@ -79,8 +79,8 @@ class DrawJacket(inkex.Effect):
                          'stroke-width':'8',
                          'stroke-linejoin':'miter',
                          'stroke-miterlimit':'4',
-                         'marker-start': 'url(#Arrow2Mstart)',
-                         'marker-end':'url(#Arrow2Mend)'}
+                         inkex.addNS('marker-start','svg'):'url(#Arrow2Lstart)',
+                         'marker-end':'url(#Arrow2Lend)'}
            else:
                style = { 'fill':'none',
                          'stroke':'green',
@@ -88,9 +88,7 @@ class DrawJacket(inkex.Effect):
                          'stroke-linejoin':'miter',
                          'stroke-miterlimit':'4'}
              
-           pathattribs = {inkex.addNS('nodetypes','sodipodi'): nodetypes, 
-                          inkex.addNS('connector-curvature','inkscape'): '0',
-                          inkex.addNS('label','inkscape') : name,
+           pathattribs = { inkex.addNS('label','inkscape') : name,
                           'transform' : trans,
                           'd': pathdefinition, 
                           'style': simplestyle.formatStyle(style)}
@@ -259,15 +257,30 @@ class DrawJacket(inkex.Effect):
            x = abs((xsq)**(.5))
            return x
 
-    def GetDot(self,my_layer,xvalue,yvalue,r,style,name):
-           nx = name+'x'
-           ny = name+'y'
-           dotstr = nx+','+ny
-           # Draw the dot
-           self.Dot(my_layer,xval,yval,name)
-           # returns the 'A1x,A1y' string to name the Dot
-           return dotstr               
+    def GetDot(self,my_layer,x,y,name):
+           self.Dot(my_layer,x,y,name)
+           return x,y,str(x)+','+str(y)
                
+    def addMarker(self, name, rotate):
+        defs = self.xpathSingle('/svg:svg//svg:defs')
+        if defs == None:
+            defs = inkex.etree.SubElement(self.document.getroot(),inkex.addNS('defs','svg'))
+        marker = inkex.etree.SubElement(defs ,inkex.addNS('marker','svg'))
+        marker.set('id', name)
+        marker.set('orient', 'auto')
+        marker.set('refX', '0.0')
+        marker.set('refY', '0.0')
+        marker.set('style', 'overflow:visible')
+        marker.set(inkex.addNS('stockid','inkscape'), name)
+
+        arrow = inkex.etree.Element("path")
+        arrow.set('d', 'M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z ')
+        if rotate:
+            arrow.set('transform', 'scale(0.8) rotate(180) translate(12.5,0)')
+        else:
+            arrow.set('transform', 'scale(0.8) translate(12.5,0)')
+        arrow.set('style', 'fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none')
+        marker.append(arrow)
            #______________
 
 
@@ -275,6 +288,9 @@ class DrawJacket(inkex.Effect):
            in_to_px=(90)                    #convert inches to pixels - 90px/in
            cm_to_in=(1/(2.5))               #convert centimeters to inches - 1in/2.5cm
            cm_to_px=(90/(2.5))              #convert centimeters to pixels
+           self.addMarker('Arrow1Lstart', False)
+           self.addMarker('Arrow1Lend',  False)
+
 
            height=(self.options.height)*in_to_px                         #Pattern was written for someone 5'9 or 176cm, 38" chest or 96cm
            chest=self.options.chest*in_to_px
@@ -290,8 +306,8 @@ class DrawJacket(inkex.Effect):
            nape_to_vneck=self.options.nape_to_vneck*in_to_px
            sleeve_length=self.options.sleeve_length*in_to_px
            
-           begin_pattern_x=5*cm_to_px               #Pattern begins in upper left corner x=3cm
-           begin_pattern_y=5*cm_to_px               #Start at 6cm down on left side of document         
+           begin_x=5*cm_to_px               #Pattern begins in upper left corner x=3cm
+           begin_y=5*cm_to_px               #Start at 6cm down on left side of document         
 
            # Create a layer to draw the pattern.
            rootlayer = self.document.getroot()
@@ -305,190 +321,61 @@ class DrawJacket(inkex.Effect):
            self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Group')
            self.layer.set(inkex.addNS('groupmode','inkscape'), 'Back Jacket Pattern Piece')
            # 'Nape'
-           A1x=begin_pattern_x
-           A1y=begin_pattern_y   
-           A1=str(A1x)+','+str(A1y)
-           self.Dot(my_layer,A1x,A1y,'A1')
-
+           A1x,A1y,A1=self.GetDot(my_layer,begin_x,begin_y,'A1')
            # 'High Shoulder Point'
-           A2x=A1x+((chest/2)/8)+2*cm_to_px
-           A2y=A1y
-           A2=str(A2x)+','+str(A2y)
-           self.Dot(my_layer,A2x,A2y,'A2')
-
+           A2x,A2y,A2=self.GetDot(my_layer,(A1x+((chest/2)/8)+2*cm_to_px),A1y,'A2')
            # 'Back Shoulder Width Reference Point'
-           A3x=(A1x+(back_shoulder_width/2))
-           A3y=A1y
-           A3=str(A3x)+','+str(A3y)
-           self.Dot(my_layer,A3x,A3y,'A3')
-
+           A3x,A3y,A3=self.GetDot(my_layer,(A1x+(back_shoulder_width/2)),A1y,'A3')
            # 'Back Shoulder Width Reference Line'
-           B1x=A1x
-           B1y=(A1y+back_shoulder_length)
-           B1=str(B1x)+','+str(B1y)
-           B2x=B1x+((back_shoulder_width)/2)
-           B2y=B1y
-           B2=str(B2x)+','+str(B2y)
-           B3x=(B2x+(1*cm_to_px))
-           B3y=B1y
-           B3=str(B3x)+','+str(B3y)
-           self.Dot(my_layer,B1x,B1y,'B1') 
-           self.Dot(my_layer,B2x,B2y,'B2') 
-           self.Dot(my_layer,B3x,B3y,'B3') 
+           B1x,B1y,B1=self.GetDot(my_layer,A1x,(A1y+back_shoulder_length),'B1') 
+           B2x,B2y,B2=self.GetDot(my_layer,B1x+((back_shoulder_width)/2),B1y,'B2') 
+           B3x,B3y,B3=self.GetDot(my_layer,(B2x+(1*cm_to_px)),B1y,'B3') 
            my_path='M '+B1+' L '+B3
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Shoulder Width Reference Line B1B3','')
-
+           self.Path(my_layer,my_path,'reference','Back Shoulder Width Reference Line B1B3','')
            # 'Back Chest Reference Line'
-           C1x=A1x
-           C1y=(A1y+chest_length)
-           C1=str(C1x)+','+str(C1y)
-           C2x=(C1x+(1*cm_to_px))
-           C2y=C1y
-           C2=str(C2x)+','+str(C2y)
-           C3x=(A3x-(1*cm_to_px))        
-           C3y=C1y
-           C3=str(C3x)+','+str(C3y)
-           C4x=A3x
-           C4y=C1y
-           C4=str(C4x)+','+str(C4y)
-           self.Dot(my_layer,B1x,B1y,'C1')
-           self.Dot(my_layer,C2x,C2y,'C2')
-           self.Dot(my_layer,C3x,C3y,'C3')
-           self.Dot(my_layer,C4x,C4y,'C4')
+           C1x,C1y,C1=self.GetDot(my_layer,A1x,(A1y+chest_length),'C1')
+           C2x,C2y,C2=self.GetDot(my_layer,(C1x+(1*cm_to_px)),C1y,'C2')
+           C3x,C3y,C3=self.GetDot(my_layer,(A3x-(1*cm_to_px)),C1y,'C3')
+           C4x,C4y,C4=self.GetDot(my_layer,A3x,C1y,'C4')
            my_path='M '+C1+' L '+C4
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Chest Reference Line C1C4','')
-
-           # D from A 'Back Waist Reference Line'
-           D1x=A1x
-           D1y=(A1y+back_waist_length)
-           D1=str(D1x)+','+str(D1y)
-           D2x=(D1x+(2.5*cm_to_px))
-           D2y=D1y
-           D2=str(D2x)+','+str(D2y)
-           D3x=A3x-((3*cm_to_px))       
-           D3y=D1y
-           D3=str(D3x)+','+str(D3y)
-           D4x=A3x
-           D4y=D1y
-           D4=str(D4x)+','+str(D4y)
-           self.Dot(my_layer,D1x,D1y,'D1')
-           self.Dot(my_layer,D2x,D2y,'D2')
-           self.Dot(my_layer,D3x,D3y,'D3')
-           self.Dot(my_layer,D4x,D4y,'D4')
+           self.Path(my_layer,my_path,'reference','Back Chest Reference Line C1C4','')
+           #'Back Waist Reference Line'
+           D1x,D1y,D1=self.GetDot(my_layer,A1x,A1y+back_waist_length,'D1')
+           D2x,D2y,D2=self.GetDot(my_layer,D1x+(2.5*cm_to_px),D1y,'D2')
+           D3x,D3y,D3=self.GetDot(my_layer,A3x-(3*cm_to_px),D1y,'D3')
+           D4x,D4y,D4=self.GetDot(my_layer,A3x,D1y,'D4')
            my_path='M '+D1+' L '+D4
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Waist Reference Line D1D4','')
-
-           # E from D 'Back Seat Reference Line'
-           E1x=A1x
-           E1y=(D1y+back_waist_to_seat_length)
-           E1=str(E1x)+','+str(E1y)
-           E2x=(E1x+(2*cm_to_px))
-           E2y=E1y
-           E2=str(E2x)+','+str(E2y)
-           E3x=(A3x-(2*cm_to_px))        
-           E3y=E1y
-           E3=str(E3x)+','+str(E3y)
-           E4x=A3x
-           E4y=E1y
-           E4=str(E4x)+','+str(E4y)
-           self.Dot(my_layer,E1x,E1y,'E1')
-           self.Dot(my_layer,E2x,E2y,'E2')
-           self.Dot(my_layer,E3x,E3y,'E3')
-           self.Dot(my_layer,E4x,E4y,'E4')
+           self.Path(my_layer,my_path,'reference','Back Waist Reference Line D1D4','')
+           # 'Back Hip Reference Line'
+           E1x,E1y,E1=self.GetDot(my_layer,A1x,(D1y+back_waist_to_seat_length),'E1')
+           E2x,E2y,E2=self.GetDot(my_layer,E1x+(2*cm_to_px),E1y,'E2')
+           E3x,E3y,E3=self.GetDot(my_layer,A3x-(2*cm_to_px),E1y,'E3')
+           E4x,E4y,E4=self.GetDot(my_layer,A3x,E1y,'E4')
            my_path='M '+E1+' L '+E4
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Seat Reference Line','')
-
-           # 'Back Bottom = Full Length of Jacket'
-           F1x=A1x
-           F1y=(A1y+back_jacket_length) 
-           F1=str(F1x)+','+str(F1y)
-           F2x=(F1x+(1.5*cm_to_px))
-           F2y=F1y
-           F2=str(F2x)+','+str(F2y)
-           F3x=(A3x-(1.5*cm_to_px))
-           F3y=F1y
-           F3=str(F3x)+','+str(F3y)
-           F4x=A3x
-           F4y=F1y
-           F4=str(F4x)+','+str(F4y)
-           self.Dot(my_layer,F1x,F1y,'F1')
-           self.Dot(my_layer,F2x,F2y,'F2')
-           self.Dot(my_layer,F3x,F3y,'F3')
-           self.Dot(my_layer,F3x,F3y,'F4')
-           my_path='M '+F2+' L '+F3
-           nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Bottom Line F2F3','')
-
-           #===============
+           self.Path(my_layer,my_path,'reference','Back Hip Reference Line E1E4','')
+           # 'Full Length of Jacket'
+           F1x,F1y,F1=self.GetDot(my_layer,A1x,A1y+back_jacket_length,'A1')
+           F2x,F2y,F2=self.GetDot(my_layer,F1x+(1.5*cm_to_px),F1y,'F2')
+           F3x,F3y,F3=self.GetDot(my_layer,A3x-(1.5*cm_to_px),F1y,'F3')
+           F4x,F4y,F4=self.GetDot(my_layer,A3x,F1y,'F4')
+           my_path='M '+F1+' L '+F4
+           self.Path(my_layer,my_path,'reference','Back Jacket Hem Reference Line F1F4','')
            # Top,Bottom,Back, And Side Reference Lines
            my_path='M '+A1+' L '+A3
-           my_nodetypes='cc'
-           self.Path(my_layer, my_nodetypes,my_path,'reference','Back Top Reference Line A1A3','')
+           self.Path(my_layer,my_path,'reference','Back Top Reference Line A1A3','')
            my_path='M '+F1+' L '+F4
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Bottom Reference Line F1F4','')
+           self.Path(my_layer,my_path,'reference','Back Bottom Reference Line F1F4','')
            my_path='M '+A1+' L '+F1
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Reference Line A1F1','')
+           self.Path(my_layer,my_path,'reference','Back Reference Line A1F1','')
            my_path='M '+A3+' L '+F4
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Side Reference Line A3F4','')
-
-           #===============
-           # Back Center Seam
-           x1= B1x
-           y1=(B1y+(abs(C2y-B1y)*(.10)))
-           x2=(B1x+(abs(C2x-B1x)*(.6)))
-           y2=(B1y+(abs(C2y-B1y)*(.80)))
-           c1=str(x1)+','+str(y1)
-           c2=str(x2)+','+str(y2)
-	   my_nodetypes='csszsc'
-           #my_path='M '+A1+' L '+B1+' C '+c1+' '+c2+' '+ C2+' L '+D2+' L '+E2+' L '+F2
-           #my_path='M '+A1+' L '+B1+' L '+C2+' L '+D2+' L '+E2+' L '+F2
-           my_path='M '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1
-           self.Path(my_layer,my_nodetypes,my_path,'line','Back Center Seam A1B1C2D2E2F2','')
-           Back_Center_Seam='L '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1
-
-           #===============
+           self.Path(my_layer,my_path,'reference','Side Reference Line A3F4','')
            # 'Back Shoulder Reference Line'
            I1x=A2x
            I1y=A2y-(2*cm_to_px)
            I1=str(I1x)+','+str(I1y)
            self.Dot(my_layer,I1x,I1y,'I1')
            my_path='M '+I1+' L '+A2
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Back Shoulder Reference Line','')
-
-           # 'Back Shoulder Line'
-           x1=I1x+(B3x-I1x)*(.33)
-           y1=I1y+(B3y-I1y)*(.4)
-           x2=I1x+(B3x-I1x)*(.6)
-           y2=I1y+(B3y-I1y)*(.66)
-           bsc1=str(x1)+','+str(y1)
-           bsc2=str(x2)+','+str(y2)
-           my_path= 'M '+I1+' C '+bsc1+' '+bsc2+' '+B3
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Back Shoulder Line','')
-           Back_Shoulder_Seam=my_path
-
-           # Back Neck Curve
-           my_length1=((abs(I1y-A1y))*(.75))
-           my_length2=(-((abs(I1x-A1x))*(.50)))    #opposite direction
-           x1,y1 = self.XYwithSlope(I1x,I1y,B3x,B3y,my_length1,'perpendicular')
-           x2,y2 = self.XYwithSlope(A1x,A1y,A2x,A2y,my_length2,'normal')
-           bnc1=str(x1)+','+str(y1)
-           bnc2=str(x2)+','+str(y2)
-           #my_path='M '+I1+' C '+c1+' '+c2+ ' '+A1
-           my_path='M '+A1+' C '+bnc2+' '+bnc1+ ' '+I1
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Back Neck Curve','')
-           Back_Neck_Curve=my_path
-
-
+           self.Path(my_layer,my_path,'reference','Back Shoulder Reference Line I1A2','')
            # 'Back Sleeve Balance Point'
            I2x=A3x
            chest_to_balance_point=(12*cm_to_px)      
@@ -500,20 +387,53 @@ class DrawJacket(inkex.Effect):
            I3y=(C4y-(6*cm_to_px))
            I3=str(I3x)+','+str(I3y)
            self.Dot(my_layer,I3x,I3y,'I3')
-           # 'Back Armscye Curve'
-           bac1=str(I2x)+','+str(I2y)         
-           bac2=bac1
-           my_path='M '+B3+' C '+bac1+' '+bac2+' '+I3
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Top Armscye Curve','')
-           Back_Armhole_Curve=my_path
 
            #===============
+           # Back Center line
+           x1= B1x
+           y1=(B1y+(abs(C2y-B1y)*(.10)))
+           x2=(B1x+(abs(C2x-B1x)*(.6)))
+           y2=(B1y+(abs(C2y-B1y)*(.80)))
+           c1=str(x1)+','+str(y1)
+           c2=str(x2)+','+str(y2)
+           my_path='M '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1
+           self.Path(my_layer,my_path,'line','Back Center Seam A1B1C2D2E2F2','')
+           # Back Neck Curve Line
+           my_length1=((abs(I1y-A1y))*(.75))
+           my_length2=(-((abs(I1x-A1x))*(.50)))    #opposite direction
+           x1,y1= self.XYwithSlope(I1x,I1y,B3x,B3y,my_length1,'perpendicular')
+           bnc1=str(x1)+','+str(x2)
+           x2,y2 = self.XYwithSlope(A1x,A1y,A2x,A2y,my_length2,'normal')
+           bnc2=str(x2)+','+str(y2)
+           my_path='M '+A1+' C '+bnc2+' '+bnc1+ ' '+I1
+           self.Path(my_layer,my_path,'line','Back Neck Curve','')
+           # 'Back Shoulder Line'
+           x1=I1x+(B3x-I1x)*(.33)
+           y1=I1y+(B3y-I1y)*(.4)
+           x2=I1x+(B3x-I1x)*(.6)
+           y2=I1y+(B3y-I1y)*(.66)
+           bsc1=str(x1)+','+str(y1)
+           bsc2=str(x2)+','+str(y2)
+           my_path= 'M '+I1+' C '+bsc1+' '+bsc2+' '+B3
+           self.Path(my_layer,my_path,'line','Back Shoulder Line','')
+           # 'Back Armscye Curve'
+           bac1=I2         
+           my_path='M '+B3+' Q '+bac1+' '+I3
+           self.Path(my_layer,my_path,'line','Top Armscye Curve','')
            # 'Back Side Seam'
            my_path='M '+I3+' L '+C3+' L '+D3+' L '+E3+' L '+F3+' L '+F2
-           my_nodetypes='casacc'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Back Side Seam I3C3D3E3F3','')
-           Back_Side_Seam=my_path
+           self.Path(my_layer,my_path,'line','Back Side Seam I3C3D3E3F3','')
+           # Create Back Pattern Piece
+           self.back_jacket_layer = inkex.etree.SubElement(my_layer, 'g')
+           self.back_jacket_layer.set(inkex.addNS('label', 'inkscape'), 'Steampunk Mens Jacket Pattern')
+           self.back_jacket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Back')
+           back_jacket_layer=self.back_jacket_layer          
+           Back_Pattern_Path='M '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1+' C '+bnc2+' '+bnc1+ ' '+I1+' C '+bsc1+' '+bsc2+' '+B3+' Q '+bac1+' '+I3+' L '+C3+' L '+D3+' L '+E3+' L '+F3+' z'
+           self.Path(back_jacket_layer,Back_Pattern_Path,'pattern','Jacket Back','')
+           my_path='M '+str(F2x+(F3x-F2x)/2)+','+str(E2y)+' L '+str(F2x+(F3x-F2x)/2)+','+str(C2y)
+           self.Path(back_jacket_layer,my_path,'grainline','Jacket Back Grainline','')
+           # To Do - Smooth nodes, copy this path with id='Back Jacket Seam Allowance, paste in place, create 56.25px Outset of solid black for the cutting line, 
+           # Then select for id='Back Jacket', change stroke type to dash
 
 
 
@@ -542,8 +462,7 @@ class DrawJacket(inkex.Effect):
            F5=str(F5x)+','+str(F5y)
            self.Dot(my_layer,F5x,F5y,'F5')
            my_path='M '+I4+' L '+C5+' L '+D5+' L '+E5+' L '+F5
-           my_nodetypes='casac'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Front Side Seam I4C5D5E5F5','')
+           self.Path(my_layer,my_path,'line','Front Side Seam I4C5D5E5F5','')
            Front_Side_Seam=my_path
 
            # 'Front Reference Points'
@@ -617,38 +536,31 @@ class DrawJacket(inkex.Effect):
 
            #Extend top reference line
            my_path='M '+A3+' L '+A5
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Top Reference Line A3A5','')
+           self.Path(my_layer,my_path,'reference','Front Top Reference Line A3A5','')
            
            # Extend Chest reference line
            my_path='M '+C4+' L '+C10
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Chest Reference Line C4C10','')
+           self.Path(my_layer,my_path,'reference','Front Chest Reference Line C4C10','')
 
            #Extend Waist reference line
            my_path='M '+D4+' L '+D10
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Waist Reference Line D4D10','')
+           self.Path(my_layer,my_path,'reference','Front Waist Reference Line D4D10','')
 
            #Extend Seat reference line
            my_path='M '+E4+' L '+E7
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Seat Reference Line E4E7','')
+           self.Path(my_layer,my_path,'reference','Front Seat Reference Line E4E7','')
 
            #Extend Bottom reference line
            my_path='M '+F4+' L '+F7
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Bottom Reference Line C4C10','')
+           self.Path(my_layer,my_path,'reference','Front Bottom Reference Line C4C10','')
 
            # Front Chest Button/Buttonhole Reference Line
            my_path='M '+C9+' L '+F8
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Buttonhole Reference Line C4C10','')
+           self.Path(my_layer,my_path,'reference','Front Buttonhole Reference Line C4C10','')
          
            # Front Length Extension Reference Line
            my_path='M '+F5+' L '+F8
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Length Extension Reference Line C4C10','')
+           self.Path(my_layer,my_path,'reference','Front Length Extension Reference Line C4C10','')
          
         
 
@@ -664,18 +576,16 @@ class DrawJacket(inkex.Effect):
            J2=str(J2x)+','+str(J2y)
            self.Dot(my_layer,J2x,J2y,'J2')
            my_path='M '+J2+' L '+A5
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Shoulder Line J2A5','')
+           self.Path(my_layer,my_path,'reference','Front Shoulder Line J2A5','')
            Front_Shoulder_Seam=my_path
-           x1=A5x-abs(J2x-A5x)*(.33)
-           y1=A5y-abs(J2y-A5y)*(.4)
+           x1=A5x-abs(J2x-A5x)*(.45)
+           y1=A5y+abs(J2y-A5y)*(.15)
            fsc1=str(x1)+','+str(y1)
-           x2=A5x-abs(J2x-A5x)*(.5)
-           y2=A4
+           x2=A5x-abs(J2x-A5x)*(.85)
+           y2=A5y+abs(J2y-A5y)*(.7)
            fsc2=str(x2)+','+str(y2)
-           my_path= 'M '+A5+' C '+fsc1+' '+fsc2+' '+J2
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Back Shoulder Line','')
+           my_path= 'M '+A5+' C '+fsc1+','+fsc2+' '+J2
+           self.Path(my_layer,my_path,'line','Back Shoulder Line','')
            Back_Shoulder_Seam=my_path
 
 
@@ -685,11 +595,9 @@ class DrawJacket(inkex.Effect):
            J3=str(J3x)+','+str(J3y)
            self.Dot(my_layer,J3x,J3y,'J3')
            my_path='M '+C8+' L '+J3
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Armhole Length Reference C8J3','')
+           self.Path(my_layer,my_path,'reference','Armhole Length Reference C8J3','')
            my_path='M '+J2+' L '+J3
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Armhole Length Reference J2J3','')
+           self.Path(my_layer,my_path,'reference','Armhole Length Reference J2J3','')
 
            armholelength=(self.LineLength(J2x,J2y,J3x,J3y))
            my_length=(armholelength/2)
@@ -703,8 +611,7 @@ class DrawJacket(inkex.Effect):
            J5=str(J5x)+','+str(J5y)
            self.Dot(my_layer,J5x,J5y,'J5') 
            my_path='M '+J4+' L '+J5
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Armhole Curvedepth Reference J4J5','')
+           self.Path(my_layer,my_path,'reference','Armhole Curvedepth Reference J4J5','')
 
            x1=J2x
            y1=J2y
@@ -719,8 +626,7 @@ class DrawJacket(inkex.Effect):
            y4=C7y
            fac1c4=str(x4)+','+str(y4)
            my_path='M '+J2+' C '+fac1c1+','+fac1c2+' '+J3+'  '+fac1c3+','+fac1c4+' '+C7
-           my_nodetypes='cac'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Front Armhole Curve1 J2J3C7','')
+           self.Path(my_layer,my_path,'line','Front Armhole Curve1 J2J3C7','')
            Front_Armhole_Curve_1=my_path
 
            X=(C5x-100)
@@ -731,8 +637,7 @@ class DrawJacket(inkex.Effect):
            I5=str(I5x)+','+str(I5y)
            self.Dot(my_layer,I5x,I5y,'I5')
            my_path='M '+C5+' L '+I5
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Armhole Depth 1 C5I5','')
+           self.Path(my_layer,my_path,'reference','Front Armhole Depth 1 C5I5','')
            x1=C6x-(abs(C6x-I4x)*(.5))
            y1=C6y
            x2=C6x-(abs(C6x-I4x)*(.9))
@@ -740,8 +645,7 @@ class DrawJacket(inkex.Effect):
            fac2c1=str(x1)+','+str(y1)
            fac2c2=str(x2)+','+str(y2)
            my_path='M '+C6+' C '+fac2c1+','+fac2c2+' '+I4
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Front Armhole Curve2 C6I4','')
+           self.Path(my_layer,my_path,'line','Front Armhole Curve2 C6I4','')
            Front_Armhole_Curve_2=my_path
 
            # Front Collar
@@ -757,8 +661,7 @@ class DrawJacket(inkex.Effect):
            K7x,K7y=self.XYwithSlope(K6x,K6y,K6x-100,K6y+100,length,'normal')
            K7=str(K7x)+','+str(K7y)
            my_path='M '+K6+' L '+K7
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Collar reference Line A5K8C10','')
+           self.Path(my_layer,my_path,'reference','Front Collar reference Line A5K8C10','')
            self.Dot(my_layer,K7x,K7y,'K7')
            length=(2.5*cm_to_px)
            K8x,K8y=self.XY(A5x,A5y,J2x,J2y,length)
@@ -768,13 +671,17 @@ class DrawJacket(inkex.Effect):
            K9=str(K9x)+','+str(K9y)
            self.Dot(my_layer,K9x,K9y,'K9')
            my_path='M '+A5+' L '+K8+' L '+C10
-           my_nodetypes='csc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Collar reference Line A5K8C10','')
+           self.Path(my_layer,my_path,'reference','Front Collar reference Line A5K8C10','')
+           
    
 
-           my_path='M '+A5+' L '+K6+' L '+K1+' L '+C10
-           my_nodetypes='cccc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Neck/Lapel reference Line A5K8C10','')
+           my_path='M '+A5+' L '+K6+' L '+K1
+           self.Path(my_layer,my_path,'reference','Front Neck/Lapel reference Line A5K6K1','')
+           fnc1x=K1x+(1)*cm_to_px
+           fnc1y=K1y+abs(K1y-C10y)/2
+           fnc1=str(fnc1x)+','+str(fnc1y)
+           my_path='M '+K1+' Q '+fnc1+' '+C10
+           self.Path(my_layer,my_path,'line','Front Lapel Curve reference Line K1C10','')
 
            #collar dart
            K3x,K3y=(K1x-((K1x-K9x)/2)) ,(K1y)               #K3=dart midpoint
@@ -801,8 +708,7 @@ class DrawJacket(inkex.Effect):
            L4=str(L4x)+','+str(L4y)
            self.Dot(my_layer,L4x,L4y,'L4') 
            my_path='M '+L1+' L '+L2+' L '+L3+' L '+L4+' z'
-           my_nodetypes='cccc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','place Upper Pocket here','')
+           self.Path(my_layer,my_path,'reference','place Upper Pocket here','')
            dx=(K1x-L1x)+(7.5*cm_to_px)
            dy=0
            UP1x,UP1y=L1x+dx,L1y+dy
@@ -818,8 +724,7 @@ class DrawJacket(inkex.Effect):
            UP4=str(UP4x)+','+str(UP4y)
            self.Dot(my_layer,UP4x,UP4y,'UP4')
            my_path='M '+UP1+' L '+UP2+' L '+UP3+' L '+UP4+' z'
-           my_nodetypes='cccc'
-           self.Path(my_layer,my_nodetypes,my_path,'pattern','Front Jacket Upper Pocket L1L2L3L4','')
+           self.Path(my_layer,my_path,'pattern','Front Jacket Upper Pocket L1L2L3L4','')
 
            #Upper Dart
            length=9*cm_to_px
@@ -827,11 +732,9 @@ class DrawJacket(inkex.Effect):
            K5=str(K5x)+','+str(K5y)
            self.Dot(my_layer,K5x,K5y,'K5')   
            my_path='M '+K3+' L '+K5
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Upper Dart Reference Line K3K5','') 
-           my_nodetypes='ccc'
+           self.Path(my_layer,my_path,'reference','Upper Dart Reference Line K3K5','') 
            my_path='M '+K2+' L '+K5+' '+K4
-           self.Path(my_layer,my_nodetypes,my_path,'dart','Upper Dart line K2K5K4','')
+           self.Path(my_layer,my_path,'dart','Upper Dart line K2K5K4','')
        
 
            #Lower Pocket
@@ -851,20 +754,17 @@ class DrawJacket(inkex.Effect):
            self.Dot(my_layer,N2x,N2y,'N2')
            self.Dot(my_layer,N3x,N3y,'N3')
            my_path='M '+A4+' L '+N1
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Front Jacket Lower Pocket Reference Line A4N1','') 
+           self.Path(my_layer,my_path,'reference','Front Jacket Lower Pocket Reference Line A4N1','') 
            M2x,M2y=N2x,(N2y-abs(N1y-M1y))
            M2=str(M2x)+','+str(M2y)
            self.Dot(my_layer,M2x,M2y,'M2')
            my_path='M '+N2+' L '+M2
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Lower Pocket Reference Line N2M2','')
+           self.Path(my_layer,my_path,'reference','Lower Pocket Reference Line N2M2','')
            M3x,M3y=N3x,(N3y-abs(N1y-M1y))
            M3=str(M3x)+','+str(M3y)
            self.Dot(my_layer,M3x,M3y,'M3')
            my_path='M '+N3+' L '+M3
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Lower Pocket Reference Line N3M3','')
+           self.Path(my_layer,my_path,'reference','Lower Pocket Reference Line N3M3','')
            M4x,M4y=M3x-(1*cm_to_px),M3y+((self.Sqrt(((5.5)**2)-(1)))*cm_to_px)
            M4=str(M4x)+','+str(M4y)
            self.Dot(my_layer,M4x,M4y,'M4')
@@ -872,8 +772,7 @@ class DrawJacket(inkex.Effect):
            M5=str(M5x)+','+str(M5y)
            self.Dot(my_layer,M5x,M5y,'M5')
            my_path='M '+M2+' L '+M3+' L '+M4+' L '+M5+' z'
-           my_nodetypes='cccc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','place Lower Pocket here','')
+           self.Path(my_layer,my_path,'reference','place Lower Pocket here','')
            dx=(C10x-M2x)+(7.5*cm_to_px)
            dy=0
            LP1x, LP1y = M1x+dx,M1y+dy
@@ -891,9 +790,8 @@ class DrawJacket(inkex.Effect):
            LP5x, LP5y = M5x+dx,M5y+dy
            LP5=str(LP5x)+','+str(LP5y)        
            self.Dot(my_layer,LP5x,LP5y,'LP5')
-           my_nodetypes='cccc'
            my_path = 'M '+LP2+' L '+LP3+' '+LP4+' '+LP5+' z'
-           self.Path(my_layer,my_nodetypes,my_path,'pattern','Front Jacket Lower Pocket LP2LP3LP4LP5','')
+           self.Path(my_layer,my_path,'pattern','Front Jacket Lower Pocket LP2LP3LP4LP5','')
            Lower_Pocket=my_path
            
            #Collar Pattern Line
@@ -907,8 +805,7 @@ class DrawJacket(inkex.Effect):
            F9=str(F9x)+','+str(F9y)
            self.Dot(my_layer,F9x,F9y,'F9')
            my_path='M '+A5+' Q '+K6+' '+K9+' L '+K1+' '+C10+' '+D11+' C '+E7+' '+F7+ ' '+F9+' L '+F5
-           my_nodetypes='csssscsssssc'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Front Jacket Collar and Front Line','')  
+           self.Path(my_layer,my_path,'reference','Front Jacket Collar and Front reference','')  
            Front_Collar_and_Lapel=my_path
 
            # Side Dart
@@ -920,8 +817,7 @@ class DrawJacket(inkex.Effect):
            O2=str(O2x)+','+str(O2y)
            self.Dot(my_layer,O2x,O2y,'O2')            
            my_path='M '+O1+' L '+O2
-           my_nodetypes='cc'
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Side Dart Reference Line','')
+           self.Path(my_layer,my_path,'reference','Side Dart Reference Line','')
            O3y=D5y-(2*cm_to_px)
            m=(O1y-O2y)/(O1x-O2x)
            b=O1y-(O1x*m)
@@ -936,7 +832,6 @@ class DrawJacket(inkex.Effect):
            O5x=O3x+(1*cm_to_px)
            O5=str(O5x)+','+str(O5y)  
            self.Dot(my_layer,O5x,O5y,'O5')
-           #my_path='M '+C6+' L '+O4+' L '+O1+' L '+O5+' L '+C7
            sdc1x,sdc1y=O4x-30,C6y+(abs(C6y-O4y))*(.80)                                 #sidedartcontrol1,2, etc - sdc1, sdc2
            sdc1=str(sdc1x)+','+str(sdc1y)
            sdc2x,sdc2y=O4x,O4y+(abs(O4y-O1y))*(.20)
@@ -947,43 +842,28 @@ class DrawJacket(inkex.Effect):
            sdc4=str(sdc4x)+','+str(sdc4y)
            #start at C6 godownto O1, Move up to C7 godown to O1, 2 separate dart lines.
            my_path='M '+C6+' C '+sdc1+' '+sdc2+' '+O1
-           my_nodetypes='csc'
-           self.Path(my_layer,my_nodetypes,my_path,'dart','Side Dart1','')
+           self.Path(my_layer,my_path,'dart','Side Dart1','')
            Front_Side_Dart1=my_path
            my_path='M '+C7+' C '+sdc3+' '+sdc4+' '+O1
-           my_nodetypes='csc'
-           self.Path(my_layer,my_nodetypes,my_path,'dart','Side Dart2','')
+           self.Path(my_layer,my_path,'dart','Side Dart2','')
            Front_Side_Dart2=my_path
 
 
            #########################################
            #    Draw Front & Back Pattern Pieces   #
            #########################################
-           self.back_jacket_layer = inkex.etree.SubElement(my_layer, 'g')
-           self.back_jacket_layer.set(inkex.addNS('label', 'inkscape'), 'Steampunk Mens Jacket Pattern')
-           self.back_jacket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Back')
-           back_jacket_layer=self.back_jacket_layer          
-           my_nodetypes=' '
-           Back_Pattern_Path='M '+F2+' L '+E2+' L '+D2+' L '+C2+' L '+B1+' L '+A1+' C '+bnc2+' '+bnc1+ ' '+I1+' C '+bsc1+' '+bsc2+' '+B3+' C '+bac1+' '+bac2+' '+I3+' L '+C3+' L '+D3+' L '+E3+' L '+F3+' z'
-           self.Path(back_jacket_layer,my_nodetypes,Back_Pattern_Path,'pattern','Jacket Back','')
-           my_path='M '+str(F2x+(F3x-F2x)/2)+','+str(E2y)+' L '+str(F2x+(F3x-F2x)/2)+','+str(C2y)
-           my_nodetypes='cc'
-           self.Path(back_jacket_layer,'cc',my_path,'grainline','Jacket Back Grainline','')
-           # To Do - Smooth nodes, copy this path with id='Back Jacket Seam Allowance, paste in place, create 56.25px Outset of solid black for the cutting line, 
-           # Then select for id='Back Jacket', change stroke type to dash
+
 
            self.front_jacket_layer = inkex.etree.SubElement(my_layer, 'g')
            self.front_jacket_layer.set(inkex.addNS('label', 'inkscape'), 'Steampunk Mens Jacket Pattern')
            self.front_jacket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Front')
            front_jacket_layer=self.front_jacket_layer
 
-           my_nodetypes=' '
            #Front_Pattern_Piece=Front_Side_Seam+' '+Front_Shoulder_Seam+' '+Front_Armhole_Curve_2+' '+Front_Armhole_Curve_1+' '+Front_Collar_and_Lapel
-           Front_Pattern_Piece='M '+A5+' Q '+K6+' '+K9+' L '+K1+' L '+C10+' L '+D11+' C '+E7+' '+F7+' '+F9+' L '+F5+' L '+E5+' L '+D5+' L '+C5+' L '+I4+' C '+fac2c2+' '+fac2c1+' '+C6+' L '+C7+' C '+fac1c4+' '+fac1c3+' '+J3+' C '+fac1c2+' '+fac1c1+' '+J2+' z'
-           self.Path(front_jacket_layer,my_nodetypes,Front_Pattern_Piece,'pattern','Jacket Front','')
+           Front_Pattern_Piece='M '+A5+' Q '+K6+' '+K9+' L '+K1+' Q '+fnc1+','+C10+' L '+D11+' C '+E7+' '+F7+' '+F9+' L '+F5+' L '+E5+' L '+D5+' L '+C5+' L '+I4+' C '+fac2c2+' '+fac2c1+' '+C6+' L '+C7+' C '+fac1c4+' '+fac1c3+' '+J3+' C '+fac1c2+' '+fac1c1+' '+J2+' C '+fsc2+','+fsc1+','+A5+' z'
+           self.Path(front_jacket_layer,Front_Pattern_Piece,'pattern','Jacket Front','')
            my_path='M '+str(C8x+(C10x-C8x)/2)+','+str(E2y)+' L '+str(C8x+(C10x-C8x)/2)+','+str(L4y+(3*cm_to_px))
-           my_nodetypes='cc'
-           self.Path(back_jacket_layer,'cc',my_path,'grainline','Front Jacket Grainline','')
+           self.Path(back_jacket_layer,my_path,'grainline','Front Jacket Grainline','')
 
            
            #===============
@@ -1011,9 +891,11 @@ class DrawJacket(inkex.Effect):
            SF1x,SF1y=SA1x,SB1y+(sleeve_length)
            SF1=str(SF1x)+','+str(SF1y)
            self.Dot(my_layer,SF1x,SF1y,'SF1')
-           my_nodetypes='csssc'
+           sc1c1x=SC1x
+           sc1c1y=SC1y-(abs(SC1y-SB1y)*(.3))
+           sc1c1y=str(sc1c1x)+','+str(sc1c1y)
            my_path='M '+SA1+' L '+SB1+' '+SC1+' '+SD1+' '+SF1
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Length Reference Line SA1SB1SC1SD1SF1','')
+           self.Path(my_layer,my_path,'reference','Sleeve Length Reference Line SA1SB1SC1SD1SF1','')
            x1=SA1x-100
            y1=SA1y-100
            length=(3*cm_to_px)
@@ -1027,11 +909,10 @@ class DrawJacket(inkex.Effect):
            SA4x,SA4y=(SA1x+(chest/4-3*cm_to_px)),SA1y
            SA4=str(SA4x)+','+str(SA4y)
            self.Dot(my_layer,SA4x,SA4y,'SA4')
-           my_nodetypes='cc'
            my_path='M '+SA1+' L '+SA4
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Top Reference Line SA','')
+           self.Path(my_layer,my_path,'reference','Sleeve Top Reference Line SA','')
            my_path='M '+SA1+' L '+SA2
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Corner Reference Line SA1SA2','')
+           self.Path(my_layer,my_path,'reference','Sleeve Corner Reference Line SA1SA2','')
  
 
            SB2x,SB2y=(SA4x-(4*cm_to_px)),SB1y
@@ -1055,9 +936,29 @@ class DrawJacket(inkex.Effect):
            SB8x,SB8y=SB6x+((SB6x-SB4x)),SB4y+((C4y-I2y)-(C8y-J3y))
            SB8=str(SB8x)+','+str(SB8y)
            self.Dot(my_layer,SB8x,SB8y,'SB8')
-           my_nodetypes='cc'
            my_path='M '+SB1+' L '+SB2+' '+SB3+' '+SB4+' '+SB5+' '+SB6+' '+SB7+' '+SB8
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Reference Line SB','')
+           self.Path(my_layer,my_path,'reference','Sleeve Reference Line SB','')
+           tsc1x=SB1x+abs(SA2x-SB1x)*(.6)
+           tsc1y=SB1y-abs(SA2y-SB1y)*(.7)
+           tsc1=str(tsc1x)+','+str(tsc1y)
+           my_path='M '+SB1+' Q '+tsc1+' '+SA2
+           self.Path(my_layer,my_path,'line','Sleeve Curve Reference Line SB1SA2','')
+           tsc2x=SA2x+abs(SA3x-SA2x)*(.25)
+           tsc2y=SA2y-abs(SA3y-SA2y)*(.6)
+           tsc2=str(tsc2x)+','+str(tsc2y)
+           tsc3x=SA2x+abs(SA3x-SA2x)*(.6)
+           tsc3y=SA3y-((.5)*cm_to_px)
+           tsc3=str(tsc3x)+','+str(tsc3y)
+           my_path='m '+SA2+' C '+tsc2+' '+tsc3+','+SA3
+           self.Path(my_layer,my_path,'line','Sleeve Curve Reference Line SA2SA3','')
+           tsc4x=SA3x+abs(SA3x-SB2x)*(.25)
+           tsc4y=SA3y
+           tsc4=str(tsc4x)+','+str(tsc4y)
+           tsc5x=SA3x+abs(SA3x-SB2x)*(.7)
+           tsc5y=SA3y+abs(SA3y-SB2y)*(.45)
+           tsc5=str(tsc5x)+','+str(tsc5y)
+           my_path='m '+SA3+' C '+tsc4+' '+tsc5+','+SB2
+           self.Path(my_layer,my_path,'line','Sleeve Curve Reference Line SA3SB2','')
 
 
            SC2x,SC2y=SC1x+((SA4x-SA1x)/2),SC1y
@@ -1081,12 +982,19 @@ class DrawJacket(inkex.Effect):
            SC8x,SC8y=SB8x,SC1y
            SC8=str(SC8x)+','+str(SC8y)
            self.Dot(my_layer,SC8x,SC8y,'SC8')
-           my_nodetypes='cc'
            my_path='M '+SA3+' L '+SC2
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Cap Depth Reference Line SA3SC2 ','')
-           my_nodetypes='csssssc'
+           self.Path(my_layer,my_path,'reference','Sleeve Cap Depth Reference Line SA3SC2 ','')
            my_path='M '+SC1+' L '+SC2+' '+SC3+' '+SC5+' '+SC6+' '+SC7+' '+SC8
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Reference Line SC','')
+           self.Path(my_layer,my_path,'reference','Sleeve Reference Line SC','')
+           tsc6x=SB2x+abs(SC4x-SB2x)*(.25)
+           tsc6y=SB2y+abs(SC4x-SB2x)*(.25)
+           tsc6=str(tsc6x)+','+str(tsc6y)
+           tsc7x=SB2x+abs(SC4x-SB2x)*(.85)
+           tsc7y=SB2y+abs(SC4y-SB2y)*(.5)
+           tsc7=str(tsc7x)+','+str(tsc7y)
+           my_path='M '+SB2+' C '+tsc6+','+tsc7+' '+SC4
+           self.Path(my_layer,my_path,'line','Sleeve Curve Reference Line SB2SC4','')
+
 
            SD2x,SD2y=SD1x+1*cm_to_px,SD1y
            SD2=str(SD2x)+','+str(SD2y)
@@ -1109,9 +1017,8 @@ class DrawJacket(inkex.Effect):
            SD8x,SD8y=SB8x,SD1y
            SD8=str(SD8x)+','+str(SD8y)
            self.Dot(my_layer,SD8x,SD8y,'SD8')
-           my_nodetypes='csssssc'
            my_path='M '+SD1+' L '+SD2+' '+SD3+' '+SD4+' '+SD5+' '+SD6+' '+SD7+' '+SD8
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Reference Line SD','')
+           self.Path(my_layer,my_path,'reference','Sleeve Reference Line SD','')
 
            SF1x,SF1y=SA1x,SB1y+sleeve_length
            SF1=str(SF1x)+','+str(SF1y)
@@ -1143,9 +1050,8 @@ class DrawJacket(inkex.Effect):
            SF10x,SF10y=self.XYwithSlope(SF9x,SF9y,SF7x,SF7y,2*cm_to_px,'normal')
            SF10=str(SF10x)+','+str(SF10y)
            self.Dot(my_layer,SF10x,SF10y,'SF10')
-           my_nodetypes='cssssc'
            my_path='M '+SF1+' L '+SF2+' '+SF3+' '+SF6+' '+SF7+' '+SF8
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Reference Line SF','')
+           self.Path(my_layer,my_path,'reference','Sleeve Reference Line SF','')
 
            # Cuff Placement Reference Points
            SE1x,SE1y=SF2x-2.5*cm_to_px,SF2y-10*cm_to_px
@@ -1161,44 +1067,33 @@ class DrawJacket(inkex.Effect):
            SE4=str(SE4x)+','+str(SE4y)
            self.Dot(my_layer,SE4x,SE4y,'SE4')
 
-           my_nodetypes='csssssc'
            my_path='M '+SA4+' L '+SB3+' '+SC4+' '+SC3+' '+SD4+' '+SF3
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Side Reference Line SA4SB3SC4SC3SD4SF3','')
-           my_nodetypes='cssc'
+           self.Path(my_layer,my_path,'reference','Sleeve Side Reference Line SA4SB3SC4SC3SD4SF3','')
            my_path='M '+SB4+' L '+SC5+' '+SD5+' '+SF6
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Side Reference Line SSB4SC5SD5SF6','')
-           my_nodetypes='cc'
+           self.Path(my_layer,my_path,'reference','Sleeve Side Reference Line SSB4SC5SD5SF6','')
            my_path='M '+SB6+' L '+SC7
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Cap Reference Line SB6SC7','')
-           my_nodetypes='cc'
+           self.Path(my_layer,my_path,'reference','Sleeve Cap Reference Line SB6SC7','')
            my_path='M '+SB8+' L '+SC8+' '+SD8+' '+SF8
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Sleeve Side Reference Line SB8SC8SD8SF8','')
+           self.Path(my_layer,my_path,'reference','Sleeve Side Reference Line SB8SC8SD8SF8','')
 
-           # Draw Top Sleeve Pattern reference lines
-           my_nodetypes='cssscsssssssc'
-           my_path='M '+SF2+' '+SE1+' '+SD2+' '+SC1+' '+SB1+' '+SA2+' '+SA3+' '+SB2+' '+SC4+' '+SD3+' '+SE2+' '+SF5+' z'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Top Sleeve Reference Pattern','')    
+           # Draw Top Sleeve Pattern Seams
+           my_path='M '+SF2+' '+SE1+' '+SD2+' '+SC1+' '+SB1+' Q '+tsc1+' '+SA2+' C '+tsc2+' '+tsc3+','+SA3+' C '+tsc4+' '+tsc5+','+SB2+' C '+tsc6+','+tsc7+' '+SC4+' '+SD3+' '+SE2+' '+SF5+' z'
+           self.Path(my_layer,my_path,'green','Top Sleeve Reference Pattern','')    
 
            # Draw Bottom Sleeve Pattern reference lines
-           my_nodetypes='cssscsscsssc'
            my_path='M '+SF7+' '+SE3+' '+SD6+' '+SC6+' '+SB5+' '+SB6+' '+SB7+' '+SB8+' '+SC8+' '+SD7+' '+SE4+' '+SF10+' z'
-           self.Path(my_layer,my_nodetypes,my_path,'line','Top Sleeve Reference Pattern','')
+           self.Path(my_layer,my_path,'green','Top Sleeve Reference Pattern','')
 
            # Draw Cuff Placement reference lines
-
-           my_nodetypes='cc'
            my_path='M '+SE1+' L '+SE2
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Top Sleeve Cuff Placement line','')
+           self.Path(my_layer,my_path,'reference','Top Sleeve Cuff Placement line','')
            my_path='M '+str(SC2x)+','+str(SC2y)+' L '+str(SC2x)+','+str(SD1y+8*in_to_px)
-           my_nodetypes='cc'
-           self.Path(back_jacket_layer,'cc',my_path,'grainline','Top Sleeve Grainline','')
+           self.Path(back_jacket_layer,my_path,'grainline','Top Sleeve Grainline','')
 
-           my_nodetypes='cc'
            my_path='M '+SE3+' L '+SE4
-           self.Path(my_layer,my_nodetypes,my_path,'reference','Bottom Sleeve Cuff Placement line','')
+           self.Path(my_layer,my_path,'reference','Bottom Sleeve Cuff Placement line','')
            my_path='M '+str(SC7x)+','+str(SC6y+3*in_to_px)+' L '+str(SC7x)+','+str(SD6y+11*in_to_px)
-           my_nodetypes='cc'
-           self.Path(back_jacket_layer,'cc',my_path,'grainline','Bottom Sleeve Grainline','')
+           self.Path(back_jacket_layer,my_path,'grainline','Bottom Sleeve Grainline','')
 
 
    
