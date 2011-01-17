@@ -290,7 +290,7 @@ class DrawJacket(inkex.Effect):
            self.DrawMyDot(my_layer,B2x,B2y,dot_radius,dot_color,dot_width,dot_fill,'B2') 
            self.DrawMyDot(my_layer,B3x,B3y,dot_radius,dot_color,dot_width,dot_fill,'B3') 
            my_pathdefinition='M '+B1+' L '+B3
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Back Shoulder Width Reference Line B1B3')
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Back Shoulder Width Reference Line B1B3')
 
            # 'Back Chest Reference Line'
            C1x=A1x
@@ -310,9 +310,9 @@ class DrawJacket(inkex.Effect):
            self.DrawMyDot(my_layer,C3x,C3y,dot_radius,dot_color,dot_width,dot_fill,'C3')
            self.DrawMyDot(my_layer,C4x,C4y,dot_radius,dot_color,dot_width,dot_fill,'C4')
            my_pathdefinition='M '+C1+' L '+C4
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Back Chest Reference Line C1C4')
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Back Chest Reference Line C1C4')
 
-           # D from A 'Back Waist'
+           # D from A 'Back Waist Reference Line'
            D1x=A1x
            D1y=(A1y+back_waist_length)
            D1=str(D1x)+','+str(D1y)
@@ -330,9 +330,9 @@ class DrawJacket(inkex.Effect):
            self.DrawMyDot(my_layer,D3x,D3y,dot_radius,dot_color,dot_width,dot_fill,'D3')
            self.DrawMyDot(my_layer,D4x,D4y,dot_radius,dot_color,dot_width,dot_fill,'D4')
            my_pathdefinition='M '+D1+' L '+D4
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Back Waist Reference Line D1D4')
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Back Waist Reference Line D1D4')
 
-           # E from D 'Back Seat'
+           # E from D 'Back Seat Reference Line'
            E1x=A1x
            E1y=(D1y+back_waist_to_seat_length)
            E1=str(E1x)+','+str(E1y)
@@ -350,7 +350,7 @@ class DrawJacket(inkex.Effect):
            self.DrawMyDot(my_layer,E3x,E3y,dot_radius,dot_color,dot_width,dot_fill,'E3')
            self.DrawMyDot(my_layer,E4x,E4y,dot_radius,dot_color,dot_width,dot_fill,'E4')
            my_pathdefinition='M '+E1+' L '+E4
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Back Seat Reference Line')
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Back Seat Reference Line')
 
            # 'Back Bottom = Full Length of Jacket'
            F1x=A1x
@@ -375,7 +375,7 @@ class DrawJacket(inkex.Effect):
            #===============
            # Squared Reference Lines
            my_pathdefinition='M '+A1+' L '+A3
-           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Back Top Reference Line A1A3')
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Back Top Reference Line A1A3')
            my_pathdefinition='M '+F1+' L '+F4
            self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Back Bottom Reference Line F1F4')
            my_pathdefinition='M '+A1+' L '+F1
@@ -472,7 +472,8 @@ class DrawJacket(inkex.Effect):
            my_pathdefinition='M '+I4+' L '+C5+' L '+D5+' L '+E5+' L '+F5
            self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front Side Seam I4C5D5E5F5')
 
-           # 'Front Chest Reference Line'
+           # 'Front Reference Points'
+           # chest
            C8x=(C5x+((chest/2)/4)+(2*cm_to_px))
            C8y=C1y
            C8=str(C8x)+','+str(C8y)
@@ -485,7 +486,7 @@ class DrawJacket(inkex.Effect):
            C6y=C1y
            C6=str(C6x)+','+str(C6y)
            self.DrawMyDot(my_layer,C6x,C6y,dot_radius,dot_color,dot_width,dot_fill,'C6')
-           C9x=(C8x+(chest/2)+(3.5*cm_to_px))
+           C9x=(C8x+((chest/2)*(.5))+(3.5*cm_to_px))
            C9y=C1y
            C9=str(C9x)+','+str(C9y)
            self.DrawMyDot(my_layer,C9x,C9y,dot_radius,dot_color,dot_width,dot_fill,'C9')
@@ -493,11 +494,40 @@ class DrawJacket(inkex.Effect):
            C10y=C1y
            C10=str(C10x)+','+str(C10y)
            self.DrawMyDot(my_layer,C10x,C10y,dot_radius,dot_color,dot_width,dot_fill,'C10')
+           # waist
+           D9x=C9x
+           D9y=D1y
+           D9=str(D9x)+','+str(D9y)
+           self.DrawMyDot(my_layer,D9x,D9y,dot_radius,dot_color,dot_width,dot_fill,'D9')
+           D10x=D9x+(2*cm_to_px)
+           D10y=D1y
+           D10=str(D10x)+','+str(D10y)
+           self.DrawMyDot(my_layer,D10x,D10y,dot_radius,dot_color,dot_width,dot_fill,'D10')
+           # seat
+           E6x=C9x
+           E6y=E1y
+           E6=str(E6x)+','+str(E6y)
+           self.DrawMyDot(my_layer,E6x,E6y,dot_radius,dot_color,dot_width,dot_fill,'E6')
+           # bottom edge
+           F7x=C9x
+           F7y=F1y
+           F7=str(F7x)+','+str(F7y)
+           self.DrawMyDot(my_layer,F7x,F7y,dot_radius,dot_color,dot_width,dot_fill,'F7')
+           F6x=(F7x-(6.5*cm_to_px))
+           F6y=F1y
+           F6=str(F6x)+','+str(F6y)
+           self.DrawMyDot(my_layer,F6x,F6y,dot_radius,dot_color,dot_width,dot_fill,'F6')
+           F8x=C9x
+           F8y=F7y+(2.5*cm_to_px)
+           F8=str(F8x)+','+str(F8y)
+           self.DrawMyDot(my_layer,F8x,F8y,dot_radius,dot_color,dot_width,dot_fill,'F8')
+           # shoulder
            A4x=C8x
            A4y=A1y
            A4=str(A4x)+','+str(A4y)
            self.DrawMyDot(my_layer,A4x,A4y,dot_radius,dot_color,dot_width,dot_fill,'A4')
-           A5x=(A4x+((chest/16)+(1*cm_to_px)))
+           #A5x=(A4x+((chest/16)+(1*cm_to_px)))
+           A5x=A4x+(7*cm_to_px)
            A5y=A1y
            A5=str(A5x)+','+str(A5y)
            self.DrawMyDot(my_layer,A5x,A5y,dot_radius,dot_color,dot_width,dot_fill,'A5')
@@ -506,9 +536,32 @@ class DrawJacket(inkex.Effect):
            my_pathdefinition='M '+A3+' L '+A5
            self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Front Top Reference Line A3A5')
            
-           #Extend Chest reference line
+           # Extend Chest reference line
            my_pathdefinition='M '+C4+' L '+C10
            self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Front Chest Reference Line C4C10')
+
+           #Extend Waist reference line
+           my_pathdefinition='M '+D4+' L '+D10
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Front Waist Reference Line D4D10')
+
+           #Extend Seat reference line
+           my_pathdefinition='M '+E4+' L '+E6
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Front Seat Reference Line E4E6')
+
+           #Extend Bottom reference line
+           my_pathdefinition='M '+F4+' L '+F7
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Front Bottom Reference Line C4C10')
+
+           # Front Chest Button/Buttonhole Reference Line
+           my_pathdefinition='M '+C9+' L '+F8
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Front Buttonhole Reference Line C4C10')
+         
+           # Front Length Extension Reference Line
+           my_pathdefinition='M '+F5+' L '+F8
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Front Length Extension Reference Line C4C10')
+         
+        
+
 
            #Front Shoulder Line
            J1x=A4x
@@ -535,15 +588,53 @@ class DrawJacket(inkex.Effect):
            my_length=(armholelength/2)
            my_typeslope='normal'
            J4x,J4y=self.GetCoordsFromSlope(J3x,J3y,J2x,J2y,-my_length,my_typeslope)
-           self.DrawMyDot(my_layer,J4x,J4y,dot_radius,'orange',dot_width,dot_fill,'J4')
+           J4=str(J4x)+','+str(J4y)
+           self.DrawMyDot(my_layer,J4x,J4y,dot_radius,dot_color,dot_width,dot_fill,'J4')
            my_length=2*cm_to_px
            my_typeslope='perpendicular' 
            X1=J4x
            Y1=J4y
            X2=J3x
            Y2=J3y
-           J5x, J5y=self.GetCoordsFromSlope(X1,Y1,X2,Y2,my_length,my_typeslope)
-           self.DrawMyDot(my_layer,J5x,J5y,100,'green',100,'red','J5') 
+           J5x, J5y=self.GetCoordsFromSlope(J4x,J4y,J2x,J2y,my_length,my_typeslope)
+           J5=str(J5x)+','+str(J5y)
+           self.DrawMyDot(my_layer,J5x,J5y,dot_radius,dot_color,dot_width,dot_fill,'J5') 
+           my_pathdefinition='M '+J4+' L '+J5
+           self.DrawMyCurve(my_layer,my_pathdefinition,referenceline_color,referenceline_width,'Armhole Curvedepth Reference J4J5')
+
+           x1=J2x
+           y1=J2y
+           c1=str(x1)+','+str(y1)
+           x2=J3x+abs(J2x-J3x)*(.3)
+           y2=J3y-abs(J2y-J3y)*(.3)
+           c2=str(x2)+','+str(y2)
+           x3=(J3x+(abs(J3x-C8x)*(.7)))
+           y3=(J3y+(abs(C8y-C7y)*(.2)))
+           c3=str(x3)+','+str(y3)
+           x4=(C7x+(abs(C8x-C7x)*(.8)))
+           y4=C7y
+           c4=str(x4)+','+str(y4)
+           my_pathdefinition='M '+J2+' C '+c1+','+c2+' '+J3+'  '+c3+','+c4+' '+C7
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front Armhole Curve1 J2J3C7')
+
+           X2=(C5x-100)
+           Y2=(C5y+100)
+           my_length=(4*cm_to_px)
+           my_typeslope='normal'
+           X1,Y1=self.GetCoordsFromSlope(C5x,C5y,X2,Y2,my_length,my_typeslope)
+           self.DrawMyDot(my_layer,X1,Y1,dot_radius,dot_color,dot_width,dot_fill,'XY')
+           x1=C6x-(abs(C6x-I4x)*(.5))
+           y1=C6y
+           x2=C6x-(abs(C6x-I4x)*(.9))
+           y2=C6y-(abs(C6y-I4y)*(.8))
+           c1=str(x1)+','+str(y1)
+           c2=str(x2)+','+str(y2)
+           my_pathdefinition='M '+C6+' C '+c1+','+c2+' '+I4
+           self.DrawMyCurve(my_layer,my_pathdefinition,patternline_color,patternline_width,'Front Armhole Curve2 C6I4')
+
+
+
+           
    
 my_effect = DrawJacket()
 my_effect.affect()
