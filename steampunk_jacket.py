@@ -874,38 +874,38 @@ class DrawJacket(inkex.Effect):
            # Armhole Points, Paths & reference lines        
            x1, y1 = self.XYwithSlope( front_chest_startx, front_chest_starty, front_chest_startx-100, front_chest_starty+100, front_armhole_depth_1, 'normal' )   # create right angle with same dx & dy for 2nd point.  Used 100px, arbitrarily chosen #.
            front_armhole_curve_1x, front_armhole_curve_1y, front_armhole_curve_1 = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_1' )
-           my_path = 'M '+ front_chest_start +' L '+ front_armhole_curve_1
-           self.Path( my_layer, my_path, 'reference', 'front_armhole_curve_1 Reference Line', '' )
-           c1x, c1y, c1 = self.GetDot( my_layer, front_dart_1x-(abs(front_dart_1x-front_armhole_pointx)*(.5)),front_dart_1y,'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,front_dart_1x-(abs(front_dart_1x-front_armhole_pointx)*(.9)),front_dart_1y-(abs(front_dart_1y-front_armhole_pointy)*(.8)),'c2')
+           d = 'M '+ front_chest_start +' L '+ front_armhole_curve_1
+           self.Path( my_layer, d, 'reference', 'front_armhole_curve_1 Reference Line', '' )
+
+           c1x, c1y, c1 = self.GetDot( my_layer, front_dart_1x - ( abs( front_dart_1x - front_armhole_pointx ) * (.5) ), front_dart_1y, 'c1' )
+           c2x, c2y, c2 = self.GetDot( my_layer, front_dart_1x - ( abs( front_dart_1x - front_armhole_pointx ) * (.9) ), front_dart_1y - ( abs( front_dart_1y - front_armhole_pointy ) * (.8) ), 'c2' )
 
            #my_path='M '+front_armhole_point+' C '+c2+' '+c1+' '+front_dart_1+' L '+front_dart_1
-           Front_Armscye_1=' C '+c2+' '+c1+' '+front_dart_1
+           Front_Armscye_1 = ' C '+ c2 +' '+ c1 +' '+ front_dart_1
           
            # 2nd Armscye Seam Line
            x1, y1 = self.XYwithSlope( front_chest_underarmx, front_chest_underarmy, front_chest_underarmx + 100, front_chest_underarmy + 100, front_armhole_depth_2, 'normal')  
            front_armhole_curve_2x, front_armhole_curve_2y, front_armhole_curve_2 = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_2' )
-           my_path='M '+front_chest_underarm+' L '+front_armhole_curve_2
-           self.Path(my_layer,my_path,'reference','front_armhole_depth_2 Reference Line','')
-           front_armhole_curve_2bx, front_armhole_curve_2by, front_armhole_curve_2b = self.GetDot( my_layer, front_chest_underarmx, front_chest_underarmy - 2*cm_to_px, 'front_armhole_curve_2b' )
-           my_path = 'M '+ front_shoulder_end +' L '+ front_armhole_curve_2b
-           self.Path( my_layer, my_path, 'reference', 'front_armhole_curve_2b Reference Line','')
+           d = 'M '+ front_chest_underarm +' L '+ front_armhole_curve_2
+           self.Path( my_layer, d, 'reference', 'front_armhole_depth_2 Reference Line', '' )
+
+           front_armhole_curve_2bx, front_armhole_curve_2by, front_armhole_curve_2b = self.GetDot( my_layer, front_chest_underarmx, front_chest_underarmy - front_armhole_depth_2, 'front_armhole_curve_2b' )
+           d = 'M '+ front_shoulder_end +' L '+ front_armhole_curve_2b
+           self.Path( my_layer, d, 'reference', 'front_armhole_curve_2b Reference Line', '' )
+
            mid_point = ( self.LineLength( front_shoulder_endx, front_shoulder_endy, front_armhole_curve_2bx, front_armhole_curve_2by ) * (0.5) )
-           x1 , y1   = self.XYwithSlope( front_armhole_curve_2bx, front_armhole_curve_2by, front_shoulder_endx, front_shoulder_endy, - mid_point, 'normal' )
+           x1 , y1   = self.XYwithSlope( front_armhole_curve_2bx, front_armhole_curve_2by, front_shoulder_endx, front_shoulder_endy, -mid_point, 'normal' )
            front_armhole_curve_2b_midptx, front_armhole_curve_2b_midpty, front_armhole_curve_2b_midpt = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_2b_midpt' )
            front_armhole_curve_3x, front_armhole_curve_3y, front_armhole_curve_3 = self.GetDot( my_layer, front_chest_underarmx, front_chest_underarmy - front_armhole_depth_3, 'front_armhole_curve_3' )
            x1, y1 = self.XYwithSlope( front_armhole_curve_2b_midptx, front_armhole_curve_2b_midpty, front_shoulder_endx, front_shoulder_endy, front_armhole_depth_4, 'perpendicular' ) 
            front_armhole_curve4x, front_armhole_curve_4y, front_armhole_curve_4 = self.GetDot( my_layer, x1, y1, 'front_armhole_curve_4' )
-           my_path = 'M '+ front_armhole_curve_2b_midpt +' L '+ front_armhole_curve_4
-           self.Path( my_layer, my_path, 'reference', 'front_armhole_curve_4 Reference Line','')
-           curvex_length = abs( front_dart_5x - front_armhole_curve_3x )
-           curvey_length = abs( front_dart_5y - front_armhole_curve_3y )
-           c1x, c1y, c1 = self.GetDot( my_layer, front_dart_5x + ( curvex_length * (.364) ),  front_dart_5y + ( curvey_length * (.084) ), 'c1' ) 
-           c2x, c2y, c2 = self.GetDot( my_layer, front_armhole_curve_3x + ( curvex_length * (0.182) ) ,front_armhole_curve_3y + ( curvey_length * (0.8) ), 'c2' )
-           curvex_length = abs( front_armhole_curve_3x - front_shoulder_endx )
-           curvey_length = abs( front_armhole_curve_3y - front_shoulder_endy )
-           c3x, c3y, c3 = self.GetDot( my_layer, front_armhole_curve_3x - ( curvex_length * (0.1) ), front_armhole_curve_3y - ( curvey_length * (.4) ), 'c3' )
-           c4x, c4y, c4 = self.GetDot( my_layer, front_shoulder_endx + ( curvex_length * (.2) ), front_shoulder_endy + ( curvey_length * (.12) ), 'c4' )
+           d = 'M '+ front_armhole_curve_2b_midpt +' L '+ front_armhole_curve_4
+           self.Path( my_layer, d, 'reference', 'front_armhole_curve_4 Reference Line','')
+
+           c1x, c1y, c1 = self.GetDot( my_layer, front_dart_5x + ( abs( front_dart_5x - front_armhole_curve_3x )* (.364) ),  front_dart_5y + ( abs( front_dart_5y - front_armhole_curve_3y ) * (.084) ), 'c1' ) 
+           c2x, c2y, c2 = self.GetDot( my_layer, front_armhole_curve_3x + ( abs( front_dart_5x - front_armhole_curve_3x )  * (0.182) ) ,front_armhole_curve_3y + ( abs( front_dart_5y - front_armhole_curve_3y ) * (0.8) ), 'c2' )
+           c3x, c3y, c3 = self.GetDot( my_layer, front_armhole_curve_3x - ( abs( front_armhole_curve_3x - front_shoulder_endx ) * (0.1) ), front_armhole_curve_3y - ( abs( front_armhole_curve_3y - front_shoulder_endy ) * (.4) ), 'c3' )
+           c4x, c4y, c4 = self.GetDot( my_layer, front_shoulder_endx + ( abs( front_armhole_curve_3x - front_shoulder_endx ) * (.2) ), front_shoulder_endy + ( abs( front_armhole_curve_3y - front_shoulder_endy ) * (.12) ), 'c4' )
 
            Front_Armscye_2 = 'L '+ front_dart_5 +' C '+ c1+ ' ' + c2 +' '+ front_armhole_curve_3 + ' C '+ c3 +' '+ c4 +' '+ front_shoulder_end
 
@@ -945,57 +945,74 @@ class DrawJacket(inkex.Effect):
            Upper_Pocket_Placement = 'M '+ upper_pocket_1 +' L '+ upper_pocket_2 +' '+ upper_pocket_3 +' '+ upper_pocket_4 +' z'
 
            # upper pocket pattern path (separate from jacket pattern)
-           dx, dy = abs(pattern_offset_2x - upper_pocket_1x), -abs(lapel_dart_2y - upper_pocket_1y )
+           dx, dy = abs( pattern_offset_2x - upper_pocket_1x ), - abs( lapel_dart_2y - upper_pocket_3y )
            upper_tpocket_1x, upper_tpocket_1y, upper_tpocket_1 = self.GetDot( my_layer, upper_pocket_1x + dx, upper_pocket_1y + dy, 'upper_tpocket_1' )
            upper_tpocket_2x, upper_tpocket_2y, upper_tpocket_2 = self.GetDot( my_layer, upper_tpocket_1x, upper_tpocket_1y - upper_pocket_height, 'upper_tpocket_2' )
            upper_tpocket_5x, upper_tpocket_5y, upper_tpocket_5 = self.GetDot( my_layer, upper_tpocket_2x+upper_pocket_width, upper_tpocket_2y+upper_pocket_height_offset, 'upper_tpocket_5' )
            upper_tpocket_6x, upper_tpocket_6y, upper_tpocket_6 = self.GetDot( my_layer, upper_tpocket_5x, upper_tpocket_5y + upper_pocket_height, 'upper_tpocket_6 ' )
+
            x, y = self.XYwithSlope( upper_tpocket_2x, upper_tpocket_2y, upper_tpocket_5x, upper_tpocket_5y, seam_allowance, 'normal' )   # add foldline out to seam allowance
            upper_tpocket_foldline_extension_1x, upper_tpocket_foldline_extension_1y, upper_tpocket_foldline_extension_1 = self.GetDot( my_layer, x, y, 'upper_tpocket_foldline_extension_1' )
            x, y = self.XYwithSlope( upper_tpocket_5x, upper_tpocket_5y, upper_tpocket_2x, upper_tpocket_2y, seam_allowance, 'normal' )   # add foldline out to opposite seam allowance 
            upper_tpocket_foldline_extension_2x, upper_tpocket_foldline_extension_2y, upper_tpocket_foldline_extension_2 = self.GetDot( my_layer, x, y, 'upper_tpocket_foldline_extension_2' )
+
            # top half of the pocket pattern is mirrored around the foldline, skewed at an angle
-           my_angle = self.AngleFromSlope( upper_pocket_height_offset, upper_pocket_width )   # angle defined by "rise" & "run" of pocket's top points
-           line_angle = ( math.pi / 2.0 ) - ( 2.0 * my_angle ) # 90 degrees minus twice the slope
+           my_angle = self.AngleFromSlope( upper_pocket_height_offset, upper_pocket_width )   # angle defined by height y offset between top 2 point (rise), and pocketx  width (run)
+           line_angle = ( math.pi / 2.0 ) - ( 2.0 * my_angle ) # 90 degrees (pi/2) minus twice the angle
+
            x, y = self.NewPointFromDistanceAndAngle( upper_tpocket_2x, upper_tpocket_2y, upper_pocket_height, line_angle )
-           upper_tpocket_3x, upper_tpocket_3y, upper_tpocket_3 = self.GetDot( my_layer,x,y, 'upper_tpocket_3' )
+           upper_tpocket_3x, upper_tpocket_3y, upper_tpocket_3 = self.GetDot( my_layer, x, y, 'upper_tpocket_3' )
+
            x, y = self.NewPointFromDistanceAndAngle( upper_tpocket_5x, upper_tpocket_5y, upper_pocket_height, line_angle )
            upper_tpocket_4x, upper_tpocket_4y, upper_tpocket_4 = self.GetDot( my_layer, x, y, 'upper_tpocket_4' )
+
            upper_tpocket_grainline1x, upper_tpocket_grainline1y, upper_tpocket_grainline1 = self.GetDot( my_layer, upper_tpocket_3x + 2*cm_to_px, upper_tpocket_3y + 1*cm_to_px, 'upper_tpocket_grainline1' )
            upper_tpocket_grainline2x, upper_tpocket_grainline2y, upper_tpocket_grainline2 = self.GetDot( my_layer, upper_tpocket_grainline1x, upper_tpocket_1y, 'upper_tpocket_grainline2' )
+
            Upper_Pocket_Pattern = 'M '+ upper_tpocket_1 +' L '+ upper_tpocket_2+ ' '+ upper_tpocket_3 +' '+ upper_tpocket_4 +' '+ upper_tpocket_5 +' '+ upper_tpocket_6 +' z'
+
            Upper_Pocket_Foldline = 'M ' + upper_tpocket_foldline_extension_1 +' L '+ upper_tpocket_foldline_extension_2
 
-           #Lower Pocket
+           #Lower Pocket Placement
 
-           dx, dy = lower_pocket_slant_offset, lower_pocket_height          
+           dx, dy = lower_pocket_slant_offset, lower_pocket_height    # height y ofset between top 2 points, and pocket x width
            lower_pocket_midpointx, lower_pocket_midpointy, lower_pocket_midpoint = self.GetDot( my_layer, front_chest_underarmx, front_chest_underarmy + lower_pocket_placement_offset, 'lower_pocket_midpoint' )
            m = self.Slope( front_hem_startx, front_hem_starty, front_hem_curve_reference_endx, front_hem_curve_reference_endy, 'normal' ) # lower pocket is parallel to slanted hem edge
            b = lower_pocket_midpointy - ( m * lower_pocket_midpointx )
            lower_pocket_top_leftx, lower_pocket_top_lefty, lower_pocket_top_left = self.GetDot( my_layer, lower_pocket_midpointx - ( lower_pocket_width * (.5) ),  m *  ( lower_pocket_midpointx -  ( lower_pocket_width  * (.5) ) )  + b, 'lower_pocket_top_left' )
            lower_pocket_top_rightx, lower_pocket_top_righty, lower_pocket_top_right = self.GetDot( my_layer, lower_pocket_midpointx + ( lower_pocket_width * (.5) ),  m *  ( lower_pocket_midpointx +  ( lower_pocket_width  * (.5) ) )  + b, 'lower_pocket_top_left' )          
-           lower_pocket_bottom_rightx, lower_pocket_bottom_righty, lower_pocket_bottom_right = self.GetDot( my_layer, lower_pocket_top_rightx - dx, lower_pocket_top_righty + dy, 'lower_pocket_bottom_right' )
-           lower_pocket_bottom_leftx, lower_pocket_bottom_lefty, lower_pocket_bottom_left = self.GetDot( my_layer, lower_pocket_top_leftx - dx, lower_pocket_top_lefty + dy, 'lower_pocket_bottom_left' )
+           lower_pocket_bottom_rightx, lower_pocket_bottom_righty, lower_pocket_bottom_right = self.GetDot( my_layer, lower_pocket_top_rightx - dx, lower_pocket_top_righty + dy , 'lower_pocket_bottom_right' )
+           lower_pocket_bottom_leftx, lower_pocket_bottom_lefty, lower_pocket_bottom_left = self.GetDot( my_layer, lower_pocket_top_leftx - dx, lower_pocket_top_lefty + dy , 'lower_pocket_bottom_left' )
            b = lower_pocket_bottom_righty - ( m * lower_pocket_bottom_rightx )
            lower_pocket_curve_endx, lower_pocket_curve_endy, lower_pocket_curve_end = self.GetDot( my_layer, lower_pocket_bottom_rightx - ( lower_pocket_width  * (.25) ), b + ( m * ( lower_pocket_bottom_rightx - ( lower_pocket_width * (.25) ) ) ), 'lower_pocket_curve_end' )
-           Lower_Pocket_Placement = 'M '+ lower_pocket_top_left +' L '+ lower_pocket_top_right +' Q '+ lower_pocket_bottom_right +' '+ lower_pocket_curve_end+ ' L '+ lower_pocket_bottom_left+ ' z'
 
-           dx1,dy1= abs(pattern_offset_2x -lower_pocket_top_leftx), -abs(front_button_topy - lower_pocket_top_lefty) # place pocket at top buttom
-           LP1x, LP1y,LP1 =self.GetDot(my_layer, lower_pocket_midpointx+dx1,lower_pocket_midpointy+dy1,'LP1')
-           LP2x, LP2y,LP2 =self.GetDot(my_layer, lower_pocket_top_leftx+dx1,lower_pocket_top_lefty+dy1,'LP2')
-           LP2ax,LP2ay,LP2a=self.GetDot(my_layer,LP2x-seam_allowance,LP2y,'LP2a')
-           LP3x, LP3y,LP3 =self.GetDot(my_layer, lower_pocket_top_rightx+dx1,lower_pocket_top_righty+dy1,'LP3')
-           LP3ax,LP3ay,LP3a=self.GetDot(my_layer,LP3x+seam_allowance,LP3y,'LP3a')
-           LP4x, LP4y,LP4 =self.GetDot(my_layer, lower_pocket_bottom_rightx+dx1,lower_pocket_bottom_righty+dy1,'LP4')
-           LP5x, LP5y,LP5 =self.GetDot(my_layer, lower_pocket_bottom_leftx+dx1,lower_pocket_bottom_lefty+dy1,'LP5')
-           x,y = self.XYwithSlope(LP5x,LP5y,LP2x,LP2y,seam_allowance,'perpendicular')      
-           LP6x, LP6y,LP6 =self.GetDot(my_layer, lower_pocket_curve_endx+dx1,lower_pocket_curve_endy+dy1,'LP6')
-           LP7x, LP7y,LP7 =self.GetDot(my_layer, LP2x,LP2y-lower_pocket_flap_height,'LP7')
-           LP8x, LP8y,LP8 =self.GetDot(my_layer, LP3x,LP3y-lower_pocket_flap_height,'LP8')
-           Lower_Pocket_Pattern= 'M '+LP2+' L '+LP7+ ' '+LP8+' '+LP3+' Q '+LP4+' '+LP6+' L '+LP5+' z' 
-           Lower_Pocket_Foldline='M '+LP2a+' L '+LP3a
-           LPG1x,LPG1y,LPG1=self.GetDot(my_layer,LP1x,LP1y+1*cm_to_in,'LPG1')
-           LPG2x,LPG2y,LPG2=self.GetDot(my_layer,LP5x+abs(LP5x-LP4x)/2,LP5y-1*cm_to_px,'LPG2')
+           Lower_Pocket_Placement = 'M '+ lower_pocket_top_left +' L '+ lower_pocket_top_right +' Q '+ lower_pocket_bottom_right +' '+ lower_pocket_curve_end+ ' L '+ lower_pocket_bottom_left+ ' z'
+          
+           # Lower Pocket Pattern - place pocket beginning at intesection of pattern_offset2 & top button
+           dx, dy = abs( pattern_offset_2x - lower_pocket_top_leftx ), -abs( front_button_topy - lower_pocket_top_lefty ) 
+           lower_tpocket_midpointx, lower_tpocket_midpointy, lower_tpocket_midpoint = self.GetDot( my_layer, lower_pocket_midpointx + dx, lower_pocket_midpointy + dy, 'lower_tpocket_midpoint' ) #midpoint of visible pocket after pocket is sewn in 
+           lower_tpocket_top_leftx, lower_tpocket_top_lefty, lower_tpocket_top_left = self.GetDot( my_layer, lower_pocket_top_leftx + dx, lower_pocket_top_lefty + dy, 'lower_tpocket_top_left' ) #top left of visible pocket after pocket is sewn in
+           lower_tpocket_top_rightx, lower_tpocket_top_righty,lower_tpocket_top_right = self.GetDot( my_layer, lower_pocket_top_rightx + dx, lower_pocket_top_righty + dy, 'lower_tpocket_top_right' )  # top right of visible pocket after pocket is sewn in
+
+           lower_tpocket_foldpoint1x, lower_tpocket_foldpoint1y, lower_tpocket_foldpoint1 = self.GetDot( my_layer, lower_tpocket_top_leftx - seam_allowance, lower_tpocket_top_lefty, 'lower_tpocket_foldpoint1' ) #lower_tpocket_foldpoint1 extends past seam allowance to cutting line outside lower_tpocket_top_left - fold is created prior to sewing the seams.
+           lower_tpocket_foldpoint2x,lower_tpocket_foldpoint2y,lower_tpocket_foldpoint2=self.GetDot(my_layer,lower_tpocket_top_rightx+seam_allowance,lower_tpocket_top_righty,'lower_tpocket_foldpoint2') #lower_tpocket_foldpoint2 extends past seam allowance to cutting line outside lower_tpocket_top_right
+
+
+           lower_pocket4x, lower_pocket4y,lower_pocket4 =self.GetDot(my_layer, lower_pocket_bottom_rightx+dx,lower_pocket_bottom_righty+dy,'lower_pocket4')
+           lower_pocket5x, lower_pocket5y,lower_pocket5 =self.GetDot(my_layer, lower_pocket_bottom_leftx+dx,lower_pocket_bottom_lefty+dy,'lower_pocket5')
+
+           x,y = self.XYwithSlope(lower_pocket5x,lower_pocket5y,lower_tpocket_top_leftx,lower_tpocket_top_lefty,seam_allowance,'perpendicular')      
+           lower_pocket6x, lower_pocket6y,lower_pocket6 =self.GetDot(my_layer, lower_pocket_curve_endx+dx,lower_pocket_curve_endy+dy,'lower_pocket6')
+           lower_pocket7x, lower_pocket7y,lower_pocket7 =self.GetDot(my_layer, lower_tpocket_top_leftx,lower_tpocket_top_lefty-lower_pocket_flap_height,'lower_pocket7')
+           lower_pocket8x, lower_pocket8y,lower_pocket8 =self.GetDot(my_layer, lower_tpocket_top_rightx,lower_tpocket_top_righty-lower_pocket_flap_height,'lower_pocket8')
+
+
+
+           Lower_Pocket_Pattern= 'M '+lower_tpocket_top_left+' L '+lower_pocket7+ ' '+lower_pocket8+' '+lower_tpocket_top_right+' Q '+lower_pocket4+' '+lower_pocket6+' L '+lower_pocket5+' z' 
+           Lower_Pocket_Foldline='M '+lower_tpocket_foldpoint1+' L '+lower_tpocket_foldpoint2
+
+           lower_pocketG1x,lower_pocketG1y,lower_pocketG1=self.GetDot(my_layer,lower_tpocket_midpointx,lower_tpocket_midpointy+1*cm_to_in,'lower_pocketG1')
+           lower_pocketG2x,lower_pocketG2y,lower_pocketG2=self.GetDot(my_layer,lower_pocket5x+abs(lower_pocket5x-lower_pocket4x)/2,lower_pocket5y-1*cm_to_px,'lower_pocketG2')
            # Side Dart
            x1,y1=self.XY(lower_pocket_midpointx,lower_pocket_midpointy,lower_pocket_top_leftx,lower_pocket_top_lefty,-(4*cm_to_px))
            O1x,O1y,O1=self.GetDot(my_layer,x1,y1,'O1')
@@ -1041,18 +1058,19 @@ class DrawJacket(inkex.Effect):
            Button_number = 4
            Button_distance=(abs(front_button_topy-waist_starty)/2)
            Button_size=(.75*in_to_px)
+
            #Hem Line & Allowance
            Hem_Line=' M '+front_hem_start+' L '+F9
            #x,y=self.XY(front_hem_startx,front_hem_starty,front_hip_startx,front_hip_starty,hem_allowance)
-           Helower_pocket_midpointx, Helower_pocket_midpointy, Helower_pocket_midpoint = self.GetDot( my_layer, front_hem_startx, front_hem_starty + hem_allowance, 'Helower_pocket_midpoint' )
-           Helower_pocket_top_leftx,Helower_pocket_top_lefty,Helower_pocket_top_left=self.GetDot(my_layer,F9x,F9y+hem_allowance,'Helower_pocket_top_left')
-           Hem_Line=' L '+Helower_pocket_top_left+' '+Helower_pocket_midpoint 
-           Jacket_Bottomy=Helower_pocket_top_lefty       
+           Hem1x, Hem1y, Hem1 = self.GetDot( my_layer, front_hem_startx, front_hem_starty + hem_allowance, 'Hem1' )
+           Hem2x,Hem2y,Hem2=self.GetDot(my_layer,F9x,F9y+hem_allowance,'Hem2')
+           Hem_Line=' L '+Hem2+' '+Hem1 
+           Jacket_Bottomy=Hem2y       
            # Grainline
            G1x,G1y,G1=self.GetDot(my_layer,front_chest_underarmx+(front_pattern_endx-front_chest_underarmx)/2,upper_pocket_4y+5*cm_to_px,'G1')
            G2x,G2y,G2=self.GetDot(my_layer,G1x,G1y+40*cm_to_px,'G2')
-           # collar #
 
+           # collar #
            # offset = dx, dy from far right corner of upper pocket UP,+ 8cm to make room for seam allowances, etc
            # point lapel_neck_intersect from the front neck begins curve around back neck, so lapel_neck_intersect=>Collarcurvestart
            # back neck nape to back_shoulder_top is half length of collar, so length nape-back_shoulder_top=>Collarlength, line goes through front_shoulder_top=>Collarshoulderpoint
@@ -1176,7 +1194,7 @@ class DrawJacket(inkex.Effect):
            self.Path(my_layer,Lower_Pocket_Foldline,'foldline','Lower Pocket Foldline','')
            self.Path(my_layer,Lower_Pocket_Pattern,'seamline','Lower Pocket Seamline','')
            self.Path(my_layer,Lower_Pocket_Pattern,'pattern','Lower Pocket Cuttingline','')
-           self.Grainline(my_layer,LPG1x,LPG1y,LPG2x,LPG2y,'Lower Pocket Grainline')
+           self.Grainline(my_layer,lower_pocketG1x,lower_pocketG1y,lower_pocketG2x,lower_pocketG2y,'Lower Pocket Grainline')
 
            ###########################
            ### Draw Collar Pattern ###
@@ -1289,24 +1307,23 @@ class DrawJacket(inkex.Effect):
            line_angle = self.AngleFromSlope(abs(SE2y-SF5y),abs(SE2x-SF5x))
            mirror_line_angle = central_angle2 - line_angle
            x,y = self.NewPointFromDistanceAndAngle(SF5x,SF5y,cuff_height, mirror_line_angle)
-           Helower_pocket_top_leftx,Helower_pocket_top_lefty,Helower_pocket_top_left = self.GetDot(my_layer,x,y,'Helower_pocket_top_left')
+           Hem2x,Hem2y,Hem2 = self.GetDot(my_layer,x,y,'Hem2')
            angle3=central_angle1+central_angle2
-           x,y=self.NewPointFromDistanceAndAngle(Helower_pocket_top_leftx,Helower_pocket_top_lefty,-self.LineLength(SE2x,SE2y,SE1x,SE1y),angle3)
-           Helower_pocket_midpointx,Helower_pocket_midpointy,Helower_pocket_midpoint = self.GetDot(my_layer,x,y,'Helower_pocket_midpoint')
-           Cuff_Hem_Line=' L '+Helower_pocket_top_left+' '+Helower_pocket_midpoint
-
-           # Matching Cuff Piece
+           x,y=self.NewPointFromDistanceAndAngle(Hem2x,Hem2y,-self.LineLength(SE2x,SE2y,SE1x,SE1y),angle3)
+           Hem1x,Hem1y,Hem1 = self.GetDot(my_layer,x,y,'Hem1')
+           Cuff_Hem_Line = ' L '+Hem2+' '+Hem1
+           # Matching Upper Sleeve Cuff Piece
            dx,dy= abs(SF2x-pattern_offset_2x), abs(SF5y-waist_starty)-2*cm_to_px
-           c1x,c1y,c1=self.GetDot(my_layer,SF2x-dx,SF2y-dy,'c1')
-           c2x,c2y,c2=self.GetDot(my_layer,SE1x-dx,SE1y-dy,'c2')
-           c3x,c3y,c3=self.GetDot(my_layer,SE2x-dx,SE2y-dy,'c3')
-           c4x,c4y,c4=self.GetDot(my_layer,SF5x-dx,SF5y-dy,'c4')
-           c5x,c5y,c5=self.GetDot(my_layer,Helower_pocket_top_leftx-dx,Helower_pocket_top_lefty-dy,'c5')
-           c6x,c6y,c6=self.GetDot(my_layer,Helower_pocket_midpointx-dx,Helower_pocket_midpointy-dy,'c6')
-           Cuff_Pattern='M '+c1+' L '+c2+' '+c3+' '+c4+' '+c5+' '+c6+' z'
-           Cuff_Pattern_Fold_Line='M '+c1+' '+c4
-           CPG1x,CPG1y,CPG1=self.GetDot(my_layer,c1x+(abs(c1x-c3x)/2), c2y+(2.5*cm_to_px),'CPG1')
-           CPG2x,CPG2y,CPG2=self.GetDot(my_layer,CPG1x,c5y-(2.5*cm_to_px),'CPG1')
+           upper_sleeve_match_cuff1x,upper_sleeve_match_cuffy,upper_sleeve_match_cuff=self.GetDot(my_layer,SF2x-dx,SF2y-dy,'upper_sleeve_match_cuff')
+           upper_sleeve_match_cuff2x,upper_sleeve_match_cuff2y,upper_sleeve_match_cuff2=self.GetDot(my_layer,SE1x-dx,SE1y-dy,'upper_sleeve_match_cuff2')
+           upper_sleeve_match_cuff3x,upper_sleeve_match_cuff3y,upper_sleeve_match_cuff3=self.GetDot(my_layer,SE2x-dx,SE2y-dy,'upper_sleeve_match_cuff3')
+           upper_sleeve_match_cuff4x,upper_sleeve_match_cuff4y,upper_sleeve_match_cuff4=self.GetDot(my_layer,SF5x-dx,SF5y-dy,'upper_sleeve_match_cuff4')
+           upper_sleeve_match_cuff5x,upper_sleeve_match_cuff5y,upper_sleeve_match_cuff5=self.GetDot(my_layer,Hem2x-dx,Hem2y-dy,'upper_sleeve_match_cuff5')
+           c6x,c6y,c6=self.GetDot(my_layer,Hem1x-dx,Hem1y-dy,'c6')
+           Cuff_Pattern='M '+upper_sleeve_match_cuff+' L '+upper_sleeve_match_cuff2+' '+upper_sleeve_match_cuff3+' '+upper_sleeve_match_cuff4+' '+upper_sleeve_match_cuff5+' '+c6+' z'
+           Cuff_Pattern_Fold_Line='M '+upper_sleeve_match_cuff+' '+upper_sleeve_match_cuff4
+           CPG1x,CPG1y,CPG1=self.GetDot(my_layer,upper_sleeve_match_cuff1x+(abs(upper_sleeve_match_cuff1x-upper_sleeve_match_cuff3x)/2), upper_sleeve_match_cuff2y+(2.5*cm_to_px),'CPG1')
+           CPG2x,CPG2y,CPG2=self.GetDot(my_layer,CPG1x,upper_sleeve_match_cuff5y-(2.5*cm_to_px),'CPG1')
            # Sleeve Side 1 SF2-SB1
            x1,y1=self.XYwithSlope(SE1x,SE1y,SF2x,SF2y,abs(SD2y-SE1y)*(.25),'normal')
            c1x,c1y,c1=self.GetDot(my_layer,x1,y1,'c1')
@@ -1372,26 +1389,26 @@ class DrawJacket(inkex.Effect):
            Sleeve_Side_4=' C '+c1+' '+c2+' '+SD7+' C '+' '+c3+' '+c4+' '+SE4+' L '+SF10
            # Hem Line & Allowance
            # Extend the cuff
-           Cuff_Fold_Line='M '+SF7+' L '+SF10
-           central_angle1 = self.AngleFromSlope(abs(SE4y-SE3y),abs(SE4x-SE3x))
-           cuff_height=self.LineLength(SE4x,SE4y,SF10x,SF10y)
+           Cuff_Fold_Line = 'M '+ SF7 +' L '+ SF10
+           central_angle1 = self.AngleFromSlope( abs(SE4y-SE3y ), abs(SE4x-SE3x))
+           cuff_height = self.LineLength(SE4x,SE4y,SF10x,SF10y)
            central_angle2 = self.AngleFromSlope(abs(SF10y-SF7y),abs(SF10x-SF7x))
-           line_angle = self.AngleFromSlope(abs(SE4y-SF10y),abs(SE4x-SF10x))
+           line_angle = self.AngleFromSlope( abs(SE4y-SF10y),abs(SE4x-SF10x))
            mirror_line_angle = central_angle2 - line_angle
            x,y = self.NewPointFromDistanceAndAngle(SF10x,SF10y,cuff_height, mirror_line_angle)
-           Helower_pocket_top_leftx,Helower_pocket_top_lefty,Helower_pocket_top_left = self.GetDot(my_layer,x,y,'Helower_pocket_top_left')
+           Hem2x,Hem2y,Hem2 = self.GetDot(my_layer,x,y,'Hem2')
            angle3=central_angle1+central_angle2
-           x,y=self.NewPointFromDistanceAndAngle(Helower_pocket_top_leftx,Helower_pocket_top_lefty,-self.LineLength(SE4x,SE4y,SE3x,SE3y),angle3)
-           Helower_pocket_midpointx,Helower_pocket_midpointy,Helower_pocket_midpoint = self.GetDot(my_layer,x,y,'Helower_pocket_midpoint')
-           Cuff_Hem_Line=' L '+Helower_pocket_top_left+' '+Helower_pocket_midpoint
+           x,y=self.NewPointFromDistanceAndAngle(Hem2x,Hem2y,-self.LineLength(SE4x,SE4y,SE3x,SE3y),angle3)
+           Hem1x,Hem1y,Hem1 = self.GetDot(my_layer,x,y,'Hem1')
+           Cuff_Hem_Line=' L '+Hem2+' '+Hem1
            # Matching Cuff Piece
            dx, dy = -abs( SF7x - pattern_offset_2x ), 3*cm_to_px
            c1x,c1y,c1=self.GetDot(my_layer,SF7x+dx,SF7y+dy,'c1')
            c2x,c2y,c2=self.GetDot(my_layer,SE3x+dx,SE3y+dy,'c2')
            c3x,c3y,c3=self.GetDot(my_layer,SE4x+dx,SE4y+dy,'c3')
            c4x,c4y,c4=self.GetDot(my_layer,SF10x+dx,SF10y+dy,'c4')
-           c5x,c5y,c5=self.GetDot(my_layer,Helower_pocket_top_leftx+dx,Helower_pocket_top_lefty+dy,'c5')
-           c6x,c6y,c6=self.GetDot(my_layer,Helower_pocket_midpointx+dx,Helower_pocket_midpointy+dy,'c6')
+           c5x,c5y,c5=self.GetDot(my_layer,Hem2x+dx,Hem2y+dy,'c5')
+           c6x,c6y,c6=self.GetDot(my_layer,Hem1x+dx,Hem1y+dy,'c6')
            Cuff_Pattern='M '+c1+' L '+c2+' '+c3+' '+c4+' '+c5+' '+c6+' z'
            Cuff_Pattern_Fold_Line='M '+c1+' '+c4
            CPG1x,CPG1y,CPG1=self.GetDot(my_layer,c1x+(abs(c1x-c3x)/2),c2y+(2.5*cm_to_px),'CPG1')
