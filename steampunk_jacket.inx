@@ -20,7 +20,7 @@
  <param name="back_underarm_width" type="float" min="1.0" max="1000.0" _gui-text="back_underarm_width">17.8</param>
  <param name="back_underarm_length" type="float" min="1.0" max="1000.0" _gui-text="back_underarm_length">9.2</param>
  <param name="seat" type="float" min="1.0" max="1000.0" _gui-text="seat">37</param>
- <param name="back_waist_to_seat_length" type="float" min="1.0" max="1000.0" _gui-text="back_waist_to_seat_length">8</param>
+ <param name="back_waist_to_hip_length" type="float" min="1.0" max="1000.0" _gui-text="back_waist_to_hip_length">8</param>
  <param name="nape_to_vneck" type="float" min="1.0" max="1000.0" _gui-text="Nape around to about 11.5cm (4.5in) below front neck">11.5</param>
  <param name="sleeve_length" type="float" min="1.0" max="1000.0" _gui-text="sleeve_length">29</param>
  <effect>
