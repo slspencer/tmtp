@@ -116,6 +116,7 @@ class DrawJacket(inkex.Effect):
  
            root_obj = lxml.objectify.Element('root')
            sodi_obj = lxml.objectify.Element('namedview')
+           #attrList = namedview.Attributes()
 	   #for i in range(attrList.length):
 	   #   attr = attrList.item(i)
 	   #   setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
@@ -1267,7 +1268,6 @@ class DrawJacket(inkex.Effect):
            root.set("height",heightstr)
            root.set("currentScale","0.09 : 1")  # doesn't work
            #x=self.document.getElementById('svg2').getAttribute('viewBox')
-           
 
 
            root.set("preserveAspectRatio","xMidYMid meet")   #doesn't work
