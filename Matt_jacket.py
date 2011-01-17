@@ -450,7 +450,7 @@ class DrawJacket(inkex.Effect):
 
            #===============
            # 'Back Side Seam'
-           my_path='M '+I3+' L '+C3+' L '+D3+' L '+E3+' L '+F3
+           my_path='M '+I3+' L '+C3+' L '+D3+' L '+E3+' L '+F3+' L '+F2
            self.Path(my_layer,my_path,line_color,line_width,'Back Side Seam I3C3D3E3F3')
 
 
@@ -589,6 +589,8 @@ class DrawJacket(inkex.Effect):
            J3y=(C8y-(2.5*cm_to_px))
            J3=str(J3x)+','+str(J3y)
            self.Dot(my_layer,J3x,J3y,dot_radius,dot_color,dot_width,dot_fill,'J3')
+           my_path='M '+C8+' L '+J3
+           self.Path(my_layer,my_path,ref_color,refline_width,'Armhole Length Reference C8J3')
            my_path='M '+J2+' L '+J3
            self.Path(my_layer,my_path,ref_color,refline_width,'Armhole Length Reference J2J3')
 
@@ -625,12 +627,15 @@ class DrawJacket(inkex.Effect):
            my_path='M '+J2+' C '+c1+','+c2+' '+J3+'  '+c3+','+c4+' '+C7
            self.Path(my_layer,my_path,line_color,line_width,'Front Armhole Curve1 J2J3C7')
 
-           X2=(C5x-100)
-           Y2=(C5y+100)
+           X=(C5x-100)
+           Y=(C5y+100)
            my_length=(4*cm_to_px)
            my_typeslope='normal'
-           X1,Y1=self.XYwithSlope(C5x,C5y,X2,Y2,my_length,my_typeslope)
-           self.Dot(my_layer,X1,Y1,dot_radius,dot_color,dot_width,dot_fill,'XY')
+           I5x,I5y=self.XYwithSlope(C5x,C5y,X,Y,my_length,my_typeslope)
+           I5=str(I5x)+','+str(I5y)
+           self.Dot(my_layer,X1,Y1,dot_radius,dot_color,dot_width,dot_fill,'I5')
+           my_path='M '+C5+' L '+I5
+           self.Path(my_layer,my_path,ref_color,refline_width,'Front Armhole Depth 1 C5I5')
            x1=C6x-(abs(C6x-I4x)*(.5))
            y1=C6y
            x2=C6x-(abs(C6x-I4x)*(.9))
@@ -650,6 +655,12 @@ class DrawJacket(inkex.Effect):
            K6=str(K6x)+','+str(K6y)
            self.Dot(my_layer,K6x,K6y,dot_radius,dot_color,dot_width,dot_fill,'K6')
            length=(2.5*cm_to_px)
+           K7x,K7y=self.XYwithSlope(K6x,K6y,K6x-100,K6y+100,length,'normal')
+           K7=str(K7x)+','+str(K7y)
+           my_path='M '+K6+' L '+K7
+           self.Path(my_layer,my_path,ref_color,refline_width,'Front Collar reference Line A5K8C10')
+           self.Dot(my_layer,K7x,K7y,dot_radius,dot_color,dot_width,dot_fill,'K7')
+           length=(2.5*cm_to_px)
            K8x,K8y=self.XY(A5x,A5y,J2x,J2y,length)
            K8=str(K8x)+','+str(K8y)
            self.Dot(my_layer,K8x,K8y,dot_radius,dot_color,dot_width,dot_fill,'K8')
@@ -658,22 +669,20 @@ class DrawJacket(inkex.Effect):
            self.Dot(my_layer,K9x,K9y,dot_radius,dot_color,dot_width,dot_fill,'K9')
            my_path='M '+A5+' L '+K8+' L '+C10
            self.Path(my_layer,my_path,ref_color,refline_width,'Front Collar reference Line A5K8C10')
-           length=(2.5*cm_to_px)
-           K7x,K7y=self.XYwithSlope(K6x,K6y,K6x-100,K6y+100,length,'normal')
-           K7=str(K7x)+','+str(K7y)
-           self.Dot(my_layer,K7x,K7y,dot_radius,dot_color,dot_width,dot_fill,'K7')
+
+
            my_path='M '+A5+' L '+K6+' L '+K1+' L '+C10
            self.Path(my_layer,my_path,ref_color,refline_width,'Front Neck/Lapel reference Line A5K8C10')
            K3x,K3y=(K1x-((K1x-K9x)/2)) ,(K1y)
            K3=str(K3x)+','+str(K3y)
            self.Dot(my_layer,K3x,K3y,dot_radius,dot_color,dot_width,dot_fill,'K3')
            K2x,K2y=(K3x+((1.3*cm_to_px)*(.5))),(K1y)    #dart leg  - dart is 1.3cm total
+           K2=str(K2x)+','+str(K2y)
            K4x,K4y=(K3x-((1.3*cm_to_px)*(.5))),(K1y)    #dart leg   - dart is 1.3cm total
-           K5x=(K4x-(1.3*cm_to_px))
-           K5y=(C10y-(9.6*cm_to_px))
+           K4=str(K4x)+','+str(K4y)
            self.Dot(my_layer,K2x,K2y,dot_radius,dot_color,dot_width,dot_fill,'K2')           
            self.Dot(my_layer,K4x,K4y,dot_radius,dot_color,dot_width,dot_fill,'K4')
-           self.Dot(my_layer,K5x,K5y,dot_radius,dot_color,dot_width,dot_fill,'K5')
+
            #Upper Pocket
            L1x,L1y=(C8x+(3.7*cm_to_px)),(C8y)
            L1=str(L1x)+','+str(L1y)
@@ -685,26 +694,50 @@ class DrawJacket(inkex.Effect):
            L4=str(L4x)+','+str(L4y)
            my_path='M '+L1+' L '+L2+' L '+L3+' L '+L4+' z'
            self.Path(my_layer,my_path,ref_color,refline_width,'Front Jacket Upper Pocket L1L2L3L4')
+
+
+           #Upper Dart
+           length=9*cm_to_px
+           K5x,K5y=self.XY(K2x,K2y,L4x,L4y,-length)
+           K5=str(K5x)+','+str(K5y)
+           self.Dot(my_layer,K5x,K5y,dot_radius,dot_color,dot_width,dot_fill,'K5')   
+           my_path='M '+K3+' L '+K5
+           self.Path(my_layer,my_path,ref_color,refline_width,'Upper Dart Reference Line K3K5')        
+
            #Lower Pocket
            M1x,M1y=(C8x),(C8y+(28*cm_to_px))
+           M1=str(M1x)+','+str(M1y)
+           self.Dot(my_layer,M1x,M1y,dot_radius,dot_color,dot_width,dot_fill,'M1')
+
            m=self.Slope(F5x,F5y,F8x,F8y,'normal')
            b=F5y-(m*F5x)
            N1x=C8x
            N1y=b+(m*N1x)
            N1=str(N1x)+','+str(N1y)
            N2x,N2y = self.XYwithSlope(N1x,N1y,F8x,F8y,(7.5*cm_to_px),'normal')
+           N2=str(N2x)+','+str(N2y)
            N3x,N3y = self.XYwithSlope(N1x,N1y,F8x,F8y,-(7.5*cm_to_px),'normal')
+           N3=str(N3x)+','+str(N3y)
            self.Dot(my_layer,N1x,N1y,dot_radius,dot_color,dot_width,dot_fill,'N1')
            self.Dot(my_layer,N2x,N2y,dot_radius,dot_color,dot_width,dot_fill,'N2')
            self.Dot(my_layer,N3x,N3y,dot_radius,dot_color,dot_width,dot_fill,'N3')
+           my_path='M '+A4+' L '+N1
+           self.Path(my_layer,my_path,ref_color,refline_width,'Front Jacket Lower Pocket Reference Line A4N1')
+
  
            M2x,M2y=N2x,(N2y-abs(N1y-M1y))
            M2=str(M2x)+','+str(M2y)
            self.Dot(my_layer,M2x,M2y,dot_radius,dot_color,dot_width,dot_fill,'M2')
+           my_path='M '+N2+' L '+M2
+           self.Path(my_layer,my_path,ref_color,refline_width,'Lower Pocket Reference Line N2M2')
+
 
            M3x,M3y=N3x,(N3y-abs(N1y-M1y))
            M3=str(M3x)+','+str(M3y)
            self.Dot(my_layer,M3x,M3y,dot_radius,dot_color,dot_width,dot_fill,'M3')
+           my_path='M '+N3+' L '+M3
+           self.Path(my_layer,my_path,ref_color,refline_width,'Lower Pocket Reference Line N3M3')
+
 
            M4x,M4y=M3x-(1*cm_to_px),M3y+((self.Sqrt(((5.5)**2)-(1)))*cm_to_px)
            M4=str(M4x)+','+str(M4y)
@@ -716,10 +749,48 @@ class DrawJacket(inkex.Effect):
 
            my_path='M '+M2+' L '+M3+' L '+M4+' L '+M5+' z'
            self.Path(my_layer,my_path,ref_color,refline_width,'Front Jacket Lower Pocket M2M3M4M5')
-           #collar dart Length
+           
+           #Collar Pattern Line
+           P1=str(D10x)+','+str(D10y+(5*cm_to_px))   # halfway bw D10 & E6
+           c2=str(abs(F7y-E6y)/2)
+           c2=F7
+           m=self.Slope(F5x,F5y,F8x,F8y,'normal')
+           b=F5y-(m*F5x)
+           F9x=K8x
+           F9y=b+(m*F9x)
+           F9=str(F9x)+','+str(F9y)
+           self.Dot(my_layer,F9x,F9y,dot_radius,dot_color,dot_width,dot_fill,'F9')
+           my_path='M '+A5+' Q '+K6+' '+K9+' L '+K4+' L '+K5+' L '+K2+' L '+K1+' L '+C10+' L '+D10+' C '+E6+' '+F8+ ' '+F9+' L '+F5
+           self.Path(my_layer,my_path,line_color,line_width,'Front Jacket Collar and Front Line')  
 
-          
-      
+           # Side Dart
+           O1x,O1y=self.XY(M1x,M1y,M2x,M2y,-(4*cm_to_px))
+           O1=str(O1x)+','+str(O1y)
+           self.Dot(my_layer,O1x,O1y,dot_radius,dot_color,dot_width,dot_fill,'O1')
+           O2x=C6x+(abs(C7x-C6x)/2)
+           O2y=C6y
+           O2=str(O2x)+','+str(O2y)
+           self.Dot(my_layer,O2x,O2y,dot_radius,dot_color,dot_width,dot_fill,'O2')            
+           my_path='M '+O1+' L '+O2
+           self.Path(my_layer,my_path,ref_color,refline_width,'Side Dart Reference Line')
+           O3y=D5y-(2*cm_to_px)
+           m=(O1y-O2y)/(O1x-O2x)
+           b=O1y-(O1x*m)
+           O3x=((O3y-b)/m)
+           O3=str(O3x)+','+str(O3y)
+           self.Dot(my_layer,O3x,O3y,dot_radius,dot_color,dot_width,dot_fill,'O3')
+           O4y=O3y
+           O4x=O3x-(1*cm_to_px)
+           O4=str(O4x)+','+str(O4y)
+           self.Dot(my_layer,O4x,O4y,dot_radius,dot_color,dot_width,dot_fill,'O4') 
+           O5y=O3y
+           O5x=O3x+(1*cm_to_px)
+           O5=str(O5x)+','+str(O5y)  
+           my_path='M '+C6+' L '+O4+' L '+O1+' L '+O5+' L '+C7
+           self.Path(my_layer,my_path,line_color,line_width,'Side Dart')
+
+
+           
            
            
            
