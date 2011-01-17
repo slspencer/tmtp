@@ -27,6 +27,7 @@ class DrawJacket(inkex.Effect):
     def __init__(self):
           inkex.Effect.__init__(self)        
           # Store measurements from BackBodice.inx into object 'self'   
+          self.OptionParser.add_option('--measureunit', action='store', type='str', dest='measureunit', default='cm', help='Select measurement unit:')
           self.OptionParser.add_option('--height', action='store', type='float', dest='height', default=1.0, help='Height in inches') 
           self.OptionParser.add_option('--chest', action='store', type='float', dest='chest', default=1.0, help='chest')
           self.OptionParser.add_option('--chest_length', action='store', type='float', dest='chest_length', default=1.0, help='chest_length')
@@ -367,27 +368,38 @@ class DrawJacket(inkex.Effect):
            in_to_px=(90)                    #convert inches to pixels - 90px/in
            cm_to_in=(1/(2.5))               #convert centimeters to inches - 1in/2.5cm
            cm_to_px=(90/2.5)              #convert centimeters to pixels
-           height=(self.options.height)*in_to_px                         #Pattern was written for someone 5'9 or 176cm, 38" chest or 96cm
-           chest=self.options.chest*in_to_px
-           chest_length=self.options.chest_length*in_to_px
-           waist=self.options.waist*in_to_px
-           back_waist_length=self.options.back_waist_length*in_to_px                #((.25)*height)                        # (44.5/176cm) 
-           back_jacket_length=self.options.back_jacket_length*in_to_px               #(((.173)*height)+back_waist_length)  # (30.5cm/176cm) 
-           back_shoulder_width=self.options.back_shoulder_width*in_to_px    #((.233)*height)                     # (41/176)   
-           back_shoulder_length=self.options.back_shoulder_length*in_to_px           #((.042)*height)                    # (7.5/176cm)
-           back_underarm_width=self.options.back_underarm_width*in_to_px
-           back_underarm_length=self.options.back_underarm_length*in_to_px           #((.14)*height)                     # (24/176)cm 
-           back_waist_to_seat_length=self.options.back_waist_to_seat_length*in_to_px   #(.112*height)               # (20/176)cm  
-           nape_to_vneck=self.options.nape_to_vneck*in_to_px
-           sleeve_length=self.options.sleeve_length*in_to_px
+           if (self.options.measureunit=='cm') :
+               conversion=cm_to_px
+           else:
+               conversion=in_to_px
+           height=(self.options.height)*conversion                         #Pattern was written for someone 5'9 or 176cm, 38" chest or 96cm
+           chest=self.options.chest*conversion
+           chest_length=self.options.chest_length*conversion
+           waist=self.options.waist*conversion
+           back_waist_length=self.options.back_waist_length*conversion                #((.25)*height)                        # (44.5/176cm) 
+           back_jacket_length=self.options.back_jacket_length*conversion               #(((.173)*height)+back_waist_length)  # (30.5cm/176cm) 
+           back_shoulder_width=self.options.back_shoulder_width*conversion    #((.233)*height)                     # (41/176)   
+           back_shoulder_length=self.options.back_shoulder_length*conversion           #((.042)*height)                    # (7.5/176cm)
+           back_underarm_width=self.options.back_underarm_width*conversion
+           back_underarm_length=self.options.back_underarm_length*conversion           #((.14)*height)                     # (24/176)cm 
+           back_waist_to_seat_length=self.options.back_waist_to_seat_length*conversion   #(.112*height)               # (20/176)cm  
+           nape_to_vneck=self.options.nape_to_vneck*conversion
+           sleeve_length=self.options.sleeve_length*conversion
            
-           begin_x=5*cm_to_px               #Pattern begins in upper left corner x=3cm
-           begin_y=5*cm_to_px               #Start at 6cm down on left side of document   
+           begin_x=5*cm_to_px               #Pattern begins in upper left corner x=5cm
+           begin_y=nape_to_vneck/2               #Start at nape to neck measurement down on left side of document   
            seam_allowance=(5*in_to_px)/8   #5/8" seam allowance  
            hem_allowance=5*cm_to_px        #5cm or 2" seam allowance   
+           border=3*in_to_px
+           borderstr=str(border)
 
            # Create a base layer to draw the pattern.
            rootlayer = self.document.getroot()
+           rootlayer.set("margin-top",borderstr)
+           rootlayer.set("margin-bottom",borderstr)
+           rootlayer.set("margin-left",borderstr)
+           rootlayer.set("margin-right",borderstr)
+           self.view_center = (0.0,0.0)
            self.layer = inkex.etree.SubElement(rootlayer, 'g')
            self.layer.set(inkex.addNS('label', 'inkscape'), 'Pattern Layer')
            self.layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Group')
@@ -493,7 +505,7 @@ class DrawJacket(inkex.Effect):
            Hem_Line=' M '+F2+' L '+F3
            Hem1x,Hem1y,Hem1=self.GetDot(my_layer,F2x,F2y+hem_allowance,'Hem1')
            Hem2x,Hem2y,Hem2=self.GetDot(my_layer,F3x,F3y+hem_allowance,'Hem2')
-           Hem_Allowance=' L '+Hem2+' '+Hem1        
+           Hem_Line=' L '+Hem2+' '+Hem1        
            # Grainline
            G1x,G1y,G1=self.GetDot(my_layer,A2x,I3y,'G1')
            G2x,G2y,G2=self.GetDot(my_layer,G1x,G1y+40*cm_to_px,'G2')
@@ -505,7 +517,7 @@ class DrawJacket(inkex.Effect):
            self.back_jacket_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Back Group')
            back_jacket_layer=self.back_jacket_layer   
            my_layer=back_jacket_layer       
-           Back_Pattern_Path=Back_Center+' '+Back_Neck+ ' '+Back_Shoulder+' '+Back_Armhole+' '+Back_Side+' '+Hem_Allowance+' z'
+           Back_Pattern_Path=Back_Center+' '+Back_Neck+ ' '+Back_Shoulder+' '+Back_Armhole+' '+Back_Side+' '+Hem_Line+' z'
            self.Path(my_layer,Hem_Line,'foldline','Jacket Back Hemline','')
            self.Path(my_layer,Back_Pattern_Path,'seamline','Jacket Back Seamline','')
            self.Path(my_layer,Back_Pattern_Path,'pattern','Jacket Back Cuttingline','')
@@ -757,7 +769,8 @@ class DrawJacket(inkex.Effect):
            x,y=self.XY(F5x,F5y,E5x,E5y,hem_allowance)
            Hem1x,Hem1y,Hem1=self.GetDot(my_layer,x,y,'Hem1')
            Hem2x,Hem2y,Hem2=self.GetDot(my_layer,F9x,F9y+hem_allowance,'Hem2')
-           Hem_Allowance=' L '+Hem2+' '+Hem1        
+           Hem_Line=' L '+Hem2+' '+Hem1 
+           Jacket_Bottomy=Hem2y       
            # Grainline
            G1x,G1y,G1=self.GetDot(my_layer,C8x+(C10x-C8x)/2,L4y+5*cm_to_px,'G1')
            G2x,G2y,G2=self.GetDot(my_layer,G1x,G1y+40*cm_to_px,'G2')
@@ -850,7 +863,7 @@ class DrawJacket(inkex.Effect):
            self.jacket_front_layer.set(inkex.addNS('label', 'inkscape'), 'Jacket Front Label')
            self.jacket_front_layer.set(inkex.addNS('groupmode', 'inkscape'), 'Jacket Front Group')
            my_layer=self.jacket_front_layer
-           Jacket_Front_Pattern_Piece=Front_Side+' '+Front_Armhole1+' '+Front_Armhole2+' '+Front_Shoulder+' '+Front_Collar_and_Lapel+' '+Hem_Allowance+' z'
+           Jacket_Front_Pattern_Piece=Front_Side+' '+Front_Armhole1+' '+Front_Armhole2+' '+Front_Shoulder+' '+Front_Collar_and_Lapel+' '+Hem_Line+' z'
            self.Path(my_layer,Front_Side_Dart,'dart','Jacket Front Side Dart','')
            self.Path(my_layer,Front_Side_Dart_Foldline,'foldline','Jacket Front Side Dart Foldline','')
            self.Path(my_layer,Collar_Dart,'dart','Collar Dart','')
@@ -1138,32 +1151,29 @@ class DrawJacket(inkex.Effect):
            ### Resize Document, Reset View ###
            ###################################
            root = self.document.getroot()
-           my_layer=base_layer
+           my_layer=root
            border = 3*in_to_px
            borderstr = str(border)
            width = border + abs(F1x-SF10x)+border
-           height = border + abs(Collartopy-F1y) + border
+           height = border + abs(Collartopy-Jacket_Bottomy)+ border
            widthstr = str(width)
            heightstr = str(height)
-
-           #x=self.document.getElementById('svg2').getAttribute('viewBox')
-
-           #root.set("margin-top",borderstr)
-           #root.set("margin-bottom",borderstr)
-           #root.set("margin-left",borderstr)
-           #root.set("margin-right",borderstr)
            root.set("width", widthstr)
            root.set("height",heightstr)
+           #root.set("currentScale","1 : 1")
+           #x=self.document.getElementById('svg2').getAttribute('viewBox')
+
+
            #root.set("preserveAspectRatio","xMidYMid meet")
            #root.set("width","auto")
            #root.set("viewBox", "0 0"+" "+widthstr+" "+heightstr)
            #root.set("fitBoxtoViewport","True")
-           #root.set("currentScale","0.1 : 1")
+
            #x = self.document.location.reload()
            #root.set("width", "90in" % document_width)
            #root.set("height", "%sin" % document_height)
-           #viewbox=str(0)+' '+str(0)+str(width)+' '+str(height)
-           #root.set("viewBox", viewbox)      # 5 sets view/zoom to page width
+           viewbox=str(0)+' '+str(0)+str(width)+' '+str(height)
+           root.set("viewBox", viewbox)      # 5 sets view/zoom to page width
            #x=self.document.getElementById('svg2')
            #x.setAttribute('preserveAspectRatio',"xMidyMid meet")
 
