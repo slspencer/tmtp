@@ -69,17 +69,13 @@ import simpletransform
 import math
 import lxml
 import xml
-#import py2geom
-#from lxml import objectify
-#from scour import removeNamespacedAttributes as removeNSAttrib
-#from scour import removeNamespacedElements as removeNSElem
 
-# define directory where this script and steampunk_jacket.inx are located
+# define linux directory where this script and steampunk_jacket.inx are located
 sys.path.append('/usr/share/inkscape/extensions')
 
-###############################
+########################
 ######## Define globals #######
-###############################
+########################
 # Namespaces dictionary
 NSS = {
        u'cc'       :u'http://creativecommons.org/ns#',
@@ -95,89 +91,95 @@ NSS = {
         }
 
 # pattern name
-company_name   = 'New Day'
-pattern_name   = 'Steampunk Jacket'
-pattern_number = '1870-M-J-1'
-client_name    = 'Matt Conklin'
+company_name  = 'New Day'
+pattern_name     = 'Steampunk Jacket'
+pattern_number  = '1870-M-J-1'
+pattern_pieces    = 7
+client_name        = 'Matt Conklin'
 
 # measurement constants
-in_to_pt     = ( 72.72 / 1    )          #convert inches to printer's points - 72.72pt = 1in
-cm_to_pt     = ( 72.72 / 2.5  )          #convert centimeters to printer's points
-paper_width  = ( 32*in_to_pt  )
-border       = ( 7.5*cm_to_pt )          # 7.5cm (3") document borders
+in_to_pt         = ( 72 / 1    )             #convert inches to printer's points - 72pt = 1in
+cm_to_pt       = ( 72 / 2.54  )          #convert centimeters to printer's points
+paper_width  = ( 36 * in_to_pt )
+border           = ( 2 * in_to_pt )          # 3 document borders
 
 # sewing constants
 quarter_seam_allowance = ( in_to_pt * 1 / 4 )   # 1/4" seam allowance
-seam_allowance         = ( in_to_pt * 5 / 8 )   # 5/8" seam allowance
-hem_allowance          = ( in_to_pt * 2     )   # 2" seam allowance
-pattern_offset         = ( in_to_pt * 4     )   # 4" between patterns
+seam_allowance              = ( in_to_pt * 5 / 8 )   # 5/8" seam allowance
+hem_allowance               = ( in_to_pt * 2     )   # 2" seam allowance
+pattern_offset                 = ( in_to_pt * 4     )   # 4" between patterns
 
 # svg constants
 svgNameText = []
 no_transform = ''   # no transform required
-SVG_OPTIONS  = { 'width' : "auto",
-                'height' : "auto",
-          'currentScale' : "0.05 : 1",
-      'fitBoxtoViewport' : "True",
-   'preserveAspectRatio' : "xMidYMid meet",
-         'margin-bottom' : str(border),
-           'margin-left' : str(border),
-          'margin-right' : str(border),
-            'margin-top' : str(border),
-          'company-name' : company_name,
-       'patttern-number' : pattern_number,
-          'pattern-name' : pattern_name,
-           'client-name' : client_name
-                }
-
+SVG_OPTIONS  = {
+     'width' : "auto",
+     'height' : "auto",
+     'currentScale' : "0.05 : 1",
+     'fitBoxtoViewport' : "True",
+     'preserveAspectRatio' : "xMidYMid meet",
+     'margin-bottom' : str(border),
+     'margin-left' : str(border),
+     'margin-right' : str(border),
+     'margin-top' : str(border),
+     'company-name' : company_name,
+     'patttern-number' : pattern_number,
+     'pattern-name' : pattern_name,
+     'client-name' : client_name
+      }
 
 class Point :
     """
     Creates instance of Python class Point
     Creates & draws XML object from instance of Python class Point
     """
-    def __init__(self, name,  x,  y, nodetype , layer,  transform ) :
+    def __init__( self, name,  x,  y, nodetype , layer,  transform ) :
 
-        self.id     =  name
-        self.type = 'node'
+        self.id             =  name
+        self.type         = 'node'
         self.nodetype = nodetype    #can be corner, smooth, symmetric, tangent, control
-        self.x      = x
-        self.y      = y
-        self.coords  = str(x) + "," + str(y)
-        self.layer = layer
+        self.x              = x
+        self.y              = y
+        self.coords     = str(x) + "," + str(y)
+        self.layer        = layer
         self.transform = transform
+        self.DrawPoint()
 
     def Info(self):
         #Returns info from Python instance of class Point
-        return self.id, self.type, self.nodetype, self.coords, self.transform,  self.layer
+        return self.id, self.type, self.nodetype, str(self.x),  str(self.y),  self.coords, self.layer,  self.transform
 
     def DrawPoint(self):
        #Creates & draws XML object from Python instance of class Point
-        style = {   'stroke' : 'red','fill' : 'red','stroke-width' : '8' }
-        attribs = { 'style'        : simplestyle.formatStyle( style ),
-                        inkex.addNS( 'label', 'inkscape' ) : self.id,
-                        inkex.addNS( 'text', 'svg' ) : self.id,
-                        'transform'   : self.transform,
-                        'id'               :  self.id,
-                        'cx'               :  str(self.x),
-                        'cy'               :  str(self.y),
-                        'r'                 :  str( (.05) * in_to_pt )
+        style    = { 'stroke' : 'red',
+                       'fill' : 'red',
+                       'stroke-width' : '3'
                        }
+        attribs = {
+                        'style'                                             : simplestyle.formatStyle( style ),
+                        inkex.addNS( 'label', 'inkscape' ) : self.id,
+                        inkex.addNS( 'text', 'svg' )            : self.id,
+                        'id'                                                  :  self.id,
+                        'cx'                                                  :  str(self.x),
+                        'cy'                                                  :  str(self.y),
+                        'r'                                                    :  str( 5 ),
+                        'transform'                                      : self.transform
+                        }
         inkex.etree.SubElement( self.layer, inkex.addNS( 'circle', 'svg' ),  attribs )
 
 class Layout :
 
     def __init__(self, name,  x,  y,  layer ) :
-        self.id = name
-        self.type = 'layout'
-        self.document_low   = Point( 'document_low',  x,  y,  'corner',  layer,  no_transform)
+        self.id                      = name
+        self.type                  = 'layout'
+        self.document_low   = Point( 'document_low',    x,  y,  'corner',  layer,  no_transform)
         self.document_high = Point( 'document_high',  x,  y,  'corner',  layer,   no_transform)
-        self.current_low       = Point( 'current_low',  x,  y,  'corner',  layer,   no_transform)
-        self.current_high     = Point( 'current_high',  x,  y,  'corner',  layer,   no_transform)
-        self.pattern_low       = Point( 'pattern_low',  x,  y,  'corner',  layer,   no_transform)
-        self.pattern_high     = Point( 'pattern_high',  x,  y,  'corner',  layer,  no_transform)
+        self.current_low       = Point( 'current_low',      x,  y,  'corner',  layer,   no_transform)
+        self.current_high     = Point( 'current_high',    x,  y,  'corner',  layer,   no_transform)
+        self.pattern_low       = Point( 'pattern_low',      x,  y,  'corner',  layer,   no_transform)
+        self.pattern_high     = Point( 'pattern_high',    x,  y,  'corner',  layer,  no_transform)
         self.pattern_count   = 1
-        self.pattern_max     = 7
+        self.pattern_max     = pattern_pieces
 
     def Info(self):
         return self.id, self.type, self.document_low.Info(), self.document_high.Info(), self.current_low.Info(), self.current_high.Info()
@@ -189,10 +191,10 @@ class Generic:
 
 class Pattern:
     def __init__(self,  name,  layer):
-        self.id = name
-        self.layer = layer
+        self.id                   = name
+        self.layer               = layer
         self.pattern_count = 0
-        self.pattern_max   = 7
+        self.pattern_max   = pattern_pieces
 
 class PatternPiece:
     def __init__(self,  name,  layer):
@@ -200,7 +202,7 @@ class PatternPiece:
         self.layer = layer
         self.count = 0
         self.start = Point( 'start',  0,  0,  'corner',  layer,  no_transform)
-        self.low = Point( 'low',  0,  0,  'corner',  layer,  no_transform)
+        self.low =   Point( 'low',  0,  0,  'corner',  layer,  no_transform)
         self.high = Point( 'high',  0,  0,  'corner',  layer,  no_transform)
         self.width = 0
         self.height = 0
@@ -393,16 +395,15 @@ class DrawJacket( inkex.Effect ):
           my_path = path
           x_array = []
           y_array = []
-          self.Debug( my_path )
           path_coords_xy   = my_path.split( ' ' )                    # split path into pieces, separating at each 'space'
 
           for i in range( len( path_coords_xy ) ) :
-              self.Debug('path_coords_xy[ ' +str(i)+' ] = ')
-              self.Debug( "*"+path_coords_xy[i]+"*")
+              #self.Debug('path_coords_xy[ ' +str(i)+' ] = ')
+              #self.Debug( "*"+path_coords_xy[i]+"*")
 
               coords_xy = path_coords_xy[i].replace( ' ', '' )       # strip out remaining white spaces & put coordinate pair <x>,<y> (or command letter) into 'coords_xy'
-              self.Debug( 'strip out white spaces = ')
-              self.Debug("*"+coords_xy+"*")
+              #self.Debug( 'strip out white spaces = ')
+              #self.Debug("*"+coords_xy+"*")
 
               if ( len(coords_xy)  > 0 ) :                                                                                            # if coords_xy not empty, then process
 
@@ -419,23 +420,19 @@ class DrawJacket( inkex.Effect ):
 
           return min(x_array) + dx, min(y_array) + dy, max(x_array) + dx, max(y_array) + dy
 
-
-
-    ###################################################
     def Buttons( self, parent, bx, by, button_number, button_distance, button_size ):
            # can only do vertical button lines at this time...button line doesn't need extension past last button, so use ( button_number -1 )
            buttonline ='M ' + str(bx) +' '+ str(by) +' L '+ str(bx) +' '+ str( by + ( (button_number - 1) *button_distance) )
-           self.Path( parent, buttonline, 'foldline', 'Button Line', no_transform)
+           self.DrawPath( parent, buttonline, 'foldline', 'Button Line', no_transform)
            i = 1
            y = by
            while i<=button_number :
               self.Circle( parent, bx, y, (button_size / 2), 'green', 'Button_'+ str(i))
               buttonhole_path = 'M '+ str(bx) +' '+ str(y) +' L '+ str(bx-button_size) +' '+ str(y)
-              self.Path( parent, buttonhole_path, 'buttonhole', 'Button Hole '+ str(i), no_transform )
+              self.DrawPath( parent, buttonhole_path, 'buttonhole', 'Button Hole '+ str(i), no_transform )
               i = i + 1
               y = y + button_distance
 
-    ###################################################
     def Circle(self, layer, x, y, radius, color, name, ):
            style = {   'stroke'       : color,
                        'fill'         :'none',
@@ -448,16 +445,13 @@ class DrawJacket( inkex.Effect ):
                         'r'           : str(radius) }
            inkex.etree.SubElement( layer, inkex.addNS( 'circle', 'svg' ), attribs )
 
-    ###################################################
     def Debug( self, msg ):
            sys.stderr.write( str( msg ) + '\n' )
            return msg
 
-
-    ###################################################
     def Grainline( self, parent, x1, y1, x2, y2, name, trans ):
            grain_path = 'M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
-           self.Path( parent, grain_path, 'grainline', name, trans )
+           self.DrawPath( parent, grain_path, 'grainline', name, trans )
            self.Arrow( parent, x1, y1, x2, y2, name, trans )
            self.Arrow( parent, x2, y2, x1, y1, name, trans )
 
@@ -517,7 +511,7 @@ class DrawJacket( inkex.Effect ):
            return self.layer
 
     ###################################################
-    def Path( self, parent, pathdefinition, pathtype, name, trans ):
+    def DrawPath( self, parent, pathdefinition, pathtype, name, trans ):
 
            if ( pathtype == 'reference' )    :
                style = { 'fill'               : 'none',
@@ -942,23 +936,22 @@ class DrawJacket( inkex.Effect ):
 
            # reference & pattern layers
            reference_layer = self.NewLayer( 'Reference', self.document.getroot(), 'layer' )        # reference_layer = reference information
-           pattern_layer    = self.NewLayer( 'Pattern',     self.document.getroot(), 'layer')        # pattern_layer = pattern lines & marks
+           pattern_layer    = self.NewLayer( 'Pattern',   self.document.getroot(), 'layer')        # pattern_layer = pattern lines & marks
 
            # signature
-           my_layer   =  pattern_layer
-           trans         =  no_transform
            font_size    =  60
            text_space =  ( font_size * 1.1 )
-           self.Text( my_layer, border,   border,                            font_size, 'Company',             company_name,   trans )
-           self.Text( my_layer, border, ( border + 1*text_space ), font_size, 'Pattern_number', pattern_number,  trans )
-           self.Text( my_layer, border, ( border + 2*text_space ), font_size, 'Client',               client_name,         trans )
+           self.Text( reference_layer, border,   border,                            font_size, 'company',             company_name,   no_transform )
+           self.Text( reference_layer, border, ( border + 1*text_space ), font_size, 'pattern_number', pattern_number,  no_transform )
+           self.Text( reference_layer, border, ( border + 2*font_size + 5 ), font_size, 'pattern_name',  pattern_name,    no_transform )
+           self.Text( reference_layer, border, ( border + 3*text_space + 5 ), font_size, 'client',  client_name,   no_transform )
 
           # pattern start, count & placement
-           begin      = Point( 'begin',  border,   ( border + (3*text_space) + pattern_offset), 'corner',   reference_layer,  no_transform)
-           layout     = Layout( 'layout',  begin.x,  begin.y,  reference_layer)
+           begin = Point( 'begin',  border,   ( border + (3*text_space) + pattern_offset), 'corner',   reference_layer,  no_transform)
+           #begin.DrawPoint()
+           layout = Layout( 'layout',  begin.x,  begin.y,  reference_layer)
            pattern_start = Point('pattern_start', begin.x, begin.y,  'corner', reference_layer,  no_transform)
           # pattern_end  = Point('pattern_end', (pattern_start.x + pattern_width),  (pattern_start.y + pattern_height), reference_layer,  no_transform)
-
 
            # Jacket Back
            jacket = Pattern('Jacket',  self.NewLayer('Jacket',  pattern_layer,  'layer') )
@@ -975,34 +968,25 @@ class DrawJacket( inkex.Effect ):
            jb.transform  = 'translate(' + str(pattern_start.x) +', '+ str(pattern_start.y) + ' )'
            jb.seam.center = Generic()
            jb.seam.side = Generic()
-
+           jb.seam.shoulder = Generic()
+           jb.seam.neck = Generic()
+           jb.seam.armhole = Generic()
+           jb.seam.hem = Generic()
 
            # reference back center seam points for nape, shoulder, chest, waist, hip, hem
-           #napex,  napey,  nape  = Dot( my_layer,,    (0*cm_to_pt),         'nape',                 jb.transform )
            jb.nape = Point('nape',   0,   0, 'corner',   reference_layer,  no_transform)   # start calculations from nape at 0,0
-           #back_shoulder_centerx, back_shoulder_centery, back_shoulder_center = Dot( my_layer, (0*cm_to_pt),    back_shoulder_length, 'back_shoulder_center', jb.transform )
            jb.seam.center.shoulder = Point('back_center_shoulder',  jb.nape.x,    jb.nape.y + back_shoulder_length, 'smooth', reference_layer,  no_transform)
-           #back_chest_centerx,    back_chest_centery,    back_chest_center    = Dot( my_layer, (1*cm_to_pt),    back_chest_length,    'back_chest_center',    jb.transform   )
            jb.seam.center.chest = Point( 'back_center_chest',  jb.nape.x + (1*cm_to_pt),  jb.nape.y + back_chest_length,  'smooth', reference_layer, jb.transform  )
-           #back_waist_centerx,    back_waist_centery,    back_waist_center    = Dot( my_layer, (2.5*cm_to_pt),  back_waist_length,    'back_waist_center',    jb.transform   )
            jb.seam.center.waist = Point( 'back_center_waist', jb.nape.x + (2.5*cm_to_pt),  jb.nape.y + back_waist_length,    'symmetric', reference_layer, jb.transform)
-           #back_hip_centerx,      back_hip_centery,      back_hip_center      = Dot( my_layer, (2*cm_to_pt),    back_waist_length + back_hip_length, 'back_hip_center', jb.transform )
            jb.seam.center.hip =  Point( 'back_center_hip', jb.nape.x + (2*cm_to_pt),    jb.seam.center.waist.y + back_hip_length, 'smooth', reference_layer,  jb.transform )
-           #back_hem_centerx,      back_hem_centery,      back_hem_center      = Dot( my_layer, (1.5*cm_to_pt),  back_jacket_length,   'back_hem_center',      jb.transform )
            jb.seam.center.hem = Point( 'back_center_hem', jb.nape.x + (1.5*cm_to_pt),  back_jacket_length,   'smooth', reference_layer, jb.transform )
-           #back_hem_allowance_centerx, back_hem_allowance_centery, back_hem_allowance_center = Dot( my_layer, (1.5*cm_to_pt), back_jacket_length + hem_allowance, 'back_hem_allowance_center', jb.transform )
            jb.seam.center.hem_allowance = Point( 'back_center_hem_allowance', jb.seam.center.hem.x +0, jb.seam.center.hem.y + hem_allowance, 'corner', reference_layer ,  jb.transform)
 
            # reference back side seam points for chest, waist, hip, hem
-           #back_chest_sidex, back_chest_sidey, back_chest_side = Dot( my_layer, back_shoulder_width - (1*cm_to_pt),     back_chest_length,  'back_chest_side', jb.transform )
            jb.seam.side.chest = Point( 'back_side_chest', jb.nape.x + back_shoulder_width - (1*cm_to_pt),  jb.nape.y + back_chest_length, 'smooth', reference_layer, jb.transform )
-           #back_waist_sidex, back_waist_sidey, back_waist_side = Dot( my_layer, back_shoulder_width - (3*cm_to_pt),     back_waist_length,  'back_waist_side', jb.transform )
            jb.seam.side.waist = Point( 'back_side_waist', jb.nape.x + back_shoulder_width - (3*cm_to_pt),  jb.nape.y + back_waist_length, 'symmetric',  reference_layer, jb.transform )
-           #back_hip_sidex, back_hip_sidey, back_hip_side       = Dot( my_layer, back_shoulder_width - (2*cm_to_pt),     back_waist_length + back_hip_length, 'back_hip_side', jb.transform )
            jb.seam.side.hip = Point( 'back_side_hip', jb.nape.x + back_shoulder_width - (2*cm_to_pt),  jb.seam.side.waist.y + back_hip_length, 'smooth', reference_layer, jb.transform )
-           #back_hem_sidex, back_hem_sidey, back_hem_side       = Dot( my_layer, back_shoulder_width - (1.5*cm_to_pt),   back_jacket_length, 'back_hem_side', jb.transform )
            jb.seam.side.hem = Point( 'back_side_hem', jb.nape.x + back_shoulder_width - (1.5*cm_to_pt),   back_jacket_length, 'smooth', reference_layer, jb.transform )
-           #jb.seam.side.hem_allowance.x, jb.seam.side.hem_allowance.y, jb.seam.side.hem_allowance. = Dot( my_layer, back_hem_sidex, back_jacket_length + hem_allowance, 'jb.seam.side.hem_allowance.', jb.transform )
            jb.seam.side.hem_allowance = Point( 'back_side_hem_allowance', jb.seam.side.hem.x, jb.seam.side.hem.y + hem_allowance, 'corner',  reference_layer, jb.transform )
 
            # armscye points
@@ -1010,43 +994,43 @@ class DrawJacket( inkex.Effect ):
            jb.underarm = Point( 'back_underarm_point', jb.nape.x + back_shoulder_width, jb.nape.y + back_balance_length + abs(back_balance_length - back_chest_length)*(.48), 'smooth', reference_layer,  jb.transform )
 
            # diagonal shoulder line
-           jb.seam.shoulder = Generic()
            jb.seam.shoulder.high = Point( 'jb.seam.shoulder.high.', jb.nape.x + back_neck_width, jb.nape.y - back_neck_length, 'corner', reference_layer,  jb.transform )
            jb.seam.shoulder.low =  Point( 'back_shoulder_low', jb.seam.center.shoulder.x + back_shoulder_width + (1*cm_to_pt), jb.seam.center.shoulder.y, 'corner', reference_layer,  jb.transform )
 
-           # Back Vertical Grid
+           # Back Vertical Reference Grid
            d = 'M '+ jb.nape.coords   + ' v ' + str( jb.height )
-           self.Path( reference_layer, d , 'reference' , 'Jacket Back - Center', jb.transform )
+           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Center', jb.transform )
            d = 'M '+ str(jb.nape.x + back_shoulder_width) + ', ' + str(jb.nape.y) + ' v ' + str( jb.height)
-           self.Path( reference_layer, d , 'reference' , 'Jacket Back - Shoulder Width',   jb.transform )
+           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Shoulder Width',   jb.transform )
            d = 'M '+ str(jb.nape.x + jb.width) + ', ' + str(jb.nape.y)       + ' v ' + str( jb.height )
-           self.Path( reference_layer, d , 'reference' , 'Jacket Back - Side',   jb.transform )
+           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Side',   jb.transform )
            d = 'M '+ jb.seam.shoulder.high.coords  +' v '+ str(back_shoulder_length)
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Neck',     jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Neck',     jb.transform )
 
-           # Back Horizontal Grid
+           # Back Horizontal Reference Grid
            d = 'M '+ jb.nape.coords  + ' h ' + str( jb.width )   # top grid line
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Top',  jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Top',  jb.transform )
            d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.shoulder.y)   + ' h ' + str( jb.width ) # shoulder grid line
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Shoulder', jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Shoulder', jb.transform )
            d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.chest.y)        + ' h ' + str( jb.width ) # chest grid line
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Chest',    jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Chest',    jb.transform )
            d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.waist.y)         + ' h ' + str( jb.width) # waist
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Waist',    jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Waist',    jb.transform )
            d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.hip.y )           + ' h ' + str( jb.width ) #hip
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Hip',      jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Hip',      jb.transform )
            d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.hem.y )         + ' h ' + str( jb.width ) # hem
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Hem',      jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Hem',      jb.transform )
            d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.hem_allowance.y )  + ' h ' + str( jb.width )# hem allowance
-           self.Path( reference_layer, d, 'reference', 'Jacket Back - Hem',      jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Hem',      jb.transform )
            d = 'M ' + str(jb.nape.x) + ', ' + str(jb.nape.y + jb.height)                + ' h ' + str( jb.width )
-           self.Path( my_layer, d, 'reference', 'Jacket Back - End',      jb.transform )
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - End',      jb.transform )
 
            # Back Center Seam line clockwise from bottom left:
            x1, y1       = self.PointwithSlope( jb.seam.center.hip.x, jb.seam.center.hip.y, jb.seam.center.hem.x, jb.seam.center.hem.y, abs( jb.seam.center.hip.y - jb.seam.center.waist.y )*(.3), 'normal' )
            c1 = Point( 'c1', x1, y1, 'control', reference_layer, jb.transform)
            c2 = Point( 'c2', jb.seam.center.waist.x,  jb.seam.center.waist.y + abs( jb.seam.center.waist.y -  jb.seam.center.hip.y   ) * (.3), 'control', reference_layer, jb.transform )
            c3 = Point( 'c2', jb.seam.center.waist.x,  jb.seam.center.waist.y - abs( jb.seam.center.waist.y - jb.seam.center.chest.y ) * (.3), 'control', reference_layer,  jb.transform )
+
            x1, y1 = self.PointwithSlope( jb.seam.center.chest.x, jb.seam.center.chest.y, jb.seam.center.shoulder.x, jb.seam.center.shoulder.y, abs( jb.seam.center.chest.y - jb.seam.center.waist.y )*(.3), 'normal' )
            c4 = Point( 'c4', x1, y1, 'control', reference_layer,  jb.transform )
            c5 = Point( 'c5', jb.seam.center.chest.x - abs(jb.seam.center.chest.x - jb.seam.center.shoulder.x)*(.3), jb.seam.center.chest.y - abs( jb.seam.center.chest.y - jb.seam.center.shoulder.y )*(.3), 'control', reference_layer,  jb.transform )
@@ -1058,82 +1042,64 @@ class DrawJacket( inkex.Effect ):
            # Back Neck seam line clockwise from jb.nape to high point of shoulder:
            x1, y1       = self.PointwithSlope( jb.seam.shoulder.high.x, jb.seam.shoulder.high.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, (abs( jb.seam.shoulder.high.y - jb.nape.y )*(.75)), 'perpendicular')
            c1 = Point( 'c1_!', x1, y1, 'control', reference_layer,  jb.transform) #c1 is perpendicular to shoulder line at jb.seam.shoulder.high.
+
            x1, y1       = self.PointwithSlope( jb.nape.x, jb.nape.y, jb.seam.shoulder.high.x, jb.nape.y, ( -(abs( jb.seam.shoulder.high.x - jb.nape.x ) ) * (.50) ), 'normal')
            c2 = Point( 'c2_!', x1, y1, 'control', reference_layer, jb.transform)
+
            # Back Neck Seam path - starts with 'jb.nape' from Back_Center_Seam
-           jb.seam.neck = Generic()
            jb.seam.neck.path = 'M ' + jb.nape.coords + ' C '+ c2.coords +' '+ c1.coords +' '+ jb.seam.shoulder.high.coords
 
            # Back Shoulder & Armhole seam lines clockwise from high point to low point of shoulder to top of side seam
-           c1   = Point( my_layer, jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.33)), jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.4)),  'control', reference_layer,  jb.transform )
-           c2   = Point( my_layer, jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.6) ), jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.66)), 'control', reference_layer,   jb.transform )
+           c1   = Point( 'c1_@', jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.33)), jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.4)),  'control', reference_layer,  jb.transform )
+           c2   = Point( 'c2_@', jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.6) ), jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.66)), 'control', reference_layer,   jb.transform )
+
            # Back Shoulder Seam path - starts with 'jb.seam.shoulder.high.coords' from Back_Neck_Seam
            jb.seam.shoulder.path = ' C '+ c1.coords +' '+ c2.coords +' '+ jb.seam.shoulder.low.coords
-           jb.seam.armhole = Generic()
-           jb.seam.armhole.path = ' Q ' + jb.balance.coords + ' ' + jb.underarm.coords
+           jb.seam.armhole.path  = ' Q ' + jb.balance.coords + ' ' + jb.underarm.coords
 
            # Back Side seam line clockwise from jb.underarm. to hem
            x1, y1 = self.PointwithSlope( jb.seam.side.chest.x, jb.seam.side.chest.y, jb.underarm.x, jb.underarm.y, abs(jb.seam.center.chest.y - jb.seam.side.waist.y) * (.3) , 'normal')
            c1 = Point( 'c1_*' , x1, y1, 'control' , reference_layer,  jb.transform)
+
            c2 = Point( 'c2_*', jb.seam.side.waist.x, jb.seam.side.waist.y - (abs( jb.seam.side.waist.y - jb.seam.side.chest.y )*(.3)), 'control', reference_layer,  jb.transform )
            c3 = Point( 'c3_*', jb.seam.side.waist.x, jb.seam.side.waist.y + (abs( jb.seam.side.waist.y - jb.seam.side.hip.y )*(.3)),   'control', reference_layer,  jb.transform )
+
            x1, y1  = self.PointwithSlope( jb.seam.side.hip.x, jb.seam.side.hip.y, jb.seam.side.hem.x, jb.seam.side.hem.y, (abs(jb.seam.side.waist.y - jb.seam.side.hip.y)*(.3)), 'normal')
            c4 = Point( 'c4_*', x1, y1, 'control', reference_layer,  jb.transform )
+
            # Back Side Seam path -- starts with 'jb.underarm.' from Back_Shoulder_Armhole_Seam
            jb.seam.side.path  = ' L '+ jb.seam.side.chest.coords +' C '+ c1.coords + ' '+ c2.coords +' '+ jb.seam.side.waist.coords +' C '+ c3.coords +' '+ c4.coords +' '+ jb.seam.side.hip.coords +' L '+ jb.seam.side.hem.coords + ' ' + jb.seam.side.hem_allowance.coords
 
            # Back Hemline path
-           jb.seam.hem = Generic()
            jb.seam.hem.path = 'M ' +  jb.seam.center.hem.coords + ' L ' + jb.seam.side.hem.coords
 
            # Grainline
-           g1 = Point( 'g1', jb.seam.shoulder.high.x, jb.underarm.y, 'grainline', reference_layer,  jb.transform )
-           g2 = Point( 'g2', g1.x, g1.y + (40*cm_to_pt), 'grainline', reference_layer,  jb.transform )
+           g1 = Point( 'g1', (jb.seam.shoulder.low.x)/2, jb.underarm.y, 'grainline', reference_layer,  jb.transform )
+           g2 = Point( 'g2', g1.x, g1.y + (60*cm_to_pt), 'grainline', reference_layer,  jb.transform )
 
            # Jacket Back Pattern path
-           self.Debug('jb.seam.neck.path = ')
-           self.Debug(jb.seam.neck.path)
-           self.Debug('jb.seam.shoulder.path = ')
-           self.Debug(jb.seam.shoulder.path)
-           self.Debug('jb.seam.armhole.path = ')
-           self.Debug(jb.seam.armhole.path)
-           self.Debug('jb.seam.side = ')
-           self.Debug(jb.seam.side.path)
-           self.Debug('jb.seam.center.path')
-           self.Debug(jb.seam.center.path)
-           self.Debug( 'Got to here!')
            jb.path = jb.seam.neck.path +' '+ jb.seam.shoulder.path + ' '+ jb.seam.armhole.path +' '+ jb.seam.side.path + ' ' + jb.seam.center.path +' z'
 
-           ########################
-           ### Draw Jacket Back ###
-           ########################
-           # switch to pattern layer
-           my_layer  = jb.layer
-           Jacket_Back_Layer = jb.layer
-           self.Path( jb.layer, jb.seam.hem.path, 'hemline',     'Jacket_Back_Hemline',      jb.transform )
-           self.Path( jb.layer, jb.path, 'seamline',  'Jacket_Back_Seamline',     jb.transform )
-           self.Path( jb.layer, jb.path, 'cuttingline', 'Jacket_Back_Cuttingline',  jb.transform ) # self.Path creates id 'path_Jacket_Back_Cuttingline' used in BoundingBox()
-           self.Grainline( jb.layer, g1.x, g1.y, g2.x, g2.y,     'Jacket_Back_Grainline',    jb.transform )
+           #Draw Jacket Back on pattern layer
+           self.DrawPath( jb.layer, jb.seam.hem.path, 'hemline',  'Jacket_Back_Hemline',  jb.transform )
+           self.DrawPath( jb.layer, jb.path, 'seamline',  'Jacket_Back_Seamline',  jb.transform )
+           self.DrawPath( jb.layer, jb.path, 'cuttingline', 'Jacket_Back_Cuttingline',  jb.transform ) # self.DrawPath creates id 'path_Jacket_Back_Cuttingline' used in BoundingBox()
+           self.Grainline( jb.layer, g1.x, g1.y, g2.x, g2.y, 'Jacket_Back_Grainline',  jb.transform )
+
            # text
-           x, y       = (3*cm_to_pt) , jb.nape.x + back_shoulder_length
+           x, y = (3*cm_to_pt) , jb.nape.x + back_shoulder_length
            font_size  = 40
-           self.Text( my_layer, x,   y,                              font_size, 'Company',        company_name,    jb.transform )
-           self.Text( my_layer, x, ( y + 1*font_size + 5 ), font_size, 'Pattern_number', pattern_number,  jb.transform )
-           self.Text( my_layer, x, ( y + 2*font_size + 5 ), font_size, 'Client',         client_name,     jb.transform )
-           self.Text( my_layer, x, ( y + 3*font_size + 5 ), font_size, 'Pattern_name',   pattern_name,    jb.transform )
-           self.Text( my_layer, x, ( y + 4*font_size + 5 ), font_size, 'Cut_fabric',     str(jb.fabric), jb.transform )
+           self.Text( jb.layer, x,   y,                               font_size, 'company',   company_name,    jb.transform )
+           self.Text( jb.layer, x, ( y + 1*font_size + 5 ), font_size, 'pattern_number', pattern_number,  jb.transform )
+           self.Text( jb.layer, x, ( y + 2*font_size + 5 ), font_size, 'cut_fabric',  'Cut '+str(jb.fabric)+ ' Fabric',   jb.transform )
+           self.Text( jb.layer, x, ( y + 3*font_size + 5 ), font_size, 'client',   client_name,     jb.transform )
+
            # document calculations
-           #pattern_low_x, pattern_low_y, pattern_high_x, pattern_high_y = self.BoundingBox( 'path_Jacket_Back_Cuttingline', pattern_startx, pattern_starty )
-           #jb.low.x,  jb.low.y,  jb.high.x,  jb.high.y = self.BoundingBox( 'path_Jacket_Back_Cuttingline', jb.start.x, jb.start.y )
            jb.low.x,  jb.low.y,  jb.high.x,  jb.high.y = self.NewBoundingBox( jb.path, jb.start.x, jb.start.y )
-           #document_low_x  = min( document_low_x,  pattern_low_x  )
            layout.document_low.x  = min( layout.document_low.x ,  jb.low.x  )
            layout.document_low.y  = min( layout.document_low.y ,  jb.low.y  )
-           #document_low_y  = min( document_low_y,  pattern_low_y  )
            layout.document_high.x = max( layout.document_high.x, jb.high.x)
            layout.document_high.y = max( layout.document_high.y, jb.high.y )
-
-
 
            ###################################
            ### Resize Document, Reset View ###
@@ -1144,7 +1110,6 @@ class DrawJacket( inkex.Effect ):
            layout.width  = layout.document_high.x + border
            # reset document size
            self.svg_svg( str( layout.width ), str( layout.height ), str( border ) )
-
 
 my_effect = DrawJacket()
 my_effect.affect()
