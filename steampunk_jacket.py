@@ -22,7 +22,7 @@
 # :) 3. Define 'placement' type of line - place in def module & change 'dart' to 'placement'
 # :) 4. Narrow line widths - printed lines are quite large
 # 5. Learn 'marker' technique
-# 6. Define 'notch' marker - Place matching notches perpendicular to slope at a given a pair of points on seamlines on different pieces, outset by the given seam allowance appropriate for each piece.
+# 6. Define 'notch' & arrow markers - Place matching notches perpendicular to slope at a given a pair of points on seamlines on different pieces, outset by the given seam allowance appropriate for each piece.
 # 7. Define 'small sewing dot' marker - place marker at given point
 # 8. Define 'large sewing dot' marker - place marker at given point
 # 9. Define 'small sewing square' marker - place marker at given point
@@ -48,7 +48,7 @@
 #25. Line intersect w/ curve
 #25. Find point along curve - distance or %?
 #26. Find point of slope change on curve
-#27. Recalculate patterns to start at 0,0, then use pattern_startx,y as transform -
+#27. :) Recalculate patterns to start at 0,0, then use pattern_startx,y as transform -
 #27a :) back
 #27b front
 #27c upper sleeve
@@ -109,14 +109,16 @@ cm_to_in        = ( 1 / 2.54 )             #convert centimeters to inches
 in_to_cm        = ( 2.54 / 1 )             #convert inches to centimeters
 
 # layout constants
-paper_width  = ( 36 * in_to_pt )      #wide-carriage plotter is 36" wide
-border           = ( 2 * in_to_pt )     # 2" document borders
+printer='36" wide carriage plotter'
+if (printer == '36" wide carriage plotter'):
+   paper_width  = ( 36 * in_to_pt )
+   border           = ( 1 * in_to_pt )        # 1" document borders
 
 # sewing constants
 quarter_seam_allowance = ( in_to_pt * 1 / 4 )   # 1/4" seam allowance
 seam_allowance              = ( in_to_pt * 5 / 8 )   # 5/8" seam allowance
-hem_allowance               = ( in_to_pt * 2     )   # 2" seam allowance
-pattern_offset                 = ( in_to_pt * 3     )   # 3" between patterns
+hem_allowance               = ( in_to_pt * 2     )    # 2" seam allowance
+pattern_offset                 = ( in_to_pt * 3     )    # 3" between patterns
 
 # svg constants
 svgNameText = []
@@ -193,11 +195,12 @@ class Layout :
         return self.id, self.type, self.document_low.Info(), self.document_high.Info(), self.current_low.Info(), self.current_high.Info(),  self.pattern_low.Info(),  self.pattern_high.Info(),  str(self.pattern_count),  str(self.pattern_max)
 
 class Generic:
+    """
+    Create a generic base object so that other objects can be attached on the fly with '.'
+    """
 
     def __init__(self):
-        """
-        create a generic base object so that other objects can be attached on the fly with '.'
-        """
+
         self.type = "instance of Generic class"
         return
 
@@ -205,6 +208,9 @@ class Generic:
         return self.type
 
 class Pattern:
+    """
+    Create an instance of Pattern class, eg - jacket, pants, corset, which will contain the set of pattern piece objects - eg  jacket.back, pants.frontPocket, corset.stayCover
+    """
     def __init__(self,  name,  layer) :
         self.id                   = name
         self.type               = "instance of Pattern class"
@@ -216,6 +222,10 @@ class Pattern:
         return self.id,  self.type,  self.layer,  str(self.pattern_count),  str(self.pattern_max)
 
 class PatternPiece:
+    """
+    Create an instance of the PatternPiece class, eg jacket.back, pants.frontPocket, corset.stayCover will contain the set of seams and all other pattern piece info,
+    eg - jacket.back.seam.shoulder, jacket.back.grainline,  jacket.back.interfacing
+    """
     def __init__(self,  name,  layer):
         self.id = name
         self.type = 'instance of PatternPiece class'
@@ -237,11 +247,7 @@ class PatternPiece:
         return self.id,  self.type,  self.layer,  str(self.count),  self.start.Info(),  self.low.Info(),  self.high.Info(),  str(self.width),  str(self.height),  str(self.fabric),  str(self.interfacing),  str(self.lining),  self.transform,  self.path,  self.seam.Info()
 
 
-def BezierSmooth ( point1,  point2) :
-       #  'Generic' Bezier Curve - Returns two control points for curve based on 1/3 difference between x & y values of two points
-        c1 = Point( 'c1', abs(point1.x - point2.x)*(.33),  abs(point1.y - point2.y) *(.33),  'control',  no_transform )
-        c2 = Point( 'c2', abs(point1.x - point2.x)*(.66),  abs(point1.y - point2.y) *(.66),  'control',  no_transform )
-        return "C c1.coordstr c2.coordstr point2.coordstr"
+
 
 class DrawJacket( inkex.Effect ):
     """
@@ -354,7 +360,7 @@ class DrawJacket( inkex.Effect ):
 
     def Arrow( self, layer, x1, y1, x2, y2, name, trans ):
            """
-           creates arrow markers for ends of grainline
+           creates arrow for end of grainline
            """
            arrow_height=30
            arrow_width=10
@@ -373,20 +379,30 @@ class DrawJacket( inkex.Effect ):
            w2x,w2y = self.PointFromDistanceAndAngle(x1, y1,-arrow_width, perpendicular_angle)
            style = { 'fill':'green',
                      'stroke':'green',
-                     'stroke-width':'8',
+                     'stroke-width':'2',
                      'stroke-linejoin':'miter',
                      'stroke-miterlimit':'4'}
-           my_path='M '+str(x1)+' '+str(y1)+' '+str(w1x)+' '+str(w1y)+' L '+str(hx)+' '+str(hy)+' L '+str(w2x)+' '+str(w2y)+' z'
+           path ='M '+str(x1)+' '+str(y1)+' '+str(w1x)+' '+str(w1y)+' L '+str(hx)+' '+str(hy)+' L '+str(w2x)+' '+str(w2y)+' z'
            pathattribs = { inkex.addNS('label','inkscape') : 'Arrow',
                                                       'id' :  name +'_arrow_'+ str(arrow_number),
                                                       'transform' : trans,
-                                                      'd': my_path,
+                                                      'd': path,
                                                       'style': simplestyle.formatStyle(style) }
            inkex.etree.SubElement( layer, inkex.addNS('path','svg'), pathattribs)
 
-    def BoundingBox( self, element_id, dx, dy ) :
+    def BezierSmooth ( self,  layer,  point1,  point2,  trans ):
+        #  'Generic' Bezier Curve - Returns two control points for curve based on ~1/3 difference between x & y values of two points
+        # Some python versions don't like (1/3) - returns 0 or scientific calculations which are different than 'classroom math' - so use (.33) and (.66)
+        self.Debug('got to here')
+        dist_x,  dist_y = abs( point1.x - point2.x ),   abs( point1.y - point2.y )
+        c1 = Point( 'c1', dist_x*(.33),  dist_y *(.33),  'control',  layer,  trans )
+        c2 = Point( 'c2', dist_x*(.66),  dist_y *(.66),  'control',  layer,  trans )
+        return "C c1.coordstr c2.coordstr point2.coordstr"
 
-          # Return bounding box info usable to layout pattern pieces on printout
+    def BoundingBox( self, element_id, dx, dy ) :
+          """
+          Return bounding box info usable for pattern piece layout on printout
+          """
           x_array = []
           y_array = []
           x_array.append(1.2345)  # initialize with dummy float value
@@ -394,11 +410,11 @@ class DrawJacket( inkex.Effect ):
 
           my_element        = self.getElementById( element_id )  # returns 'element g at ...' --> a pointer into the document
           my_path             = my_element.get( 'd' )                   # returns the whole path  'M ..... z'
-          path_coords_xy   = my_path.split( ' ' )                    # split path into pieces, separating at each 'space'
+          path_coords_xy   = my_path.split( ' ' )                       # split path into segments, separating at each 'space', assumes each coordinate pair x&y to be separated by comma with no space between x,y.  This is built into DrawPoint() where self.coords=str(x)+','+str(y)
 
           for i in range( len( path_coords_xy ) ) :
 
-              coords_xy = path_coords_xy[i].replace( ' ', '' )       # strip out remaining white spaces & put coordinate pair <x>,<y> (or command letter) into 'coords_xy'
+              coords_xy = path_coords_xy[i].replace( ' ', '' )       # strip out segments which are only white space, put coordinate pair x,y (or command letter) into 'coords_xy'
 
               if ( len(coords_xy)  > 0 ) :                                                                                            # if coords_xy not empty, then process
 
@@ -408,14 +424,14 @@ class DrawJacket( inkex.Effect ):
 
                       for j in range( len( xy ) ) :
 
-                          if ( ( j % 2 ) == 0 ) :        # j starts with 0, so if mod(j,2)=0 then xy[j] is an x point -- in case there are more than 2 elements in xy array
-                              x_array.append( float( xy[ j ] ) )
+                          if ( ( j % 2 ) == 0 ) :        # j starts with 0, so if mod(j,2)=0 then xy[j] is an x point
+                              x_array.append( float( xy[ j ] ) )   # change x from string to float, add to x_array
                           else :                         # mod(j,2)<>0, so xy[j] is a y point
-                              y_array.append( float( xy[ j ] ) )
+                              y_array.append( float( xy[ j ] ) )     # y from string to float, add to y_array
 
           x_array.remove(1.2345)
           y_array.remove(1.2345)
-
+          # minimum value of x is left side of bounding box, min y is upper side, max x is right side, max y is lower side, add any transform values dx & dy
           return min(x_array) + dx, min(y_array) + dy, max(x_array) + dx, max(y_array) + dy
 
     ###################################################
@@ -453,7 +469,7 @@ class DrawJacket( inkex.Effect ):
            """
            Creates line of buttons
            Can only do vertical button lines at this time
-           Button line doesn't need extension before first or after last button, so draw (button-1) line segments
+           Button line doesn't need extension before first or after last button, so draw (button-1) line segments starting with center of first button
            bx,by is coordinate of center of first button
            """
            buttonline ='M ' + str(bx) +' '+ str(by) +' L '+ str(bx) +' '+ str( by + ( (button_number - 1) *button_distance) )
@@ -470,7 +486,7 @@ class DrawJacket( inkex.Effect ):
     def Circle(self, layer, x, y, radius, color, name, ):
            style = {   'stroke' : color,
                        'fill'  :'none',
-                       'stroke-width' :'5' }
+                       'stroke-width' :'3' }
            attribs = { 'style'  : simplestyle.formatStyle( style ),
                         inkex.addNS( 'label', 'inkscape' ) : name,
                         'id' : name,
@@ -490,58 +506,66 @@ class DrawJacket( inkex.Effect ):
            self.Arrow( parent, x2, y2, x1, y1, name, trans )
 
     def DrawGrainline( self, parent, path, name, trans ):
-          #not in use at this time
+           #!!!!!!not in use at this time
+           #!!!!!!somehow add markers to line definition
            self.DrawPath( parent, path, 'grainline', name, trans )
-           self.Arrow( parent, x1, y1, x2, y2, name, trans )
-           self.Arrow( parent, x2, y2, x1, y1, name, trans )
 
+    def IntersectLineLine( self, x1, y1, x2, y2, x3, y3, x4, y4 ) :
+           """
+           Find intersection between two lines
+           """
+           # Find point x,y where m1*x+b1=m2*x + b2
+           # m = (y1-y2)/(x1-x2) --> find slope for each line
+           # y = mx + b --> b = y - mx  --> find b for each line
 
-    def IntersectLineLine( self, x11, y11, x12, y12, x21, y21, x22, y22 ) :
-
-           # y = mx + b  --> looking for point x,y where m1*x+b1=m2*x + b2
-           # b = y - mx
            # !!!!!!!!!!!!Test later for parallel lines  and vertical lines !!!!!!!!!
 
            # Calulations for line 1:
-           m1 = self.Slope( x11, y11, x12, y12, 'normal' )
+           m1= self.Slope( x1, y1, x2, y2, 'normal' )
            if (m1 == 'undefined' ) :
-               x = x11
-           b1 = ( y11 - ( m1 * x11 ) )
+               # vertical line
+               x = x1
+           b1 = ( y1 - ( m1 * x1 ) )  # b=y-mx
            # Calculations for line 2:
-           m2 = self.Slope( x21, y21, x22, y22, 'normal' )
+           m2 = self.Slope( x3, y3, x4, y4, 'normal' )
            if (m2 == 'undefined' ) :
-               x = x21
-           b2 = ( y21 - ( m2 * x21 ) )
-           # get x that satisfies both m1*x1 + b1 = m2*x2 + b2
+               x = x3
+           b2 = ( y3 - ( m2 * x3 ) )
+           # find x where m1*x1 + b1 = m2*x2 + b2, so that x1 = x & x2 =x
            # m1*x + b1        = m2*x + b2
-           # m1*x - m2*x      = ( b2 - b1 )
-           # ( m1 - m2 )*x    = ( b2 - b1 )
-           x = ( ( b2 - b1 ) / ( m1 - m2 ) )
-           # get y --> y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
-           y = ( ( m1 * x ) + b1 )
+           # m1*x - m2*x      =  b2 - b1
+           # x( m1 - m2 )   = b2 - b1
+           # x = (b2-b1)/(m1-m2)
+           x = ( b2 - b1) / ( m1 - m2)
+           # find y where y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
+           y = ( m1 * x ) + b1
            return x, y
 
-    def LineLength( self, ax, ay, bx, by ):
+    def LineLength( self, x1, y1, x2, y2 ):
            #a^2 + b^2 = c^2
-           c_sq = ( ( ax - bx )**2 ) + ( ( ay - by )**2 )
-           c = self.Sqrt( c_sq )
+           c_squared = ( ( x1 - x2 )**2 ) + ( ( y1 - y2 )**2 )
+           c = self.Sqrt( c_squared )
            return c
 
     def ListAttributes( self, my_object ) :
-           self.Debug( my_object )
-           # my_object_attributes_list = my_object.attrib
-           # my_object_attributes_list  = my_object.Attributes()
-           # my_object_attributes_list  = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS ) /*   ---> @ will look up an attribute
-           # this_object = self.document.xpath('//@'+my_object, namespaces=inkex.NSS )
-           # my_object_attributes_list  = my_object.Attributes()
-	       # for i in range( my_object.length ):
-	       #    my_current_attribute = my_object.item(i)
-           #    debug( my_current_attribute )
-           #    debug( "current_attribute %i is %s" % (i, my_current_attribute ) )
-	       #    setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
+        # not in use
+        self.Debug( my_object )
+        # my_object_attributes_list = my_object.attrib
+        # my_object_attributes_list  = my_object.Attributes()
+        # my_object_attributes_list  = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS ) /*   ---> @ will look up an attribute
+        # this_object = self.document.xpath('//@'+my_object, namespaces=inkex.NSS )
+        # my_object_attributes_list  = my_object.Attributes()
+        # for i in range( my_object.length ):
+        #  my_current_attribute = my_object.item(i)
+        #    debug( my_current_attribute )
+        #    debug( "current_attribute %i is %s" % (i, my_current_attribute ) )
+        #    setAttributeNS( attr.namespaceURI, attr.localName, attr.nodeValue)
 
     def NewLayer( self, name,  parent, object_type):
-           # object type can be 'group' or 'layer' --> for inkscape:groupmode value
+           """
+           Create instance of NewLayer class - create new layer or group to hold entire pattern, reference marks, each pattern piece, or a portion of pattern
+           object_type can be 'group' or 'layer' --> for inkscape:groupmode value, will be a group <g></g> in XML/SVG file
+           """
            self.layer = inkex.etree.SubElement( parent, 'g' )   #Creates group/layer
            self.layer.set( inkex.addNS( 'label',     'inkscape'), 'Inkscape_'+name +'_Layer' )   # inkscape:label is same as layer - shows up in xml as 'inkscape label'.
            self.layer.set( inkex.addNS( 'groupmode', 'inkscape'), object_type ) # inkscape:groupmode doesn't show up in xml
@@ -631,125 +655,119 @@ class DrawJacket( inkex.Effect ):
         y2 = y1 - (distance * math.sin(angle))
         return (x2, y2)
 
-    def PointOnLine(self,x,y,px,py,length):
-           # x,y is point to measure from to find XY
-           # if mylength>0, XY will be extended from xy away from pxpy
-           # if mylength<0, XY will be between xy and pxpy
-           # xy and pxpy cannot be the same point
-           # otherwise, .   px,py are points on existing line with x,y
-           # line slope formula:     m = (y-y1)/(x-x1)
-           #                        (y-y1) = m(x-x1)                         /* we'll use this in circle formula
-           #                         y1 = y-m(x-x1)                          /* we'll use this after we solve circle formula
-           # circle radius formula: (x-x1)^2 + (y-y1)^2 = r^2                /* see (y-y1) ?
-           #                        (x-x1)^2 + (m(x-x1))^2 = r^2             /* substitute m(x-x1) from line slope formula for (y-y1)
-           #                        (x-x1)^2 + (m^2)(x-x1)^2 = r^2           /* distribute exponent in (m(x-x1))^2
-           #                        (1 + m^2)(x-x1)^2 = r^2                  /* pull out common term (x-x1)^2 - advanced algebra - ding!
-           #                        (x-x1)^2 = (r^2)/(1+m^2)
-           #                        (x-x1) = r/sqrt(1+(m^2))
-           #                         x1 = x-r/sqrt(1+(m^2))
-           #                      OR x1 = x+r/sqrt(1+(m^2))
-           # solve for (x1,y1)
-           m=self.Slope(x,y,px,py,'normal')
-           r=length
-           #solve for x1 with circle formula, or right triangle formula
-           if (m=='undefined'):
-               x1=x
-               if (py <= y):
-                  y1=y+r
-               else:
-                  y1=y-r
-           else:
-               if (m==0):
-                   y1=y
-                   if (px <= x):
-                       x1=x+r
-                   else:
-                       x1=x-r
-               else:
-                   if (px <= x):
-      	               x1=(x+(r/(self.Sqrt(1+(m**2)))))
-                       y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula
-                   else:
-      	               x1=(x-(r/(self.Sqrt(1+(m**2)))))
-                       y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula
-           return x1,y1
+    def PointOnLine(self,x1,y1,x2,y2,length):
+        # x1, y1 is point to measure from to find x3, y3
+        # if mylength>0, x3,y3 will be extended from x1,y1 away from x2,y2
+        # if mylength<0, x3,y3 will be between x1,y1 and x2,y2
+        # x1,y1 and x2,y2 cannot be the same point
+        # line slope formula:     m = (y1-y2)/(x1-x2)
+        #                                   m(x1-x2) = y1-y2                       /* we'll use m(x1-x2) this in circle formula
+        #                                   m(x1-x2) - y1 = - y2                        /* we'll use this after we solve circle formula
+        #                                   y2 = y1 - m(x1 - x2)
+        # circle radius formula: (x1-x2)^2 + (y1-y2)^2 = r^2   /* note (y1-y2)
+        #                                   (x1-x2)^2 + (m(x1-x2))^2 = r^2         /* substitute m(x-x1) from line slope formula for (y-y1)
+        #                                   (x1-x2)^2 + (m^2)(x1-x2)^2 = r^2     /* distribute exponent
+        #                                   ((x1-x2)^2) (1 + m^2)= r^2                /* pull out common term (x-x1)^2 - advanced algebra - ding!
+        #                                    (x1-x2)^2 = (r^2)/(1+m^2)
+        #                                    (x1-x2) = r/sqrt(1+(m^2))
+        #                                     x1 = x-r/sqrt(1+(m^2))
+        #                               OR x1 = x+r/sqrt(1+(m^2))
+        # solve for (x3,y3)
+        m=self.Slope(x1,y1,x2,y2,'normal')
+        r=length
+        #solve for x3 with circle formula, e.g. right triangle formula
+        if (m=='undefined'):
+            # vertical line
+            x3=x1
+            if ( y1 >= y2 ):
+                # extend line downwards - drawing  has 0,0 at top left corner
+                y3 = y1 + r
+            else:
+                # extend line upwards
+                y3=y1-r
+        elif (m==0):
+            # horizontal line
+            y3=y1
+            if (x1 > x2):
+                # extend line towards right
+                x3 = x1 + r
+            else:
+                # extend line towards left
+                x3 = x1 - r
+        elif ( x1 > x2 ):
+            x3 = x1 + ( r / self.Sqrt(1+(m**2)) )
+            y3 = y1 - m*( x1 - x3 )                        #solve for y3 by plugging x3 into point-slope formula
+        else:
+            x3 = x1 - ( r / self.Sqrt(1+(m**2)) )
+            y3 = y1 -m*( x1 - x3 )                        #solve for y3 by plugging x1 into point-slope formula
+        return x3, y3
 
-    def PointwithSlope( self, x, y, px, py, length, slopetype ) :
-           # x,y the point to measure from, px&py are points on the line, length will be appended to x,y at slope of (x,y)(px,py)
-           # length should be positive to extend line away from x, y, or negative to find a point on the line between x,y and  px,py
-           # slopetype must be either  'normal' or 'perpendicular'
-           # this function returns x1, y1 from the formulas below
-           # --->to find coordinates 45degrees from a single point, add or subtract N from x & y to get px & py. I usually use 100pt, just over an inch.
-           #     for finding point 2cm 45degrees from x,y, px=x+100, py=y-100 (Inkscape's pixel canvas's y decreases as you go up, increases down.
-           #     0,0 is upper top left corner.  Useful for finding curves in armholes, necklines, etc.
-           #     check whether to add or subtract from x and y, else x1,y1 might be in opposite direction of what you want !!!
-           #
-           # line slope formula:     m     = (y-y1)/(x-x1)                   /* m = slope
-           #                        (y-y1) = m(x-x1)                         /* we'll use this in circle formula
-           #                         y1    = y-m(x-x1)                       /* we'll use this after we solve circle formula
-           #
-           # circle radius formula: (x-x1)^2 + (y-y1)^2 = r^2                /* see (y-y1) ?
-           #                        (x-x1)^2 + (m(x-x1))^2 = r^2             /* substitute m(x-x1) from line slope formula for (y-y1)
-           #                        (x-x1)^2 + (m^2)(x-x1)^2 = r^2           /* distribute exponent in (m(x-x1))^2
-           #                        (1 + m^2)(x-x1)^2 = r^2                  /* pull out common term (x-x1)^2 -
-           #                        (x-x1)^2 = (r^2)/(1+m^2)
-           #                        (x-x1) = r/sqrt(1+(m^2))
-           #                         x1 = x-(r/sqrt(1+(m^2)))                /* if adding to left end of line, subtract from x --> x < px
-           #                      OR x1 = x+(r/sqrt(1+(m^2)))                /* if adding to right end of line, add to x       --> x > px
-           # solve for (x1,y1)
-           r = length
-           if ( x != px ):
-               m = self.Slope( x, y, px, py, slopetype )
-               if (m==0):
-                   y1=y
-                   if (px <= x):
-                       x1=x+r
-                   else:
-                       x1=x-r
-               else:
-                   m_sq=(m**2)
-                   sqrt_1plusm_sq=self.Sqrt(1+(m_sq))
-                   if (px <= x):
-      	               x1=(x+(r/sqrt_1plusm_sq))        #solve for x1 with circle formula, or right triangle formula
-                   else:
-      	               x1=(x-(r/sqrt_1plusm_sq))
-                   y1=y-m*(x-x1)                        #solve for y1 by plugging x1 into point-slope formula
-           elif  (slopetype=='normal') or (slopetype=='inverse'):
-               if (slopetype=='inverse'):
-                   x1=-x
-               else:
-                   x1=x
-               if (py <= y):
-                  y1=y+r
-               else:
-                  y1=y-r
-           else:    #perpendicular to undefined slope where x==px, so return points on horizontal slope=0 y
-               y1=y
-               if (px<=x):
-                  x1=x+r
-               else:
-                  x1=x-r
-           return x1,y1
+    def PointwithSlope( self, x1, y1, x2, y2, length, slopetype ) :
+        m = self.Slope(x1,y1,x2,y2,slopetype)
+        r = length
+        if ( slopetype == 'normal'):
+            if (m=='undefined'):
+                # vertical line, extend line from x1,y1 up or down
+                x3 = x1
+                if ( y1 > y2 ):
+                    y3 = y1 + r
+                else:
+                    y3 = y1 - r
+            elif (m==0):
+                # horizontal line, extend line from x1,y1 right or left
+                if ( x1 > x2 ):
+                    x3 = x1 + r
+                else:
+                    x3 = x1 - r
+                y3 = y1
+            else:
+                if ( x1 > x2 ):
+                    x3 = x1 + ( r / self.Sqrt(1+(m**2)) )
+                else:
+                    x3 = x1 - ( r / self.Sqrt(1+(m**2)) )
+                y3 = y1 - m*( x1 - x3 )                        #solve for y3 by plugging x3 into point-slope formula
+        else:
+            # self.Slope returns m = perpendicular or inverse slope
+            if (m=='undefined'):
+                # perpendicular/inverse line is horizontal, create vertical line from x1, y1
+                y3 = y1
+                x3 = x1 + r
+            elif (m=='0'):
+                # perpendicular/inverse line is vertical, create horizontal line from x1,y1
+                x3 = x1
+                y3 = y1 + r
+            elif ( m > 0 ):
+                    x3 = x1 + ( r / self.Sqrt(1+(m**2)) )
+                    y3 = y1 + m*( x1 - x3 ) #solve for y3 by plugging x3 into point-slope formula
+            else:
+                    x3 = x1 - ( r / self.Sqrt(1+(m**2)) )
+                    y3 = y1 - m*(x1-x3)
+        return x3, y3
 
     def Slope(self,x1,y1,x2,y2,slopetype):
-           # slopetype can only be {'normal','inverse','perpendicular'}
-           if ((slopetype=='normal') or (slopetype=='inverse')):
-               if (x1==x2):
-                   slope='undefined'
-               elif (y2==y1):
-                   slope=0    #force this to 0, Python might retain as a very small number
-               if (slopetype=='inverse'):
+            # slopetype can only be {'normal','inverse','perpendicular'}
+            if (slopetype=='normal'):
+                if (x1==x2):
+                    slope='undefined'
+                elif (y2==y1):
+                    slope=0    #force this to 0, Python might retain as a very small number
+                else:
+                    slope=((y2-y1)/(x2-x1))
+            elif ( slopetype == 'perpendicular'):    #perpendicular slope -(x2-x1)/(y2-y1)
+                if (x1==x2):
+                    slope='0'
+                elif (y2==y1):
+                    slope='undefined'
+                else:
+                    slope=-((x2-x1)/(y2-y1))
+            elif (slopetype=='inverse'):
+                if (x1==x2):
+                    slope='0'
+                elif (y2==y1):
+                    slope='undefined'
+                else:
                    slope=-((y2-y1)/(x2-x1))
-               else:
-                   slope=((y2-y1)/(x2-x1))
-           else:    #perpendicular slope -(x2-x1)/(y2-y1)
-               if (x1==x2):
-                   slope='0'
-               elif (y2==y1):
-                   slope='undefined'
-               else:
-                   slope=-((x2-x1)/(y2-y1))
-           return slope
+            return slope
 
     ###################################################
     def sodipodi_namedview(self):
@@ -1030,7 +1048,7 @@ class DrawJacket( inkex.Effect ):
 
            # diagonal shoulder line
            jb.seam.shoulder.high = Point( 'jacket.back.seam.shoulder.high', jb.nape.x + back_neck_width, jb.nape.y - back_neck_length, 'corner', reference_layer,  jb.transform )
-           jb.seam.shoulder.low =  Point( 'jacket.back.seam.shoulder.low', jb.seam.center.shoulder.x + back_shoulder_width + (1*cm_to_pt), jb.seam.center.shoulder.y, 'corner', reference_layer,  jb.transform )
+           jb.seam.shoulder.low   = Point( 'jacket.back.seam.shoulder.low', jb.seam.center.shoulder.x + back_shoulder_width + (1*cm_to_pt), jb.seam.center.shoulder.y, 'corner', reference_layer,  jb.transform )
 
            # Back Vertical Reference Grid
            d = 'M '+ jb.nape.coords   + ' v ' + str( jb.height )
@@ -1039,7 +1057,7 @@ class DrawJacket( inkex.Effect ):
            self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Shoulder Width',   jb.transform )
            d = 'M '+ str(jb.nape.x + jb.width) + ', ' + str(jb.nape.y)       + ' v ' + str( jb.height )
            self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Side',   jb.transform )
-           d = 'M '+ jb.seam.shoulder.high.coords  +' v '+ str(back_shoulder_length)
+           d = 'M '+ jb.seam.shoulder.high.coords  +' v '+ str(back_neck_length)
            self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Neck',     jb.transform )
 
            # Back Horizontal Reference Grid
@@ -1061,10 +1079,10 @@ class DrawJacket( inkex.Effect ):
            self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - End',      jb.transform )
 
            # Back Center Seam line clockwise from bottom left:
-           x1, y1       = self.PointwithSlope( jb.seam.center.hip.x, jb.seam.center.hip.y, jb.seam.center.hem.x, jb.seam.center.hem.y, abs( jb.seam.center.hip.y - jb.seam.center.waist.y )*(.3), 'normal' )
+           x1, y1 = self.PointwithSlope( jb.seam.center.hip.x, jb.seam.center.hip.y, jb.seam.center.hem.x, jb.seam.center.hem.y, abs( jb.seam.center.hip.y - jb.seam.center.waist.y )*(.3), 'normal' )
            c1 = Point( 'c1', x1, y1, 'control', reference_layer, jb.transform)
            c2 = Point( 'c2', jb.seam.center.waist.x,  jb.seam.center.waist.y + abs( jb.seam.center.waist.y -  jb.seam.center.hip.y   ) * (.3), 'control', reference_layer, jb.transform )
-           c3 = Point( 'c2', jb.seam.center.waist.x,  jb.seam.center.waist.y - abs( jb.seam.center.waist.y - jb.seam.center.chest.y ) * (.3), 'control', reference_layer,  jb.transform )
+           c3 = Point( 'c3', jb.seam.center.waist.x,  jb.seam.center.waist.y - abs( jb.seam.center.waist.y - jb.seam.center.chest.y ) * (.3), 'control', reference_layer,  jb.transform )
 
            x1, y1 = self.PointwithSlope( jb.seam.center.chest.x, jb.seam.center.chest.y, jb.seam.center.shoulder.x, jb.seam.center.shoulder.y, abs( jb.seam.center.chest.y - jb.seam.center.waist.y )*(.3), 'normal' )
            c4 = Point( 'c4', x1, y1, 'control', reference_layer,  jb.transform )
@@ -1076,10 +1094,10 @@ class DrawJacket( inkex.Effect ):
 
            # Back Neck seam line clockwise from jb.nape to high point of shoulder:
            x1, y1       = self.PointwithSlope( jb.seam.shoulder.high.x, jb.seam.shoulder.high.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, (abs( jb.seam.shoulder.high.y - jb.nape.y )*(.75)), 'perpendicular')
-           c1 = Point( 'c1', x1, y1, 'control', reference_layer,  jb.transform) #c1 is perpendicular to shoulder line at jb.seam.shoulder.high.
+           c1 = Point( 'c1_!', x1, y1, 'control', reference_layer,  jb.transform) #c1 is perpendicular to shoulder line at jb.seam.shoulder.high.
 
            x1, y1       = self.PointwithSlope( jb.nape.x, jb.nape.y, jb.seam.shoulder.high.x, jb.nape.y, ( -(abs( jb.seam.shoulder.high.x - jb.nape.x ) ) * (.50) ), 'normal')
-           c2 = Point( 'c2', x1, y1, 'control', reference_layer, jb.transform)
+           c2 = Point( 'c2_!', x1, y1, 'control', reference_layer, jb.transform)
 
            # Back Neck Seam path - starts with 'jacket.back.nape' from Back_Center_Seam
            jb.seam.neck.path = 'M ' + jb.nape.coords + ' C '+ c2.coords +' '+ c1.coords +' '+ jb.seam.shoulder.high.coords
