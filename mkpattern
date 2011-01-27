@@ -165,7 +165,8 @@ class AppTemplate(StdApp):
             if verbose:
                 print "Using client file: ", mfn
         else:
-            print "You must specify a client file"
+            cmdline.error('Error: You must specify a client file\n\n', self.defaults)
+            return
 
         dbgdump = False
         if self.cfg.has_key('debug'):

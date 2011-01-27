@@ -22,7 +22,7 @@ import json
 # Define globals
 
 # Namespaces dictionary
-def NSS = {
+NSS = {
    u'cc'       :u'http://creativecommons.org/ns#',
    u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
    u'svg'      :u'http://www.w3.org/2000/svg',
@@ -36,16 +36,16 @@ def NSS = {
    }
 
 # measurement constants
-def in_to_pt = ( 72 / 1    )  #convert inches to printer's points
-def cm_to_pt = ( 72 / 2.54  ) #convert centimeters to printer's points
-def cm_to_in = ( 1 / 2.54 )   #convert centimeters to inches
-def in_to_cm = ( 2.54 / 1 )   #convert inches to centimeters
+in_to_pt = ( 72 / 1    )  #convert inches to printer's points
+cm_to_pt = ( 72 / 2.54  ) #convert centimeters to printer's points
+cm_to_in = ( 1 / 2.54 )   #convert centimeters to inches
+in_to_cm = ( 2.54 / 1 )   #convert inches to centimeters
 
 # sewing constants
-def quarter_seam_allowance = ( in_to_pt * 1 / 4 ) # 1/4" seam allowance
-def seam_allowance         = ( in_to_pt * 5 / 8 ) # 5/8" seam allowance
-def hem_allowance          = ( in_to_pt * 2     ) # 2" seam allowance
-def pattern_offset         = ( in_to_pt * 3     ) # 3" between patterns
+quarter_seam_allowance = ( in_to_pt * 1 / 4 ) # 1/4" seam allowance
+seam_allowance         = ( in_to_pt * 5 / 8 ) # 5/8" seam allowance
+hem_allowance          = ( in_to_pt * 2     ) # 2" seam allowance
+pattern_offset         = ( in_to_pt * 3     ) # 3" between patterns
 
 # Universal classes
 
@@ -65,7 +65,7 @@ class Client :
         # Check to make sure we have units
         try:
             units = self.client['measureunit']['value']
-            if units == 'cm'
+            if units == 'cm':
                 self.conversion = cm_to_pt
             elif  units == 'in':
                 self.conversion = in_to_pt
@@ -73,8 +73,17 @@ class Client :
             print 'Client Data measurement units not defined in client data file'
             raise
 
+        #
+        # What we need to do is -
+        # read all these and then create a heirarchy of objects and
+        # attributes, based on the 'dotted path' notation.
+        #
+        
         # read everything into attributes
-        for key, val in self.client:
+        for key, val in self.client.items():
+            keyparts = key.split('.')
+            print keyparts
+            # TODO here is where we walk this and do the work
             ty = val['type']
             if ty == 'float':
                 self.__dict__[key] = float(val['value'])
@@ -89,8 +98,8 @@ class Client :
 
     def dump(self):
         print "===== Begin Client Data ====="
-        for key, val in self.client:
-            print key + " : " + val 
+        for key, val in self.client.items():
+            print key, val 
         print "====== End Client Data ======"
 
 

@@ -1,7 +1,7 @@
 {
   "customername": {
   		  "value":"John Doe",
-		  "type":"float",
+		  "type":"string",
 		  "gui_text":"Client Name"
 		  }, 
   "measureunit": {
@@ -19,7 +19,7 @@
 		  "type":"float",
 		  "gui_text":"Chest"
 		  }, 
-  "chest_length": {
+  "chest.length": {
   		  "value":"130.0",
 		  "type":"float",
 		  "gui_text":"Chest Length"
@@ -29,32 +29,32 @@
 		  "type":"float",
 		  "gui_text":"Waist"
 		  }, 
-  "back_waist_length": {
+  "back.waist.length": {
   		  "value":"35",
 		  "type":"float",
 		  "gui_text":"Waist Length"
 		  }, 
-  "back_jacket_length": {
+  "back.jacket.length": {
   		  "value":"76",
 		  "type":"float",
 		  "gui_text":"Back Jacket Length"
 		  }, 
-  "back_shoulder_width": {
+  "back.shoulder.width": {
   		  "value":"50",
 		  "type":"float",
 		  "gui_text":"Back Shoulder Width"
 		  }, 
-  "back_shoulder_length": {
+  "back.shoulder.length": {
   		  "value":"79",
 		  "type":"float",
 		  "gui_text":"Back Shoulder Length"
 		  }, 
-  "back_underarm_width": {
+  "back.underarm.width": {
   		  "value":"8",
 		  "type":"float",
 		  "gui_text":"Back Underarm Width"
 		  }, 
-  "back_underarm_length": {
+  "back.underarm.length": {
   		  "value":"12",
 		  "type":"float",
 		  "gui_text":"Back Underarm Length"
@@ -64,7 +64,7 @@
 		  "type":"float",
 		  "gui_text":"Seat"
 		  }, 
-  "back_waist_to_hip_length": {
+  "back.waist_to_hip.length": {
   		  "value":"45",
 		  "type":"float",
 		  "gui_text":"Back Waist To Hip Length"
@@ -74,7 +74,7 @@
 		  "type":"float",
 		  "gui_text":"Nape around to about 11.5cm (4.5in) below front neck"
 		  }, 
-  "sleeve_length": {
+  "sleeve.length": {
   		  "value":"84.5",
 		  "type":"float",
 		  "gui_text":"Sleeve Length"
