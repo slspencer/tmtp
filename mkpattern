@@ -181,7 +181,10 @@ class AppTemplate(StdApp):
         client = Client(self.cfg['client_file'])
 
         if dbgdump:
-            client.dump()
+            cd = client.dump()
+            print "========== Client Data Dump =========="
+            print cd,
+            print "======== End Client Data Dump ========"
 
         #
         # Begin the real work here

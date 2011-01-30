@@ -64,10 +64,10 @@ class Client(object):
     def __init__(self, filename, filetype= 'json'):
         # This is set up to be extensible for XML or other formats
 
-        # prepend __ or it will appear in the dump
-        self.__filetypes__ = ['json']
-        if filetype not in self.__filetypes__:
-            print 'Client: supported file types are ', self.__filetypes__
+        self.filetypes = ['json']
+        self.data = ClientData()
+        if filetype not in self.filetypes:
+            print 'Client: supported file types are ', self.filetypes
         if filetype == 'json':
             self.__readJson__(filename)
 
@@ -90,7 +90,6 @@ class Client(object):
             raise
 
         #
-        # What we need to do is -
         # read all these and then create a heirarchy of objects and
         # attributes, based on the 'dotted path' notation.
         #
@@ -100,10 +99,10 @@ class Client(object):
             keyparts = key.split('.')
 
             # make sure the objects are created in the dotted 'path'
-            parent = self
+            parent = self.data
             for i in range (0, len(keyparts)-1):
                 oname = keyparts[i]
-                if oname not in parent.__dict__:
+                if oname not in dir(parent):
                     # object does not exist, create a new ClientData object within the parent
                     setattr(parent, oname, ClientData())
                     # Now, set the parent to be the object we just created
@@ -134,29 +133,37 @@ class Client(object):
                 raise ValueError('Unknown type ' + ty + 'in client data')
         return
 
-    def __dump__(self, obj, parent = ''):
+    def __dump__(self, obj, parent = '', outtxt = []):
         objAttrs = dir(obj)
+
+        # walk through the attributes in this object
         for oname in objAttrs:
+
+            # we don't care about internal python stuff
             if oname.startswith('__'):
                 continue
+
+            # get the actual object we're looking at
             thisobj = getattr(obj, oname)
+
+            # is it one of our own clientdata objects?
             if isinstance(thisobj, ClientData):
-                self.__dump__(thisobj, oname)
+                # if so, then call dump on it
+                self.__dump__(thisobj, oname, outtxt)
             else:
-                # we ignore certain classes in the dump
-                if thisobj.__class__.__name__ in ['dict', 'instancemethod']:
-                    continue
-                #print oname, 'class', thisobj.__class__.__name__
+                # if not, then it is an 'end item' bit of information
                 if parent != '':
-                    print parent + "." + oname, thisobj
+                    outtxt.append(parent + "." + oname + " " + str(thisobj) + "\n")
                 else:
-                    print oname, thisobj
+                    outtxt.append(oname + " " + str(thisobj) + "\n")
+        return(outtxt)
 
     def dump(self):
-        print "===== Begin Client Data ====="
-        self.__dump__(self)
-        print "====== End Client Data ======"
-
+        ot = ''
+        output = sorted(self.__dump__(self.data))
+        for line in output:
+            ot = ot + line
+        return ot
 
 
 
