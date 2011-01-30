@@ -177,8 +177,9 @@ class AppTemplate(StdApp):
         else:
             dbgdump = False
 
-        # open the client file and read them
+        # open the client file and read the data
         client = Client(self.cfg['client_file'])
+
         if dbgdump:
             client.dump()
 

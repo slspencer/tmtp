@@ -49,13 +49,29 @@ pattern_offset         = ( in_to_pt * 3     ) # 3" between patterns
 
 # Universal classes
 
-class Client :
+class ClientData(object):
+    """
+    Class used to build a heirarchical structure of client data
+    """
+    def __init__(self):
+        return
+
+class Client(object):
     """
     Class to hold client-specific data
     Does unit conversions for cm or inches and returns data in pts
     """
+    def __init__(self, filename, filetype= 'json'):
+        # This is set up to be extensible for XML or other formats
 
-    def __init__(self, datafilename):
+        # prepend __ or it will appear in the dump
+        self.__filetypes__ = ['json']
+        if filetype not in self.__filetypes__:
+            print 'Client: supported file types are ', self.__filetypes__
+        if filetype == 'json':
+            self.__readJson__(filename)
+
+    def __readJson__(self, datafilename):
         self.info={}
 
         # open the client file and read data
@@ -66,9 +82,9 @@ class Client :
         try:
             units = self.client['measureunit']['value']
             if units == 'cm':
-                self.conversion = cm_to_pt
+                self.__conversion__ = cm_to_pt
             elif  units == 'in':
-                self.conversion = in_to_pt
+                self.__conversion__ = in_to_pt
         except KeyError:
             print 'Client Data measurement units not defined in client data file'
             raise
@@ -82,31 +98,70 @@ class Client :
         # read everything into attributes
         for key, val in self.client.items():
             keyparts = key.split('.')
-            print keyparts
-            # TODO here is where we walk this and do the work
+
+            # make sure the objects are created in the dotted 'path'
+            parent = self
+            for i in range (0, len(keyparts)-1):
+                oname = keyparts[i]
+                if oname not in parent.__dict__:
+                    # object does not exist, create a new ClientData object within the parent
+                    setattr(parent, oname, ClientData())
+                    # Now, set the parent to be the object we just created
+                    parent = getattr(parent, oname)
+                else:
+                    # object exists - it better be a clientdata type and not something
+                    # else. This can be caused by errors in the variable naming in the json file
+                    parent = getattr(parent, oname)
+                    if not isinstance(parent, ClientData):
+                        print "########################### ERROR: Malformed Client Data ###########################"
+                        print "\nThe valiable named <", oname, "> appears both as an attribute and as a parent"
+                        print "Check the Data file <", datafilename, ">"
+                        print "\n####################################################################################"
+                        raise ValueError
+
+            # now, we have all the containing objects in place
+            # get the rightmost part of the dotted variable, and add it
+            attrname = keyparts[-1]
+            # Create attribute based on the type in the json data
             ty = val['type']
             if ty == 'float':
-                self.__dict__[key] = float(val['value'])
+                setattr(parent, attrname, float(val['value']))
             elif ty == 'string':
-                self.__dict__[key] = val['value']
+                setattr(parent, attrname, val['value'])
             elif ty == 'int':
-                self.__dict__[key] = int(val['value'])
+                setattr(parent, attrname, int(val['value']))
             else:
                 raise ValueError('Unknown type ' + ty + 'in client data')
-
         return
+
+    def __dump__(self, obj, parent = ''):
+        objAttrs = dir(obj)
+        for oname in objAttrs:
+            if oname.startswith('__'):
+                continue
+            thisobj = getattr(obj, oname)
+            if isinstance(thisobj, ClientData):
+                self.__dump__(thisobj, oname)
+            else:
+                # we ignore certain classes in the dump
+                if thisobj.__class__.__name__ in ['dict', 'instancemethod']:
+                    continue
+                #print oname, 'class', thisobj.__class__.__name__
+                if parent != '':
+                    print parent + "." + oname, thisobj
+                else:
+                    print oname, thisobj
 
     def dump(self):
         print "===== Begin Client Data ====="
-        for key, val in self.client.items():
-            print key, val 
+        self.__dump__(self)
         print "====== End Client Data ======"
 
 
 
 
 
-class Point :
+class Point(object):
     """
     Creates instance of Python class Point
     Creates & draws XML object from instance of Python class Point
@@ -144,7 +199,7 @@ class Point :
                         }
         inkex.etree.SubElement( self.layer, inkex.addNS( 'circle', 'svg' ),  attribs )
 
-class Layout :
+class Layout(object):
 
     def __init__(self, name,  x,  y,  layer ) :
         self.id                      = name
@@ -161,7 +216,7 @@ class Layout :
     def Info(self):
         return self.id, self.type, self.document_low.Info(), self.document_high.Info(), self.current_low.Info(), self.current_high.Info(),  self.pattern_low.Info(),  self.pattern_high.Info(),  str(self.pattern_count),  str(self.pattern_max)
 
-class Generic:
+class Generic(object):
     """
     Create a generic base object so that other objects can be attached on the fly with '.'
     """
@@ -174,7 +229,7 @@ class Generic:
     def Info(self):
         return self.type
 
-class Pattern:
+class Pattern(object):
     """
     Create an instance of Pattern class, eg - jacket, pants, corset, which will contain the set of pattern piece objects - eg  jacket.back, pants.frontPocket, corset.stayCover
     """
@@ -188,7 +243,7 @@ class Pattern:
     def Info(self):
         return self.id,  self.type,  self.layer,  str(self.pattern_count),  str(self.pattern_max)
 
-class PatternPiece:
+class PatternPiece(object):
     """
     Create an instance of the PatternPiece class, eg jacket.back, pants.frontPocket, corset.stayCover will contain the set of seams and all other pattern piece info,
     eg - jacket.back.seam.shoulder, jacket.back.grainline,  jacket.back.interfacing

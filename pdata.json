@@ -14,7 +14,7 @@
 		  "type":"float",
 		  "gui_text":"Height"
 		  }, 
-  "chest": {
+  "chest.base": {
   		  "value":"120.0",
 		  "type":"float",
 		  "gui_text":"Chest"
