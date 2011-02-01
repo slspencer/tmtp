@@ -179,17 +179,19 @@ class AppTemplate(StdApp):
 
         # open the client file and read the data
         client = Client(self.cfg['client_file'])
+        cd = client.data
 
         if dbgdump:
-            cd = client.dump()
             print "========== Client Data Dump =========="
-            print cd,
+            print client.dump(),
             print "======== End Client Data Dump ========"
 
         #
         # Begin the real work here
         #
-        return
+        # svg constants
+        svgNameText = []
+        no_transform = ''   # no transform required
 
         # create the svg document itself
         sz = svg("TMTP test")
@@ -201,6 +203,52 @@ class AppTemplate(StdApp):
         #sc.set_xlink_type("text/ecmascript")
         #sz.addElement(sc)
         #sz.set_onload("init(evt)")
+
+        # TODO - abstract these into configuration file(s)
+        # pattern name
+        company_name  = 'New Day'
+        pattern_name     = 'Steampunk Jacket'
+        pattern_number  = '1870-M-J-1'
+        pattern_pieces    = 7
+
+        # TODO also extract these from this file to somewhere else
+        printer='36" wide carriage plotter'
+        if (printer == '36" wide carriage plotter'):
+            paper_width  = ( 36 * in_to_pt )
+            border           = ( 1 * in_to_pt )        # 1" document borders
+
+        # Add attributes
+        #
+        sz.set_width('auto')
+        sz.set_height('auto')
+        sz.setAttribute('currentScale', "0.05 : 1")
+        sz.setAttribute('fitBoxtoViewport', "True")
+        sz.setAttribute('preserveAspectRatio', "xMidYMid meet")
+        sz.setAttribute('margin-bottom', str(border))
+        sz.setAttribute('margin-left', str(border))
+        sz.setAttribute('margin-right', str(border))
+        sz.setAttribute('margin-top', str(border))
+        sz.setAttribute('company-name', company_name)
+        sz.setAttribute('patttern-number', pattern_number)
+        sz.setAttribute('pattern-name', pattern_name)
+        sz.setAttribute('client-name', cd.customername)
+
+        # Add namespaces
+        #
+        # TODO - note sure if any of these are required
+        #sz.setAttribute('xmlns:cc', "http://creativecommons.org/ns#")
+        # dc xmlns:dc="http://purl.org/dc/elements/1.1/"
+        # u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+        # u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+        # u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
+        # u'xml'      :u'http://www.w3.org/XML/1998/namespace',
+        # u'xpath'    :u'http://www.w3.org/TR/xpath',
+        # u'xsl'      :u'http://www.w3.org/1999/XSL/Transform'
+
+
+
+        sz.save(self.cfg['args'][0])
+        return
 
         oh = ShapeBuilder()
 

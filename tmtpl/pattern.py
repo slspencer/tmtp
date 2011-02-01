@@ -21,20 +21,6 @@ import json
 
 # Define globals
 
-# Namespaces dictionary
-NSS = {
-   u'cc'       :u'http://creativecommons.org/ns#',
-   u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-   u'svg'      :u'http://www.w3.org/2000/svg',
-   u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
-   u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
-   u'xml'      :u'http://www.w3.org/XML/1998/namespace',
-   u'xmlns'    :u'http://www.w3.org/2000/xmlns/',
-   u'xlink'    :u'http://www.w3.org/1999/xlink',
-   u'xpath'    :u'http://www.w3.org/TR/xpath',
-   u'xsl'      :u'http://www.w3.org/1999/XSL/Transform'
-   }
-
 # measurement constants
 in_to_pt = ( 72 / 1    )  #convert inches to printer's points
 cm_to_pt = ( 72 / 2.54  ) #convert centimeters to printer's points
@@ -124,7 +110,7 @@ class Client(object):
             # Create attribute based on the type in the json data
             ty = val['type']
             if ty == 'float':
-                setattr(parent, attrname, float(val['value']))
+                setattr(parent, attrname, float(val['value']) * self.__conversion__)
             elif ty == 'string':
                 setattr(parent, attrname, val['value'])
             elif ty == 'int':
@@ -152,6 +138,7 @@ class Client(object):
                 self.__dump__(thisobj, oname, outtxt)
             else:
                 # if not, then it is an 'end item' bit of information
+                # TODO convert back to the units used for input (not pts)
                 if parent != '':
                     outtxt.append(parent + "." + oname + " " + str(thisobj) + "\n")
                 else:
@@ -164,9 +151,6 @@ class Client(object):
         for line in output:
             ot = ot + line
         return ot
-
-
-
 
 class Point(object):
     """
