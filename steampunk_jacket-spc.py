@@ -29,37 +29,7 @@ sys.path.append('/usr/share/inkscape/extensions')
 
 # Define globals
 
-# pattern name
-company_name  = 'New Day'
-pattern_name     = 'Steampunk Jacket'
-pattern_number  = '1870-M-J-1'
-pattern_pieces    = 7
-client_name        = 'Matt Conklin'
 
-# layout constants
-printer='36" wide carriage plotter'
-if (printer == '36" wide carriage plotter'):
-   paper_width  = ( 36 * in_to_pt )
-   border           = ( 1 * in_to_pt )        # 1" document borders
-
-# svg constants
-svgNameText = []
-no_transform = ''   # no transform required
-SVG_OPTIONS  = {
-     'width' : "auto",
-     'height' : "auto",
-     'currentScale' : "0.05 : 1",
-     'fitBoxtoViewport' : "True",
-     'preserveAspectRatio' : "xMidYMid meet",
-     'margin-bottom' : str(border),
-     'margin-left' : str(border),
-     'margin-right' : str(border),
-     'margin-top' : str(border),
-     'company-name' : company_name,
-     'patttern-number' : pattern_number,
-     'pattern-name' : pattern_name,
-     'client-name' : client_name
-      }
 
 class DrawJacket( inkex.Effect ):
     """
@@ -73,91 +43,6 @@ class DrawJacket( inkex.Effect ):
            this module calls modules listed above to get the work done
            """
 
-           # get conversion
-           if ( self.options.measureunit == 'cm'):
-               conversion = cm_to_pt
-           else:
-               conversion = in_to_pt
-
-           # get parameters
-           height                     = self.options.height                     * conversion        #Pattern was written for height=5'9 or 176cm, 38" chest or 96cm
-           #chest                      = self.options.chest                      * conversion
-           #chest_length               = self.options.chest_length               * conversion
-           #waist                      = self.options.waist                      * conversion
-           #back_waist_length          = self.options.back_waist_length          * conversion
-           #back_jacket_length         = self.options.back_jacket_length         * conversion
-           #back_shoulder_width        = self.options.back_shoulder_width        * conversion
-           #back_shoulder_length       = self.options.back_shoulder_length       * conversion
-           #back_underarm_width        = self.options.back_underarm_width        * conversion
-           #back_underarm_length       = self.options.back_underarm_length       * conversion
-           #back_waist_to_hip_length   = self.options.back_waist_to_hip_length   * conversion
-           #nape_to_vneck         = self.options.nape_to_vneck              * conversion
-           #sleeve_length              = self.options.sleeve_length              * conversion
-           #neck_width           = chest/16 + (2*cm_to_pt)     # replace chest/16 with new parameter back_neck_width, front_neck_width, neck_circumference
-           #back_shoulder_height = 2*cm_to_pt                  # replace 2*cm_to_pt with new parameter back_shoulder_height
-           #bp_width             = (back_shoulder_width * 0.5)   # back pattern width is relative to back_shoulder_width/2  (plus 1cm)
-           #
-           # Back Horizontal
-           back_neck_width		= 3.125 * conversion
-           back_shoulder_width		= 10 * conversion
-           #back_balance_width		= 9.5 * conversion
-           #back_underarm_width		= 11.5 * conversion
-           back_chest_width		= 11.5 * conversion
-           back_waist_width		= 10.5 * conversion
-           #back_pelvic_width		= 10.5 * conversion
-           back_hip_width		= 12.5 * conversion
-           #back_jacket_width            = 0   * conversion
-           #back_thigh_width             = 0  	 * conversion
-           #back_knee_width	        = 0 * conversion
-           #back_small_width	        = 0 * conversion
-           #back_calf_width	        = 0 * conversion
-           # Back Vertical * conversion
-           back_neck_length		= 1 * conversion
-           back_shoulder_length		= 3.5 * conversion
-           back_balance_length		= 8.5 * conversion
-           #back_underarm_length	= 11.5 * conversion
-           back_chest_length		= 11.5 * conversion
-           back_waist_length		= 18.75 * conversion
-           #back_pelvic_length		= 5.75 * conversion
-           back_hip_length		= 8 * conversion
-           back_jacket_length		= 35  * conversion  # 30" for 5'9" man --> 6'2" - 5'9" = 5" --> 30 + 5 = 35"
-           #back_knee_length		= 27  * conversion
-           #back_calf_length		= 0  * conversion
-           #back_ground_length		= 0  * conversion
-           #outside_leg_length		= 0  * conversion
-           #inside_leg_length		= 0  * conversion
-           sleeve_length		= 26 * conversion
-           # Front Horizontal
-           front_neck_width		= 2.75 * conversion
-           front_shoulder_width		= 9 * conversion
-           front_pectoral_width		= 8.25 * conversion
-           front_underarm_width		= 10 * conversion
-           front_chest_width		= 10 * conversion
-           front_waist_width		= 11 * conversion
-           front_pelvic_width		= 9.5 * conversion
-           front_hip_width		= 10 * conversion
-           front_jacket_width		= 0 * conversion
-           #front_thigh_width		= 0 * conversion
-           #front_knee_width		= 0 * conversion
-           #front_small_width		= 0 * conversion
-           #front_calf_width		= 0 * conversion
-           # Front Vertical
-           front_neck_length		= 4.75  * conversion
-           front_shoulder_length	= 2 * conversion
-           front_pectoral_length	= 4.5 * conversion
-           front_underarm_length	= 7 * conversion
-           front_chest_length		= 7 * conversion
-           front_waist_length		= 15 * conversion
-           front_pelvic_length		= 7.5 * conversion
-           front_hip_length		= 9.5 * conversion
-           #front_jacket_length		= 0 * conversion
-           #front_knee_length		= 0 * conversion
-           #front_calf_length		= 27.5 * conversion
-           #front_ground_length		= 0 * conversion
-           # Diagonal
-           nape_to_vneck                       = 14.75 * conversion
-           shoulder_top_width                = 7.5 * conversion
-           front_scoop_to_shoulder_low  = 9.5 * conversion
 
            # reference & pattern layers
            reference_layer = self.NewLayer( 'Reference', self.document.getroot(), 'layer' )        # reference_layer = reference information
