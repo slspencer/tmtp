@@ -63,6 +63,7 @@ class Client(object):
         # open the client file and read data
         f = open(datafilename, 'r')
         self.client = json.load(f)
+        f.close()
 
         # Check to make sure we have units
         try:
