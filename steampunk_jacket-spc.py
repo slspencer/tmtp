@@ -38,28 +38,9 @@ class DrawJacket( inkex.Effect ):
 
     def effect(self):
 
-           """
-           effect() is main module called in body of short program at end of this file
-           this module calls modules listed above to get the work done
-           """
+# here is where I am copying from into mkpattern.py - I am deleting from this file as I build the other.
 
 
-           # reference & pattern layers
-           reference_layer = self.NewLayer( 'Reference', self.document.getroot(), 'layer' )        # reference_layer = reference information
-           pattern_layer    = self.NewLayer( 'Pattern',   self.document.getroot(), 'layer')        # pattern_layer = pattern lines & marks
-
-           # document signature
-           font_size    =  60
-           text_space =  ( font_size * 1.1 )
-           x, y = border, border
-           self.WriteText( pattern_layer, x,   y,  font_size, 'company',  company_name,   no_transform )
-           y = y + text_space
-           self.WriteText( pattern_layer, x, y, font_size, 'pattern_number', pattern_number,  no_transform )
-           y = y + text_space
-           self.WriteText( pattern_layer, x, y, font_size, 'pattern_name',  pattern_name,    no_transform )
-           y = y + text_space
-           self.WriteText( pattern_layer, x, y, font_size, 'client',  client_name,   no_transform )
-           y = y + text_space
 
           # pattern start, count & placement
            begin = Point( 'begin',  x,   (y + pattern_offset), 'corner',  reference_layer,  no_transform)
