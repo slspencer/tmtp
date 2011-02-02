@@ -18,6 +18,15 @@ import json
 #import lxml
 #import xml
 
+from pysvg.filter import *
+from pysvg.gradient import *
+from pysvg.linking import *
+from pysvg.script import *
+from pysvg.shape import *
+from pysvg.structure import *
+from pysvg.style import *
+from pysvg.text import *
+from pysvg.builders import *
 
 # Define globals
 
@@ -152,6 +161,68 @@ class Client(object):
         for line in output:
             ot = ot + line
         return ot
+
+class docInfo():
+    """
+    Holds document information such as Company name, design name and number, designer, etc
+    Formats the title block for the printed document
+    """
+    def __init__(self):
+        self.company = ''
+        self.pattern_number = ''
+        self.pattern_name = ''
+        self.paper_width = 0.0
+        self.border = 0.0
+        self.clientdata = None
+        return
+
+    def drawTitleBlock(self, group):
+        # document signature
+        # TODO make the text parts configurable
+        font_size    =  60
+        text_space =  ( font_size * 1.1 )
+        x, y = self.border, self.border
+        WriteText( group, x, y, font_size, 'company', self.company_name)
+        y = y + text_space
+        WriteText(group, x, y, font_size, 'pattern_number', self.pattern_number)
+        y = y + text_space
+        WriteText( group, x, y, font_size, 'pattern_name', self.pattern_name)
+        y = y + text_space
+        WriteText( group, x, y, font_size, 'client', self.clientdata.customername)
+        y = y + text_space
+
+
+# Begin functions not part of any class - maybe move these somewhere else
+
+def WriteText(parent, x, y, font_size, label, string, trans = ''):
+    # TODO - take the styling and attributes and make them loadable,
+    # perhaps in a document style class or something. Hard-coded
+    # for now
+
+    tstyle_dict = {
+        'font-size':str(font_size)+'px',
+        'vertical-align':'top',
+        'fill-opacity':'1.0',
+        'font-style':'normal',
+        'fill':'#000000',
+        'font-weight':'normal',
+        'stroke':'none',
+        'text-anchor':'right',
+        'text-align':'right'
+        }
+
+    tstyle = StyleBuilder(tstyle_dict)
+
+    t = text(string, x, y)
+    t.set_style(tstyle.getStyle())
+    t.set_id(label)
+    t.setAttribute('transform', trans)
+    parent.addElement(t)
+
+    return
+
+
+# =================================================================================================
 
 class Point(object):
     """
@@ -772,30 +843,6 @@ class PatternPiece(object):
            #root.set("height", "%sin" % document_height)
            #x.set("width",widthstr(border*2 + self.options.back_shoulder_width
 
-    def WriteText( self, parent, x, y, font_size, label, string, trans ):
-
-           text_align  = 'right'
-           vertical_alignment = 'top'
-           text_anchor   = 'right'
-           style = {'text-align'     : text_align,
-                    'vertical-align' : vertical_alignment,
-                    'text-anchor'    : text_anchor,
-                    'font-size'      : str(font_size)+'px',
-                    'fill-opacity'   : '1.0',
-                    'stroke'         : 'none',
-                    'font-weight'    : 'normal',
-                    'font-style'     : 'normal',
-                    'fill'           : '#000000'
-                   }
-           attribs = {'style'    : simplestyle.formatStyle( style ),
-                     inkex.addNS( 'label', 'inkscape' ) : label,
-                     'id'       :  label,
-                     'x'         : str(x),
-                     'y'         : str(y),
-                     'transform' : trans
-                    }
-           t         = inkex.etree.SubElement( parent, inkex.addNS( 'text', 'svg'), attribs)
-           t.text    = string
 
     ###################################################
     def Visibility( self, name, value ):
