@@ -255,18 +255,19 @@ class AppTemplate(StdApp):
         #docinfo.lowx = begin.x
         #docinfo.lowy = begin.y
 
+        # The whole pattern in a jacket
+        jacket = Pattern('jacket')
+        doc.add(jacket)
+
+        back = PatternPiece('back', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
+        jacket.add(back)
+
         #
         # Temporary End
         #
         doc.draw()
         return
 
-        # The whole pattern in a jacket
-        jacket = Pattern('jacket')
-
-
-        back = PatternPiece('back', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
-        jacket.add(back)
 
         jb = jacket.back
 

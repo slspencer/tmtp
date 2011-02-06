@@ -34,17 +34,21 @@ class pBase(object):
     # and 'reference' These are grouped so that display of the reference group
     # can be turned on and off
     groups = {}
-    children = []
     debug = True
+
+    def __init__(self):
+        self.children = []
 
     def add(self, obj):
         print "Adding . . .", obj.name
         obj.id = self.name + '.' + obj.name
         setattr(self, obj.name, obj)
         self.children.append(obj)
-        if obj.groupname:
+        try:
             if obj.groupname not in self.groups:
                 self.groups[obj.groupname] = None
+        except AttributeError:
+            pass
         return
 
     def svg(self):

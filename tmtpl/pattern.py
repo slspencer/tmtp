@@ -24,12 +24,13 @@ from pysvg.builders import *
 from constants import *
 from patternbase import pBase
 
-class Generic(object):
-    """
-    Create a generic base object so that other objects can be attached on the fly with '.'
-    """
-    def __init__(self):
-        return
+# TODO I don't think we need this any more
+#class Generic(object):
+#    """
+#    Create a generic base object so that other objects can be attached on the fly with '.'
+#    """
+#    def __init__(self):
+#        return
 
 # ---- Pattern Classes ----------------------------------------
 
@@ -52,6 +53,7 @@ class Point(pBase):
         #self.type      = 'node'
         #self.nodetype  = nodetype    #can be corner, smooth, symmetric, tangent, control
         self.coords   = str(x) + "," + str(y)
+        pBase.__init__(self)
 
     def svg(self):
         """
@@ -75,8 +77,7 @@ class Pattern(pBase):
     """
     def __init__(self, name):
         self.name = name
-        self.id = name
-        return
+        pBase.__init__(self)
 
 class PatternPiece(pBase):
     """
@@ -91,3 +92,4 @@ class PatternPiece(pBase):
         self.interfacing = interfacing
         self.lining = lining
         self.transform = ""
+        pBase.__init__(self)

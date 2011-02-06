@@ -48,7 +48,8 @@ class Document(pBase):
         self.pattern_name = ''
         self.paper_width = 0.0
         self.border = 0.0
-        
+        pBase.__init__(self) 
+       
     def draw(self):
         # create the base document
         sz = svg("TMTP test")
@@ -117,6 +118,7 @@ class TitleBlock(pBase):
         self.x = x
         self.y = y
         self.fontsize = 60
+        pBase.__init__(self)
         return
 
     def svg(self):
