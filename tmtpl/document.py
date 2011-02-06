@@ -108,7 +108,6 @@ class Document(pBase):
         
 class TitleBlock(pBase):
     def __init__(self, group, name, x, y, company_name = 'Company Name', pattern_name = 'Pattern Name', pattern_number = 'Pattern Number', client_name = 'Client Name'):
-        self.group = group
         self.name = name
         self.company_name = company_name
         self.pattern_name = pattern_name
@@ -122,7 +121,7 @@ class TitleBlock(pBase):
 
     def svg(self):
         if self.debug:
-            print 'TitleBlock SVG called for ID ', self.id
+            print 'svg() called for titleblock ID ', self.id
 
         # TODO make the text parts configurable
         tbg = g()
@@ -138,7 +137,7 @@ class TitleBlock(pBase):
         y = y + text_space
         tbg.addElement(generateText(x, y, self.fontsize, 'client', self.client_name))
         y = y + text_space
-        self.groups[self.group].addElement(tbg)
+        self.groups[self.groupname].addElement(tbg)
         return
 
 

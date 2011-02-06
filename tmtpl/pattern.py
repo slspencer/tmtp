@@ -38,14 +38,14 @@ class Point(pBase):
     Creates instance of Python class Point
     Creates & draws XML object from instance of Python class Point
     """
-    def __init__(self, group, x,  y, name, nodetype,  transform = '' , draw = True) :
+    def __init__(self, group, name, x,  y, nodetype,  transform = '' , draw = True) :
 
         # TODO remove nodetype if not used
         self.groupname = group
+        self.name = name
         self.x         = x
         self.y         = y
         self.transform = transform
-        self.id        =  name
 
         self.size      = 5
         self.style     = { 'stroke' : 'red', 'fill' : 'red', 'stroke-width' : '1' }
@@ -53,22 +53,20 @@ class Point(pBase):
         #self.nodetype  = nodetype    #can be corner, smooth, symmetric, tangent, control
         self.coords   = str(x) + "," + str(y)
 
-        # make sure group is in base class
-        if group not in groups:
-            groups.append(group)
+    def svg(self):
+        """
+        generate the svg for this item and rturn it as a pysvg object
+        """
+        if self.debug:
+            print 'svg() called for Point ID ', self.id
 
-        def svg(self, groupname):
-            """
-            generate the svg for this item and rturn it as a pysvg object
-            """
-            if groupname == self.group:
-                pstyle = StyleBuilder(self.style)
-                p = circle(self.x, self.y, self.size)
-                p.set_style(pstyle.getStyle())
-
-                p.set_id(self.id)
-                p.set_transform(self.transform)
-                return(p)
+        pstyle = StyleBuilder(self.style)
+        p = circle(self.x, self.y, self.size)
+        p.set_style(pstyle.getStyle())
+        p.set_id(self.id)
+        p.set_transform(self.transform)
+        self.groups[self.groupname].addElement(p)
+        return
 
 class Pattern(pBase):
     """

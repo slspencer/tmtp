@@ -242,22 +242,24 @@ class AppTemplate(StdApp):
         #svgNameText = []
         #no_transform = ''   # no transform required
 
+
+
+        # pattern start, count & placement
+        x = border
+        y = border
+
+        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET), 'begin', 'corner')
+        doc.add(begin)
+
+        # may not be needed??
+        #docinfo.lowx = begin.x
+        #docinfo.lowy = begin.y
+
         #
         # Temporary End
         #
         doc.draw()
         return
-
-
-        # pattern start, count & placement
-        x = docinfo.border
-        y = docinfo.border
-
-        begin = Point('reference',  x,   (y + PATTERN_OFFSET), 'begin', 'corner')
-
-        # may not be needed??
-        #docinfo.lowx = begin.x
-        #docinfo.lowy = begin.y
 
         # The whole pattern in a jacket
         jacket = Pattern('jacket')
