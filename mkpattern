@@ -248,7 +248,7 @@ class AppTemplate(StdApp):
         x = border
         y = border
 
-        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET), 'begin', 'corner')
+        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET), 'corner')
         doc.add(begin)
 
         # may not be needed??
@@ -262,6 +262,14 @@ class AppTemplate(StdApp):
         back = PatternPiece('back', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
         jacket.add(back)
 
+        jb = jacket.back
+
+        print 'before start point'
+        start =  Point('reference', 'start', begin.x, begin.y, 'type')
+        jb.add(start)
+
+        jb.transform  = 'translate(' + jb.start.coords + ' )'
+
         #
         # Temporary End
         #
@@ -269,15 +277,6 @@ class AppTemplate(StdApp):
         return
 
 
-        jb = jacket.back
-
-        print 'before start point'
-        start =  Point('refrence', begin.x, begin.y, 'start', '')
-        print ' about to add start point'
-        jb.add(start)
-        print 'done adding start point'
-
-        jb.transform  = 'translate(' + jb.start.coords + ' )'
 
         # TODO NEXT - need a new lightweight point that doesn't have group, etc
         jb.add(Point('low', 0, 0, ))

@@ -93,3 +93,15 @@ class PatternPiece(pBase):
         self.lining = lining
         self.transform = ""
         pBase.__init__(self)
+
+    def svg(self):
+        """
+        generate the svg for this item and rturn it as a pysvg object
+        """
+        if self.debug:
+            print 'svg() called for PatternPiece ID ', self.id
+
+        pBase.svg(self)
+
+        return
+
