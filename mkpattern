@@ -8,10 +8,15 @@ from getopt          import getopt, GetoptError
 # for the pattern generation
 from tmtpl.utils     import stdo
 from tmtpl.std_app   import StdApp
+
+from tmtpl.constants import *
 from tmtpl.pattern   import *
+from tmtpl.document   import *
+from tmtpl.support   import *
+from tmtpl.client   import Client
 
 # Project specific
-from math import sin, cos, radians
+#from math import sin, cos, radians
 
 from pysvg.filter import *
 from pysvg.gradient import *
@@ -186,86 +191,150 @@ class AppTemplate(StdApp):
             print client.dump(),
             print "======== End Client Data Dump ========"
 
-        # TODO - abstract these into configuration file(s)
         # pattern name
-        company_name  = 'New Day'
-        pattern_name     = 'Steampunk Jacket'
-        pattern_number  = '1870-M-J-1'
         pattern_pieces    = 7
-
-        # create the document info and fill it in
-        docinfo = docInfo()
-        docinfo.clientdata = cd
-        docinfo.company_name = company_name
-        docinfo.pattern_name = pattern_name
-        docinfo.pattern_number = pattern_number
 
         # TODO also extract these from this file to somewhere else
         printer='36" wide carriage plotter'
         if (printer == '36" wide carriage plotter'):
-            docinfo.paper_width  = ( 36 * in_to_pt )
-            docinfo.border       = ( 1 * in_to_pt )        # 1" document borders
+            paper_width  = ( 36 * in_to_pt )
+            border       = ( 1 * in_to_pt )        # 1" document borders
+
+
+        # create the document info and fill it in
+        # TODO - abstract these into configuration file(s)
+        companyName = 'New Day'
+        patternName = 'Steampunk Jacket'
+        patternNumber = '1870-M-J-1'
+        clientName = cd.customername
+
+        # attributes for the entire svg document
+        docattrs = {'currentScale' : "0.05 : 1",
+                    'fitBoxtoViewport' : "True",
+                    'preserveAspectRatio' : "xMidYMid meet",
+                    'margin-bottom' : str(border),
+                    'margin-left' : str(border),
+                    'margin-right' : str(border),
+                    'margin-top' : str(border),
+                    'company-name' : companyName,
+                    'patttern-number' : patternNumber,
+                    'pattern-name' : patternName,
+                    'client-name' : clientName
+                    }
+
+        doc = Document(self.cfg['args'][0], name = 'Document', attributes = docattrs)
+
+        # TODO also extract these from this file to somewhere else
+        printer='36" wide carriage plotter'
+        if (printer == '36" wide carriage plotter'):
+            doc.paper_width  = paper_width
+            doc.border       = border
+
+        # Set up the title block
+        tb = TitleBlock('pattern', 'titleblock', doc.border, doc.border, company_name = companyName, pattern_name = patternName, pattern_number = patternNumber, client_name = clientName)
+        print 'Adding tb'
+        doc.add(tb)
 
         #
         # Begin the real work here
         #
-        # svg constants
-        svgNameText = []
-        no_transform = ''   # no transform required
+        # svg constants TODO I think I removed the need for these
+        #svgNameText = []
+        #no_transform = ''   # no transform required
 
-        # create the svg document itself
-        sz = svg("TMTP test")
-
-        # add the scripting we need to handle events
-        # TODO for now don't
-        #sc = script()
-        #sc.set_xlink_href("mouse_over.js")
-        #sc.set_xlink_type("text/ecmascript")
-        #sz.addElement(sc)
-        #sz.set_onload("init(evt)")
-
-        # Add attributes
         #
-        sz.set_width('auto')
-        sz.set_height('auto')
-        sz.setAttribute('currentScale', "0.05 : 1")
-        sz.setAttribute('fitBoxtoViewport', "True")
-        sz.setAttribute('preserveAspectRatio', "xMidYMid meet")
-        sz.setAttribute('margin-bottom', str(docinfo.border))
-        sz.setAttribute('margin-left', str(docinfo.border))
-        sz.setAttribute('margin-right', str(docinfo.border))
-        sz.setAttribute('margin-top', str(docinfo.border))
-        sz.setAttribute('company-name', docinfo.company_name)
-        sz.setAttribute('patttern-number', docinfo.pattern_number)
-        sz.setAttribute('pattern-name', docinfo.pattern_name)
-        sz.setAttribute('client-name', cd.customername)
-
-        # Add namespaces
+        # Temporary End
         #
-        # TODO - note sure if any of these are required
-        #sz.setAttribute('xmlns:cc', "http://creativecommons.org/ns#")
-        # dc xmlns:dc="http://purl.org/dc/elements/1.1/"
-        # u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-        # u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
-        # u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
-        # u'xml'      :u'http://www.w3.org/XML/1998/namespace',
-        # u'xpath'    :u'http://www.w3.org/TR/xpath',
-        # u'xsl'      :u'http://www.w3.org/1999/XSL/Transform'
+        doc.draw()
+        return
 
-        # reference & pattern layers - implemented as groups
-        reference_group = g() # reference_layer = reference information
-        reference_group.set_id('Reference')
-        pattern_group = g()  # pattern_layer = pattern lines & marks
-        reference_group.set_id('Pattern')
 
-        # draw the title block
-        docinfo.drawTitleBlock(pattern_group)
+        # pattern start, count & placement
+        x = docinfo.border
+        y = docinfo.border
 
-        # Add the groups
-        sz.addElement(reference_group)
-        sz.addElement(pattern_group)
-        # Write out the svg file
-        sz.save(self.cfg['args'][0])
+        begin = Point('reference',  x,   (y + PATTERN_OFFSET), 'begin', 'corner')
+
+        # may not be needed??
+        #docinfo.lowx = begin.x
+        #docinfo.lowy = begin.y
+
+        # The whole pattern in a jacket
+        jacket = Pattern('jacket')
+
+
+        back = PatternPiece('back', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
+        jacket.add(back)
+
+        jb = jacket.back
+
+        print 'before start point'
+        start =  Point('refrence', begin.x, begin.y, 'start', '')
+        print ' about to add start point'
+        jb.add(start)
+        print 'done adding start point'
+
+        jb.transform  = 'translate(' + jb.start.coords + ' )'
+
+        # TODO NEXT - need a new lightweight point that doesn't have group, etc
+        jb.add(Point('low', 0, 0, ))
+        jb.add(low)
+
+        high =  Point('high', 0, 0, )
+        jb.add(high)
+
+        jb.width = max(cd.back.shoulder.width, cd.back.chest.width, cd.back.waist.width, cd.back.hip.width) \
+            + (2*SEAM_ALLOWANCE) + (3*cm_to_pt)  # 3cm ease assumed
+        jb.height = cd.back.neck.length + cd.back.jacket.length + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + (3*cm_to_pt) #3cm ease assumed
+
+        # create a pattern part
+        jb = PatternPiece('back', whatever)
+        jacket.add(jb)
+
+        # and the first piece in the jacket is the back
+        nape = Point('nape', 0, 0, )
+        jb.add(nape)
+
+        grainline = Path('grainline', 0, 0)
+        jb.add(grainline)
+
+        center_seam = Path('center_seam', arg2, points=['shoulder', 'chest', 'waist', 'hip', 'hem'])
+        jacket.add(center_seam)
+
+        side_seam = Path()
+        shoulder_seam = Path()
+        # add path obj to pattern piece
+        points = ['nape',
+                  'grainline',
+                  'seam.center.shoulder', 
+                  'seam.center.chest',
+                  'seam.center.waist',
+                  'seam.center.hip',
+                  'seam.center.hem',
+                  'seam.center.hem_allowance',
+                  'seam.side.chest',
+                  'seam.side.waist',
+                  'seam.side.hip',
+                  'seam.side.hem',
+                  'seam.side.hem_allowance',
+                  'balance',
+                  'underarm',
+                  'seam.shoulder.high',
+                  'seam.shoulder.low']
+        # grainline.path
+        # seam.center.path
+        # seam.side.path
+        # seam.shoulder.path
+        jb.seam.neck = Generic() # uses seam.neck.path
+        jb.seam.armhole = Generic() # seam.armhole.path
+        jb.seam.hem = Generic() # seam.hem.path
+
+
+
+        #
+        # End of experiments
+        #
+        doc.draw()
         return
 
         oh = ShapeBuilder()
