@@ -41,6 +41,7 @@ class Document(pBase):
     """
     def __init__(self, filename, name = 'UnnamedDocument', attributes = None):
         self.name = name
+        self.id = name
         self.filename = filename
         self.attrs = attributes
         self.company = ''
@@ -88,20 +89,21 @@ class Document(pBase):
         #pat_grp = g()  # pattern_layer = pattern lines & marks
         #pat_grp.set_id('Pattern')
 
-        # Add the groups
-        for group in self.groups:
-            print 'Creating group ', group
-            self.groups[group] = g()
-            # Set the ID to the group name
-            self.groups[group].set_id(group)
-
         # Recursively get everything to draw
-        self.svg()
+        svgdict = self.svg()
 
-        # add all the top level groups to the document
-        for group in self.groups:
-            print 'Creating group ', group
-            sz.addElement(self.groups[group])
+        # and put it into the top level document
+        for dictname, dictelements in svgdict.items():
+            self.groups[dictname] = g()
+            # Set the ID to the group name
+            self.groups[dictname].set_id(dictname)
+
+            # Now add all the elements to it
+            for svgel in dictelements:
+                self.groups[dictname].addElement(svgel)
+
+            # Now add the top level group to the document
+            sz.addElement(self.groups[dictname])
 
         # Write out the svg file
         sz.save(self.filename)
@@ -121,9 +123,16 @@ class TitleBlock(pBase):
         pBase.__init__(self)
         return
 
+    def add(self, obj):
+        # Title Blocks don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The TitleBlock class can not have children')
+
     def svg(self):
         if self.debug:
             print 'svg() called for titleblock ID ', self.id
+
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
 
         # TODO make the text parts configurable
         tbg = g()
@@ -139,8 +148,9 @@ class TitleBlock(pBase):
         y = y + text_space
         tbg.addElement(generateText(x, y, self.fontsize, 'client', self.client_name))
         y = y + text_space
-        self.groups[self.groupname].addElement(tbg)
-        return
+
+        md[self.groupname].append(tbg)
+        return md
 
 
 

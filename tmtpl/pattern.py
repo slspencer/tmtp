@@ -24,14 +24,6 @@ from pysvg.builders import *
 from constants import *
 from patternbase import pBase
 
-# TODO I don't think we need this any more
-#class Generic(object):
-#    """
-#    Create a generic base object so that other objects can be attached on the fly with '.'
-#    """
-#    def __init__(self):
-#        return
-
 # ---- Pattern Classes ----------------------------------------
 
 class Point(pBase):
@@ -55,6 +47,10 @@ class Point(pBase):
         self.coords   = str(x) + "," + str(y)
         pBase.__init__(self)
 
+    def add(self, obj):
+        # Points don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The Point class can not have children')
+
     def svg(self):
         """
         generate the svg for this item and rturn it as a pysvg object
@@ -62,13 +58,17 @@ class Point(pBase):
         if self.debug:
             print 'svg() called for Point ID ', self.id
 
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
+
         pstyle = StyleBuilder(self.style)
         p = circle(self.x, self.y, self.size)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
         p.set_transform(self.transform)
-        self.groups[self.groupname].addElement(p)
-        return
+        md[self.groupname].append(p)
+
+        return md
 
 class Pattern(pBase):
     """
@@ -84,14 +84,15 @@ class PatternPiece(pBase):
     Create an instance of the PatternPiece class, eg jacket.back, pants.frontPocket, corset.stayCover will contain the set of seams and all other pattern piece info,
     eg - jacket.back.seam.shoulder, jacket.back.grainline,  jacket.back.interfacing
     """
-    def __init__(self, name, letter = '?', fabric = 0, interfacing = 0, lining = 0):
+    def __init__(self, group, name, letter = '?', fabric = 0, interfacing = 0, lining = 0):
         self.name = name
+        self.groupname = group
         self.width = 0
         self.height = 0
         self.fabric = fabric
         self.interfacing = interfacing
         self.lining = lining
-        self.transform = ""
+        self.attrs['transform'] = ''
         pBase.__init__(self)
 
     def svg(self):
@@ -101,7 +102,29 @@ class PatternPiece(pBase):
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
 
-        pBase.svg(self)
+        # get all the svg items in all children, in groups
+        # See the base class definition of the svg() method for more
+        svgdict = pBase.svg(self)
 
-        return
+        # We pass back everything but our layer untouched
+        # For our layer, we bundle up all the children's SVG
+        # and place it within a group that has our id
+
+        childlist = pBase.svg(self)
+
+        my_group = g()
+        my_group.set_id(self.id)
+        for attrname, attrvalue in self.attrs.items():
+            my_group.setAttribute(attrname, attrvalue)
+        for cgitem in childlist[self.groupname]:
+            my_group.addElement(cgitem)
+
+        # now we replace the list of items in our group that we got
+        # from the children with our one svg item, which is a group
+        # that contains them all
+        my_group_list = []
+        my_group_list.append(my_group)
+        childlist[self.groupname] = my_group_list
+
+        return childlist
 
