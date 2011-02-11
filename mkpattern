@@ -217,7 +217,7 @@ class AppTemplate(StdApp):
                     'margin-right' : str(border),
                     'margin-top' : str(border),
                     'company-name' : companyName,
-                    'patttern-number' : patternNumber,
+                    'pattern-number' : patternNumber,
                     'pattern-name' : patternName,
                     'client-name' : clientName
                     }
@@ -258,15 +258,22 @@ class AppTemplate(StdApp):
         jacket = Pattern('jacket')
         doc.add(jacket)
 
+        # Create the back pattern piece
         back = PatternPiece('pattern', 'back', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
         jacket.add(back)
 
         jb = jacket.back
 
-        print 'before start point'
         start =  Point('reference', 'start', begin.x, begin.y, 'type')
         jb.add(start)
+
         jb.attrs['transform'] = 'translate(' + jb.start.coords + ' )'
+        jb.add(Point('reference', 'low', 0, 0, 'type'))
+        jb.add(Point('reference', 'high', 0, 0, 'type'))
+
+        jb.width = max(cd.back.shoulder.width, cd.back.chest.width, cd.back.waist.width, cd.back.hip.width) \
+            + (2*SEAM_ALLOWANCE) + (3*cm_to_pt)  # 3cm ease assumed
+        jb.height = cd.back.neck.length + cd.back.jacket.length + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + (3*cm_to_pt) #3cm ease assumed
 
         #
         # Temporary End
@@ -276,16 +283,6 @@ class AppTemplate(StdApp):
 
 
 
-        # TODO NEXT - need a new lightweight point that doesn't have group, etc
-        jb.add(Point('low', 0, 0, ))
-        jb.add(low)
-
-        high =  Point('high', 0, 0, )
-        jb.add(high)
-
-        jb.width = max(cd.back.shoulder.width, cd.back.chest.width, cd.back.waist.width, cd.back.hip.width) \
-            + (2*SEAM_ALLOWANCE) + (3*cm_to_pt)  # 3cm ease assumed
-        jb.height = cd.back.neck.length + cd.back.jacket.length + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + (3*cm_to_pt) #3cm ease assumed
 
         # create a pattern part
         jb = PatternPiece('back', whatever)
