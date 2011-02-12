@@ -41,66 +41,12 @@ class DrawJacket( inkex.Effect ):
 # here is where I am copying from into mkpattern.py - I am deleting from this file as I build the other.
 
 
-
-          # pattern start, count & placement
-           begin = Point( 'begin',  x,   (y + pattern_offset), 'corner',  reference_layer,  no_transform)
-           #begin.DrawPoint()
-           layout = Layout( 'layout',  begin.x,  begin.y,  reference_layer)
-           pattern_start = Point('pattern_start', begin.x, begin.y,  'corner', reference_layer,  no_transform)
-
            # Jacket Back
-           jacket = Pattern('jacket',  self.NewLayer('Jacket',  pattern_layer,  'layer') )
-           jacket.back = PatternPiece('jacket.back', self.NewLayer('Jacket_Back',  jacket.layer,  'layer') )
-           jb = jacket.back
-           jb.id  = 'jacket.back'
-           jb.letter = 'A'
-           jb.fabric  = 2
-           jb.interfacing = 0
-           jb.lining = 0
-           jb.start = pattern_start
-           jb.width = max(back_shoulder_width, back_chest_width, back_waist_width, back_hip_width) + (2*seam_allowance) + (3*cm_to_pt)  # 3cm ease assumed
-           jb.height = back_neck_length + back_jacket_length + hem_allowance + (2*seam_allowance) + (3*cm_to_pt) #3cm ease assumed
-           jb.transform  = 'translate(' + str(pattern_start.x) +', '+ str(pattern_start.y) + ' )'
-           jb.seam.center = Generic()
-           jb.seam.side = Generic()
-           jb.seam.shoulder = Generic()
-           jb.seam.neck = Generic()
-           jb.seam.armhole = Generic()
-           jb.seam.hem = Generic()
 
-           # reference back center seam points for nape, shoulder, chest, waist, hip, hem
-           jb.nape = Point('jacket.back.nape',   0,   0, 'corner',   reference_layer,  no_transform)   # start calculations from nape at 0,0
-           jb.seam.center.shoulder = Point('jacket.back.seam.center.shoulder',  jb.nape.x,    jb.nape.y + back_shoulder_length, 'smooth', reference_layer,  no_transform)
-           jb.seam.center.chest = Point( 'jacket.back.seam.center.chest',  jb.nape.x + (1*cm_to_pt),  jb.nape.y + back_chest_length,  'smooth', reference_layer, jb.transform  )
-           jb.seam.center.waist = Point( 'jacket.back.seam.center.waist', jb.nape.x + (2.5*cm_to_pt),  jb.nape.y + back_waist_length,    'symmetric', reference_layer, jb.transform)
-           jb.seam.center.hip =  Point( 'jacket.back.seam.center.hip', jb.nape.x + (2*cm_to_pt),    jb.seam.center.waist.y + back_hip_length, 'smooth', reference_layer,  jb.transform )
-           jb.seam.center.hem = Point( 'jacket.back.seam.center.hem', jb.nape.x + (1.5*cm_to_pt),  back_jacket_length,   'smooth', reference_layer, jb.transform )
-           jb.seam.center.hem_allowance = Point( 'jacket.back.seam.center.hem_allowance', jb.seam.center.hem.x +0, jb.seam.center.hem.y + hem_allowance, 'corner', reference_layer ,  jb.transform)
 
-           # reference back side seam points for chest, waist, hip, hem
-           jb.seam.side.chest = Point( 'jacket.back.seam.side.chest', jb.nape.x + back_shoulder_width - (1*cm_to_pt),  jb.nape.y + back_chest_length, 'smooth', reference_layer, jb.transform )
-           jb.seam.side.waist = Point( 'jacket.back.seam.side.waist', jb.nape.x + back_shoulder_width - (3*cm_to_pt),  jb.nape.y + back_waist_length, 'symmetric',  reference_layer, jb.transform )
-           jb.seam.side.hip = Point( 'jacket.back.seam.side.hip', jb.nape.x + back_shoulder_width - (2*cm_to_pt),  jb.seam.side.waist.y + back_hip_length, 'smooth', reference_layer, jb.transform )
-           jb.seam.side.hem = Point( 'jacket.back.seam.side.hem', jb.nape.x + back_shoulder_width - (1.5*cm_to_pt),   back_jacket_length, 'smooth', reference_layer, jb.transform )
-           jb.seam.side.hem_allowance = Point( 'jacket.back.seam.side.hem_allowance', jb.seam.side.hem.x, jb.seam.side.hem.y + hem_allowance, 'corner',  reference_layer, jb.transform )
 
-           # armscye points
-           jb.balance = Point( 'jacket.back.balance', jb.nape.x + back_shoulder_width,  jb.nape.y + back_balance_length, 'smooth', reference_layer,  jb.transform )
-           jb.underarm = Point( 'jacket.back.underarm', jb.nape.x + back_shoulder_width, jb.nape.y + back_balance_length + abs(back_balance_length - back_chest_length)*(.48), 'smooth', reference_layer,  jb.transform )
 
-           # diagonal shoulder line
-           jb.seam.shoulder.high = Point( 'jacket.back.seam.shoulder.high', jb.nape.x + back_neck_width, jb.nape.y - back_neck_length, 'corner', reference_layer,  jb.transform )
-           jb.seam.shoulder.low   = Point( 'jacket.back.seam.shoulder.low', jb.seam.center.shoulder.x + back_shoulder_width + (1*cm_to_pt), jb.seam.center.shoulder.y, 'corner', reference_layer,  jb.transform )
 
-           # Back Vertical Reference Grid
-           d = 'M '+ jb.nape.coords   + ' v ' + str( jb.height )
-           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Center', jb.transform )
-           d = 'M '+ str(jb.nape.x + back_shoulder_width) + ', ' + str(jb.nape.y) + ' v ' + str( jb.height)
-           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Shoulder Width',   jb.transform )
-           d = 'M '+ str(jb.nape.x + jb.width) + ', ' + str(jb.nape.y)       + ' v ' + str( jb.height )
-           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Side',   jb.transform )
-           d = 'M '+ jb.seam.shoulder.high.coords  +' v '+ str(back_neck_length)
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Neck',     jb.transform )
 
            # Back Horizontal Reference Grid
            d = 'M '+ jb.nape.coords  + ' h ' + str( jb.width )   # top grid line

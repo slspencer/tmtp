@@ -42,6 +42,8 @@ class Document(pBase):
     def __init__(self, filename, name = 'UnnamedDocument', attributes = None):
         self.name = name
         self.id = name
+        self.x = 0
+        self.y = 0
         self.filename = filename
         self.attrs = attributes
         self.company = ''
@@ -53,7 +55,7 @@ class Document(pBase):
        
     def draw(self):
         # create the base document
-        sz = svg("TMTP test")
+        sz = svg(self.x, self.y)
 
         # add the scripting we need to handle events
         # TODO for now don't

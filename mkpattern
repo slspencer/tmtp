@@ -247,8 +247,12 @@ class AppTemplate(StdApp):
         x = border
         y = border
 
-        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET), 'corner')
+        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET))
         doc.add(begin)
+
+        # This was here, and used later to calculate doc size
+        # TODO may not be needed
+        #layout = Layout( 'layout',  begin.x,  begin.y,  reference_layer)
 
         # may not be needed??
         #docinfo.lowx = begin.x
@@ -264,16 +268,71 @@ class AppTemplate(StdApp):
 
         jb = jacket.back
 
-        start =  Point('reference', 'start', begin.x, begin.y, 'type')
+        start =  Point('reference', 'start', begin.x, begin.y)
         jb.add(start)
 
         jb.attrs['transform'] = 'translate(' + jb.start.coords + ' )'
-        jb.add(Point('reference', 'low', 0, 0, 'type'))
-        jb.add(Point('reference', 'high', 0, 0, 'type'))
+        jb.add(Point('reference', 'low', 0, 0))
+        jb.add(Point('reference', 'high', 0, 0))
 
         jb.width = max(cd.back.shoulder.width, cd.back.chest.width, cd.back.waist.width, cd.back.hip.width) \
             + (2*SEAM_ALLOWANCE) + (3*cm_to_pt)  # 3cm ease assumed
         jb.height = cd.back.neck.length + cd.back.jacket.length + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + (3*cm_to_pt) #3cm ease assumed
+
+        nape = Point('reference', 'nape', 0, 0)
+        jb.add(nape)
+
+        # reference back center seam points for nape, shoulder, chest, waist, hip, hem
+        jb.add(Node('seam'))
+        jb.seam.add(Node('center'))
+        jb.seam.center.add(Point('reference', 'shoulder', jb.nape.x, jb.nape.y + back_shoulder_length))
+        jb.seam.center.add(Point('reference', 'chest', jb.nape.x + (1*cm_to_pt), jb.nape.y + back_chest_length))
+        jb.seam.center.add(Point('reference', 'waist', jb.nape.x + (2.5*cm_to_pt), jb.nape.y + back_waist_length))
+        jb.seam.center.add(Point('reference', 'hip', jb.nape.x + (2*cm_to_pt), jb.seam.center.waist.y + back_hip_length))
+        jb.seam.center.add(Point('reference', 'hem', jb.nape.x + (1.5*cm_to_pt),  back_jacket_length))
+        jb.seam.center.add(Point('reference', 'hem_allowance', jb.seam.center.hem.x +0, jb.seam.center.hem.y + hem_allowance))
+
+        # reference back side seam points for chest, waist, hip, hem
+        jb.seam.add(Node('side'))
+        jb.seam.side.add(Point('reference', 'chest', jb.nape.x + back_shoulder_width - (1*cm_to_pt),  jb.nape.y + back_chest_length))
+        jb.seam.side.add(Point('reference', 'waist', jb.nape.x + back_shoulder_width - (3*cm_to_pt),  jb.nape.y + back_waist_length))
+        jb.seam.side.add(Point('reference', 'hip', jb.nape.x + back_shoulder_width - (2*cm_to_pt),  jb.seam.side.waist.y + back_hip_length))
+        jb.seam.side.add(Point('reference', 'hem', jb.nape.x + back_shoulder_width - (1.5*cm_to_pt),   back_jacket_length))
+        jb.seam.side.add(Point('reference', 'hem_allowance', jb.seam.side.hem.x, jb.seam.side.hem.y + hem_allowance))
+
+        # armscye points
+        jb.add(Point('reference', 'balance', jb.nape.x + back_shoulder_width,  jb.nape.y + back_balance_length))
+        jb.add(Point('reference', 'underarm', jb.nape.x + back_shoulder_width, jb.nape.y + back_balance_length + abs(back_balance_length - back_chest_length)*(.48)))
+
+        # diagonal shoulder line
+        jb.seam.add(Node('shoulder'))
+        jb.seam.shoulder.add(Point('reference', 'high', jb.nape.x + back_neck_width, jb.nape.y - back_neck_length))
+        jb.seam.shoulder.add(Point('reference', 'low', jb.seam.center.shoulder.x + back_shoulder_width + (1*cm_to_pt), jb.seam.center.shoulder.y))
+
+        #
+        # Temporary End
+        #
+        doc.draw()
+        return
+
+        # Back Vertical Reference Grid
+        d = 'M '+ jb.nape.coords   + ' v ' + str( jb.height )
+           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Center', jb.transform )
+
+           d = 'M '+ str(jb.nape.x + back_shoulder_width) + ', ' + str(jb.nape.y) + ' v ' + str( jb.height)
+           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Shoulder Width',   jb.transform )
+
+           d = 'M '+ str(jb.nape.x + jb.width) + ', ' + str(jb.nape.y)       + ' v ' + str( jb.height )
+           self.DrawPath( reference_layer, d , 'reference' , 'Jacket Back - Side',   jb.transform )
+
+           d = 'M '+ jb.seam.shoulder.high.coords  +' v '+ str(back_neck_length)
+           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Neck',     jb.transform )
+
+
+        jb.seam.add(Node('neck'))
+        jb.seam.add(Node('armhole'))
+        jb.seam.add(Node('hem'))
+
 
         #
         # Temporary End
@@ -285,12 +344,8 @@ class AppTemplate(StdApp):
 
 
         # create a pattern part
-        jb = PatternPiece('back', whatever)
-        jacket.add(jb)
 
         # and the first piece in the jacket is the back
-        nape = Point('nape', 0, 0, )
-        jb.add(nape)
 
         grainline = Path('grainline', 0, 0)
         jb.add(grainline)
@@ -301,23 +356,6 @@ class AppTemplate(StdApp):
         side_seam = Path()
         shoulder_seam = Path()
         # add path obj to pattern piece
-        points = ['nape',
-                  'grainline',
-                  'seam.center.shoulder', 
-                  'seam.center.chest',
-                  'seam.center.waist',
-                  'seam.center.hip',
-                  'seam.center.hem',
-                  'seam.center.hem_allowance',
-                  'seam.side.chest',
-                  'seam.side.waist',
-                  'seam.side.hip',
-                  'seam.side.hem',
-                  'seam.side.hem_allowance',
-                  'balance',
-                  'underarm',
-                  'seam.shoulder.high',
-                  'seam.shoulder.low']
         # grainline.path
         # seam.center.path
         # seam.side.path

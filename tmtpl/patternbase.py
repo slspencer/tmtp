@@ -52,12 +52,14 @@ class pBase(object):
         return
 
     def mkgroupdict(self):
+        """
+        Return a dictionary containing keys for all the groups
+        which are defined
+        """
         td = {}
         for k, v in self.groups.items():
             td[k] = []
         return td
-            
-            
 
     def svg(self):
         """

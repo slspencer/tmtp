@@ -31,14 +31,14 @@ class Point(pBase):
     Creates instance of Python class Point
     Creates & draws XML object from instance of Python class Point
     """
-    def __init__(self, group, name, x,  y, nodetype,  transform = '' , draw = True) :
+    def __init__(self, group, name, x,  y, transform = '') :
 
         # TODO remove nodetype if not used
         self.groupname = group
         self.name = name
         self.x         = x
         self.y         = y
-        self.transform = transform
+        self.attrs['transform'] = transform
 
         self.size      = 5
         self.style     = { 'stroke' : 'red', 'fill' : 'red', 'stroke-width' : '1' }
@@ -65,10 +65,19 @@ class Point(pBase):
         p = circle(self.x, self.y, self.size)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
-        p.set_transform(self.transform)
+        for attrname, attrvalue in self.attrs.items():
+            p.setAttribute(attrname, attrvalue)
         md[self.groupname].append(p)
 
         return md
+
+class Node(pBase):
+    """
+    Create an instance which is only intended to be a holder for other objects
+    """
+    def __init__(self, name):
+        self.name = name
+        pBase.__init__(self)
 
 class Pattern(pBase):
     """
