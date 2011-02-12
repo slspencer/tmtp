@@ -45,41 +45,6 @@ class DrawJacket( inkex.Effect ):
 
 
 
-
-
-
-           # Back Horizontal Reference Grid
-           d = 'M '+ jb.nape.coords  + ' h ' + str( jb.width )   # top grid line
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Top',  jb.transform )
-           d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.shoulder.y)   + ' h ' + str( jb.width ) # shoulder grid line
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Shoulder', jb.transform )
-           d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.chest.y)        + ' h ' + str( jb.width ) # chest grid line
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Chest',    jb.transform )
-           d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.waist.y)         + ' h ' + str( jb.width) # waist
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Waist',    jb.transform )
-           d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.hip.y )           + ' h ' + str( jb.width ) #hip
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Hip',      jb.transform )
-           d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.hem.y )         + ' h ' + str( jb.width ) # hem
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Hem',      jb.transform )
-           d = 'M ' + str(jb.nape.x) + ', ' + str( jb.seam.center.hem_allowance.y )  + ' h ' + str( jb.width )# hem allowance
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - Hem',      jb.transform )
-           d = 'M ' + str(jb.nape.x) + ', ' + str(jb.nape.y + jb.height)                + ' h ' + str( jb.width )
-           self.DrawPath( reference_layer, d, 'reference', 'Jacket Back - End',      jb.transform )
-
-           # Back Center Seam line clockwise from bottom left:
-           x1, y1 = self.PointwithSlope( jb.seam.center.hip.x, jb.seam.center.hip.y, jb.seam.center.hem.x, jb.seam.center.hem.y, abs( jb.seam.center.hip.y - jb.seam.center.waist.y )*(.3), 'normal' )
-           c1 = Point( 'c1', x1, y1, 'control', reference_layer, jb.transform)
-           c2 = Point( 'c2', jb.seam.center.waist.x,  jb.seam.center.waist.y + abs( jb.seam.center.waist.y -  jb.seam.center.hip.y   ) * (.3), 'control', reference_layer, jb.transform )
-           c3 = Point( 'c3', jb.seam.center.waist.x,  jb.seam.center.waist.y - abs( jb.seam.center.waist.y - jb.seam.center.chest.y ) * (.3), 'control', reference_layer,  jb.transform )
-
-           x1, y1 = self.PointwithSlope( jb.seam.center.chest.x, jb.seam.center.chest.y, jb.seam.center.shoulder.x, jb.seam.center.shoulder.y, abs( jb.seam.center.chest.y - jb.seam.center.waist.y )*(.3), 'normal' )
-           c4 = Point( 'c4', x1, y1, 'control', reference_layer,  jb.transform )
-           c5 = Point( 'c5', jb.seam.center.chest.x - abs(jb.seam.center.chest.x - jb.seam.center.shoulder.x)*(.3), jb.seam.center.chest.y - abs( jb.seam.center.chest.y - jb.seam.center.shoulder.y )*(.3), 'control', reference_layer,  jb.transform )
-           c6 = Point( 'c6', jb.seam.center.shoulder.x, jb.seam.center.shoulder.y + abs( jb.seam.center.shoulder.y - jb.seam.center.chest.y )*(.3), 'control', reference_layer,  jb.transform )
-
-           # Back Center Seam path
-           jb.seam.center.path  = 'L '+ jb.seam.center.hem_allowance.coords +' L '+  jb.seam.center.hem.coords + ' L ' +  jb.seam.center.hip.coords +' C '+ c1.coords +' '+ c2.coords +' '+ jb.seam.center.waist.coords +' C '+ c3.coords +' '+ c4.coords +' '+ jb.seam.center.chest.coords +' C '+ c5.coords +' '+ c6.coords + ' '+ jb.seam.center.shoulder.coords +' L '+ jb.nape.coords
-
            # Back Neck seam line clockwise from jb.nape to high point of shoulder:
            x1, y1       = self.PointwithSlope( jb.seam.shoulder.high.x, jb.seam.shoulder.high.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, (abs( jb.seam.shoulder.high.y - jb.nape.y )*(.75)), 'perpendicular')
            c1 = Point( 'c1_!', x1, y1, 'control', reference_layer,  jb.transform) #c1 is perpendicular to shoulder line at jb.seam.shoulder.high.

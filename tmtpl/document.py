@@ -68,8 +68,6 @@ class Document(pBase):
         # Add attributes - TODO probably put these in a dictionary as
         # part of the document class
         #
-        sz.set_width('auto')
-        sz.set_height('auto')
         if self.attrs:
             for attr, value in self.attrs.items():
                 sz.setAttribute(attr, value)

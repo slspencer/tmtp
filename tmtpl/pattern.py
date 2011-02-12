@@ -26,59 +26,6 @@ from patternbase import pBase
 
 # ---- Pattern Classes ----------------------------------------
 
-class Point(pBase):
-    """
-    Creates instance of Python class Point
-    Creates & draws XML object from instance of Python class Point
-    """
-    def __init__(self, group, name, x,  y, transform = '') :
-
-        # TODO remove nodetype if not used
-        self.groupname = group
-        self.name = name
-        self.x         = x
-        self.y         = y
-        self.attrs['transform'] = transform
-
-        self.size      = 5
-        self.style     = { 'stroke' : 'red', 'fill' : 'red', 'stroke-width' : '1' }
-        #self.type      = 'node'
-        #self.nodetype  = nodetype    #can be corner, smooth, symmetric, tangent, control
-        self.coords   = str(x) + "," + str(y)
-        pBase.__init__(self)
-
-    def add(self, obj):
-        # Points don't have children. If this changes, change the svg method also.
-        raise RuntimeError('The Point class can not have children')
-
-    def svg(self):
-        """
-        generate the svg for this item and rturn it as a pysvg object
-        """
-        if self.debug:
-            print 'svg() called for Point ID ', self.id
-
-        # an empty dict to hold our svg elements
-        md = self.mkgroupdict()
-
-        pstyle = StyleBuilder(self.style)
-        p = circle(self.x, self.y, self.size)
-        p.set_style(pstyle.getStyle())
-        p.set_id(self.id)
-        for attrname, attrvalue in self.attrs.items():
-            p.setAttribute(attrname, attrvalue)
-        md[self.groupname].append(p)
-
-        return md
-
-class Node(pBase):
-    """
-    Create an instance which is only intended to be a holder for other objects
-    """
-    def __init__(self, name):
-        self.name = name
-        pBase.__init__(self)
-
 class Pattern(pBase):
     """
     Create an instance of Pattern class, eg - jacket, pants, corset, which will contain the set of pattern piece objects - eg  jacket.back, pants.frontPocket, corset.stayCover
@@ -101,6 +48,7 @@ class PatternPiece(pBase):
         self.fabric = fabric
         self.interfacing = interfacing
         self.lining = lining
+        self.attrs = {}
         self.attrs['transform'] = ''
         pBase.__init__(self)
 
@@ -136,4 +84,101 @@ class PatternPiece(pBase):
         childlist[self.groupname] = my_group_list
 
         return childlist
+
+class Node(pBase):
+    """
+    Create an instance which is only intended to be a holder for other objects
+    """
+    def __init__(self, name):
+        self.name = name
+        pBase.__init__(self)
+
+class Point(pBase):
+    """
+    Creates instance of Python class Point
+    Creates & draws XML object from instance of Python class Point
+    """
+    def __init__(self, group, name, x,  y, transform = '') :
+
+        self.groupname = group
+        self.name = name
+        self.x         = x
+        self.y         = y
+        self.attrs = {}
+        self.attrs['transform'] = transform
+
+        self.size      = 5
+        # TODO probably put the style somwhere else
+        self.style     = { 'stroke' : 'red', 'fill' : 'red', 'stroke-width' : '1' }
+        self.coords   = str(x) + "," + str(y)
+        pBase.__init__(self)
+
+    def add(self, obj):
+        # Points don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The Point class can not have children')
+
+    def svg(self):
+        """
+        generate the svg for this item and rturn it as a pysvg object
+        """
+        if self.debug:
+            print 'svg() called for Point ID ', self.id
+
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
+
+        pstyle = StyleBuilder(self.style)
+        p = circle(self.x, self.y, self.size)
+        p.set_style(pstyle.getStyle())
+        p.set_id(self.id)
+        for attrname, attrvalue in self.attrs.items():
+            p.setAttribute(attrname, attrvalue)
+        md[self.groupname].append(p)
+
+        return md
+
+class Line(pBase):
+    """
+    Creates instance of Python class Point
+    Creates & draws XML object from instance of Python class Point
+    """
+    def __init__(self, group, name, label, xstart,  ystart, xend, yend, transform = '') :
+
+        self.groupname = group
+        self.name = name
+        self.label = label
+        self.xstart = xstart
+        self.ystart = ystart
+        self.xend = xend
+        self.yend = yend
+        self.attrs = {}
+        self.attrs['transform'] = transform
+        # TODO probably put the style somwhere else
+        self.style     = { 'stroke' : 'orange', 'stroke-width' : '2' }
+
+        pBase.__init__(self)
+
+    def add(self, obj):
+        # Lines don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The Line class can not have children')
+
+    def svg(self):
+        """
+        generate the svg for this item and rturn it as a pysvg object
+        """
+        if self.debug:
+            print 'svg() called for Line ID ', self.id
+
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
+
+        pstyle = StyleBuilder(self.style)
+        p = line(self.xstart, self.ystart, self.xend, self.yend)
+        p.set_style(pstyle.getStyle())
+        p.set_id(self.id)
+        for attrname, attrvalue in self.attrs.items():
+            p.setAttribute(attrname, attrvalue)
+        md[self.groupname].append(p)
+
+        return md
 

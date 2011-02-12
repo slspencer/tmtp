@@ -47,6 +47,25 @@ def generateText(x, y, font_size, label, string, trans = ''):
 
     return t
 
+def angleOfLine(x1, y1, x2, y2):
+    """
+    Accepts two sets of coordinates and returns the angle between them
+    """
+    return math.atan2(y2-y1,x2-x1)
+
+def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
+    """
+    Accepts two pairs of coordinates and an optional rotation angle
+    returns a point along the line (can be extended from the line)
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    angle = angleOfLine(x1, y1, x2, y2) + (rotation * 180/math.pi)
+    x = (distance * math.sin(angle)) + x1
+    y = (distance * math.cos(angle)) + y1
+    return x, y
+
+################ End of things which have been adapted and are used in the new framework ################
+
 
 def AngleFromSlope(rise, run):
     """
@@ -384,72 +403,6 @@ def PointOnLine(x1,y1,x2,y2,length):
         y3 = y1 -m*( x1 - x3 )                        #solve for y3 by plugging x1 into point-slope formula
     return x3, y3
 
-    def PointwithSlope( self, x1, y1, x2, y2, length, slopetype ) :
-        m = self.Slope(x1,y1,x2,y2,slopetype)
-        r = length
-        if ( slopetype == 'normal'):
-            if (m=='undefined'):
-                # vertical line, extend line from x1,y1 up or down
-                x3 = x1
-                if ( y1 > y2 ):
-                    y3 = y1 + r
-                else:
-                    y3 = y1 - r
-            elif (m==0):
-                # horizontal line, extend line from x1,y1 right or left
-                if ( x1 > x2 ):
-                    x3 = x1 + r
-                else:
-                    x3 = x1 - r
-                y3 = y1
-            else:
-                if ( x1 > x2 ):
-                    x3 = x1 + ( r / self.Sqrt(1+(m**2)) )
-                else:
-                    x3 = x1 - ( r / self.Sqrt(1+(m**2)) )
-                y3 = y1 - m*( x1 - x3 )                        #solve for y3 by plugging x3 into point-slope formula
-        else:
-            # self.Slope returns m = perpendicular or inverse slope
-            if (m=='undefined'):
-                # perpendicular/inverse line is horizontal, create vertical line from x1, y1
-                y3 = y1
-                x3 = x1 + r
-            elif (m=='0'):
-                # perpendicular/inverse line is vertical, create horizontal line from x1,y1
-                x3 = x1
-                y3 = y1 + r
-            elif ( m > 0 ):
-                    x3 = x1 + ( r / self.Sqrt(1+(m**2)) )
-                    y3 = y1 + m*( x1 - x3 ) #solve for y3 by plugging x3 into point-slope formula
-            else:
-                    x3 = x1 - ( r / self.Sqrt(1+(m**2)) )
-                    y3 = y1 - m*(x1-x3)
-        return x3, y3
-
-def Slope(x1,y1,x2,y2,slopetype):
-    # slopetype can only be {'normal','inverse','perpendicular'}
-    if (slopetype=='normal'):
-        if (x1==x2):
-            slope='undefined'
-        elif (y2==y1):
-            slope=0    #force this to 0, Python might retain as a very small number
-        else:
-            slope=((y2-y1)/(x2-x1))
-    elif ( slopetype == 'perpendicular'):    #perpendicular slope -(x2-x1)/(y2-y1)
-        if (x1==x2):
-            slope='0'
-        elif (y2==y1):
-            slope='undefined'
-        else:
-            slope=-((x2-x1)/(y2-y1))
-    elif (slopetype=='inverse'):
-        if (x1==x2):
-            slope='0'
-        elif (y2==y1):
-            slope='undefined'
-        else:
-            slope=-((y2-y1)/(x2-x1))
-    return slope
 
 ###################################################
 def sodipodi_namedview():

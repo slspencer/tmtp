@@ -35,7 +35,6 @@ class pBase(object):
     # can be turned on and off
     groups = {}
     debug = False
-    attrs = {}
 
     def __init__(self):
         self.children = []
