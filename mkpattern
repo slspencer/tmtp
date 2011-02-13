@@ -344,10 +344,93 @@ class AppTemplate(StdApp):
                      jb.seam.center.chest.y - abs( jb.seam.center.chest.y - jb.seam.center.shoulder.y )*(.3)))
         jb.add(Point('reference', 'c6', jb.seam.center.shoulder.x, jb.seam.center.shoulder.y + abs( jb.seam.center.shoulder.y - jb.seam.center.chest.y )*(.3)))
 
+        # Back Neck seam line clockwise from jb.nape to high point of shoulder:
+        distance = (abs( jb.seam.shoulder.high.y - jb.nape.y )*(.75))
+        x, y = pointAlongLine(jb.seam.shoulder.high.x, jb.seam.shoulder.high.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, distance, 90)
+        jb.add(Point('reference', 'c7', x, y)) # perpendicular to shoulder line at jb.seam.shoulder.high.
+
+        distance = (-(abs( jb.seam.shoulder.high.x - jb.nape.x ) ) * (.50))
+        x, y = pointAlongLine(jb.nape.x, jb.nape.y, jb.seam.shoulder.high.x, jb.nape.y, distance)
+        jb.add(Point('reference', 'c8', x, y))
+
+        # Back Shoulder & Armhole seam lines clockwise from high point to low point of shoulder to top of side seam
+        jb.add(Point('reference', 'c9',
+                     jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.33)),
+                     jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.4))))
+
+        jb.add(Point('reference', 'c10',
+                     jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.6) ),
+                     jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.66))))
+
+
+        # Back Side seam line clockwise from jb.underarm. to hem
+        distance = abs(jb.seam.center.chest.y - jb.seam.side.waist.y) * (.3)
+        x, y = pointAlongLine(jb.seam.side.chest.x, jb.seam.side.chest.y, jb.underarm.x, jb.underarm.y, distance)
+        jb.add(Point('reference', 'c11', x, y))
+
+        jb.add(Point('reference', 'c12', jb.seam.side.waist.x, jb.seam.side.waist.y - (abs( jb.seam.side.waist.y - jb.seam.side.chest.y )*(.3))))
+        jb.add(Point('reference', 'c13', jb.seam.side.waist.x, jb.seam.side.waist.y + (abs( jb.seam.side.waist.y - jb.seam.side.hip.y )*(.3))))
+
+        distance = (abs(jb.seam.side.waist.y - jb.seam.side.hip.y)*(.3))
+        x, y = pointAlongLine(jb.seam.side.hip.x, jb.seam.side.hip.y, jb.seam.side.hem.x, jb.seam.side.hem.y, distance)
+        jb.add(Point('reference', 'c14', x, y))
+
+        # Grainline
+        # TODO Put this in a Grainline class that includes arrows, styling, etc
+        jb.add(Point('reference', 'g1', (jb.seam.shoulder.low.x)/2, jb.underarm.y))
+        jb.add(Point('reference', 'g2', jb.g1.x, jb.g1.y + (60*cm_to_pt)))
+        jb.add(Line('reference', 'grainline', 'Grainline', jb.g1.x, jb.g1.y, jb.g2.x, jb.g2.y))
+        # End Grainline
+
+
+        # Assemble all paths down here
+        # Paths are a bit differemt - we create the SVG and then create the object to hold it
+        # See the pysvg library docs for the pysvg methods
+        path_svg = path()
+        jb.add(Path('pattern', 'path', 'Jacket Back Path', path_svg))
+
+        # Back Neck Seam path - starts with 'jacket.back.nape' from Back_Center_Seam
+        # Was jb.seam.neck.path = 'M ' + jb.nape.coords + ' C '+ c8.coords +' '+ c7.coords +' '+ jb.seam.shoulder.high.coords
+        path_svg.appendMoveToPath(jb.nape.x, jb.nape.y, relative = False)
+        path_svg.appendCubicCurveToPath(jb.c8.x, jb.c8.y, jb.c7.x, jb.c7.y, jb.seam.shoulder.high.x, jb.seam.shoulder.high.y, relative = False)
+
+        # Back Shoulder Seam path - starts with 'jacket.back.seam.shoulder.high.coords' from Back_Neck_Seam
+        # Was jb.seam.shoulder.path = ' C '+ c9.coords +' '+ c10.coords +' '+ jb.seam.shoulder.low.coords
+        path_svg.appendCubicCurveToPath(jb.c9.x, jb.c9.y, jb.c10.x, jb.c10.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, relative = False)
+
+        # Was jb.seam.armhole.path  = ' Q ' + jb.balance.coords + ' ' + jb.underarm.coords
+        path_svg.appendQuadraticCurveToPath(jb.balance.y, jb.balance.y, jb.underarm.x, jb.underarm.y, relative = False)
+
+        # Back Side Seam path -- starts with 'jacket.back.underarm.' from Back_Shoulder_Armhole_Seam
+        # Was jb.seam.side.path  = ' L '+ jb.seam.side.chest.coords +' C '+ c11.coords + ' '+ c12.coords +' '+ jb.seam.side.waist.coords +
+        # ' C '+ c13.coords +' '+ c14.coords +' '+ jb.seam.side.hip.coords +' L '+ jb.seam.side.hem.coords + ' ' + jb.seam.side.hem_allowance.coords
+        path_svg.appendLineToPath(jb.seam.side.chest.x, jb.seam.side.chest.y, relative = False)
+        path_svg.appendCubicCurveToPath(jb.c11.x, jb.c11.y, jb.c12.x, jb.c12.y, jb.seam.side.waist.x, jb.seam.side.waist.y, relative = False)
+        path_svg.appendCubicCurveToPath(jb.c13.x, jb.c13.y, jb.c14.x, jb.c14.y, jb.seam.side.hip.x, jb.seam.side.hip.y, relative = False)
+        path_svg.appendLineToPath(jb.seam.side.hem.x, jb.seam.side.hem.y, relative = False)
+        path_svg.appendLineToPath(jb.seam.side.hem_allowance.x, jb.seam.side.hem_allowance.y, relative = False) # not sure of this, no operator in original
+
         # Back Center Seam path
-        #   jb.seam.center.path  = 'L '+ jb.seam.center.hem_allowance.coords +' L '+  jb.seam.center.hem.coords + ' L ' +  jb.seam.center.hip.coords +' C '+ c1.coords +' '+ c2.coords +' '+ jb.seam.center.waist.coords +' C '+ c3.coords +' '+ c4.coords +' '+ jb.seam.center.chest.coords +' C '+ c5.coords +' '+ c6.coords + ' '+ jb.seam.center.shoulder.coords +' L '+ jb.nape.coords
+        # Was jb.seam.center.path  = 'L '+ jb.seam.center.hem_allowance.coords + ' L '+  jb.seam.center.hem.coords + ' L ' +  jb.seam.center.hip.coords +
+        # ' C '+ c1.coords +' '+ c2.coords +' '+ jb.seam.center.waist.coords + ' C '+ c3.coords +' '+ c4.coords +' '+ jb.seam.center.chest.coords +
+        # ' C '+ c5.coords +' '+ c6.coords + ' '+ jb.seam.center.shoulder.coords + ' L '+ jb.nape.coords
 
+        path_svg.appendLineToPath(jb.seam.center.hem_allowance.x, jb.seam.center.hem_allowance.y, relative = False)
+        path_svg.appendLineToPath(jb.seam.center.hem.x, jb.seam.center.hem.y, relative = False)
+        path_svg.appendLineToPath(jb.seam.center.hip.x, jb.seam.center.hip.y, relative = False)
+        path_svg.appendCubicCurveToPath(jb.c1.x, jb.c1.y, jb.c2.x, jb.c2.y, jb.seam.center.waist.x, jb.seam.center.waist.y, relative = False)
+        path_svg.appendCubicCurveToPath(jb.c3.x, jb.c3.y, jb.c4.x, jb.c4.y, jb.seam.center.chest.x, jb.seam.center.chest.y , relative = False)
+        path_svg.appendCubicCurveToPath(jb.c5.x, jb.c5.y, jb.c6.x, jb.c6.y, jb.seam.center.shoulder.x, jb.seam.center.shoulder.y, relative = False)
+        path_svg.appendLineToPath(jb.nape.x, jb.nape.y, relative = False)
+        path_svg.appendCloseCurve()
 
+        # Back Hemline path
+        # Was jb.seam.hem.path = 'M ' +  jb.seam.center.hem.coords + ' L ' + jb.seam.side.hem.coords
+        path_hemline = path()
+        jb.add(Path('pattern', 'hemline', 'Jacket Back Hemline', path_hemline))
+        path_hemline.appendMoveToPath(jb.seam.center.hem.x, jb.seam.center.hem.y, relative = False)
+        path_hemline.appendLineToPath(jb.seam.side.hem.x, jb.seam.side.hem.y, relative = False)
+        
         #
         # Temporary End
         #
@@ -364,31 +447,6 @@ class AppTemplate(StdApp):
         #
         doc.draw()
         return
-
-
-
-
-        # create a pattern part
-
-        # and the first piece in the jacket is the back
-
-        grainline = Path('grainline', 0, 0)
-        jb.add(grainline)
-
-        center_seam = Path('center_seam', arg2, points=['shoulder', 'chest', 'waist', 'hip', 'hem'])
-        jacket.add(center_seam)
-
-        side_seam = Path()
-        shoulder_seam = Path()
-        # add path obj to pattern piece
-        # grainline.path
-        # seam.center.path
-        # seam.side.path
-        # seam.shoulder.path
-        jb.seam.neck = Generic() # uses seam.neck.path
-        jb.seam.armhole = Generic() # seam.armhole.path
-        jb.seam.hem = Generic() # seam.hem.path
-
 
 
         #

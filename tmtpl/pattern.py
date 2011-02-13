@@ -54,7 +54,7 @@ class PatternPiece(pBase):
 
     def svg(self):
         """
-        generate the svg for this item and rturn it as a pysvg object
+        generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
@@ -96,7 +96,6 @@ class Node(pBase):
 class Point(pBase):
     """
     Creates instance of Python class Point
-    Creates & draws XML object from instance of Python class Point
     """
     def __init__(self, group, name, x,  y, transform = '') :
 
@@ -119,7 +118,7 @@ class Point(pBase):
 
     def svg(self):
         """
-        generate the svg for this item and rturn it as a pysvg object
+        generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
             print 'svg() called for Point ID ', self.id
@@ -139,8 +138,7 @@ class Point(pBase):
 
 class Line(pBase):
     """
-    Creates instance of Python class Point
-    Creates & draws XML object from instance of Python class Point
+    Creates instance of Python class Line
     """
     def __init__(self, group, name, label, xstart,  ystart, xend, yend, transform = '') :
 
@@ -164,7 +162,7 @@ class Line(pBase):
 
     def svg(self):
         """
-        generate the svg for this item and rturn it as a pysvg object
+        generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
             print 'svg() called for Line ID ', self.id
@@ -179,6 +177,43 @@ class Line(pBase):
         for attrname, attrvalue in self.attrs.items():
             p.setAttribute(attrname, attrvalue)
         md[self.groupname].append(p)
+
+        return md
+
+class Path(pBase):
+    """
+    Creates instance of Python class Path
+    Holds a path object and applies grouping, styles, etc when drawn
+    """
+    def __init__(self, group, name, label, pathSVG, transform = '') :
+
+        self.groupname = group
+        self.name = name
+        self.label = label
+        self.pathSVG = pathSVG
+        self.attrs = {}
+        self.attrs['transform'] = transform
+
+        pBase.__init__(self)
+
+    def add(self, obj):
+        # Paths don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The Path class can not have children')
+
+    def svg(self):
+        """
+        generate the svg for this item and return it as a pysvg object
+        """
+        if self.debug:
+            print 'svg() called for Line ID ', self.id
+
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
+
+        self.pathSVG.set_id(self.id)
+        for attrname, attrvalue in self.attrs.items():
+            self.pathSVG.setAttribute(attrname, attrvalue)
+        md[self.groupname].append(self.pathSVG)
 
         return md
 
