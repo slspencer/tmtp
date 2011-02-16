@@ -59,15 +59,11 @@ class PatternPiece(pBase):
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
 
-        # get all the svg items in all children, in groups
-        # See the base class definition of the svg() method for more
-        svgdict = pBase.svg(self)
-
         # We pass back everything but our layer untouched
         # For our layer, we bundle up all the children's SVG
         # and place it within a group that has our id
 
-        childlist = pBase.svg(self)
+        childlist = pBase.svg(self) # returns all children
 
         my_group = g()
         my_group.set_id(self.id)
@@ -97,18 +93,19 @@ class Point(pBase):
     """
     Creates instance of Python class Point
     """
-    def __init__(self, group, name, x,  y, transform = '') :
+    def __init__(self, group, name, x,  y, styledef = 'default', transform = '') :
 
         self.groupname = group
         self.name = name
+        self.sdef = styledef
         self.x         = x
         self.y         = y
         self.attrs = {}
         self.attrs['transform'] = transform
 
+
         self.size      = 5
         # TODO probably put the style somwhere else
-        self.style     = { 'stroke' : 'red', 'fill' : 'red', 'stroke-width' : '1' }
         self.coords   = str(x) + "," + str(y)
         pBase.__init__(self)
 
@@ -126,10 +123,13 @@ class Point(pBase):
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
 
-        pstyle = StyleBuilder(self.style)
+        pstyle = StyleBuilder(self.styledefs[self.sdef])
         p = circle(self.x, self.y, self.size)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
+        p.set_onmouseover('ShowTooltip(evt)')
+        p.set_onmouseout('HideTooltip(evt)')
+
         for attrname, attrvalue in self.attrs.items():
             p.setAttribute(attrname, attrvalue)
         md[self.groupname].append(p)
@@ -140,10 +140,11 @@ class Line(pBase):
     """
     Creates instance of Python class Line
     """
-    def __init__(self, group, name, label, xstart,  ystart, xend, yend, transform = '') :
+    def __init__(self, group, name, label, xstart,  ystart, xend, yend, styledef='default', transform = '') :
 
         self.groupname = group
         self.name = name
+        self.sdef = styledef
         self.label = label
         self.xstart = xstart
         self.ystart = ystart
@@ -151,8 +152,6 @@ class Line(pBase):
         self.yend = yend
         self.attrs = {}
         self.attrs['transform'] = transform
-        # TODO probably put the style somwhere else
-        self.style     = { 'stroke' : 'orange', 'stroke-width' : '2' }
 
         pBase.__init__(self)
 
@@ -170,7 +169,7 @@ class Line(pBase):
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
 
-        pstyle = StyleBuilder(self.style)
+        pstyle = StyleBuilder(self.styledefs[self.sdef])
         p = line(self.xstart, self.ystart, self.xend, self.yend)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
@@ -185,11 +184,12 @@ class Path(pBase):
     Creates instance of Python class Path
     Holds a path object and applies grouping, styles, etc when drawn
     """
-    def __init__(self, group, name, label, pathSVG, transform = '') :
+    def __init__(self, group, name, label, pathSVG, styledef = 'default', transform = '') :
 
         self.groupname = group
         self.name = name
         self.label = label
+        self.sdef = styledef
         self.pathSVG = pathSVG
         self.attrs = {}
         self.attrs['transform'] = transform
@@ -207,13 +207,22 @@ class Path(pBase):
         if self.debug:
             print 'svg() called for Line ID ', self.id
 
-        # an empty dict to hold our svg elements
-        md = self.mkgroupdict()
+        try:
+            # an empty dict to hold our svg elements
+            md = self.mkgroupdict()
 
-        self.pathSVG.set_id(self.id)
-        for attrname, attrvalue in self.attrs.items():
-            self.pathSVG.setAttribute(attrname, attrvalue)
-        md[self.groupname].append(self.pathSVG)
+            pstyle = StyleBuilder(self.styledefs[self.sdef])
+
+            self.pathSVG.set_id(self.id)
+            self.pathSVG.set_style(pstyle.getStyle())
+            for attrname, attrvalue in self.attrs.items():
+                self.pathSVG.setAttribute(attrname, attrvalue)
+            md[self.groupname].append(self.pathSVG)
+        except:
+            print '************************'
+            print 'Exception in element', self.id
+            print '************************'
+            raise
 
         return md
 

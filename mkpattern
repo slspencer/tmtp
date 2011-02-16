@@ -247,7 +247,7 @@ class AppTemplate(StdApp):
         x = border
         y = border
 
-        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET))
+        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET), 'point_style')
         doc.add(begin)
 
         # This was here, and used later to calculate doc size
@@ -262,124 +262,224 @@ class AppTemplate(StdApp):
         jacket = Pattern('jacket')
         doc.add(jacket)
 
+        # Set up styles dictionary
+        # for now just hardcode these here
+        # TODO - load then from a file
+        jacket.styledefs['point_style'] = { 
+            'stroke' : 'red',
+            'fill' : 'red',
+            'stroke-width' : '1'
+            }
+        jacket.styledefs['reference_path_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'gray',
+            'stroke-width'       : '4',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4',
+                'stroke-dasharray'   : '6,18',
+            'stroke-dashoffset'  : '0'
+            }
+        jacket.styledefs['default'] = {
+            'fill'               : 'none',
+            'stroke'             : 'red',
+            'stroke-width'       : '4',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4',
+            }
+        jacket.styledefs['line_path_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'pink',
+            'stroke-width'       : '5',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4'
+            }
+        jacket.styledefs['dart_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'gray',
+            'stroke-width'       : '5',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4'
+            }
+        jacket.styledefs['foldline_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'gray',
+            'stroke-width'       : '2',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4'
+            }
+        jacket.styledefs['hemline_path_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'gray',
+            'stroke-width'       : '2',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4'
+            }
+        jacket.styledefs['seamline_path_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'green',
+            'stroke-width'       : '4',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4',
+            'stroke-dasharray'   : '24,6',
+            'stroke-dashoffset'  : '0'
+            }
+        jacket.styledefs['cuttingline_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'green',
+            'stroke-width'       : '6',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4'
+            }
+        jacket.styledefs['placement_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'gray',
+            'stroke-width'       : '4',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4',
+            'stroke-dasharray'   : '6,18',
+            'stroke-dashoffset'  : '0'
+            }
+        jacket.styledefs['grainline_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'green',
+            'stroke-width'       : '4',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4'
+            }
+        jacket.styledefs['buttonhole_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'gray',
+            'stroke-width'       : '4',
+            'stroke-linejoin'    : 'miter',
+            'stroke-miterlimit'  : '4'
+            }
+
+        # TEMP Save it
+        sf = open('tmtp_styles.json', 'w+')
+        sf.write(json.dumps(jacket.styledefs, sort_keys=True, indent=4))
+        sf.close()
+
         # Create the back pattern piece
         back = PatternPiece('pattern', 'back', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
         jacket.add(back)
 
         jb = jacket.back
 
-        start =  Point('reference', 'start', begin.x, begin.y)
+        start =  Point('reference', 'start', begin.x, begin.y, 'point_style')
         jb.add(start)
 
         jb.attrs['transform'] = 'translate(' + jb.start.coords + ' )'
-        jb.add(Point('reference', 'low', 0, 0))
-        jb.add(Point('reference', 'high', 0, 0))
+        jb.add(Point('reference', 'low', 0, 0, 'point_style'))
+        jb.add(Point('reference', 'high', 0, 0, 'point_style'))
 
         jb.width = max(cd.back.shoulder.width, cd.back.chest.width, cd.back.waist.width, cd.back.hip.width) \
             + (2*SEAM_ALLOWANCE) + (3*cm_to_pt)  # 3cm ease assumed
         jb.height = cd.back.neck.length + cd.back.jacket.length + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + (3*cm_to_pt) #3cm ease assumed
 
-        nape = Point('reference', 'nape', 0, 0)
+        nape = Point('reference', 'nape', 0, 0, 'point_style')
         jb.add(nape)
 
         # reference back center seam points for nape, shoulder, chest, waist, hip, hem
         jb.add(Node('seam'))
         jb.seam.add(Node('center'))
-        jb.seam.center.add(Point('reference', 'shoulder', jb.nape.x, jb.nape.y + cd.back.shoulder.length))
-        jb.seam.center.add(Point('reference', 'chest', jb.nape.x + (1*cm_to_pt), jb.nape.y + cd.back.chest.length))
-        jb.seam.center.add(Point('reference', 'waist', jb.nape.x + (2.5*cm_to_pt), jb.nape.y + cd.back.waist.length))
-        jb.seam.center.add(Point('reference', 'hip', jb.nape.x + (2*cm_to_pt), jb.seam.center.waist.y + cd.back.hip.length))
-        jb.seam.center.add(Point('reference', 'hem', jb.nape.x + (1.5*cm_to_pt), cd.back.jacket.length))
-        jb.seam.center.add(Point('reference', 'hem_allowance', jb.seam.center.hem.x +0, jb.seam.center.hem.y + HEM_ALLOWANCE))
+        jb.seam.center.add(Point('reference', 'shoulder', jb.nape.x, jb.nape.y + cd.back.shoulder.length, 'point_style'))
+        jb.seam.center.add(Point('reference', 'chest', jb.nape.x + (1*cm_to_pt), jb.nape.y + cd.back.chest.length, 'point_style'))
+        jb.seam.center.add(Point('reference', 'waist', jb.nape.x + (2.5*cm_to_pt), jb.nape.y + cd.back.waist.length, 'point_style'))
+        jb.seam.center.add(Point('reference', 'hip', jb.nape.x + (2*cm_to_pt), jb.seam.center.waist.y + cd.back.hip.length, 'point_style'))
+        jb.seam.center.add(Point('reference', 'hem', jb.nape.x + (1.5*cm_to_pt), cd.back.jacket.length, 'point_style'))
+        jb.seam.center.add(Point('reference', 'hem_allowance', jb.seam.center.hem.x +0, jb.seam.center.hem.y + HEM_ALLOWANCE, 'point_style'))
 
         # reference back side seam points for chest, waist, hip, hem
         jb.seam.add(Node('side'))
-        jb.seam.side.add(Point('reference', 'chest', jb.nape.x + cd.back.shoulder.width - (1*cm_to_pt),  jb.nape.y + cd.back.chest.length))
-        jb.seam.side.add(Point('reference', 'waist', jb.nape.x + cd.back.shoulder.width - (3*cm_to_pt),  jb.nape.y + cd.back.waist.length))
-        jb.seam.side.add(Point('reference', 'hip', jb.nape.x + cd.back.shoulder.width - (2*cm_to_pt),  jb.seam.side.waist.y + cd.back.hip.length))
-        jb.seam.side.add(Point('reference', 'hem', jb.nape.x + cd.back.shoulder.width - (1.5*cm_to_pt),   cd.back.jacket.length))
-        jb.seam.side.add(Point('reference', 'hem_allowance', jb.seam.side.hem.x, jb.seam.side.hem.y + HEM_ALLOWANCE))
+        jb.seam.side.add(Point('reference', 'chest', jb.nape.x + cd.back.shoulder.width - (1*cm_to_pt),  jb.nape.y + cd.back.chest.length, 'point_style'))
+        jb.seam.side.add(Point('reference', 'waist', jb.nape.x + cd.back.shoulder.width - (3*cm_to_pt),  jb.nape.y + cd.back.waist.length, 'point_style'))
+        jb.seam.side.add(Point('reference', 'hip', jb.nape.x + cd.back.shoulder.width - (2*cm_to_pt),  jb.seam.side.waist.y + cd.back.hip.length, 'point_style'))
+        jb.seam.side.add(Point('reference', 'hem', jb.nape.x + cd.back.shoulder.width - (1.5*cm_to_pt),   cd.back.jacket.length, 'point_style'))
+        jb.seam.side.add(Point('reference', 'hem_allowance', jb.seam.side.hem.x, jb.seam.side.hem.y + HEM_ALLOWANCE, 'point_style'))
 
         # armscye points
-        jb.add(Point('reference', 'balance', jb.nape.x + cd.back.shoulder.width,  jb.nape.y + cd.back.balance.length))
-        jb.add(Point('reference', 'underarm', jb.nape.x + cd.back.shoulder.width, jb.nape.y + cd.back.balance.length + abs(cd.back.balance.length - cd.back.chest.length)*(.48)))
+        jb.add(Point('reference', 'balance', jb.nape.x + cd.back.shoulder.width,  jb.nape.y + cd.back.balance.length, 'point_style'))
+        jb.add(Point('reference', 'underarm', jb.nape.x + cd.back.shoulder.width,
+                     jb.nape.y + cd.back.balance.length + abs(cd.back.balance.length - cd.back.chest.length)*(.48), 'point_style'))
 
         # diagonal shoulder line
         jb.seam.add(Node('shoulder'))
-        jb.seam.shoulder.add(Point('reference', 'high', jb.nape.x + cd.back.neck.width, jb.nape.y - cd.back.neck.length))
-        jb.seam.shoulder.add(Point('reference', 'low', jb.seam.center.shoulder.x + cd.back.shoulder.width + (1*cm_to_pt), jb.seam.center.shoulder.y))
+        jb.seam.shoulder.add(Point('reference', 'high', jb.nape.x + cd.back.neck.width, jb.nape.y - cd.back.neck.length, 'point_style'))
+        jb.seam.shoulder.add(Point('reference', 'low', jb.seam.center.shoulder.x + cd.back.shoulder.width + (1*cm_to_pt), jb.seam.center.shoulder.y, 'point_style'))
 
         # Back Vertical Reference Grid
         bgrid = Node('grid')
         jb.add(bgrid)
-        bgrid.add(Line('reference', 'center', 'Jacket Back - Center', nape.x, nape.y, nape.x, nape.y +jb.height)) # vertical line
-        bgrid.add(Line('reference', 'shoulderwidth', 'Jacket Back - Shoulder Width', nape.x + cd.back.shoulder.width, nape.y, nape.x + cd.back.shoulder.width, nape.y + jb.height))
-        bgrid.add(Line('reference', 'side', 'Jacket Back - Side', nape.x + jb.width, nape.y, nape.x + jb.width, nape.y + jb.height))
+        bgrid.add(Line('reference', 'center', 'Jacket Back - Center', nape.x, nape.y, nape.x, nape.y +jb.height, 'reference_path_style')) # vertical line
+        bgrid.add(Line('reference', 'shoulderwidth', 'Jacket Back - Shoulder Width', nape.x + cd.back.shoulder.width,
+                       nape.y, nape.x + cd.back.shoulder.width, nape.y + jb.height, 'reference_path_style'))
+        bgrid.add(Line('reference', 'side', 'Jacket Back - Side', nape.x + jb.width, nape.y, nape.x + jb.width, nape.y + jb.height, 'reference_path_style'))
         jbss = jb.seam.shoulder
-        bgrid.add(Line('reference', 'neck', 'Jacket Back - Neck', jbss.high.x, jbss.high.y, jbss.high.x, jbss.high.y + cd.back.neck.length))
+        bgrid.add(Line('reference', 'neck', 'Jacket Back - Neck', jbss.high.x, jbss.high.y, jbss.high.x, jbss.high.y + cd.back.neck.length, 'reference_path_style'))
 
         # Back Horizontal Reference Grid
-        bgrid.add(Line('reference', 'top', 'Jacket Back - Top', nape.x, nape.y, nape.x + jb.width, nape.y))
-        bgrid.add(Line('reference', 'shoulder', 'Jacket Back - Shoulder', nape.x, jb.seam.center.shoulder.y, nape.x + jb.width, jb.seam.center.shoulder.y))
-        bgrid.add(Line('reference', 'chest', 'Jacket Back - Chest', nape.x, jb.seam.center.chest.y, nape.x + jb.width, jb.seam.center.chest.y))
-        bgrid.add(Line('reference', 'waist', 'Jacket Back - Waist', nape.x, jb.seam.center.waist.y, nape.x + jb.width, jb.seam.center.waist.y))
-        bgrid.add(Line('reference', 'hip', 'Jacket Back - Hip', nape.x, jb.seam.center.hip.y, nape.x + jb.width, jb.seam.center.hip.y))
-        bgrid.add(Line('reference', 'hem', 'Jacket Back - Hem', nape.x, jb.seam.center.hem.y, nape.x + jb.width, jb.seam.center.hem.y))
-        bgrid.add(Line('reference', 'hem_allowance', 'Jacket Back - Hem Allowance', nape.x, jb.seam.center.hem_allowance.y, nape.x + jb.width, jb.seam.center.hem_allowance.y))
-        bgrid.add(Line('reference', 'end', 'Jacket Back - End', nape.x, jb.nape.y + jb.height, nape.x + jb.width,  jb.nape.y + jb.height))
+        bgrid.add(Line('reference', 'top', 'Jacket Back - Top', nape.x, nape.y, nape.x + jb.width, nape.y, 'reference_path_style'))
+        bgrid.add(Line('reference', 'shoulder', 'Jacket Back - Shoulder', nape.x, jb.seam.center.shoulder.y, nape.x + jb.width, jb.seam.center.shoulder.y, 'reference_path_style'))
+        bgrid.add(Line('reference', 'chest', 'Jacket Back - Chest', nape.x, jb.seam.center.chest.y, nape.x + jb.width, jb.seam.center.chest.y, 'reference_path_style'))
+        bgrid.add(Line('reference', 'waist', 'Jacket Back - Waist', nape.x, jb.seam.center.waist.y, nape.x + jb.width, jb.seam.center.waist.y, 'reference_path_style'))
+        bgrid.add(Line('reference', 'hip', 'Jacket Back - Hip', nape.x, jb.seam.center.hip.y, nape.x + jb.width, jb.seam.center.hip.y, 'reference_path_style'))
+        bgrid.add(Line('reference', 'hem', 'Jacket Back - Hem', nape.x, jb.seam.center.hem.y, nape.x + jb.width, jb.seam.center.hem.y, 'reference_path_style'))
+        bgrid.add(Line('reference', 'hem_allowance', 'Jacket Back - Hem Allowance', nape.x, jb.seam.center.hem_allowance.y,
+                       nape.x + jb.width, jb.seam.center.hem_allowance.y, 'reference_path_style'))
+        bgrid.add(Line('reference', 'end', 'Jacket Back - End', nape.x, jb.nape.y + jb.height, nape.x + jb.width,  jb.nape.y + jb.height, 'reference_path_style'))
 
         # Back Center Seam line clockwise from bottom left:
 
         # Control Points
         distance = abs(jb.seam.center.hip.y - jb.seam.center.waist.y )*(.3)
         x, y = pointAlongLine(jb.seam.center.hip.x, jb.seam.center.hip.y, jb.seam.center.hem.x, jb.seam.center.hem.y, distance)
-        jb.add(Point('reference', 'c1', x, y))
-        jb.add(Point('reference', 'c2', jb.seam.center.waist.x, jb.seam.center.waist.y + abs(jb.seam.center.waist.y - jb.seam.center.hip.y) * (.3)))
-        jb.add(Point('reference', 'c3', jb.seam.center.waist.x, jb.seam.center.waist.y - abs(jb.seam.center.waist.y - jb.seam.center.chest.y) * (.3)))
+        jb.add(Point('reference', 'c1', x, y, 'point_style'))
+        jb.add(Point('reference', 'c2', jb.seam.center.waist.x, jb.seam.center.waist.y + abs(jb.seam.center.waist.y - jb.seam.center.hip.y) * (.3), 'point_style'))
+        jb.add(Point('reference', 'c3', jb.seam.center.waist.x, jb.seam.center.waist.y - abs(jb.seam.center.waist.y - jb.seam.center.chest.y) * (.3), 'point_style'))
 
         distance = abs( jb.seam.center.chest.y - jb.seam.center.waist.y )*(.3)
         x, y = pointAlongLine(jb.seam.center.chest.x, jb.seam.center.chest.y, jb.seam.center.shoulder.x, jb.seam.center.shoulder.y, distance)
-        jb.add(Point('reference', 'c4', x, y))
+        jb.add(Point('reference', 'c4', x, y, 'point_style'))
         jb.add(Point('reference', 'c5', jb.seam.center.chest.x - abs(jb.seam.center.chest.x - jb.seam.center.shoulder.x)*(.3),
-                     jb.seam.center.chest.y - abs( jb.seam.center.chest.y - jb.seam.center.shoulder.y )*(.3)))
-        jb.add(Point('reference', 'c6', jb.seam.center.shoulder.x, jb.seam.center.shoulder.y + abs( jb.seam.center.shoulder.y - jb.seam.center.chest.y )*(.3)))
+                     jb.seam.center.chest.y - abs( jb.seam.center.chest.y - jb.seam.center.shoulder.y )*(.3), 'point_style'))
+        jb.add(Point('reference', 'c6', jb.seam.center.shoulder.x, jb.seam.center.shoulder.y + abs( jb.seam.center.shoulder.y - jb.seam.center.chest.y )*(.3), 'point_style'))
 
         # Back Neck seam line clockwise from jb.nape to high point of shoulder:
         distance = (abs( jb.seam.shoulder.high.y - jb.nape.y )*(.75))
         x, y = pointAlongLine(jb.seam.shoulder.high.x, jb.seam.shoulder.high.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, distance, 90)
-        jb.add(Point('reference', 'c7', x, y)) # perpendicular to shoulder line at jb.seam.shoulder.high.
+        jb.add(Point('reference', 'c7', x, y, 'point_style')) # perpendicular to shoulder line at jb.seam.shoulder.high.
 
         distance = (-(abs( jb.seam.shoulder.high.x - jb.nape.x ) ) * (.50))
         x, y = pointAlongLine(jb.nape.x, jb.nape.y, jb.seam.shoulder.high.x, jb.nape.y, distance)
-        jb.add(Point('reference', 'c8', x, y))
+        jb.add(Point('reference', 'c8', x, y, 'point_style'))
 
         # Back Shoulder & Armhole seam lines clockwise from high point to low point of shoulder to top of side seam
         jb.add(Point('reference', 'c9',
                      jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.33)),
-                     jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.4))))
+                     jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.4)), 'point_style'))
 
         jb.add(Point('reference', 'c10',
                      jb.seam.shoulder.high.x + (abs( jb.seam.shoulder.low.x - jb.seam.shoulder.high.x )*(.6) ),
-                     jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.66))))
+                     jb.seam.shoulder.high.y + (abs( jb.seam.shoulder.low.y - jb.seam.shoulder.high.y )*(.66)), 'point_style'))
 
 
         # Back Side seam line clockwise from jb.underarm. to hem
         distance = abs(jb.seam.center.chest.y - jb.seam.side.waist.y) * (.3)
         x, y = pointAlongLine(jb.seam.side.chest.x, jb.seam.side.chest.y, jb.underarm.x, jb.underarm.y, distance)
-        jb.add(Point('reference', 'c11', x, y))
+        jb.add(Point('reference', 'c11', x, y, 'point_style'))
 
-        jb.add(Point('reference', 'c12', jb.seam.side.waist.x, jb.seam.side.waist.y - (abs( jb.seam.side.waist.y - jb.seam.side.chest.y )*(.3))))
-        jb.add(Point('reference', 'c13', jb.seam.side.waist.x, jb.seam.side.waist.y + (abs( jb.seam.side.waist.y - jb.seam.side.hip.y )*(.3))))
+        jb.add(Point('reference', 'c12', jb.seam.side.waist.x, jb.seam.side.waist.y - (abs( jb.seam.side.waist.y - jb.seam.side.chest.y )*(.3)), 'point_style'))
+        jb.add(Point('reference', 'c13', jb.seam.side.waist.x, jb.seam.side.waist.y + (abs( jb.seam.side.waist.y - jb.seam.side.hip.y )*(.3)), 'point_style'))
 
         distance = (abs(jb.seam.side.waist.y - jb.seam.side.hip.y)*(.3))
         x, y = pointAlongLine(jb.seam.side.hip.x, jb.seam.side.hip.y, jb.seam.side.hem.x, jb.seam.side.hem.y, distance)
-        jb.add(Point('reference', 'c14', x, y))
+        jb.add(Point('reference', 'c14', x, y, 'point_style'))
 
         # Grainline
         # TODO Put this in a Grainline class that includes arrows, styling, etc
-        jb.add(Point('reference', 'g1', (jb.seam.shoulder.low.x)/2, jb.underarm.y))
-        jb.add(Point('reference', 'g2', jb.g1.x, jb.g1.y + (60*cm_to_pt)))
-        jb.add(Line('reference', 'grainline', 'Grainline', jb.g1.x, jb.g1.y, jb.g2.x, jb.g2.y))
+        jb.add(Point('reference', 'g1', (jb.seam.shoulder.low.x)/2, jb.underarm.y, 'point_style'))
+        jb.add(Point('reference', 'g2', jb.g1.x, jb.g1.y + (60*cm_to_pt), 'point_style'))
+        jb.add(Line('reference', 'grainline', 'Grainline', jb.g1.x, jb.g1.y, jb.g2.x, jb.g2.y, 'grainline_style'))
         # End Grainline
 
 
@@ -387,7 +487,7 @@ class AppTemplate(StdApp):
         # Paths are a bit differemt - we create the SVG and then create the object to hold it
         # See the pysvg library docs for the pysvg methods
         path_svg = path()
-        jb.add(Path('pattern', 'path', 'Jacket Back Path', path_svg))
+        jb.add(Path('pattern', 'path', 'Jacket Back Path', path_svg, 'seamline_path_style'))
 
         # Back Neck Seam path - starts with 'jacket.back.nape' from Back_Center_Seam
         # Was jb.seam.neck.path = 'M ' + jb.nape.coords + ' C '+ c8.coords +' '+ c7.coords +' '+ jb.seam.shoulder.high.coords
@@ -427,7 +527,7 @@ class AppTemplate(StdApp):
         # Back Hemline path
         # Was jb.seam.hem.path = 'M ' +  jb.seam.center.hem.coords + ' L ' + jb.seam.side.hem.coords
         path_hemline = path()
-        jb.add(Path('pattern', 'hemline', 'Jacket Back Hemline', path_hemline))
+        jb.add(Path('pattern', 'hemline', 'Jacket Back Hemline', path_hemline, 'hemline_path_style'))
         path_hemline.appendMoveToPath(jb.seam.center.hem.x, jb.seam.center.hem.y, relative = False)
         path_hemline.appendLineToPath(jb.seam.side.hem.x, jb.seam.side.hem.y, relative = False)
         

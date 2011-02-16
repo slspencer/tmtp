@@ -35,6 +35,7 @@ class pBase(object):
     # can be turned on and off
     groups = {}
     debug = False
+    styledefs = {}
 
     def __init__(self):
         self.children = []

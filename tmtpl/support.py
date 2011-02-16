@@ -21,24 +21,13 @@ from pysvg.text import *
 from pysvg.builders import *
 
 
-def generateText(x, y, font_size, label, string, trans = ''):
+def generateText(x, y, font_size, label, string, style, trans = ''):
     # TODO - take the styling and attributes and make them loadable,
     # perhaps in a document style class or something. Hard-coded
     # for now
 
-    tstyle_dict = {
-        'font-size':str(font_size)+'px',
-        'vertical-align':'top',
-        'fill-opacity':'1.0',
-        'font-style':'normal',
-        'fill':'#000000',
-        'font-weight':'normal',
-        'stroke':'none',
-        'text-anchor':'right',
-        'text-align':'right'
-        }
-
-    tstyle = StyleBuilder(tstyle_dict)
+    style['font-size'] = str(font_size)+'px'
+    tstyle = StyleBuilder(style)
 
     t = text(string, x, y)
     t.set_style(tstyle.getStyle())

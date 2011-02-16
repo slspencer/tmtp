@@ -57,14 +57,31 @@ class Document(pBase):
         # create the base document
         sz = svg(self.x, self.y)
 
-        # add the scripting we need to handle events
-        # TODO for now don't
-        #sc = script()
-        #sc.set_xlink_href("mouse_over.js")
-        #sc.set_xlink_type("text/ecmascript")
-        #sz.addElement(sc)
-        #sz.set_onload("init(evt)")
 
+        # add the scripting we need to handle events
+        sc = script()
+        sc.set_xlink_href('tmtp_mouse.js')
+        sc.set_xlink_type('text/ecmascript')
+        sz.addElement(sc)
+        sz.set_onload('init(evt)')
+
+        #
+        # Add the tooltip text element
+        #
+        tsd = {
+            'vertical-align':'top',
+            'fill-opacity':'1.0',
+            'font-style':'normal',
+            'fill':'blue',
+            'font-weight':'normal',
+            'stroke':'black',
+            'text-anchor':'right',
+            'text-align':'right'
+            }
+        ttel = generateText(0, 0, 50, 'tooltip', 'ToolTip', tsd)
+        ttel.setAttribute('visibility', 'hidden')
+        sz.addElement(ttel)
+        
         # Add attributes - TODO probably put these in a dictionary as
         # part of the document class
         #
@@ -140,13 +157,23 @@ class TitleBlock(pBase):
         text_space =  ( self.fontsize * 1.1 )
         x = self.x
         y = self.y
-        tbg.addElement(generateText(x, y, self.fontsize, 'company', self.company_name))
+        tstyle = {
+            'vertical-align':'top',
+            'fill-opacity':'1.0',
+            'font-style':'normal',
+            'fill':'#000000',
+            'font-weight':'normal',
+            'stroke':'none',
+            'text-anchor':'right',
+            'text-align':'right'
+            }
+        tbg.addElement(generateText(x, y, self.fontsize, 'company', self.company_name, tstyle))
         y = y + text_space
-        tbg.addElement(generateText(x, y, self.fontsize, 'pattern_number', self.pattern_number))
+        tbg.addElement(generateText(x, y, self.fontsize, 'pattern_number', self.pattern_number, tstyle))
         y = y + text_space
-        tbg.addElement(generateText(x, y, self.fontsize, 'pattern_name', self.pattern_name))
+        tbg.addElement(generateText(x, y, self.fontsize, 'pattern_name', self.pattern_name, tstyle))
         y = y + text_space
-        tbg.addElement(generateText(x, y, self.fontsize, 'client', self.client_name))
+        tbg.addElement(generateText(x, y, self.fontsize, 'client', self.client_name, tstyle))
         y = y + text_space
 
         md[self.groupname].append(tbg)
