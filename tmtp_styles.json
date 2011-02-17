@@ -69,6 +69,17 @@
         "stroke": "red", 
         "stroke-width": "1"
     }, 
+    "point_text_style": {
+        "fill": "#000000", 
+        "fill-opacity": "1.0", 
+        "font-size": "15", 
+        "font-style": "normal", 
+        "font-weight": "normal", 
+        "stroke": "none", 
+        "text-align": "right", 
+        "text-anchor": "right", 
+        "vertical-align": "top"
+    }, 
     "reference_path_style": {
         "fill": "none", 
         "stroke": "gray", 
@@ -86,5 +97,27 @@
         "stroke-linejoin": "miter", 
         "stroke-miterlimit": "4", 
         "stroke-width": "4"
+    }, 
+    "titleblock_text_style": {
+        "fill": "#000000", 
+        "fill-opacity": "1.0", 
+        "font-size": "40", 
+        "font-style": "normal", 
+        "font-weight": "normal", 
+        "stroke": "none", 
+        "text-align": "right", 
+        "text-anchor": "right", 
+        "vertical-align": "top"
+    }, 
+    "tooltip_text_style": {
+        "fill": "blue", 
+        "fill-opacity": "1.0", 
+        "font-size": "50", 
+        "font-style": "normal", 
+        "font-weight": "normal", 
+        "stroke": "black", 
+        "text-align": "right", 
+        "text-anchor": "right", 
+        "vertical-align": "top"
     }
 }

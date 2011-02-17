@@ -231,7 +231,10 @@ class AppTemplate(StdApp):
             doc.border       = border
 
         # Set up the title block
-        tb = TitleBlock('pattern', 'titleblock', doc.border, doc.border, company_name = companyName, pattern_name = patternName, pattern_number = patternNumber, client_name = clientName)
+        tb = TitleBlock('pattern', 'titleblock', doc.border, doc.border,
+                        company_name = companyName, pattern_name = patternName,
+                        pattern_number = patternNumber, client_name = clientName,
+                        stylename = 'titleblock_text_style')
         doc.add(tb)
 
         #
@@ -353,6 +356,39 @@ class AppTemplate(StdApp):
             'stroke-linejoin'    : 'miter',
             'stroke-miterlimit'  : '4'
             }
+        jacket.styledefs['tooltip_text_style'] = {
+            'vertical-align':'top',
+            'fill-opacity':'1.0',
+            'font-size':'50',
+            'font-style':'normal',
+            'fill':'blue',
+            'font-weight':'normal',
+            'stroke':'black',
+            'text-anchor':'right',
+            'text-align':'right'
+            }
+        jacket.styledefs['titleblock_text_style'] = {
+            'vertical-align':'top',
+            'fill-opacity':'1.0',
+            'font-size':'40',
+            'font-style':'normal',
+            'fill':'#000000',
+            'font-weight':'normal',
+            'stroke':'none',
+            'text-anchor':'right',
+            'text-align':'right'
+            }
+        jacket.styledefs['point_text_style'] = {
+            'vertical-align':'top',
+            'fill-opacity':'1.0',
+            'font-size':'15',
+            'font-style':'normal',
+            'fill':'#000000',
+            'font-weight':'normal',
+            'stroke':'none',
+            'text-anchor':'right',
+            'text-align':'right'
+            }
 
         # TEMP Save it
         sf = open('tmtp_styles.json', 'w+')
@@ -432,14 +468,15 @@ class AppTemplate(StdApp):
 
         # Control Points
         distance = abs(jb.seam.center.hip.y - jb.seam.center.waist.y )*(.3)
-        x, y = pointAlongLine(jb.seam.center.hip.x, jb.seam.center.hip.y, jb.seam.center.hem.x, jb.seam.center.hem.y, distance)
+        x, y = pointAlongLine(jb.seam.center.hip.x, jb.seam.center.hip.y, jb.seam.center.hem.x, jb.seam.center.hem.y, - distance)
         jb.add(Point('reference', 'c1', x, y, 'point_style'))
         jb.add(Point('reference', 'c2', jb.seam.center.waist.x, jb.seam.center.waist.y + abs(jb.seam.center.waist.y - jb.seam.center.hip.y) * (.3), 'point_style'))
         jb.add(Point('reference', 'c3', jb.seam.center.waist.x, jb.seam.center.waist.y - abs(jb.seam.center.waist.y - jb.seam.center.chest.y) * (.3), 'point_style'))
 
         distance = abs( jb.seam.center.chest.y - jb.seam.center.waist.y )*(.3)
-        x, y = pointAlongLine(jb.seam.center.chest.x, jb.seam.center.chest.y, jb.seam.center.shoulder.x, jb.seam.center.shoulder.y, distance)
+        x, y = pointAlongLine(jb.seam.center.chest.x, jb.seam.center.chest.y, jb.seam.center.shoulder.x, jb.seam.center.shoulder.y, - distance)
         jb.add(Point('reference', 'c4', x, y, 'point_style'))
+
         jb.add(Point('reference', 'c5', jb.seam.center.chest.x - abs(jb.seam.center.chest.x - jb.seam.center.shoulder.x)*(.3),
                      jb.seam.center.chest.y - abs( jb.seam.center.chest.y - jb.seam.center.shoulder.y )*(.3), 'point_style'))
         jb.add(Point('reference', 'c6', jb.seam.center.shoulder.x, jb.seam.center.shoulder.y + abs( jb.seam.center.shoulder.y - jb.seam.center.chest.y )*(.3), 'point_style'))
@@ -447,9 +484,10 @@ class AppTemplate(StdApp):
         # Back Neck seam line clockwise from jb.nape to high point of shoulder:
         distance = (abs( jb.seam.shoulder.high.y - jb.nape.y )*(.75))
         x, y = pointAlongLine(jb.seam.shoulder.high.x, jb.seam.shoulder.high.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, distance, 90)
+        #jb.add(Line('reference', 'debug2', 'Debug2', jb.nape.x, jb.nape.y, jb.seam.shoulder.high.x, jb.nape.y)) # DEBUG
         jb.add(Point('reference', 'c7', x, y, 'point_style')) # perpendicular to shoulder line at jb.seam.shoulder.high.
 
-        distance = (-(abs( jb.seam.shoulder.high.x - jb.nape.x ) ) * (.50))
+        distance = (abs( jb.seam.shoulder.high.x - jb.nape.x ) ) * (.50)
         x, y = pointAlongLine(jb.nape.x, jb.nape.y, jb.seam.shoulder.high.x, jb.nape.y, distance)
         jb.add(Point('reference', 'c8', x, y, 'point_style'))
 
@@ -465,14 +503,14 @@ class AppTemplate(StdApp):
 
         # Back Side seam line clockwise from jb.underarm. to hem
         distance = abs(jb.seam.center.chest.y - jb.seam.side.waist.y) * (.3)
-        x, y = pointAlongLine(jb.seam.side.chest.x, jb.seam.side.chest.y, jb.underarm.x, jb.underarm.y, distance)
+        x, y = pointAlongLine(jb.seam.side.chest.x, jb.seam.side.chest.y, jb.underarm.x, jb.underarm.y, - distance)
         jb.add(Point('reference', 'c11', x, y, 'point_style'))
 
         jb.add(Point('reference', 'c12', jb.seam.side.waist.x, jb.seam.side.waist.y - (abs( jb.seam.side.waist.y - jb.seam.side.chest.y )*(.3)), 'point_style'))
         jb.add(Point('reference', 'c13', jb.seam.side.waist.x, jb.seam.side.waist.y + (abs( jb.seam.side.waist.y - jb.seam.side.hip.y )*(.3)), 'point_style'))
 
         distance = (abs(jb.seam.side.waist.y - jb.seam.side.hip.y)*(.3))
-        x, y = pointAlongLine(jb.seam.side.hip.x, jb.seam.side.hip.y, jb.seam.side.hem.x, jb.seam.side.hem.y, distance)
+        x, y = pointAlongLine(jb.seam.side.hip.x, jb.seam.side.hip.y, jb.seam.side.hem.x, jb.seam.side.hem.y, - distance)
         jb.add(Point('reference', 'c14', x, y, 'point_style'))
 
         # Grainline
@@ -499,7 +537,8 @@ class AppTemplate(StdApp):
         path_svg.appendCubicCurveToPath(jb.c9.x, jb.c9.y, jb.c10.x, jb.c10.y, jb.seam.shoulder.low.x, jb.seam.shoulder.low.y, relative = False)
 
         # Was jb.seam.armhole.path  = ' Q ' + jb.balance.coords + ' ' + jb.underarm.coords
-        path_svg.appendQuadraticCurveToPath(jb.balance.y, jb.balance.y, jb.underarm.x, jb.underarm.y, relative = False)
+        #jb.add(Line('reference', 'debug1', 'Debug1', jb.balance.x, jb.balance.y, jb.underarm.x, jb.underarm.y)) # DEBUG
+        path_svg.appendQuadraticCurveToPath(jb.balance.x, jb.balance.y, jb.underarm.x, jb.underarm.y, relative = False)
 
         # Back Side Seam path -- starts with 'jacket.back.underarm.' from Back_Shoulder_Armhole_Seam
         # Was jb.seam.side.path  = ' L '+ jb.seam.side.chest.coords +' C '+ c11.coords + ' '+ c12.coords +' '+ jb.seam.side.waist.coords +

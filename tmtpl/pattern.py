@@ -105,6 +105,7 @@ class Point(pBase):
 
         self.groupname = group
         self.name = name
+        self.textid = True # for debugging
         self.sdef = styledef
         self.x         = x
         self.y         = y
@@ -141,6 +142,13 @@ class Point(pBase):
         for attrname, attrvalue in self.attrs.items():
             p.setAttribute(attrname, attrvalue)
         md[self.groupname].append(p)
+
+        if self.textid:
+            txtlabel = self.id + '.text'
+            txttxt = self.name
+            txt = self.generateText(self.x+3, self.y, txtlabel, txttxt, 'point_text_style')
+        md[self.groupname].append(txt)
+
 
         return md
 

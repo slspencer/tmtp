@@ -68,17 +68,7 @@ class Document(pBase):
         #
         # Add the tooltip text element
         #
-        tsd = {
-            'vertical-align':'top',
-            'fill-opacity':'1.0',
-            'font-style':'normal',
-            'fill':'blue',
-            'font-weight':'normal',
-            'stroke':'black',
-            'text-anchor':'right',
-            'text-align':'right'
-            }
-        ttel = generateText(0, 0, 50, 'tooltip', 'ToolTip', tsd)
+        ttel = self.generateText(0, 0, 'tooltip', 'ToolTip', 'tooltip_text_style')
         ttel.setAttribute('visibility', 'hidden')
         sz.addElement(ttel)
         
@@ -127,16 +117,18 @@ class Document(pBase):
         return
         
 class TitleBlock(pBase):
-    def __init__(self, group, name, x, y, company_name = 'Company Name', pattern_name = 'Pattern Name', pattern_number = 'Pattern Number', client_name = 'Client Name'):
+    def __init__(self, group, name, x, y, company_name = 'Company Name',
+                 pattern_name = 'Pattern Name', pattern_number = 'Pattern Number',
+                 client_name = 'Client Name', stylename = ''):
         self.name = name
         self.company_name = company_name
         self.pattern_name = pattern_name
         self.pattern_number = pattern_number
         self.client_name = client_name
         self.groupname = group
+        self.stylename = stylename
         self.x = x
         self.y = y
-        self.fontsize = 60
         pBase.__init__(self)
         return
 
@@ -154,26 +146,17 @@ class TitleBlock(pBase):
         # TODO make the text parts configurable
         tbg = g()
         tbg.set_id(self.id)
-        text_space =  ( self.fontsize * 1.1 )
+        # this is a bit cheesy
+        text_space =  ( int(self.styledefs[self.stylename]['font-size']) * 1.1 )
         x = self.x
         y = self.y
-        tstyle = {
-            'vertical-align':'top',
-            'fill-opacity':'1.0',
-            'font-style':'normal',
-            'fill':'#000000',
-            'font-weight':'normal',
-            'stroke':'none',
-            'text-anchor':'right',
-            'text-align':'right'
-            }
-        tbg.addElement(generateText(x, y, self.fontsize, 'company', self.company_name, tstyle))
+        tbg.addElement(self.generateText(x, y, 'company', self.company_name, self.stylename))
         y = y + text_space
-        tbg.addElement(generateText(x, y, self.fontsize, 'pattern_number', self.pattern_number, tstyle))
+        tbg.addElement(self.generateText(x, y, 'pattern_number', self.pattern_number, self.stylename))
         y = y + text_space
-        tbg.addElement(generateText(x, y, self.fontsize, 'pattern_name', self.pattern_name, tstyle))
+        tbg.addElement(self.generateText(x, y, 'pattern_name', self.pattern_name, self.stylename))
         y = y + text_space
-        tbg.addElement(generateText(x, y, self.fontsize, 'client', self.client_name, tstyle))
+        tbg.addElement(self.generateText(x, y, 'client', self.client_name, self.stylename))
         y = y + text_space
 
         md[self.groupname].append(tbg)

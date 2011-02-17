@@ -21,21 +21,6 @@ from pysvg.text import *
 from pysvg.builders import *
 
 
-def generateText(x, y, font_size, label, string, style, trans = ''):
-    # TODO - take the styling and attributes and make them loadable,
-    # perhaps in a document style class or something. Hard-coded
-    # for now
-
-    style['font-size'] = str(font_size)+'px'
-    tstyle = StyleBuilder(style)
-
-    t = text(string, x, y)
-    t.set_style(tstyle.getStyle())
-    t.set_id(label)
-    t.setAttribute('transform', trans)
-
-    return t
-
 def angleOfLine(x1, y1, x2, y2):
     """
     Accepts two sets of coordinates and returns the angle between them
@@ -48,9 +33,10 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     returns a point along the line (can be extended from the line)
     the point is optionally rotated about the first point by the rotation angle in degrees
     """
-    angle = angleOfLine(x1, y1, x2, y2) + (rotation * 180/math.pi)
-    x = (distance * math.sin(angle)) + x1
-    y = (distance * math.cos(angle)) + y1
+    lineangle = angleOfLine(x1, y1, x2, y2)
+    angle = lineangle + (rotation * (math.pi/180))
+    x = (distance * math.cos(angle)) + x1
+    y = (distance * math.sin(angle)) + y1
     return x, y
 
 ################ End of things which have been adapted and are used in the new framework ################

@@ -20,7 +20,7 @@
 #from pysvg.structure import *
 #from pysvg.style import *
 #from pysvg.text import *
-#from pysvg.builders import *
+from pysvg.builders import *
 
 #from constants import *
 
@@ -41,6 +41,10 @@ class pBase(object):
         self.children = []
 
     def add(self, obj):
+        """
+        Add a class instance to parent, while setting the id
+        of the child to include the 'dotted path' fo all ancestors
+        """
         obj.id = self.id + '.' + obj.name
         setattr(self, obj.name, obj)
         self.children.append(obj)
@@ -60,6 +64,22 @@ class pBase(object):
         for k, v in self.groups.items():
             td[k] = []
         return td
+
+    def generateText(self, x, y, label, string, styledef, trans = ''):
+        """
+        Generate a text element with the defined style
+        """
+        # in this class because it needs the styledefs
+        tstyle = StyleBuilder(self.styledefs[styledef])
+
+        t = text(string, x, y)
+        t.set_style(tstyle.getStyle())
+        t.set_id(label)
+        t.setAttribute('transform', trans)
+
+        return t
+
+
 
     def svg(self):
         """
