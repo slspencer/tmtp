@@ -65,19 +65,27 @@ class PatternPiece(pBase):
 
         childlist = pBase.svg(self) # returns all children
 
-        my_group = g()
-        my_group.set_id(self.id)
-        for attrname, attrvalue in self.attrs.items():
-            my_group.setAttribute(attrname, attrvalue)
-        for cgitem in childlist[self.groupname]:
-            my_group.addElement(cgitem)
+        #
+        # put each group in it's own group element, and apply our transform
+        # to it to make sure everything stays aligned
+        #
 
-        # now we replace the list of items in our group that we got
-        # from the children with our one svg item, which is a group
-        # that contains them all
-        my_group_list = []
-        my_group_list.append(my_group)
-        childlist[self.groupname] = my_group_list
+        for child_group, members in childlist.items():
+            my_group = g()
+            grpid = self.id + '.' + child_group
+            my_group.set_id(grpid)
+            for attrname, attrvalue in self.attrs.items():
+                my_group.setAttribute(attrname, attrvalue)
+
+            for cgitem in childlist[child_group]:
+                my_group.addElement(cgitem)
+
+            # now we replace the list of items in that group that we got
+            # from the children with our one svg item, which is a group
+            # that contains them all
+            my_group_list = []
+            my_group_list.append(my_group)
+            childlist[child_group] = my_group_list
 
         return childlist
 
