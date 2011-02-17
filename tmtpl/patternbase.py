@@ -104,8 +104,8 @@ class pBase(object):
                 print 'Processing child ', child.name
             if child.svg:
                 cd = child.svg()
-                for gnm, glist in cd.items():
+                for grpnm, glist in cd.items():
                     for svgitem in glist:
-                        md[gnm].append(svgitem)
+                        md[grpnm].append(svgitem)
         return md
 
