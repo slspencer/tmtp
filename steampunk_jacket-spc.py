@@ -44,32 +44,6 @@ class DrawJacket( inkex.Effect ):
            # Jacket Back
 
 
-           #Draw Jacket Back pattern piece on pattern layer
-           self.DrawPath( jb.layer, jb.seam.hem.path, 'hemline',  'jacket.back.seam.hem.path',  jb.transform )
-           self.DrawPath( jb.layer, jb.path, 'seamline',  'jacket.back.path_Seamline',  jb.transform )
-           self.DrawPath( jb.layer, jb.path, 'cuttingline', 'jacket.back.path_Cuttingline',  jb.transform )
-           self.Grainline( jb.layer, g1.x, g1.y, g2.x, g2.y, 'jacket.back.grainline.path',  jb.transform )
-           #self.DrawGrainline( jb.layer, jb.grainline.path, 'jacket.back.grainline.path', jb.transform ) # use this after creating markers for Arrows at each end of grainline
-
-           # Write description on pattern piece
-           x, y = jb.nape.x + (5 * cm_to_pt) , jb.nape.y + back_shoulder_length
-           font_size  = 50
-           spacing = (font_size * .20)
-           y = ( y+ font_size + spacing )
-           self.WriteText( jb.layer,  x,  y,  font_size, 'company_name',   company_name,  jb.transform )
-           y = ( y+ font_size + spacing )
-           self.WriteText( jb.layer,  x,  y, font_size, 'pattern_number', pattern_number,  jb.transform )
-           y = ( y+ font_size + spacing )
-           self.WriteText( jb.layer, x,  y, font_size, 'jacket.back.letter', 'Pattern Piece '+ jb.letter,  jb.transform )
-           if jb.fabric > 0:
-             y = ( y+ font_size + spacing )
-             self.WriteText( jb.layer, x, y, font_size, 'jacket.back.fabric', 'Cut '+str(jb.fabric)+ ' Fabric',  jb.transform )
-           if jb.interfacing > 0:
-             y = ( y+ font_size + spacing )
-             self.WriteText( jb.interfacing, x,  y, font_size, 'jacket.back.interfacing', 'Cut '+str(jb.interfacing)+ ' Interfacing',     jb.transform )
-           if jb.lining > 0:
-             y = ( y+ font_size + spacing )
-             self.WriteText( jb.lining, x, y, font_size, 'jacket.back.lining', 'Cut '+str(jb.fabric)+ ' Lining',     jb.transform )
 
            # document calculations
            jb.low.x,  jb.low.y,  jb.high.x,  jb.high.y = self.NewBoundingBox( jb.path, jb.start.x, jb.start.y )
