@@ -21,6 +21,7 @@ from pysvg.style import *
 from pysvg.text import *
 from pysvg.builders import *
 
+from constants import *
 from support import *
 from patternbase import pBase
 
@@ -44,6 +45,8 @@ class Document(pBase):
         self.id = name
         self.x = 0
         self.y = 0
+        self.width = 8.5 * in_to_pt
+        self.height = 11.0 * in_to_pt
         self.filename = filename
         self.attrs = attributes
         self.company = ''
@@ -56,7 +59,8 @@ class Document(pBase):
     def draw(self):
         # create the base document
         sz = svg(self.x, self.y)
-
+        sz.set_height(self.height)
+        sz.set_width(self.width)
 
         # add the scripting we need to handle events
         sc = script()
