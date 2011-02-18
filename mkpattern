@@ -516,7 +516,7 @@ class AppTemplate(StdApp):
         # Grainline
         # TODO Put this in a Grainline class that includes arrows, styling, etc
         jb.add(Point('reference', 'g1', (jb.seam.shoulder.low.x)/2, jb.underarm.y, 'point_style'))
-        jb.add(Point('reference', 'g2', jb.g1.x, jb.g1.y + (60*cm_to_pt), 'point_style'))
+        jb.add(Point('reference', 'g2', jb.g1.x, jb.g1.y + (25*cm_to_pt), 'point_style'))
         jb.add(Line('reference', 'grainline', 'Grainline', jb.g1.x, jb.g1.y, jb.g2.x, jb.g2.y, 'grainline_style'))
         # End Grainline
 
