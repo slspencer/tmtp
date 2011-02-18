@@ -45,6 +45,7 @@ class PatternPiece(pBase):
         self.groupname = group
         self.width = 0
         self.height = 0
+        self.letter = letter
         self.fabric = fabric
         self.interfacing = interfacing
         self.lining = lining
@@ -105,7 +106,7 @@ class Point(pBase):
 
         self.groupname = group
         self.name = name
-        self.textid = True # for debugging
+        self.textid = False # for debugging TODO make this available
         self.sdef = styledef
         self.x         = x
         self.y         = y
@@ -147,7 +148,7 @@ class Point(pBase):
             txtlabel = self.id + '.text'
             txttxt = self.name
             txt = self.generateText(self.x+3, self.y, txtlabel, txttxt, 'point_text_style')
-        md[self.groupname].append(txt)
+            md[self.groupname].append(txt)
 
 
         return md
@@ -239,6 +240,60 @@ class Path(pBase):
             print 'Exception in element', self.id
             print '************************'
             raise
+
+        return md
+
+class TextBlock(pBase):
+    """
+    Creates instance of Python class TextBlock
+    """
+    def __init__(self, group, name, headline, x, y, text, textstyledef = 'default_textblock_text_style', boxstyledef = None, transform = ''):
+        self.groupname = group
+        self.name = name
+        self.text = text
+        self.textsdef = textstyledef
+        self.boxsdef = boxstyledef
+        self.headline = headline
+        self.x = x
+        self.y = y
+        self.attrs = {}
+        self.attrs['transform'] = transform
+
+        pBase.__init__(self)
+
+    def add(self, obj):
+        # Text Blocks don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The TextBlock class can not have children')
+
+    def svg(self):
+        """
+        generate the svg for this item and return it as a pysvg object
+        """
+        if self.debug:
+            print 'svg() called for TextBlock ID ', self.id
+
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
+
+        # create the text first
+        tg = g()
+        tg.set_id(self.id)
+        x = self.x
+        y = self.y
+        # this is a bit cheesy
+        spacing  =  ( int(self.styledefs[self.textsdef]['font-size']) * 1.2 )
+        line = 1
+        for line in self.text:
+            label = self.id + '.line' + str(line)
+            txt = self.generateText(x, y, label, line, self.textsdef)
+            y = y + spacing
+            tg.addElement(txt)
+
+        # TODO getting element sizes is note yet supported in pySVG,
+        # so we'll do the outline box and headline later
+        for attrname, attrvalue in self.attrs.items():
+            tg.setAttribute(attrname, attrvalue)
+        md[self.groupname].append(tg)
 
         return md
 

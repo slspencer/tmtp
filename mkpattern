@@ -204,6 +204,7 @@ class AppTemplate(StdApp):
         # create the document info and fill it in
         # TODO - abstract these into configuration file(s)
         companyName = 'New Day'
+        designerName = 'Susan Spencer'
         patternName = 'Steampunk Jacket'
         patternNumber = '1870-M-J-1'
         clientName = cd.customername
@@ -217,6 +218,7 @@ class AppTemplate(StdApp):
                     'margin-right' : str(border),
                     'margin-top' : str(border),
                     'company-name' : companyName,
+                    'designer-name' : designerName,
                     'pattern-number' : patternNumber,
                     'pattern-name' : patternName,
                     'client-name' : clientName
@@ -377,6 +379,24 @@ class AppTemplate(StdApp):
             'stroke':'none',
             'text-anchor':'right',
             'text-align':'right'
+            }
+        jacket.styledefs['default_textblock_text_style'] = {
+            'vertical-align':'top',
+            'fill-opacity':'1.0',
+            'font-size':'12',
+            'font-style':'normal',
+            'fill':'#000000',
+            'font-weight':'normal',
+            'stroke':'none',
+            'text-anchor':'start',
+            'text-align':'right'
+            }
+        jacket.styledefs['textblock_box_style'] = {
+            'fill'               : 'none',
+            'stroke'             : 'blue',
+            'stroke-width'       : '6',
+            'rx'                 : '5',
+            'ry'                 : '5'
             }
         jacket.styledefs['point_text_style'] = {
             'vertical-align':'top',
@@ -570,6 +590,34 @@ class AppTemplate(StdApp):
         path_hemline.appendMoveToPath(jb.seam.center.hem.x, jb.seam.center.hem.y, relative = False)
         path_hemline.appendLineToPath(jb.seam.side.hem.x, jb.seam.side.hem.y, relative = False)
         
+        # TODO draw a cutting line offset from the pattern line
+        # self.DrawPath( jb.layer, jb.path, 'cuttingline', 'jacket.back.path_Cuttingline',  jb.transform )
+
+        # Write description on pattern piece
+        companyName = 'New Day'
+        designerName = 'Susan Spencer'
+        patternName = 'Steampunk Jacket'
+        patternNumber = '1870-M-J-1'
+        clientName = cd.customername
+
+        text = []
+        # TODO - take these from the same configurable place where we get them for the document attributes
+        text.append(companyName)
+        text.append('Designer: %s' % designerName)
+        text.append(patternNumber)
+        text.append('Pattern Piece %s' % jb.letter)
+        if jb.fabric > 0:
+            text.append('Cut %d Fabric' % jb.fabric)
+        if jb.interfacing > 0:
+            text.append('Cut %d Interfacing' % jb.interfacing)
+
+        x, y = jb.nape.x + (5 * cm_to_pt) , jb.nape.y + cd.back.shoulder.length
+        tb = TextBlock('pattern', 'info', 'Headline', x, y, text, 'default_textblock_text_style', 'textblock_box_style')
+        jb.add(tb)
+
+
+
+
         #
         # Temporary End
         #
@@ -577,17 +625,6 @@ class AppTemplate(StdApp):
         # TODO make this dynamic when we have bounding box calculations
         doc.height = 24 * in_to_pt
         doc.width = 14 * in_to_pt
-        doc.draw()
-        return
-
-        jb.seam.add(Node('neck'))
-        jb.seam.add(Node('armhole'))
-        jb.seam.add(Node('hem'))
-
-
-        #
-        # Temporary End
-        #
         doc.draw()
         return
 
