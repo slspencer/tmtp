@@ -573,6 +573,10 @@ class AppTemplate(StdApp):
         #
         # Temporary End
         #
+
+        # TODO make this dynamic when we have bounding box calculations
+        doc.height = 24 * in_to_pt
+        doc.width = 14 * in_to_pt
         doc.draw()
         return
 
