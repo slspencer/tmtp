@@ -79,8 +79,6 @@ class pBase(object):
 
         return t
 
-
-
     def svg(self):
         """
         Return all the SVG created by every pattern piece in the pattern
@@ -128,4 +126,43 @@ class pBase(object):
                     for svgitem in glist:
                         md[grpnm].append(svgitem)
         return md
+
+    def boundingBox(self, grouplist):
+        """
+        Return two points which define a bounding box around the object
+        """
+        #
+        # The whole bounding box calculation is flawed
+        #
+        # We recurse through children to get a bounding box. Only include elements
+        # which are in the groups which appear in the grouplist
+        #
+        xlow = 0
+        ylow = 0
+        xhigh = 0
+        yhigh = 0
+
+        md = {}
+
+        if self.debug:
+            print "boundingBox() called in ", self.name
+
+        for child in self.children:
+            if self.debug:
+                print 'BB for child ', child.name
+            if child.boundingBox:
+               cxlow, cylow, cxhigh, cyhigh = child.boundingBox(grouplist)
+               if cxlow != None:
+                   if xlow != None:
+                       xlow = min(xlow, cxlow)
+                       ylow = min(ylow, cylow)
+                       xhigh = max(xhigh, cxhigh)
+                       yhigh = max(yhigh, cyhigh)
+                   else:
+                       xlow = cxlow
+                       ylow = cylow
+                       xhigh = cxhigh
+                       yhigh = cyhigh
+
+        return (xlow, ylow, xhigh, yhigh)
 

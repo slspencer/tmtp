@@ -9,6 +9,7 @@
 # (at your option) any later version.
 import sys
 import math
+import string
 
 from pysvg.filter import *
 from pysvg.gradient import *
@@ -38,6 +39,153 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     x = (distance * math.cos(angle)) + x1
     y = (distance * math.sin(angle)) + y1
     return x, y
+
+def boundingBox(path):
+    xlist = []
+    ylist = []
+    #print '===== Entered boundingBox ====='
+    #print 'path = ', path
+    path_tokens = path.split() # split path into pieces, separating at each 'space'
+
+    tok = iter(path_tokens)
+
+    try:
+        cmd = tok.next()
+        if cmd != 'M':
+            raise ValueError("Unable to handle patches that don't start with an absolute move")
+        currentx = float(tok.next())
+        currenty = float(tok.next())
+        beginx = currentx
+        beginy = currenty
+        xlist.append(currentx)
+        ylist.append(currenty)
+    except:
+        raise ValueError("Can't handle a path string shorter than 3 tokens")
+
+    while True:
+        try:
+            cmd = tok.next()
+            #print 'processing ', cmd
+            if cmd.islower():
+                relative = True
+            else:
+                relative = False
+
+            cmd = cmd.upper()
+
+            if ((cmd == 'M') or (cmd == 'L') or (cmd == 'T')):
+                # Note T is really for a Bezier curve, this is a simplification
+                x = float(tok.next())
+                y = float(tok.next())
+                if relative:
+                    currentx = currentx + x
+                    currenty = currenty + y
+                else:
+                    currentx = x
+                    currenty = y
+                xlist.append(currentx)
+                ylist.append(currenty)
+            elif cmd == 'H':
+                x = float(tok.next())
+                if relative:
+                    currentx = currentx + x
+                else:
+                    currentx = x
+                xlist.append(currentx)
+            elif cmd == 'V':
+                y = float(tok.next())
+                if relative:
+                    currenty = currenty + y
+                else:
+                    currenty = y
+                ylist.append(currenty)
+            elif ((cmd == 'C') or (cmd == 'S') or (cmd == 'Q')):
+                # Curve
+                # TODO This could be innacurate, we are only basing on control points not the actual line
+
+                # 'C' uses two control points, 'S' and 'Q' use one
+                if cmd == 'C':
+                    cpts = 2
+                else:
+                    cpts = 1
+
+                # control points
+                for i in range(0,cpts):
+                    #print '  Control Point ',
+                    x = float(tok.next())
+                    y = float(tok.next())
+                    #print 'xy = ', x, y
+                    if relative:
+                        tmpx = currentx + x
+                        tmpy = currenty + y
+                    else:
+                        tmpx = x
+                        tmpy = y
+                    xlist.append(tmpx)
+                    ylist.append(tmpy)
+
+                # final point is the real curve endpoint
+                x = float(tok.next())
+                y = float(tok.next())
+                if relative:
+                    currentx = currentx + x
+                    currenty = currenty + y
+                else:
+                    currentx = x
+                    currenty = y
+                xlist.append(currentx)
+                ylist.append(currenty)
+            elif cmd == 'A':
+                # TODO implement arcs - punt for now
+                # See http://www.w3.org/TR/SVG/paths.html#PathElement
+                raise ValueError('Arc commands in a path are not currently handled')
+            elif cmd == 'Z':
+                # No argumants to Z, and no new points
+                # but we reset position to the beginning
+                currentx = beginx
+                currenty = beginy
+                continue
+            else:
+                raise ValueError('Expected a command letter in path')
+
+        except StopIteration:
+            #print 'Done'
+            # we're done
+            break
+
+    xmin = min(xlist)
+    ymin = min(ylist)
+    xmax = max(xlist)
+    ymax = max(ylist)
+    #print 'boundingBox returning: ', xmin, ymin, xmax, ymax
+    return xmin, ymin, xmax, ymax
+
+def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
+    # TODO this is really terrible
+    if transform == '':
+        return xmin, ymin, xmax, ymax
+    rparts = transform.split('(')
+    ttype = rparts[0].strip().lower()
+    if ttype == 'translate':
+        x, y = rparts[1].rstrip(' )').split(',')
+    else:
+        raise ValueError('Unhandled transformation type')
+        
+    # translate (x,y)
+    # scale (sx, sy)
+    # rotate (angle, cx, cy)
+    # skewX(angle)
+    # skewY(angle)
+    # matrix(a, b, c, d, e, f,)
+
+    xmin = xmin + float(x)
+    ymin = ymin + float(y)
+    xmax = xmax + float(x)
+    ymax = ymax + float(y)
+    #print 'trandformBoundingBox returning: ', xmin, ymin, xmax, ymax
+    return xmin, ymin, xmax, ymax
+
+
 
 ################ End of things which have been adapted and are used in the new framework ################
 
@@ -90,7 +238,7 @@ def BezierSmooth(layer,  point1,  point2,  trans = ''):
     c2 = Point( 'c2', dist_x*(.66),  dist_y *(.66),  'control',  layer,  trans )
     return "C c1.coordstr c2.coordstr point2.coordstr"
 
-def BoundingBox(element_id, dx, dy):
+def OldBoundingBox(element_id, dx, dy):
     """
     Return bounding box info usable for pattern piece layout on printout
     """
@@ -120,26 +268,6 @@ def BoundingBox(element_id, dx, dy):
     return min(x_array) + dx, min(y_array) + dy, max(x_array) + dx, max(y_array) + dy
 
 ###################################################
-def NewBoundingBox(path, dx, dy):
-
-    my_path = path
-    x_array = []
-    y_array = []
-    path_coords_xy   = my_path.split( ' ' )                    # split path into pieces, separating at each 'space'
-    
-    for i in range( len( path_coords_xy ) ) :
-        coords_xy = path_coords_xy[i].replace( ' ', '' )       # strip out remaining white spaces & put coordinate pair <x>,<y> (or command letter) into 'coords_xy'
-        if ( len(coords_xy)  > 0 ) :                                                                                            # if coords_xy not empty, then process
-            if ( coords_xy not in [ 'M','m','L','l','H','h','V','v','C','c','S','s','Q','q','T','t','A','a','Z','z',' ' ] ) :   # don't process command letters
-                xy = coords_xy.split(',')                                                                                       # split apart x & y coordinates
-                for j in range( len( xy ) ) :
-                    if ( ( j % 2 ) == 0 ) :        # j starts with 0, so if mod(j,2)=0 then xy[j] is an x point -- in case there are more than 2 elements in xy array
-                        x_array.append( float( xy[ j ] ) )
-                    else :                         # mod(j,2)<>0, so xy[j] is a y point
-                        y_array.append( float( xy[ j ] ) )
-
-    return min(x_array) + dx, min(y_array) + dy, max(x_array) + dx, max(y_array) + dy
-
 def Buttons(parent, bx, by, button_number, button_distance, button_size):
     """
     Creates line of buttons

@@ -615,18 +615,25 @@ class AppTemplate(StdApp):
         tb = TextBlock('pattern', 'info', 'Headline', x, y, text, 'default_textblock_text_style', 'textblock_box_style')
         jb.add(tb)
 
+        # Calculate bounding box for the pattern piece, pattern group only
+        # This is pretty ugly and we can do better
+        #
 
+        #boundgroups = ['pattern', 'reference']
+        boundgroups = ['pattern']
+        xlo, ylo, xhi, yhi = jb.boundingBox(boundgroups)
+        xhi = xhi + border
+        yhi = yhi + border
 
+        doc.height = yhi
+        doc.width = xhi
+        doc.draw()
+        return
 
         #
         # Temporary End
         #
 
-        # TODO make this dynamic when we have bounding box calculations
-        doc.height = 24 * in_to_pt
-        doc.width = 14 * in_to_pt
-        doc.draw()
-        return
 
 if __name__ == '__main__':
     app = AppTemplate()

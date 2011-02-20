@@ -23,6 +23,7 @@ from pysvg.builders import *
 
 from constants import *
 from patternbase import pBase
+from support import boundingBox, transformBoundingBox
 
 # ---- Pattern Classes ----------------------------------------
 
@@ -90,6 +91,21 @@ class PatternPiece(pBase):
 
         return childlist
 
+    def boundingBox(self, grouplist):
+        """
+        Return two points which define a bounding box around the object
+        """
+        # get all the children
+        if self.groupname in grouplist:
+            xmin, ymin, xmax, ymax =  pBase.boundingBox(self, grouplist)
+            #print "Pattern BoundingBox before = ", xmin, ymin, xmax, ymax
+            xmin, ymin, xmax, ymax =  transformBoundingBox(xmin, ymin, xmax, ymax, self.attrs['transform'])
+            #print "Pattern BoundingBox after = ", xmin, ymin, xmax, ymax
+            return xmin, ymin, xmax, ymax
+        else:
+            return None, None, None, None
+
+
 class Node(pBase):
     """
     Create an instance which is only intended to be a holder for other objects
@@ -112,15 +128,12 @@ class Point(pBase):
         self.y         = y
         self.attrs = {}
         self.attrs['transform'] = transform
-
-
         self.size      = 5
-        # TODO probably put the style somwhere else
         self.coords   = str(x) + "," + str(y)
         pBase.__init__(self)
 
     def add(self, obj):
-        # Points don't have children. If this changes, change the svg method also.
+        # Points don't have children. If this changes, change the svg and boundingbox methods also.
         raise RuntimeError('The Point class can not have children')
 
     def svg(self):
@@ -150,8 +163,16 @@ class Point(pBase):
             txt = self.generateText(self.x+3, self.y, txtlabel, txttxt, 'point_text_style')
             md[self.groupname].append(txt)
 
-
         return md
+
+    def boundingBox(self, grouplist):
+        """
+        Return two points which define a bounding box around the object
+        """
+        if self.groupname in grouplist:
+            return (self.x - (self.size/2), self.y - (self.size/2), self.x + (self.size/2), self.y + (self.size/2))
+        else:
+            return None, None, None, None
 
 class Line(pBase):
     """
@@ -195,6 +216,15 @@ class Line(pBase):
         md[self.groupname].append(p)
 
         return md
+
+    def boundingBox(self, grouplist):
+        """
+        Return two points which define a bounding box around the object
+        """
+        if self.groupname in grouplist:
+            return (min(self.xstart, self.xend), min(self.ystart, self.yend), max(self.xstart, self.xend), max(self.ystart, self.yend))
+        else:
+            return None, None, None, None
 
 class Path(pBase):
     """
@@ -242,6 +272,20 @@ class Path(pBase):
             raise
 
         return md
+
+    def boundingBox(self, grouplist):
+        """
+        Return two points which define a bounding box around the object
+        """
+        # This is not elegant, should perhaps be redone
+        if self.groupname in grouplist:
+            dd = self.pathSVG.get_d()
+            xmin, ymin, xmax, ymax =  boundingBox(dd)
+            #print "BoundingBox = ", xmin, ymin, xmax, ymax
+            return xmin, ymin, xmax, ymax
+        else:
+            return None, None, None, None
+
 
 class TextBlock(pBase):
     """
@@ -296,4 +340,3 @@ class TextBlock(pBase):
         md[self.groupname].append(tg)
 
         return md
-
