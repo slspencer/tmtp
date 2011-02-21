@@ -95,6 +95,9 @@ class Document(pBase):
         # u'xpath'    :u'http://www.w3.org/TR/xpath',
         # u'xsl'      :u'http://www.w3.org/1999/XSL/Transform'
 
+        sz.setAttribute('xmlns:sodipodi', 'http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd')
+        # //svg:svg/sodipodi:namedspace/inkscape:document-units
+
         # reference & pattern layers - implemented as groups
         # TODO DELETE, these should be automatic now
         #pat_grp = g()  # pattern_layer = pattern lines & marks
