@@ -224,6 +224,16 @@ class AppTemplate(StdApp):
             print client.dump(),
             print "======== End Client Data Dump ========"
 
+        # open the styles file and read data
+        try:
+            f = open(self.cfg['styles_file'], 'r')
+            self.styledefs = json.load(f)
+            f.close()
+        except:
+            print 'unable to load Styles File <%s>' % self.cfg['styles_file']
+            return
+
+        # Now we load the actual design, which is in the form of a python module
         try:
             mod_name,file_ext = path.splitext(path.split(self.cfg['pattern_file'])[-1])
             designModule = imp.load_source(mod_name, self.cfg['pattern_file'])
@@ -235,154 +245,8 @@ class AppTemplate(StdApp):
 
         # set Client Data for the design object
         design.cd = cd
-        # design.styledefs = something
+        design.styledefs = self.styledefs
         design.cfg = self.cfg
-
-        # set styles for the design object
-        design.styledefs['point_style'] = { 
-            'stroke' : 'red',
-            'fill' : 'red',
-            'stroke-width' : '1'
-            }
-        design.styledefs['reference_path_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'gray',
-            'stroke-width'       : '4',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4',
-                'stroke-dasharray'   : '6,18',
-            'stroke-dashoffset'  : '0'
-            }
-        design.styledefs['default'] = {
-            'fill'               : 'none',
-            'stroke'             : 'red',
-            'stroke-width'       : '4',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4',
-            }
-        design.styledefs['line_path_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'pink',
-            'stroke-width'       : '5',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4'
-            }
-        design.styledefs['dart_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'gray',
-            'stroke-width'       : '5',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4'
-            }
-        design.styledefs['foldline_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'gray',
-            'stroke-width'       : '2',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4'
-            }
-        design.styledefs['hemline_path_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'gray',
-            'stroke-width'       : '2',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4'
-            }
-        design.styledefs['seamline_path_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'green',
-            'stroke-width'       : '4',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4',
-            'stroke-dasharray'   : '24,6',
-            'stroke-dashoffset'  : '0'
-            }
-        design.styledefs['cuttingline_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'green',
-            'stroke-width'       : '6',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4'
-            }
-        design.styledefs['placement_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'gray',
-            'stroke-width'       : '4',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4',
-            'stroke-dasharray'   : '6,18',
-            'stroke-dashoffset'  : '0'
-            }
-        design.styledefs['grainline_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'green',
-            'stroke-width'       : '4',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4'
-            }
-        design.styledefs['buttonhole_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'gray',
-            'stroke-width'       : '4',
-            'stroke-linejoin'    : 'miter',
-            'stroke-miterlimit'  : '4'
-            }
-        design.styledefs['tooltip_text_style'] = {
-            'vertical-align':'top',
-            'fill-opacity':'1.0',
-            'font-size':'50',
-            'font-style':'normal',
-            'fill':'blue',
-            'font-weight':'normal',
-            'stroke':'black',
-            'text-anchor':'right',
-            'text-align':'right'
-            }
-        design.styledefs['titleblock_text_style'] = {
-            'vertical-align':'top',
-            'fill-opacity':'1.0',
-            'font-size':'40',
-            'font-style':'normal',
-            'fill':'#000000',
-            'font-weight':'normal',
-            'stroke':'none',
-            'text-anchor':'right',
-            'text-align':'right'
-            }
-        design.styledefs['default_textblock_text_style'] = {
-            'vertical-align':'top',
-            'fill-opacity':'1.0',
-            'font-size':'12',
-            'font-style':'normal',
-            'fill':'#000000',
-            'font-weight':'normal',
-            'stroke':'none',
-            'text-anchor':'start',
-            'text-align':'right'
-            }
-        design.styledefs['textblock_box_style'] = {
-            'fill'               : 'none',
-            'stroke'             : 'blue',
-            'stroke-width'       : '6',
-            'rx'                 : '5',
-            'ry'                 : '5'
-            }
-        design.styledefs['point_text_style'] = {
-            'vertical-align':'top',
-            'fill-opacity':'1.0',
-            'font-size':'15',
-            'font-style':'normal',
-            'fill':'#000000',
-            'font-weight':'normal',
-            'stroke':'none',
-            'text-anchor':'right',
-            'text-align':'right'
-            }
-
-        # TEMP Save it
-        sf = open('tmtp_styles.json', 'w+')
-        sf.write(json.dumps(design.styledefs, sort_keys=True, indent=4))
-        sf.close()
 
         # Call the design to generate the pattern
         design.pattern()
