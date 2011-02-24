@@ -1,14 +1,23 @@
 #!/usr/bin/python
 #
-# Pattern generation support module
-# Copyright:(C) Susan Spencer 2010, 2011
+# This file is part of the tmtp (Tau Meta Tau Physica) project.
+# For more information, see http://www.sew-brilliant.org/
 #
-# This program is free software; you can redistribute it and/or modify
+# Copyright (C) 2010, 2011 Susan Spencer and Steve Conklin
+#
+# This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#import sys
-#import math
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import json
 
 from pysvg.filter import *
