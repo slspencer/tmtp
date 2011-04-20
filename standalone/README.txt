@@ -23,7 +23,8 @@ inkscape --file=foo.svg --verb=ZoomPage --verb=FullScreen --verb=FitCanvasToDraw
 
 It is a known bug in this code that prevents Nautilus from rendering a thumbnail of the file.
 
-The output (at this time) contains both reference and pattern objects. Command line options will be added to control this, but for now you have to edit the sample design file.
+The output (at this time) contains both reference and pattern objects. Command line options
+will be added to control this, but for now you have to edit the sample design file.
 
 Support modules for this application are in the tmtpl directory.
 
