@@ -265,7 +265,7 @@ class AppTemplate(StdApp):
             designModule = imp.load_source(mod_name, self.cfg['pattern_file'])
         except:
             print 'unable to load Pattern File <%s>' % self.cfg['pattern_file']
-            return
+            raise
 
         design = designModule.PatternDesign()
 
