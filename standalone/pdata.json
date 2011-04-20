@@ -1,216 +1,191 @@
 {
   "customername": {
-  		  "value":"John Doe",
+  		  "value":"Jane Doe",
 		  "type":"string",
 		  "gui_text":"Client Name"
-		  }, 
+		  },
   "measureunit": {
   		 "value":"cm",
 		  "type":"string",
 		  "gui_text":"Units of measurement (in or cm)"
-		  }, 
+		  },
   "height": {
-  		  "value":"100.0",
+  		  "value":"165.0",
 		  "type":"float",
 		  "gui_text":"Height"
-		  }, 
-  "chest.base": {
-  		  "value":"120.0",
+		  },
+  "chest": {
+  		  "value":"101.0",
 		  "type":"float",
 		  "gui_text":"Chest"
-		  }, 
-  "chest.length": {
-  		  "value":"130.0",
-		  "type":"float",
-		  "gui_text":"Chest Length"
-		  }, 
+		  },
   "waist": {
-  		  "value":"95",
+  		  "value":"85",
 		  "type":"float",
 		  "gui_text":"Waist"
-		  }, 
-  "front.neck.width": {
-  		  "value":"2.75",
+		  },
+  "hip": {
+  		  "value":"108.5",
+		  "type":"float",
+		  "gui_text":"Hip"
+		  },
+  "neck": {
+  		  "value":"40",
+		  "type":"float",
+		  "gui_text":"Hip"
+		  },
+  "front.neck.circum": {
+  		  "value":"21",
 		  "type":"float",
 		  "gui_text":"Front Neck Width"
-		  }, 
+		  },
+   "front.neck.width": {
+  		  "value":"16",
+		  "type":"float",
+		  "gui_text":"Front Neck Width"
+		  },
+  "front.neck.length": {
+  		  "value":"12",
+		  "type":"float",
+		  "gui_text":"Front Neck Height - measure up from neck scoop"
+		  },
   "front.shoulder.width": {
-  		  "value":"9",
+  		  "value":"44",
 		  "type":"float",
 		  "gui_text":"Front Shoulder Width"
-		  }, 
+		  },
+  "front.shoulder.length": {
+  		  "value":"3.5",
+		  "type":"float",
+		  "gui_text":"Front Shoulder Height - measure up from neck scoop"
+		  },
   "front.pectoral.width": {
-  		  "value":"8.25",
+  		  "value":"40.5",
 		  "type":"float",
 		  "gui_text":"Front Pectoral Width"
-		  }, 
-  "front.underarm.width": {
-  		  "value":"10",
+		  },
+  "front.pectoral.length": {
+  		  "value":"23",
 		  "type":"float",
-		  "gui_text":"Front Underarm Width"
-		  }, 
+		  "gui_text":"Front Pectoral Length"
+		  },
   "front.chest.width": {
-  		  "value":"10",
+  		  "value":"50.5",
 		  "type":"float",
 		  "gui_text":"Front Chest Width"
-		  }, 
+		  },
+  "front.chest.length": {
+  		  "value":"27.5",
+		  "type":"float",
+		  "gui_text":"Front Chest Length"
+		  },
   "front.waist.width": {
-  		  "value":"11",
+  		  "value":"43.5",
 		  "type":"float",
 		  "gui_text":"Front Waist Width"
-		  }, 
+		  },
+  "front.waist.length": {
+  		  "value":"52.5",
+		  "type":"float",
+		  "gui_text":"Front Waist Length"
+		  },
   "front.pelvic.width": {
   		  "value":"9.5",
 		  "type":"float",
 		  "gui_text":"Front Pelvic Width"
-		  }, 
-  "front.hip.width": {
-  		  "value":"10",
-		  "type":"float",
-		  "gui_text":"Front Hip Width"
-		  }, 
-  "front.jacket.width": {
-  		  "value":"0",
-		  "type":"float",
-		  "gui_text":"Front Jacket Width"
-		  }, 
-  "front.neck.length": {
-  		  "value":"4.75",
-		  "type":"float",
-		  "gui_text":"Front Neck length"
-		  }, 
-  "front.shoulder.length": {
-  		  "value":"2",
-		  "type":"float",
-		  "gui_text":"Front Shoulder Length"
-		  }, 
-  "front.pectoral.length": {
-  		  "value":"4.5",
-		  "type":"float",
-		  "gui_text":"Front Pectoral Length"
-		  }, 
-  "front.underarm.length": {
-  		  "value":"7",
-		  "type":"float",
-		  "gui_text":"Front Underarm Length"
-		  }, 
-  "front.chest.length": {
-  		  "value":"7",
-		  "type":"float",
-		  "gui_text":"Front Chest Length"
-		  }, 
-  "front.waist.length": {
-  		  "value":"15",
-		  "type":"float",
-		  "gui_text":"Front Waist Length"
-		  }, 
+		  },
   "front.pelvic.length": {
-  		  "value":"7.5",
+  		  "value":"6.5",
 		  "type":"float",
 		  "gui_text":"Front Pelvic Length"
-		  }, 
+		  },
+  "front.hip.width": {
+  		  "value":"56.5",
+		  "type":"float",
+		  "gui_text":"Front Hip Width"
+		  },
   "front.hip.length": {
-  		  "value":"9.5",
+  		  "value":"24.5",
 		  "type":"float",
-		  "gui_text":"Front Hip Length"
-		  }, 
-  "back.waist.length": {
-  		  "value":"18.75",
+		  "gui_text":"Front Waist to Hip"
+		  },
+  "back.neck.circum": {
+  		  "value":"19",
 		  "type":"float",
-		  "gui_text":"Back Waist Length"
-		  }, 
-  "back.waist.width": {
-  		  "value":"10.5",
-		  "type":"float",
-		  "gui_text":"Back Waist Width"
-		  }, 
-  "back.jacket.length": {
-  		  "value":"35",
-		  "type":"float",
-		  "gui_text":"Back Jacket Length"
-		  }, 
-  "back.shoulder.width": {
-  		  "value":"10",
-		  "type":"float",
-		  "gui_text":"Back Shoulder Width"
-		  }, 
-  "back.shoulder.length": {
-  		  "value":"3.5",
-		  "type":"float",
-		  "gui_text":"Back Shoulder Length"
-		  }, 
-  "back.underarm.width": {
-  		  "value":"8",
-		  "type":"float",
-		  "gui_text":"Back Underarm Width"
-		  }, 
-  "back.underarm.length": {
-  		  "value":"12",
-		  "type":"float",
-		  "gui_text":"Back Underarm Length"
-		  }, 
-  "back.hip.width": {
-  		  "value":"12.5",
-		  "type":"float",
-		  "gui_text":"Back Hip Width"
-		  }, 
-  "back.hip.length": {
-  		  "value":"8",
-		  "type":"float",
-		  "gui_text":"Back Hip Length"
-		  }, 
+		  "gui_text":"Back Neck Cirumference"
+		  },
   "back.neck.width": {
-  		  "value":"3.125",
+  		  "value":"16",
 		  "type":"float",
 		  "gui_text":"Back Neck Width"
-		  }, 
+		  },
   "back.neck.length": {
-  		  "value":"1",
+  		  "value":"5.5",
 		  "type":"float",
-		  "gui_text":"Back Neck Length"
-		  }, 
+		  "gui_text":"Back Neck Height - measure up from nape"
+		  },
+  "back.shoulder.width": {
+  		  "value":"42.5",
+		  "type":"float",
+		  "gui_text":"Back Shoulder Width"
+		  },
+  "back.shoulder.length": {
+  		  "value":"6.25",
+		  "type":"float",
+		  "gui_text":"Back Nape to Shoulder Low"
+		  },
+  "back.underarm.width": {
+  		  "value":"44.38",
+		  "type":"float",
+		  "gui_text":"Back Underarm Width"
+		  },
+  "back.underarm.length": {
+  		  "value":"17.5",
+		  "type":"float",
+		  "gui_text":"Back Nape to Underarm"
+		  },
   "back.chest.width": {
-  		  "value":"11.5",
+  		  "value":"46.25",
 		  "type":"float",
 		  "gui_text":"Back Chest Width"
-		  }, 
+		  },
   "back.chest.length": {
+  		  "value":"22.5",
+		  "type":"float",
+		  "gui_text":"Back Nape to Chest"
+		  },
+  "back.balance.length": {
   		  "value":"11.5",
 		  "type":"float",
-		  "gui_text":"Back Chest Length"
-		  }, 
-  "back.balance.length": {
-  		  "value":"8.5",
+		  "gui_text":"Back Nape to Balance Point"
+		  },
+  "back.waist.width": {
+  		  "value":"41.5",
 		  "type":"float",
-		  "gui_text":"Back Balance Length"
-		  }, 
-  "seat": {
-  		  "value":"24",
+		  "gui_text":"Back Waist Width"
+		  },
+  "back.waist.length": {
+  		  "value":"38.9",
 		  "type":"float",
-		  "gui_text":"Seat"
-		  }, 
-  "back.waist_to_hip.length": {
-  		  "value":"45",
+		  "gui_text":"Back Nape to Waist Length"
+		  },
+  "back.hip.width": {
+  		  "value":"57.5",
 		  "type":"float",
-		  "gui_text":"Back Waist To Hip Length"
-		  }, 
+		  "gui_text":"Back Hip Width"
+		  },
+  "back.hip.length": {
+  		  "value":"25",
+		  "type":"float",
+		  "gui_text":"Back Waist to Hip Length"
+		  },
   "nape_to_vneck": {
-  		  "value":"14.75",
+  		  "value":"30",
 		  "type":"float",
 		  "gui_text":"Nape around to about 11.5cm (4.5in) below front neck"
-		  }, 
-  "Shoulder_top_width": {
-  		  "value":"7.5",
-		  "type":"float",
-		  "gui_text":"Shoulder Top Width"
-		  }, 
-  "front_scoop_to_shoulder_low": {
-  		  "value":"9.5",
-		  "type":"float",
-		  "gui_text":"front_scoop_to_shoulder_low"
-		  }, 
+		  },
   "sleeve.length": {
-  		  "value":"26",
+  		  "value":"63",
 		  "type":"float",
 		  "gui_text":"Sleeve Length"
 		  }
