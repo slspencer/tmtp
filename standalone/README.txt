@@ -17,9 +17,11 @@ In order to generate a pattern from the sample, use the following command line:
 
 ./mkpattern --client=pdata.json --pattern=SamplePattern --styles=tmtp_styles.json foo.svg
 
-The output can then be viewed with most browsers or inkscape.
+The output can then be viewed with most browsers or inkscape with the following command line:
+inkscape --file=foo.svg --verb=ZoomPage --verb=FullScreen --verb=FitCanvasToDrawing
+?? --select=OBJECT-ID
 
-It is a known bug in this code that prevents Nautilus from rendering a thumbnail of the file. 
+It is a known bug in this code that prevents Nautilus from rendering a thumbnail of the file.
 
 The output (at this time) contains both reference and pattern objects. Command line options will be added to control this, but for now you have to edit the sample design file.
 
