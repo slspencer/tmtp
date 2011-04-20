@@ -1,0 +1,513 @@
+#!/usr/bin/env python
+#
+
+#
+# This is a sample pattern design distributed as part of the tmtp
+# open fashion design project. It contains a design for one piece
+# of the back of a jacket, and will be expanded in the future.
+#
+# In order to allow designers to control the licensing of their fashion
+# designs, this file is not licensed under the GPL but may be used
+# in any manner commercial or otherwise, with or without attribution.
+#
+# Designers are strongly encouraged to release their designs under a
+# creative commons license:
+#
+#  http://creativecommons.org/
+#
+#
+#
+
+from tmtpl.constants import *
+from tmtpl.pattern   import *
+from tmtpl.document   import *
+from tmtpl.support   import *
+from tmtpl.utils   import debug
+from tmtpl.client   import Client
+
+# Project specific
+#from math import sin, cos, radians
+
+from pysvg.filter import *
+from pysvg.gradient import *
+from pysvg.linking import *
+from pysvg.script import *
+from pysvg.shape import *
+from pysvg.structure import *
+from pysvg.style import *
+from pysvg.text import *
+from pysvg.builders import *
+
+class PatternDesign():
+
+    def __init__(self):
+        self.styledefs = {}
+        return
+
+    def pattern(self):
+        """
+        Method defining a pattern design. This is where the designer places
+        all elements of the design definition
+        """
+
+        # The following attributes are set before calling this method:
+        #
+        # self.cd - Client Data, which has been loaded from the client data file
+        #
+        # self.styledefs - the style difinition dictionary, loaded from the styles file
+        #
+        # self.cfg - configuration settings from the main app framework
+        #
+
+        cd = self.cd
+
+        # pattern name
+        pattern_pieces    = 7
+
+        # TODO also extract these from this file to somewhere else
+        printer='36" wide carriage plotter'
+        if (printer == '36" wide carriage plotter'):
+            paper_width  = ( 36 * in_to_pt )
+            border       = ( 1 * in_to_pt )        # 1" document borders
+
+        # create the document info and fill it in
+        # TODO - abstract these into configuration file(s)
+        companyName = 'New Day'
+        designerName = 'Susan Spencer'
+        patternName = 'Steampunk Jacket'
+        patternNumber = '1870-M-J-1'
+        clientName = cd.customername
+
+        # attributes for the entire svg document
+        docattrs = {'currentScale' : "0.05 : 1",
+                    'fitBoxtoViewport' : "True",
+                    'preserveAspectRatio' : "xMidYMid meet",
+                    'margin-bottom' : str(border),
+                    'margin-left' : str(border),
+                    'margin-right' : str(border),
+                    'margin-top' : str(border),
+                    'company-name' : companyName,
+                    'designer-name' : designerName,
+                    'pattern-number' : patternNumber,
+                    'pattern-name' : patternName,
+                    'client-name' : clientName
+                    }
+
+        doc = Document(self.cfg['args'][0], name = 'document', attributes = docattrs)
+
+        # TODO also extract these from this file to somewhere else
+        if (printer == '36" wide carriage plotter'):
+            doc.paper_width  = paper_width
+            doc.border       = border
+
+
+        #
+        # Begin the real work here
+        #
+
+        # pattern start, count & placement
+        x = border
+        y = border
+
+        pt_to_cm = 2.54/90
+        myneckwidth = 13.5*cm_to_pt
+        myshoulderwidth = 16.5*cm_to_pt
+
+        begin = Point('reference', 'begin', 0,   0, 'point_style')
+        doc.add(begin)
+
+        # The whole pattern in a jacket
+        jacket = Pattern('jacket')
+        doc.add(jacket)
+
+        # Set up styles dictionary in the pattern object
+        jacket.styledefs.update(self.styledefs)
+
+        # jacket front pattern piece
+        front = PatternPiece('pattern', 'front', letter = 'B', fabric = 2, interfacing = 0, lining = 0)
+        jacket.add(front)
+        jf = jacket.front
+
+        # design ease
+        shoulder_design_ease = (1.07)
+        chest_design_ease = (1.07)
+        waist_design_ease = (1.04)
+        hip_design_ease = (1.08)
+        half_shoulder = cd.front.shoulder.width*(0.5) * shoulder_design_ease
+        half_chest = cd.front.chest.width*(0.5) * chest_design_ease
+        half_waist = cd.front.waist.width*(0.5) * waist_design_ease
+        half_hip = cd.front.hip.width*(0.5) * hip_design_ease
+        scale = cd.chest*(0.5) * chest_design_ease
+
+        # constants
+        arm_side_offset = ( cd.chest * 0.057) 	# 5.5cm for 96cm (38") chest
+        chest_side_offset = ( cd.chest * 0.047 ) 	# 4.5cm for 96cm (38") chest
+        waist_side_offset = ( cd.waist * 0.052 ) 	# 4.5cm for 86cm (34") waist
+        hip_side_offset = ( cd.hip * 0.038 ) 	# 1.5cm for 102cm (40") hip
+        hem_side_offset = ( 0 )*cm_to_pt
+        jacket_length = ((cd.height * 76)/176 ) # 76cm jacket length for 176cm height
+        jacket_hem_length = jacket_length - cd.back.waist.length
+
+        # front constants along chestline
+        button_offset = ( 2)*cm_to_pt # buttons are placed 2cm away from front coat edge, button line is front center line
+        button_line_to_armfront = ( (scale * (0.5) ) - ((cd.chest * 3.5)/96 ) ) 	# scale/2 - 3.5cm for 96cm chest -- 3.5/96=0.036
+        armfront_to_underarm = ( (cd.chest * 5.5)/96 )  # 5.5cm for 96cm chest  -- 5.5/96=0.057
+        armfront_to_side  = ( scale * (.25)) + ( (cd.chest * 2)/96 )  # (scale/4 + 2cm) for 96cm chest  2/96=0.021
+
+        # neck constants
+        front_neck_curve_offset = ( (cd.chest * 2.5)/96 )
+
+        # shoulder constants
+        back_shoulder_ease            = ( cd.chest * 1)/96  				# 1cm/96cm chest
+        front_shoulder_adjustment     = ( cd.chest * 1)/96  				# 1cm/96cm chest
+        front_shoulder_middle_offset  = ( cd.chest * 1.3)/96 				# 1.3cm/96cm chest
+        x1 = (cd.front.shoulder.width * 0.5) + 1
+        y1 = cd.front.shoulder.length
+        x2 = (myneckwidth * 0.5) + 1
+        y2 = 0
+        length = lineLength( x1, y1, x2, y2 )
+        front_shoulder_length         = abs( lineLength( x1, y1, x2, y2 ) - front_shoulder_adjustment  )
+        front_shoulder_high_offset    = (( scale/8 ) ) + front_shoulder_adjustment # one-eigth scale + 1cm
+        front_armhole_depth_1         = ( (cd.chest * 4)/96 ) 				# 4cm/96cm=0.042
+        front_armhole_depth_2         = ( (cd.chest * 2)/96 ) 				# 2cm/96cm=0.021
+        front_armhole_depth_3         = ( (cd.chest * 5)/96 ) 				# 5cm/96cm=0.052
+        front_armhole_depth_4         = ( (cd.chest * 2)/96 ) 				# 2cm/96cm=0.021
+        front_armhole_curve_3x_offset = ( (cd.chest * 0.5)/96 ) 				# 0.5/96cm=0.005
+        front_armhole_curve_3y_offset = ( (cd.chest * 3.5)/96 ) 			# 3.5/96cm=0.036
+
+         # hem constants
+        front_hem_extension    = ( cd.height * 2.5)/176  		#2.5cm/176cm height -- lengthen hem at front edge by 2.5cm
+        front_hem_curve_offset = ( cd.hip * 6.5)/102     #6.5cm/102cm hip -- set back the curve at original hemline by 6.5cm for 102cm hip
+
+        # lapel & lapel dart constants
+        front_lapel_height      = ( cd.height * 16.5)/176
+        front_lapel_dart_width  = ( cd.chest * 1.3)/96
+        front_lapel_dart_height = ( cd.height* 9)/176
+        front_lapel_dart_offset = ( cd.chest * 2.5)/176
+
+        # side dart constants
+        front_side_dart_top_width    = ( cd.chest * 0.010 ) 	# 1cm for 96cm chest - width at armscye seam line
+        front_side_dart_middle_width = ( cd.waist * 0.021 ) 	# 2cm for 34" waist - width at widest point in side dart
+
+        # lower pocket constants
+        lp_width = ( cd.chest * 15)/96
+        lp_height = ( cd.height * 5.5)/176
+        lp_flap_height = SEAM_ALLOWANCE    # extension required to sew pocket into Jacket
+        lp_slant_offset = ( cd.height * 1)/176      # x offset to make pocket diagonal
+        lp_placement_offset = ( cd.height * 28)/176
+
+       # welt pocket constants
+        welt_placement_offset = ( cd.chest * 3)/96
+        welt_width            = ( cd.chest * 10)/96
+        welt_width_offset     = ( cd.chest * 3.7)/96
+        welt_height           = ( cd.height * 2)/176
+        welt_height_offset    = ( cd.height * 3)/176
+
+        # jacket front pattern placement, start, count
+        debug('shoulder width = ' + str(cd.front.shoulder.width*pt_to_cm))
+        debug('chest width = ' + str(cd.front.chest.width*pt_to_cm))
+        debug('waist width = ' + str(cd.front.waist.width*pt_to_cm))
+        debug('hip width = ' + str(cd.front.hip.width*pt_to_cm))
+        widest = max(cd.front.shoulder.width, cd.front.chest.width, cd.front.waist.width, cd.front.hip.width)
+        debug('widest = ' + str(widest*pt_to_cm))
+        jf.width =  ( widest * 0.75 ) + (2*SEAM_ALLOWANCE) + (3*cm_to_pt)  # 3cm extra & jacket front is 3/4 girth, jacket back is 1/4 girth
+        debug('pattern width = ' + str(jf.width*pt_to_cm) )
+        jf.add(Point('reference', 'start', 0, 0, 'point_style'))
+        jf.add(Point('reference', 'low', 0, 0, 'point_style'))
+        jf.length = ( jf.start.y + jacket_length + HEM_ALLOWANCE +  (2*SEAM_ALLOWANCE)  + (3*cm_to_pt)  )#3cm extra
+        jf.add(Point('reference', 'high', jf.width, jf.length, 'point_style'))
+
+        # front edge seam points
+        jf.add(Node('seam'))
+        jf.seam.add(Node('edge'))
+        debug('width = '+ str(jf.width*pt_to_cm) )
+        jf.seam.edge.add(Point('reference', 'corner', jf.start.x + jf.width,  jf.start.y + cd.front.chest.length - front_lapel_height, 'point_style'))
+        jf.seam.edge.add(Point('reference', 'chest', jf.seam.edge.corner.x,  jf.start.y + cd.front.chest.length, 'point_style'))
+        jf.seam.edge.add(Point('reference', 'waist', jf.seam.edge.corner.x, jf.start.y + cd.front.waist.length, 'point_style'))
+        # front edge control points
+        jf.seam.edge.add(Point('reference', 'c1',  jf.seam.edge.corner.x + (1*cm_to_pt),  jf.seam.edge.corner.y + \
+                    ( abs(jf.seam.edge.corner.y - jf.seam.edge.chest.y)*(0.5) ) , 'point_style' )) #between corner and chest
+
+        # front center/button line points
+        jf.seam.add(Node('center'))
+        jf.seam.center.add(Point('reference', 'chest', jf.seam.edge.chest.x - button_offset, jf.seam.edge.chest.y, 'point_style'))
+        jf.seam.center.add(Point('reference', 'waist', jf.seam.center.chest.x, jf.seam.edge.waist.y, 'point_style'))
+        jf.seam.center.add(Point('reference', 'hip', jf.seam.center.chest.x, jf.seam.center.waist.y + cd.front.hip.length,  'point_style'))
+        jf.seam.center.add(Point('reference', 'hem', jf.seam.center.chest.x, jf.seam.center.waist.y + jacket_hem_length, 'point_style'))
+        jf.seam.center.add(Point('reference', 'hem_extension', jf.seam.center.chest.x, jf.seam.center.hem.y + front_hem_extension, 'point_style'))
+        jf.seam.center.add(Point('reference', 'hem_allowance', jf.seam.center.chest.x, jf.seam.center.hem_extension.y + HEM_ALLOWANCE, 'point_style'))
+
+        # front armfront point
+        jf.add(Point('reference', 'armfront', jf.seam.edge.chest.x - button_line_to_armfront, jf.seam.edge.chest.y, 'point_style'))
+
+        # front side seam points
+        jf.seam.add(Node('side'))
+        # sleeve balance point is 1 cm inside the chest width for chest = 96cm
+        jf.seam.side.add(Point('reference', 'balance', jf.armfront.x - armfront_to_side + (1)*cm_to_pt, jf.armfront.y - (scale/8), 'point_style'))
+        jf.seam.side.add(Point('reference', 'chest', jf.armfront.x - armfront_to_side - (0)*cm_to_pt, jf.seam.edge.chest.y, 'point_style'))
+        jf.seam.side.add(Point('reference', 'waist', jf.armfront.x - armfront_to_side - (0)*cm_to_pt, jf.seam.center.waist.y, 'point_style')) #same y as chest for now
+        jf.seam.side.add(Point('reference', 'hip', jf.armfront.x - armfront_to_side - (3)*cm_to_pt,  jf.seam.center.hip.y, 'point_style'))
+        jf.seam.side.add(Point('reference', 'hem', jf.armfront.x - armfront_to_side - (4.5)*cm_to_pt, jf.seam.center.hem.y, 'point_style'))
+        jf.seam.side.add(Point('reference', 'hem_allowance', jf.seam.side.hem.x, jf.seam.side.hem.y + HEM_ALLOWANCE, 'point_style'))
+        # front side control points
+        # Front Side Seam --> bottom to top, from left side hem to armhole point
+        x, y = pointAlongLine( jf.seam.side.hip.x, jf.seam.side.hip.y, jf.seam.side.hem.x, jf.seam.side.hem.y, -abs(jf.seam.side.hip.y-jf.seam.side.hem.y)*(.5) , 0 )
+        jf.seam.side.add(Point('reference', 'c1', x, y, 'point_style'))
+        jf.seam.side.add(Point('reference', 'c2', jf.seam.side.hip.x + ( abs(jf.seam.side.hip.x - jf.seam.side.waist.x) * (.61) ) , \
+                    jf.seam.side.hip.y - ( abs(jf.seam.side.hip.y - jf.seam.side.waist.y) * (.66) ),  'point_style' ))
+
+        jf.seam.side.add(Point('reference', 'c3',  jf.seam.side.waist.x + ( abs(jf.seam.side.chest.x - jf.seam.side.balance.x) * (0.6) ), \
+                    jf.seam.side.waist.y - ( abs(jf.seam.side.waist.y - jf.seam.side.chest.y) * (.3) ),   'point_style')) # waist.x = chest.x, so use relationship b/w chest.x & balance.x
+        jf.seam.side.add(Point('reference', 'c4', jf.seam.side.waist.x -  ( abs(jf.seam.side.chest.x - jf.seam.side.balance.x) * (0.2) ), \
+                    jf.seam.side.waist.y - ( abs(jf.seam.side.waist.y - jf.seam.side.chest.y) * (.8) ),  'point_style'))
+
+        jf.seam.side.add(Point('reference', 'c5',  jf.seam.side.chest.x + ( abs( jf.seam.side.chest.x - jf.seam.side.balance.x) * (.04) ), \
+                    jf.seam.side.chest.y - (abs( jf.seam.side.chest.y - jf.seam.side.balance.y) * (.28) ),  'point_style'))
+        jf.seam.side.add(Point('reference', 'c6',  jf.seam.side.chest.x + ( abs( jf.seam.side.chest.x - jf.seam.side.balance.x) * (.11) ), \
+                    jf.seam.side.chest.y - (abs( jf.seam.side.chest.y - jf.seam.side.balance.y) * (.59) ),  'point_style'))
+
+        # more front edge curve points
+        front_curve_offset = abs(jf.seam.center.hem_extension.x - jf.seam.side.hem.x) * (.25) # 2.54cm/13cm on drawing
+        x, y = pointAlongLine( jf.seam.center.hem_extension.x, jf.seam.center.hem_extension.y, jf.seam.side.hem.x, jf.seam.side.hem.y, front_curve_offset, 0 )
+        jf.seam.edge.add(Point('reference', 'end', x, y, 'point_style'))
+        jf.seam.edge.add(Point('reference', 'hem_allowance', jf.seam.edge.end.x,  jf.seam.edge.end.y + HEM_ALLOWANCE,  'point_style'))
+        jf.seam.edge.add(Point('reference', 'c2', jf.seam.edge.waist.x , jf.seam.edge.waist.y + (abs( jf.seam.edge.waist.y - jf.seam.edge.end.y )*(.3)), 'point_style'))
+        jf.seam.edge.add(Point('reference', 'c3', jf.seam.edge.waist.x - (abs( jf.seam.edge.waist.x - jf.seam.edge.end.x )*(.28)), \
+                    jf.seam.edge.waist.y + (abs( jf.seam.edge.waist.y - jf.seam.edge.end.y )*(.95)), 'point_style'))
+
+        # front shoulder seam points
+        jf.seam.add(Node('shoulder'))
+        jf.seam.shoulder.add(Point('reference', 'high', jf.armfront.x + (scale/8) + (1*cm_to_pt), jf.armfront.y - cd.front.chest.length, 'point_style'))
+        distance = abs(cd.front.shoulder.length**2 - myshoulderwidth**2)**(.5)
+        jf.seam.shoulder.add(Point('reference', 'low', jf.seam.shoulder.high.x - distance, jf.seam.shoulder.high.y + cd.front.shoulder.length, 'point_style'))
+        shoulder_extension = -(2.5)*cm_to_pt
+        x, y = pointAlongLine(jf.seam.shoulder.high.x,jf.seam.shoulder.high.y,jf.seam.shoulder.low.x,jf.seam.shoulder.low.y, shoulder_extension, 0)
+        jf.seam.shoulder.add(Point('reference', 'extension',x, y, 'point_style'))
+        # front shoulder seam control points
+        jf.seam.shoulder.add(Point('reference', 'c1', jf.seam.shoulder.high.x - abs( jf.seam.shoulder.low.x - jf.seam.shoulder.high.x ) * (.85), \
+                    jf.seam.shoulder.high.y + abs( jf.seam.shoulder.low.y - jf.seam.shoulder.high.y ) * (0.7),  'point_style' ))
+        jf.seam.shoulder.add(Point('reference', 'c2', jf.seam.shoulder.high.x - abs( jf.seam.shoulder.low.x - jf.seam.shoulder.high.x ) * (.45), \
+                    jf.seam.shoulder.high.y + abs( jf.seam.shoulder.low.y - jf.seam.shoulder.high.y ) * (.15),  'point_style'))
+
+        # armscye seam points
+        jf.seam.add(Node('armscye'))
+        jf.seam.armscye.add(Point('reference', 'back', jf.seam.side.balance.x, jf.seam.side.balance.y, 'point_style'))
+        jf.seam.armscye.add(Point('reference', 'dart_1', jf.armfront.x - armfront_to_underarm - (1*cm_to_pt) , jf.armfront.y, 'point_style'))
+        jf.seam.armscye.add(Point('reference', 'dart_2', jf.armfront.x - armfront_to_underarm + (1*cm_to_pt) , jf.armfront.y,  'point_style'))
+        jf.seam.armscye.add(Point('reference', 'armfront', jf.armfront.x,  jf.seam.armscye.dart_2.y - (4*cm_to_pt),  'point_style'))  # fix this - wrong #'s
+        jf.seam.armscye.add(Point('reference', 'shoulder', jf.seam.shoulder.low.x, jf.seam.shoulder.low.y, 'point_style'))
+        # control points between armscye back & dart_1
+        jf.seam.armscye.add( Point( 'reference', 'c1', jf.seam.armscye.back.x + ((0.21)* abs(jf.seam.armscye.back.x - jf.seam.armscye.dart_1.x) ), \
+             jf.seam.armscye.back.y + ( (0.54)*abs(jf.seam.armscye.back.y - jf.seam.armscye.dart_1.y) ), 'point_style') )
+        jf.seam.armscye.add( Point( 'reference', 'c2', jf.seam.armscye.back.x + ((0.57)*abs(jf.seam.armscye.back.x - jf.seam.armscye.dart_1.x) ), \
+             jf.seam.armscye.back.y + ( (0.94)*abs(jf.seam.armscye.back.y - jf.seam.armscye.dart_1.y) ), 'point_style') )
+        # control points between armscye dart_2 & armfront
+        jf.seam.armscye.add(Point('reference', 'c3', jf.seam.armscye.dart_2.x + (abs(jf.seam.armscye.dart_2.x - jf.seam.armscye.armfront.x)*0.58), \
+             jf.seam.armscye.dart_2.y - ((0.13)*(jf.seam.armscye.dart_2.y - jf.seam.armscye.armfront.y)), 'point_style'))
+        jf.seam.armscye.add(Point('reference', 'c4', jf.seam.armscye.dart_2.x + ((0.88)*abs(jf.seam.armscye.dart_2.x - jf.seam.armscye.armfront.x)), \
+             jf.seam.armscye.dart_2.y - ((0.42)*abs(jf.seam.armscye.dart_2.y - jf.seam.armscye.armfront.y)), 'point_style'))
+        # control points between armscye.armfront & shoulder.low
+        jf.seam.armscye.add(Point('reference', 'c5', jf.seam.armscye.armfront.x + ((0.25)*abs(jf.seam.armscye.armfront.x - jf.seam.armscye.shoulder.x)), \
+             jf.seam.armscye.armfront.y - ((0.35)*abs(jf.seam.armscye.armfront.y - jf.seam.armscye.shoulder.y)), 'point_style'))
+        jf.seam.armscye.add(Point('reference', 'c6', jf.seam.armscye.armfront.x - ((0.95)*abs(jf.seam.armscye.armfront.x - jf.seam.armscye.shoulder.x)), \
+             jf.seam.armscye.armfront.y - ((0.96)*abs(jf.seam.armscye.armfront.y - jf.seam.armscye.shoulder.y)), 'point_style'))
+
+        # neck curve
+        jf.seam.add(Node('neck'))
+        jf.seam.neck.add(Point('reference', 'start', jf.seam.shoulder.high.x,  jf.seam.shoulder.high.y,  'point_style'))
+        x, y = intersectionOfLines( jf.seam.neck.start.x, jf.seam.neck.start.y + cd.front.neck.length, jf.seam.edge.corner.x, \
+                        jf.seam.edge.corner.y, jf.seam.shoulder.extension.x, jf.seam.shoulder.extension.y, \
+                        jf.seam.edge.chest.x, jf.seam.edge.chest.y)
+        jf.seam.neck.add(Point('reference', 'roll_line', x, y, 'point_style'))
+        jf.seam.neck.add(Point('reference', 'end', jf.seam.edge.corner.x,  jf.seam.edge.corner.y,  'point_style'))
+        #neck curve control points
+        jf.seam.neck.add(Point('reference', 'c1', jf.seam.neck.start.x, jf.seam.neck.start.y + cd.front.neck.length, 'point_style' )) # between neck_start & roll_line
+        jf.seam.neck.add(Point('reference', 'c2', jf.seam.neck.roll_line.x +  ( abs( jf.seam.neck.roll_line.x - jf.seam.edge.corner.x ) * (.33) ), \
+                        jf.seam.neck.roll_line.y - ( 0.5*cm_to_pt) , 'point_style')) # between roll_line & end
+        jf.seam.neck.add(Point('reference', 'c3',  jf.seam.neck.roll_line.x + ( abs( jf.seam.neck.roll_line.x - jf.seam.edge.corner.x ) * (.66) ), \
+                        jf.seam.neck.roll_line.y - ( 0.5*cm_to_pt ),  'point_style' )) # between roll_line & end
+        jf.add(Line('reference', 'grainline', 'Collar & Lapel Roll Line', jf.seam.shoulder.extension.x, jf.seam.shoulder.extension.y, \
+                        jf.seam.edge.chest.x, jf.seam.edge.chest.y, 'grainline_style'))
+
+        # lapel dart
+        jf.add(Node('dart'))
+        jf.dart.add(Node('lapel'))
+        jf.dart.lapel.add(Point('reference', 'center',  jf.seam.edge.corner.x - ( abs(jf.seam.edge.corner.x - jf.seam.neck.roll_line.x)*(0.5) ),  jf.seam.edge.corner.y, 'point_style'))
+        jf.dart.lapel.add(Point('reference', 'start',  jf.dart.lapel.center.x - (front_lapel_dart_width*0.5),  jf.dart.lapel.center.y, 'point_style'))
+        jf.dart.lapel.add(Point('reference', 'end',  jf.dart.lapel.center.x + (front_lapel_dart_width*0.5),  jf.dart.lapel.center.y, 'point_style'))
+        jf.dart.lapel.add(Point('reference', 'point',  jf.dart.lapel.start.x - front_lapel_dart_width,  jf.dart.lapel.start.y + front_lapel_dart_height, 'point_style'))
+        jf.add(Line('reference', 'grainline', 'Lapel Dart Fold Line', jf.dart.lapel.center.x, jf.dart.lapel.center.y, jf.dart.lapel.point.x, jf.dart.lapel.point.y, 'grainline_style'))
+
+
+        #lower pocket points
+        jf.add(Node('pocket'))
+        jf.pocket.add(Node('lower'))
+        jf.pocket.lower.add(Point('reference', 'midpoint',  jf.armfront.x,  jf.armfront.y + lp_placement_offset,  'point_style'))
+        # lower pocket is parallel to slanted hem edge
+        m = slopeOfLine(jf.seam.side.hem.x,  jf.seam.side.hem.y,  jf.seam.center.hem_extension.x,  jf.seam.center.hem_extension.y)
+        # -spc- next line doesn't make sense to me
+        b = jf.pocket.lower.midpoint.y - (m * jf.pocket.lower.midpoint.x)
+        jf.pocket.lower.add(Point('reference',  'start', jf.pocket.lower.midpoint.x - (lp_width*0.5),  m*(jf.pocket.lower.midpoint.x- (lp_width*0.5)) + b,  'point_style'))
+        jf.pocket.lower.add(Point('reference','top_right',  jf.pocket.lower.midpoint.x + (lp_width*0.5),  m*(jf.pocket.lower.midpoint.x + (lp_width*0.5))+ b,  'point_style'))
+        jf.pocket.lower.add(Point('reference', 'c1',  jf.pocket.lower.top_right.x - lp_slant_offset,  jf.pocket.lower.top_right.y + lp_height,  'point_style'))
+        jf.pocket.lower.add(Point('reference', 'bottom_left',  jf.pocket.lower.start.x - lp_slant_offset,  jf.pocket.lower.start.y + lp_height,  'point_style'))
+        distance = lineLength(jf.pocket.lower.c1.x,  jf.pocket.lower.c1.y,  jf.pocket.lower.bottom_left.x,  jf.pocket.lower.bottom_left.y)*(.25)
+        x,  y = pointAlongLine(jf.pocket.lower.c1.x,  jf.pocket.lower.c1.y,  jf.pocket.lower.bottom_left.x,  jf.pocket.lower.bottom_left.y, distance,  0)
+        jf.pocket.lower.add(Point('reference', 'bottom_right',  x, y, 'point_style'))
+        jf.pocket.lower.add(Point('reference', 'end', jf.pocket.lower.start.x,  jf.pocket.lower.start.y,  'point_style'))
+        jf.add(Line('reference', 'grainline', 'Lower Pocket Placement Line', jf.pocket.lower.start.x, jf.pocket.lower.start.y, \
+                    jf.pocket.lower.top_right.x, jf.pocket.lower.top_right.y, 'grainline_style'))
+        # lower pocket grainline
+        jf.pocket.lower.add(Point('reference', 'g1', jf.pocket.lower.start.x + 60,  jf.pocket.lower.start.y,  'point_style'))
+        jf.pocket.lower.add(Point('reference', 'g2', jf.pocket.lower.bottom_left.x + 60,  jf.pocket.lower.bottom_left.y,  'point_style'))
+
+        # front underarm dart points
+        jf.dart.add(Node('underarm'))
+        jf.dart.underarm.add(Node('center'))   # underarm dart's center/fold line
+        jf.dart.underarm.center.add(Point('reference', 'start', jf.seam.armscye.dart_1.x + (front_side_dart_top_width*0.5),  jf.seam.armscye.dart_1.y , 'point_style'))
+        x,  y = pointAlongLine( jf.pocket.lower.midpoint.x, jf.pocket.lower.midpoint.y,  jf.pocket.lower.start.x,  jf.pocket.lower.start.y,  (4*cm_to_pt),  0 )
+        jf.dart.underarm.center.add(Point('reference', 'end',x, y, 'point_style'))
+        x,  y = pointAlongLine( jf.dart.underarm.center.end.x,  jf.dart.underarm.center.end.y,  jf.dart.underarm.center.start.x,  jf.dart.underarm.center.start.y, \
+                    ( abs( jf.dart.underarm.center.end.y - jf.seam.side.waist.y)  + (2*cm_to_pt) ),  0)
+        jf.dart.underarm.center.add(Point('reference', 'middle', x, y, 'point_style'))
+        # front underarm dart's stitch line
+        # TODO mirror this line around the center line
+        jf.dart.underarm.add(Point('reference', 'end',  jf.dart.underarm.center.end.x,  jf.dart.underarm.center.end.y,  'point_style'))
+        jf.dart.underarm.add(Point('reference', 'middle', jf.dart.underarm.center.middle.x - (front_side_dart_middle_width*.5), jf.dart.underarm.center.middle.y, 'point_style'))
+        x,  y = pointAlongLine( jf.seam.armscye.dart_1.x,  jf.seam.armscye.dart_1.y, jf.dart.underarm.middle.x,  jf.dart.underarm.middle.y,  SEAM_ALLOWANCE)
+        jf.dart.underarm.add(Point('reference', 'start',  x,  y,  'point_style'))
+        # front underarm dart control points
+        jf.dart.underarm.add(Point('reference', 'c1', jf.dart.underarm.start.x - (.06*cm_to_pt), jf.dart.underarm.start.y + \
+                    ( abs(jf.dart.underarm.start.y - jf.dart.underarm.middle.y)*(.2) ),  'point_style')) # between start & middle
+        jf.dart.underarm.add(Point('reference',  'c2',  jf.dart.underarm.start.x - (.31*cm_to_pt),  jf.dart.underarm.start.y + \
+                    ( abs(jf.dart.underarm.start.y - jf.dart.underarm.middle.y) * (.81) ),  'point_style'))
+        jf.dart.underarm.add(Point('reference', 'c3', jf.dart.underarm.middle.x + ( abs(jf.dart.underarm.middle.x - jf.dart.underarm.end.x)*(.24) ),  \
+                    jf.dart.underarm.middle.y + ( abs(jf.dart.underarm.middle.y - jf.dart.underarm.end.y)*(.4) ),  'point_style'))
+        jf.dart.underarm.add(Point('reference', 'c4',  jf.dart.underarm.middle.x + ( abs(jf.dart.underarm.middle.x - jf.dart.underarm.end.x)*(.74) ),
+                    jf.dart.underarm.middle.y + ( abs(jf.dart.underarm.middle.y - jf.dart.underarm.end.y)*(.83) ),  'point_style' ))
+        # front underarm fold line
+        jf.add(Line('reference', 'grainline', 'Underarm Dart Fold Line', jf.dart.underarm.start.x, jf.dart.underarm.start.y, \
+                    jf.dart.underarm.end.x, jf.dart.underarm.end.y, 'grainline_style'))
+
+        # welt pocket points
+        jf.pocket.add(Node('welt'))
+        jf.pocket.welt.add(Point('reference','start', jf.armfront.x + welt_placement_offset, jf.seam.edge.chest.y - welt_height, 'point_style'))
+        jf.pocket.welt.add(Point('reference','top_right', jf.pocket.welt.start.x + welt_width, jf.pocket.welt.start.y + welt_height_offset, 'point_style'))
+        jf.pocket.welt.add(Point('reference', 'bottom_right',  jf.pocket.welt.top_right.x,  jf.pocket.welt.top_right.y + welt_height,  'point_style'))
+        jf.pocket.welt.add(Point('reference', 'end',  jf.pocket.welt.start.x,  jf.pocket.welt.start.y + welt_height,  'point_style'))
+        jf.add(Line('reference', 'grainline', 'Welt Pocket Fold Line', jf.pocket.welt.start.x, jf.pocket.welt.start.y, \
+                    jf.pocket.welt.top_right.x, jf.pocket.welt.top_right.y, 'grainline_style'))
+        # TODO - mirror this around fold line  (start to top_right)
+
+        # Grainline
+        # TODO Put this in a Grainline class that includes arrows, styling, etc
+        jf.add(Point('reference', 'g1', ( jf.seam.edge.chest.x - abs(jf.seam.edge.chest.x - jf.armfront.x)*(0.5)) , ( jf.seam.edge.chest.y + (10*cm_to_pt) ), 'point_style'))
+        jf.add(Point('reference', 'g2', jf.g1.x, jf.g1.y + (40*cm_to_pt), 'point_style'))
+        jf.add(Line('reference', 'grainline', 'Grainline', jf.g1.x, jf.g1.y, jf.g2.x, jf.g2.y, 'grainline_style'))
+
+        # front Vertical Reference Grid
+        fgrid = Node('fgrid')
+        jf.add(fgrid)
+        fgrid.add(Line('reference', 'edge', 'Jacket Front - Lapel Edge', jf.seam.edge.corner.x, jf.seam.shoulder.high.y, jf.seam.edge.waist.x, jf.seam.center.waist.y, \
+             'reference_path_style'))
+        fgrid.add(Line('reference', 'fCenter', 'Jacket Front - Center', jf.seam.center.chest.x, jf.seam.center.chest.y, jf.seam.center.hem_extension.x, \
+             jf.seam.center.hem_extension.y, 'reference_path_style'))
+        fgrid.add(Line('reference', 'fArmFront', 'Jacket Front - Armfront', jf.armfront.x, jf.seam.shoulder.high.y, jf.pocket.lower.midpoint.x, jf.pocket.lower.midpoint.y, \
+             'reference_path_style'))
+        fgrid.add(Line('reference', 'fSide', 'Jacket Front - Side', 0, jf.seam.shoulder.high.y, 0, jf.seam.center.hem_allowance.y, 'reference_path_style'))
+        fgrid.add(Line('reference', 'fNeckHeight', 'Jacket Front - Neck Height', jf.seam.shoulder.high.x, jf.seam.shoulder.high.y, jf.seam.neck.c1.x, \
+             jf.seam.neck.c1.y, 'reference_path_style'))
+        fgrid.add(Line('reference', 'fSideDartCenterLine', 'Jacket Front - Side Dart', jf.dart.underarm.center.start.x, jf.dart.underarm.center.start.y, \
+             jf.dart.underarm.center.end.x, jf.dart.underarm.center.end.y, 'reference_path_style'))
+        fgrid.add(Line('reference', 'fGrainline', 'Jacket Front - Grainline', jf.g1.x, jf.g1.y, \
+             jf.g2.x, jf.g2.y, 'reference_path_style'))
+
+        # front Horizontal Reference Grid
+        fgrid.add( Line('reference', 'fShoulder', 'Jacket Front - Shoulder', jf.start.x, jf.seam.shoulder.high.y, jf.seam.edge.corner.x, jf.seam.shoulder.high.y, \
+                        'reference_path_style'))
+        fgrid.add( Line('reference', 'fChest', 'Jacket Front - Chest', jf.start.x, jf.seam.edge.chest.y, jf.seam.edge.chest.x, jf.seam.edge.chest.y, 'reference_path_style'))
+        fgrid.add( Line('reference', 'fWaist', 'Jacket Back - Waist', jf.start.x, jf.seam.edge.waist.y, jf.seam.edge.corner.x, jf.seam.edge.waist.y, 'reference_path_style'))
+        fgrid.add( Line('reference', 'fHip', 'Jacket Front - Hip', jf.start.x, jf.seam.center.hip.y, jf.seam.center.hip.x, jf.seam.center.hip.y, 'reference_path_style'))
+        fgrid.add( Line('reference', 'fHem', 'Jacket Front - Hem', jf.start.x, jf.seam.center.hem.y, jf.seam.center.hem.x, jf.seam.center.hem.y, 'reference_path_style'))
+        fgrid.add( Line('reference', 'fHem_extension', 'Jacket Front - Hem Extension', jf.start.x, jf.seam.center.hem.y, jf.seam.center.hem_extension.x, \
+                        jf.seam.center.hem_extension.y,  'reference_path_style'))
+        fgrid.add( Line('reference', 'fHem_allowance', 'Jacket Front - Hem Allowance', jf.start.x, jf.seam.side.hem_allowance.y, jf.seam.center.hem_allowance.x, \
+                        jf.seam.center.hem_allowance.y, 'reference_path_style'))
+
+        # front Lapel & Neck reference lines
+        fgrid.add( Line('reference', 'fRoll_line', 'Jacket Front - Roll Line', jf.seam.shoulder.extension.x, jf.seam.shoulder.extension.y, \
+                        jf.seam.edge.chest.x, jf.seam.edge.chest.y, 'reference_path_style'))
+        fgrid.add( Line('reference', 'fNeck_extension', 'Jacket Front - Shoulder Extension', jf.seam.shoulder.high.x,  jf.seam.shoulder.high.y, \
+                        jf.seam.shoulder.extension.x, jf.seam.shoulder.extension.y, 'reference_path_style'))
+        fgrid.add(Line('reference', 'fNeck_height',  'Jacket Front - Neck Height',  jf.seam.neck.start.x,  jf.seam.neck.start.y,  jf.seam.neck.c1.x, \
+                        jf.seam.neck.c1.y,  'reference_path_style'))
+        fgrid.add(Line('reference', 'fNeck_width',  'Jacket Front - Neck width',  jf.seam.neck.c1.x,  jf.seam.neck.c1.y,  jf.seam.edge.corner.x,  \
+                        jf.seam.edge.corner.y,  'reference_path_style'))
+        fgrid.add(Line('reference', 'fLapelDart', 'Jacket Front - Lapel Dart',  jf.dart.lapel.start.x,  jf.dart.lapel.start.y,  jf.dart.lapel.end.x,  \
+                       jf.dart.lapel.end.y,  'reference_path_style'))
+
+
+        # Hi there!
+
+        # Assemble all paths down here
+        # Paths are a bit differemt - we create the SVG and then create the object to hold it
+        # See the pysvg library docs for the pysvg methods
+        path_svg = path()
+        jf.add(Path('pattern', 'path', 'Jacket Front Neck Path', path_svg, 'seamline_path_style'))
+
+        # Front Neck Seam path - starts with 'jacket.front.seam.neck.start'
+        path_svg.appendMoveToPath(jf.seam.neck.start.x, jf.seam.neck.start.y, relative = False)
+        path_svg.appendQuadraticCurveToPath(jf.seam.neck.c1.x, jf.seam.neck.c1.y, jf.seam.neck.roll_line.x,  jf.seam.neck.roll_line.y, relative = False)
+        path_svg.appendCubicCurveToPath(jf.seam.neck.c2.x, jf.seam.neck.c2.y, jf.seam.neck.c3.x,  jf.seam.neck.c3.y, jf.seam.neck.end.x,  jf.seam.neck.end.y, relative = False)
+
+        # Front Edge Seam path - starts with 'jacket.front.seam.edge.c1
+        path_svg.appendQuadraticCurveToPath(jf.seam.edge.c1.x,  jf.seam.edge.c1.y, jf.seam.edge.chest.x, jf.seam.edge.chest.y,  relative = False)
+        path_svg.appendLineToPath(jf.seam.edge.waist.x,  jf.seam.edge.waist.y,  relative = False)
+        path_svg.appendCubicCurveToPath(jf.seam.edge.c2.x, jf.seam.edge.c2.y,  jf.seam.edge.c3.x,  jf.seam.edge.c3.y,  jf.seam.edge.end.x,  jf.seam.edge.end.y,  relative = False)
+        path_svg.appendLineToPath(jf.seam.edge.hem_allowance.x,  jf.seam.edge.hem_allowance.y,  relative = False)
+
+        # Front Hem Allowance path
+        path_svg.appendLineToPath(jf.seam.side.hem_allowance.x,  jf.seam.side.hem_allowance.y,  relative = False)
+
+        # Front Side Seam path
+        path_svg.appendLineToPath(jf.seam.side.hem.x,  jf.seam.side.hem.y, relative = False )
+        path_svg.appendLineToPath(jf.seam.side.hip.x,  jf.seam.side.hip.y, relative = False )
+        path_svg.appendCubicCurveToPath(jf.seam.side.c1.x,  jf.seam.side.c1.y, jf.seam.side.c2.x,  jf.seam.side.c2.y,  jf.seam.side.waist.x,  jf.seam.side.waist.y,  relative = False)
+        path_svg.appendCubicCurveToPath(jf.seam.side.c3.x,  jf.seam.side.c3.y,  jf.seam.side.c4.x,  jf.seam.side.c4.y, jf.seam.side.chest.x,  jf.seam.side.chest.y, relative = False)
+        path_svg.appendCubicCurveToPath(jf.seam.side.c5.x,  jf.seam.side.c5.y, jf.seam.side.c6.x,  jf.seam.side.c6.y,  jf.seam.side.balance.x,  jf.seam.side.balance.y,  relative = False)
+
+        # Front Armscye Seam path
+        path_svg.appendCubicCurveToPath(jf.seam.armscye.c1.x,  jf.seam.armscye.c1.y, jf.seam.armscye.c2.x,  jf.seam.armscye.c2.y, \
+                    jf.seam.armscye.dart_1.x,  jf.seam.armscye.dart_1.y,  relative = False)
+        path_svg.appendLineToPath(jf.seam.armscye.dart_1.x,  jf.seam.armscye.dart_1.y,  relative = False)
+        path_svg.appendLineToPath(jf.seam.armscye.dart_2.x,  jf.seam.armscye.dart_2.y,  relative = False)
+        path_svg.appendCubicCurveToPath(jf.seam.armscye.c3.x,  jf.seam.armscye.c3.y,  jf.seam.armscye.c4.x,  jf.seam.armscye.c4.y, \
+                    jf.seam.armscye.armfront.x,  jf.seam.armscye.armfront.y,  relative = False )
+        path_svg.appendCubicCurveToPath(jf.seam.armscye.c5.x,  jf.seam.armscye.c5.y,  jf.seam.armscye.c6.x,  jf.seam.armscye.c6.y,  \
+                    jf.seam.shoulder.low.x,  jf.seam.shoulder.low.y,  relative = False)
+
+        # Front Shoulder Seam path
+        path_svg.appendCubicCurveToPath(jf.seam.shoulder.c1.x, jf.seam.shoulder.c1.y, jf.seam.shoulder.c2.x,  jf.seam.shoulder.c2.y, \
+                    jf.seam.shoulder.high.x,  jf.seam.shoulder.high.y,  relative = False)
+
+
+
+
+
+
+
+       # boundgroups = ['pattern', 'reference']
+        boundgroups = ['pattern']
+        xlo, ylo, xhi, yhi = jf.boundingBox(boundgroups)
+        xhi = xhi + border
+        yhi = yhi + border
+
+
+
+        doc.length = yhi
+        doc.width = xhi
+        doc.draw()
+        return
+
+# vi:set ts=4 sw=4 expandtab:
+
