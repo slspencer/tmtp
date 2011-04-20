@@ -22,6 +22,8 @@ import sys
 import math
 import string
 
+from utils import debug
+
 from pysvg.filter import *
 from pysvg.gradient import *
 from pysvg.linking import *
@@ -32,12 +34,21 @@ from pysvg.style import *
 from pysvg.text import *
 from pysvg.builders import *
 
-
 def angleOfLine(x1, y1, x2, y2):
     """
     Accepts two sets of coordinates and returns the angle between them
     """
     return math.atan2(y2-y1,x2-x1)
+
+def slopeOfLine(x1, y1, x2, y2):
+    """
+    Accepts two sets of coordinates and returns the slope
+    """
+    try:
+        m = (y2-y1)/(x2-x1)
+    except ZeroDivisionError:
+        m = None
+    return m
 
 def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     """
@@ -196,9 +207,56 @@ def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
     #print 'trandformBoundingBox returning: ', xmin, ymin, xmax, ymax
     return xmin, ymin, xmax, ymax
 
+def lineLength(xstart, ystart, xend, yend):
+    #a^2 + b^2 = c^2
+    return math.sqrt((xend-xstart)**2)+((yend-ystart)**2)
+
+def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
+    """
+    Find intersection between two lines.
+    Intersection does not have to be withint the supplied line segments
+    """
+    # TODO this can be improved
+
+    # Find point x,y where m1*x+b1=m2*x + b2
+    # m = (ystart1-y2)/(xstart1-xend1) --> find slope for each line
+    # y = mx + b --> b = y - mx  --> find b for each line
+
+    try:
+        m1= slopeOfLine(xstart1, ystart1, xend1, yend1)
+    except ZeroDivisionError:
+        # vertical line
+        x = xstart1
+    b1 = (ystart1 - (m1 * xstart1)) # b=y-mx
+
+    try:
+        m2 = slopeOfLine(xstart2, ystart2, xend2, yend2)
+    except ZeroDivisionError:
+        # vertical line
+        x = xstart2
+    b2 = (ystart2 - (m2 * xstart2))
+
+    # test for parallel
+    if abs(b2 - b1) < 0.01:
+        debug('***** Parallel lines in intersectionOfLines *****')
+        return None, None
+
+    # find x where m1*xstart1 + b1 = m2*xend1 + b2, so that xstart1 = x & xend1 =x
+    # m1*x + b1        = m2*x + b2
+    # m1*x - m2*x      =  b2 - b1
+    # x( m1 - m2 )   = b2 - b1
+    # x = (b2-b1)/(m1-m2)
+    x = (b2 - b1) / (m1 - m2)
+    # find y where y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
+    y = (m1 * x) + b1
+    return x, y
 
 
 ################ End of things which have been adapted and are used in the new framework ################
+#
+# When any functions are moved into use, move them above this comment block and change the name
+# to match the lowerUpperUpper() convention
+#
 
 
 def AngleFromSlope(rise, run):
@@ -310,10 +368,6 @@ def Circle(layer, x, y, radius, color, name):
                 'r'   : str(radius) }
     inkex.etree.SubElement( layer, inkex.addNS( 'circle', 'svg' ), attribs )
 
-def Debug(msg):
-    sys.stderr.write( str( msg ) + '\n' )
-    return msg
-
 def Grainline(self, parent, x1, y1, x2, y2, name, trans = ''):
     grain_path = 'M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
     self.DrawPath( parent, grain_path, 'grainline', name, trans )
@@ -324,43 +378,6 @@ def DrawGrainline(parent, path, name, trans = ''):
     #!!!!!!not in use at this time
     #!!!!!!somehow add markers to line definition
     self.DrawPath( parent, path, 'grainline', name, trans )
-
-def IntersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4):
-    """
-    Find intersection between two lines
-    """
-    # Find point x,y where m1*x+b1=m2*x + b2
-    # m = (y1-y2)/(x1-x2) --> find slope for each line
-    # y = mx + b --> b = y - mx  --> find b for each line
-
-    # !!!!!!!!!!!!Test later for parallel lines  and vertical lines !!!!!!!!!
-
-    # Calulations for line 1:
-    m1= self.Slope( x1, y1, x2, y2, 'normal' )
-    if (m1 == 'undefined' ) :
-        # vertical line
-        x = x1
-    b1 = ( y1 - ( m1 * x1 ) )  # b=y-mx
-    # Calculations for line 2:
-    m2 = self.Slope( x3, y3, x4, y4, 'normal' )
-    if (m2 == 'undefined' ) :
-        x = x3
-    b2 = ( y3 - ( m2 * x3 ) )
-    # find x where m1*x1 + b1 = m2*x2 + b2, so that x1 = x & x2 =x
-    # m1*x + b1        = m2*x + b2
-    # m1*x - m2*x      =  b2 - b1
-    # x( m1 - m2 )   = b2 - b1
-    # x = (b2-b1)/(m1-m2)
-    x = ( b2 - b1) / ( m1 - m2)
-    # find y where y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
-    y = ( m1 * x ) + b1
-    return x, y
-
-def LineLength(x1, y1, x2, y2):
-    #a^2 + b^2 = c^2
-    c_squared = ( ( x1 - x2 )**2 ) + ( ( y1 - y2 )**2 )
-    c = self.Sqrt( c_squared )
-    return c
 
 def ListAttributes(my_object):
     # not in use
@@ -470,53 +487,6 @@ def PointFromDistanceAndAngle(x1, y1, distance, angle):
     y2 = y1 - (distance * math.sin(angle))
     return (x2, y2)
 
-def PointOnLine(x1,y1,x2,y2,length):
-    # x1, y1 is point to measure from to find x3, y3
-    # if mylength>0, x3,y3 will be extended from x1,y1 away from x2,y2
-    # if mylength<0, x3,y3 will be between x1,y1 and x2,y2
-    # x1,y1 and x2,y2 cannot be the same point
-    # line slope formula:     m = (y1-y2)/(x1-x2)
-    #                                   m(x1-x2) = y1-y2                       /* we'll use m(x1-x2) this in circle formula
-    #                                   m(x1-x2) - y1 = - y2                        /* we'll use this after we solve circle formula
-    #                                   y2 = y1 - m(x1 - x2)
-    # circle radius formula: (x1-x2)^2 + (y1-y2)^2 = r^2   /* note (y1-y2)
-    #                                   (x1-x2)^2 + (m(x1-x2))^2 = r^2         /* substitute m(x-x1) from line slope formula for (y-y1)
-    #                                   (x1-x2)^2 + (m^2)(x1-x2)^2 = r^2     /* distribute exponent
-    #                                   ((x1-x2)^2) (1 + m^2)= r^2                /* pull out common term (x-x1)^2 - advanced algebra - ding!
-    #                                    (x1-x2)^2 = (r^2)/(1+m^2)
-    #                                    (x1-x2) = r/sqrt(1+(m^2))
-    #                                     x1 = x-r/sqrt(1+(m^2))
-    #                               OR x1 = x+r/sqrt(1+(m^2))
-    # solve for (x3,y3)
-    m=self.Slope(x1,y1,x2,y2,'normal')
-    r=length
-    #solve for x3 with circle formula, e.g. right triangle formula
-    if (m=='undefined'):
-        # vertical line
-        x3=x1
-        if ( y1 >= y2 ):
-            # extend line downwards - drawing  has 0,0 at top left corner
-            y3 = y1 + r
-        else:
-            # extend line upwards
-            y3=y1-r
-    elif (m==0):
-        # horizontal line
-        y3=y1
-        if (x1 > x2):
-            # extend line towards right
-            x3 = x1 + r
-        else:
-            # extend line towards left
-            x3 = x1 - r
-    elif ( x1 > x2 ):
-        x3 = x1 + ( r / self.Sqrt(1+(m**2)) )
-        y3 = y1 - m*( x1 - x3 )                        #solve for y3 by plugging x3 into point-slope formula
-    else:
-        x3 = x1 - ( r / self.Sqrt(1+(m**2)) )
-        y3 = y1 -m*( x1 - x3 )                        #solve for y3 by plugging x1 into point-slope formula
-    return x3, y3
-
 
 ###################################################
 def sodipodi_namedview():
@@ -564,9 +534,6 @@ def sodipodi_namedview():
     #group.set('transform',"translate(%f,%f) scale(%f,%f)" % (-in-view[0], -in-view[1], scale*in-width/(in-view[2]-in-view[0]), scale*in-height/(in-view[3]-in-view[1])))
 
 
-def Sqrt(xsq ) :
-    x = abs( ( xsq )**( .5 ) )
-    return x
 
 ###################################################
 def svg_svg(width, height, border):
