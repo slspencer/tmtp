@@ -1,0 +1,42 @@
+{
+  "customername": {
+  		  "value":"Jane Doe",
+		  "type":"string",
+		  "gui_text":"Client Name"
+		  },
+  "measureunit": {
+  		 "value":"cm",
+		  "type":"string",
+		  "gui_text":"Units of measurement (in or cm)"
+		  },
+  "outside-leg": {
+  		  "value":"112.0",
+		  "type":"float",
+		  "gui_text":"Outside Leg"
+		  },
+  "inside-leg": {
+  		  "value":"80.0",
+		  "type":"float",
+		  "gui_text":"Inside Leg"
+		  },
+  "waist": {
+  		  "value":"86",
+		  "type":"float",
+		  "gui_text":"Waist"
+		  },
+  "seat": {
+  		  "value":"102.0",
+		  "type":"float",
+		  "gui_text":"Seat"
+		  },
+  "knee": {
+  		  "value":"50",
+		  "type":"float",
+		  "gui_text":"Knee"
+		  },
+  "bottom-width": {
+  		  "value":"43",
+		  "type":"float",
+		  "gui_text":"Bottom Width"
+		  }
+}
