@@ -504,7 +504,7 @@ class PatternDesign():
 
 
 
-        doc.length = yhi
+        doc.height = yhi
         doc.width = xhi
         doc.draw()
         return
