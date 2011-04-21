@@ -9,12 +9,12 @@
 		  "type":"string",
 		  "gui_text":"Units of measurement (in or cm)"
 		  },
-  "outside-leg": {
+  "outside_leg": {
   		  "value":"112.0",
 		  "type":"float",
 		  "gui_text":"Outside Leg"
 		  },
-  "inside-leg": {
+  "inside_leg": {
   		  "value":"80.0",
 		  "type":"float",
 		  "gui_text":"Inside Leg"
@@ -34,7 +34,7 @@
 		  "type":"float",
 		  "gui_text":"Knee"
 		  },
-  "bottom-width": {
+  "bottom_width": {
   		  "value":"43",
 		  "type":"float",
 		  "gui_text":"Bottom Width"
