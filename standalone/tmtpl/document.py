@@ -67,9 +67,10 @@ class Document(pBase):
        
     def draw(self):
         # create the base document
-        sz = svg(self.x, self.y)
-        sz.set_height(self.height)
-        sz.set_width(self.width)
+        sz = svg()
+        #sz = svg(self.x, self.y) -spc- experiment
+        sz.set_height(self.height + (2 * self.border))
+        sz.set_width(self.width + (2 * self.border))
 
         # add the scripting we need to handle events
         sc = script()
@@ -115,8 +116,20 @@ class Document(pBase):
         # Recursively get everything to draw
         svgdict = self.svg()
 
+        # -spc- TODO somwhere in here -
+        # create a new group inside the top level, and set the sizes to get the borders
+        # correct
+
+
         # and put it into the top level document
         for dictname, dictelements in svgdict.items():
+            if self.debug:
+                print 'processing group %s for output' % dictname
+            if dictname not in self.displayed_groups:
+                if self.debug:
+                    print 'Group %s is not enabled for display' % dictname
+                continue
+                
             self.groups[dictname] = g()
             # Set the ID to the group name
             self.groups[dictname].set_id(dictname)

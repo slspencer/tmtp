@@ -72,6 +72,14 @@ class PatternPiece(pBase):
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
 
+
+        # Get our bounding box, which can extend below zero coordinates
+        xlo, ylo, xhi, yhi = self.boundingBox(self.displayed_groups)
+        print 'PatternPiece-svg: bounding box is ', xlo, ylo, xhi, yhi
+
+        # -spc- TODO FIX THIS
+        # adjust the attributes on the group to get it contained correctly
+
         # We pass back everything but our layer untouched
         # For our layer, we bundle up all the children's SVG
         # and place it within a group that has our id

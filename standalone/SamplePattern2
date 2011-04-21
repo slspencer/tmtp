@@ -82,10 +82,11 @@ class PatternDesign():
         docattrs = {'currentScale' : "0.05 : 1",
                     'fitBoxtoViewport' : "True",
                     'preserveAspectRatio' : "xMidYMid meet",
-                    'margin-bottom' : str(border),
-                    'margin-left' : str(border),
-                    'margin-right' : str(border),
-                    'margin-top' : str(border),
+                    #'margin-bottom' : str(border),
+                    #'margin-left' : str(border),
+                    #'margin-right' : str(border),
+                    #'margin-top' : str(border),
+                    'zoomAndPan' : 'magnify',
                     'company-name' : companyName,
                     'designer-name' : designerName,
                     'pattern-number' : patternNumber,
@@ -106,8 +107,8 @@ class PatternDesign():
         #
 
         # pattern start, count & placement
-        x = border
-        y = border
+        #x = 0
+        #y = 0
 
         pt_to_cm = 2.54/90
         myneckwidth = 13.5*cm_to_pt
@@ -492,20 +493,21 @@ class PatternDesign():
 
 
 
+# -spc- TODO clean this up
+#        boundgroups = ['pattern', 'reference']
+        #boundgroups = ['pattern']
+#        xlo, ylo, xhi, yhi = jf.boundingBox(boundgroups)
 
 
+#        print 'xlo = ', xlo
+#        print 'ylo = ', ylo
+#        doc.x = xlo
+#        doc.y = ylo
 
-
-       # boundgroups = ['pattern', 'reference']
-        boundgroups = ['pattern']
-        xlo, ylo, xhi, yhi = jf.boundingBox(boundgroups)
-        xhi = xhi + border
-        yhi = yhi + border
-
-
-
-        doc.height = yhi
-        doc.width = xhi
+#        doc.height = yhi-ylo
+#        doc.width = xhi-xlo
+        doc.displayed_groups.append('pattern')
+        doc.displayed_groups.append('reference')
         doc.draw()
         return
 

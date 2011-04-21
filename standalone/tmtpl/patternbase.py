@@ -30,6 +30,7 @@ class pBase(object):
     # and 'reference' These are grouped so that display of the reference group
     # can be turned on and off
     groups = {}
+    displayed_groups = []
     debug = False
     styledefs = {}
 
