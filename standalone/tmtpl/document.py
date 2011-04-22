@@ -66,6 +66,11 @@ class Document(pBase):
         pBase.__init__(self) 
        
     def draw(self):
+        # if there are no groups in the list of ones to draw, then default to all of them
+        if len(self.displayed_groups) == 0:
+            for groupname in self.groups:
+                self.displayed_groups.append(groupname)
+
         # create the base document
         sz = svg()
 
