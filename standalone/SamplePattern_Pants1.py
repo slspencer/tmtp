@@ -68,11 +68,11 @@ class PatternDesign():
         printer='36" wide carriage plotter'
         if (printer == '36" wide carriage plotter'):
             paper_width  = ( 36 * in_to_pt )
-            border       = ( 1 * in_to_pt )        # 1" document borders
+            border       = ( 5*cm_to_pt )        # document borders
 
         # create the document info and fill it in
         # TODO - abstract these into configuration file(s)
-        companyName = 'New Day'
+        companyName = 'Swank Patterns'
         designerName = 'Susan Spencer'
         patternName = 'Steampunk Trousers'
         patternNumber = '1870-M-T-1'
@@ -163,11 +163,6 @@ class PatternDesign():
         tf.add(Point('reference', '_4', tf.E.x - (4*cm_to_pt), tf.E.y, 'point_style'))
         tf.add(Point('reference', '_5', tf.F.x - (2.5*cm_to_pt), tf.F.y, 'point_style'))
         tf.add(Point('reference', '_6', tf._4.x, tf.D.y, 'point_style'))
-
-        distance = (tf._4.y - tf._6.y)/2
-        x, y = pointAlongLine(tf._4.x, tf._4.y, tf._5.x, tf._5.y, -distance)
-        tf.add(Point('reference', 'V', x,  y, 'point_style'))
-
         tf.add(Point('reference', '_7', tf.B.x + (cd.waist/4),  tf.B.y, 'point_style'))
         tf.add(Point('reference', '_8', tf._7.x + (0.5*cm_to_pt), tf.A.y, 'point_style'))
         tf.add(Point('reference', '_9', tf.I.x + (cd.seat/4) - (1*cm_to_pt), tf.I.y, 'point_style'))
@@ -179,35 +174,76 @@ class PatternDesign():
         tf.add(Point('reference', '_15', tf._14.x, tf._14.y - (2*cm_to_pt), 'point_style'))
         tf.add(Point('reference', '_16', tf._2.x + ( (tf._11.x - tf._2.x)/2 ), tf._2.y, 'point_style'))
 
-        tf.add(Point('reference', 'G', tf._16.x , tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'c1', tf._2.x + ( abs(tf._2.x - tf._3.x)*.34 ), tf._2.y - ( abs(tf._2.y - tf._3.y)*.28 ), 'point_style')) #b/w 2 & 3
+        tf.add(Point('reference', 'c2', tf._2.x + ( abs(tf._2.x - tf._3.x)*.75 ), tf._2.y - ( abs(tf._2.y - tf._3.y)*.51 ), 'point_style')) #b/w 2 & 3
+        tf.add(Point('reference', 'c3', tf._3.x + ( abs(tf._3.x - tf.C.x)*.63 ), tf._3.y - ( abs(tf._3.y - tf.C.y)*.27 ), 'point_style'))  #b/w 3 & C
+        tf.add(Point('reference', 'c4', tf.C.x, tf._3.y - ( abs(tf._3.y - tf.C.y)*.65 ), 'point_style')) # b/w 3 & C
+        tf.add(Point('reference', 'c5', tf.A.x, tf.C.y - ( abs(tf.C.y - tf.A.y)*.31 ), 'point_style')) # b/w C & A
+        tf.add(Point('reference', 'c6', tf.A.x, tf.A.y, 'point_style')) # b/w C & A
 
-        # Seam Line clockwise from A:
+        tf.add(Point('reference', 'G', tf._16.x , tf.A.y, 'point_style'))
+        distance = (tf._4.y - tf._6.y)/2
+        x, y = pointAlongLine(tf._4.x, tf._4.y, tf._5.x, tf._5.y, -distance)
+        tf.add(Point('reference', 'J', x,  y, 'point_style'))
+        tf.add(Point('reference', 'K',  tf._5.x, tf._5.y + HEM_ALLOWANCE, 'point_style'))
+        tf.add(Point('reference', 'L',  tf._13.x, tf._13.y + HEM_ALLOWANCE, 'point_style'))
+        tf.add(Point('reference', 'M',  tf._15.x, tf._15.y + HEM_ALLOWANCE, 'point_style'))
+        # Seam Line clockwise from :
 
        # Assemble all paths down here
         # Paths are a bit differemt - we create the SVG and then create the object to hold it
         # See the pysvg library docs for the pysvg methods
-        path_svg = path()
-        tf.add(Path('pattern', 'path', 'Trousers Inside Path', path_svg, 'seamline_path_style'))
-        path_svg.appendMoveToPath(tf.A.x, tf.A.y, relative = False)
-        path_svg.appendLineToPath(tf._8.x, tf._8.y, relative = False)
-        path_svg.appendLineToPath(tf._7.x, tf._7.y, relative = False)
-        path_svg.appendLineToPath(tf._9.x, tf._9.y, relative = False)
-        path_svg.appendLineToPath(tf._10.x, tf._10.y, relative = False)
-        path_svg.appendLineToPath(tf._11.x, tf._11.y, relative = False)
-        path_svg.appendLineToPath(tf._12.x, tf._12.y, relative = False)
-        path_svg.appendLineToPath(tf._13.x, tf._13.y, relative = False)
-        path_svg.appendLineToPath(tf._15.x, tf._15.y, relative = False)
-        path_svg.appendLineToPath(tf._5.x, tf._5.y, relative = False)
-        path_svg.appendLineToPath(tf._4.x, tf._4.y, relative = False)
-        path_svg.appendLineToPath(tf.V.x, tf.V.y, relative = False)
-        path_svg.appendLineToPath(tf._2.x, tf._2.y, relative = False)
-        path_svg.appendLineToPath(tf._3.x, tf._3.y, relative = False)
-        path_svg.appendLineToPath(tf.C.x, tf.C.y, relative = False)
-        path_svg.appendLineToPath(tf.A.x, tf.A.y, relative = False)
+        seamline_path_svg = path()
+        tf.add(Path('pattern', 'path', 'Trousers Front Seamline Path', seamline_path_svg, 'seamline_path_style'))
+        seamline_path_svg.appendMoveToPath(tf.A.x, tf.A.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._8.x, tf._8.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._7.x, tf._7.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._9.x, tf._9.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._10.x, tf._10.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._11.x, tf._11.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._12.x, tf._12.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf.L.x, tf.L.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf.M.x, tf.M.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf.K.x, tf.K.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._4.x, tf._4.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf.J.x, tf.J.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._2.x, tf._2.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf._3.x, tf._3.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf.C.x, tf.C.y, relative = False)
+        seamline_path_svg.appendLineToPath(tf.A.x, tf.A.y, relative = False)
 
+        cuttingline_path_svg = path()
+        tf.add(Path('pattern', 'path', 'Trousers Front Cuttingline Path', cuttingline_path_svg, 'cuttingline_style'))
+        cuttingline_path_svg.appendMoveToPath(tf.A.x, tf.A.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._8.x, tf._8.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._7.x, tf._7.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._9.x, tf._9.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._10.x, tf._10.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._11.x, tf._11.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._12.x, tf._12.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf.L.x, tf.L.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf.M.x, tf.M.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf.K.x, tf.K.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._4.x, tf._4.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf.J.x, tf.J.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._2.x, tf._2.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf._3.x, tf._3.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf.C.x, tf.C.y, relative = False)
+        cuttingline_path_svg.appendLineToPath(tf.A.x, tf.A.y, relative = False)
+
+        hemline_path_svg = path()
+        tf.add(Path('pattern', 'path', 'Trousers Front Hemline Path', hemline_path_svg, 'dart_style'))
+        hemline_path_svg.appendMoveToPath(tf._13.x, tf._13.y, relative = False)
+        hemline_path_svg.appendLineToPath(tf._15.x, tf._15.y, relative = False)
+        hemline_path_svg.appendLineToPath(tf._5.x, tf._5.y, relative = False)
+
+        waistline_path_svg = path()
+        tf.add(Path('pattern', 'path', 'Trousers Front Waistline Path', waistline_path_svg, 'dart_style'))
+        waistline_path_svg.appendMoveToPath(tf.B.x, tf.B.y, relative = False)
+        waistline_path_svg.appendLineToPath(tf._7.x, tf._7.y, relative = False)
 
         # Write description on pattern piece
-        companyName = 'New Day'
+        companyName = 'Swank Patterns'
         designerName = 'Susan Spencer'
         patternName = 'Steampunk Trousers'
         patternNumber = '1870-M-P-1'
