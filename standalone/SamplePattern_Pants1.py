@@ -264,18 +264,6 @@ class PatternDesign():
         tb = TextBlock('pattern', 'info', 'Headline', x, y, text, 'default_textblock_text_style', 'textblock_box_style')
         tf.add(tb)
 
-        # Calculate bounding box for the pattern piece, pattern group only
-        # This is pretty ugly and we can do better
-        #
-
-        #boundgroups = ['pattern', 'reference']
-        boundgroups = ['pattern']
-        xlo, ylo, xhi, yhi = tf.boundingBox(boundgroups)
-        xhi = xhi + border
-        yhi = yhi + border
-
-        doc.height = yhi
-        doc.width = xhi
         doc.draw()
         return
 
