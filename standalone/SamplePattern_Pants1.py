@@ -58,8 +58,10 @@ class PatternDesign():
         #
         # self.cfg - configuration settings from the main app framework
         #
+        # TODO find a way to get this administrative cruft out of this pattern method
 
         cd = self.cd
+        self.cfg['clientdata'] = cd
 
         # pattern name
         pattern_pieces    = 4
@@ -67,44 +69,30 @@ class PatternDesign():
         # TODO also extract these from this file to somewhere else
         printer='36" wide carriage plotter'
         if (printer == '36" wide carriage plotter'):
-            paper_width  = ( 36 * in_to_pt )
-            border       = ( 5*cm_to_pt )        # document borders
+            self.cfg['paper_width']  = ( 36 * in_to_pt )
+            self.cfg['border']       = ( 5*cm_to_pt )        # document borders
+
+        border = self.cfg['border']
 
         # create the document info and fill it in
         # TODO - abstract these into configuration file(s)
-        companyName = 'Swank Patterns'
-        designerName = 'Susan Spencer'
-        patternName = 'Steampunk Trousers'
-        patternNumber = '1870-M-T-1'
-        clientName = cd.customername
+        metainfo = {'companyName':'Swank Patterns',      # mandatory
+                    'designerName':'Susan Spencer',      # mandatory
+                    'patternName':'Steampunk Trousers',  # mandatory
+                    'patternNumber':'1870-M-T-1'         # mandatory
+                    }
+        self.cfg['metainfo'] = metainfo
 
         # attributes for the entire svg document
         docattrs = {'currentScale' : "0.05 : 1",
                     'fitBoxtoViewport' : "True",
                     'preserveAspectRatio' : "xMidYMid meet",
-                    'margin-bottom' : str(border),
-                    'margin-left' : str(border),
-                    'margin-right' : str(border),
-                    'margin-top' : str(border),
-                    'company-name' : companyName,
-                    'designer-name' : designerName,
-                    'pattern-number' : patternNumber,
-                    'pattern-name' : patternName,
-                    'client-name' : clientName
                     }
 
         doc = Document(self.cfg, name = 'document', attributes = docattrs)
 
-        # TODO also extract these from this file to somewhere else
-        if (printer == '36" wide carriage plotter'):
-            doc.paper_width  = paper_width
-            doc.border       = border
-
         # Set up the title block
-        tb = TitleBlock('pattern', 'titleblock', doc.border, doc.border,
-                        company_name = companyName, pattern_name = patternName,
-                        pattern_number = patternNumber, client_name = clientName,
-                        stylename = 'titleblock_text_style')
+        tb = TitleBlock('pattern', 'titleblock', self.cfg['border'], self.cfg['border'], stylename = 'titleblock_text_style')
         doc.add(tb)
 
         #
@@ -242,28 +230,13 @@ class PatternDesign():
         waistline_path_svg.appendMoveToPath(tf.B.x, tf.B.y, relative = False)
         waistline_path_svg.appendLineToPath(tf._7.x, tf._7.y, relative = False)
 
-        # Write description on pattern piece
-        companyName = 'Swank Patterns'
-        designerName = 'Susan Spencer'
-        patternName = 'Steampunk Trousers'
-        patternNumber = '1870-M-P-1'
-        clientName = cd.customername
+        # set the label location. Somday this should be automatic
+        tf.label_x = tf._16.x + 30
+        tf.label_y = tf._16.y
 
-        text = []
-        # TODO - take these from the same configurable place where we get them for the document attributes
-        text.append(companyName)
-        text.append('Designer: %s' % designerName)
-        text.append(patternNumber)
-        text.append('Pattern Piece %s' % tf.letter)
-        if tf.fabric > 0:
-            text.append('Cut %d Fabric' % tf.fabric)
-        if tf.interfacing > 0:
-            text.append('Cut %d Interfacing' % tf.interfacing)
+        # end of first pattern piece
 
-        x, y = tf._16.x + 30,  tf._16.y
-        tb = TextBlock('pattern', 'info', 'Headline', x, y, text, 'default_textblock_text_style', 'textblock_box_style')
-        tf.add(tb)
-
+        # call draw once for the entire pattern
         doc.draw()
         return
 

@@ -57,6 +57,8 @@ class PatternPiece(pBase):
         self.groupname = group
         self.width = 0
         self.height = 0
+        self.labelx = 0
+        self.labely = 0
         self.letter = letter
         self.fabric = fabric
         self.interfacing = interfacing
@@ -71,6 +73,8 @@ class PatternPiece(pBase):
         """
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
+
+        self.makeLabel()
 
         # We pass back everything but our layer untouched
         # For our layer, we bundle up all the children's SVG
@@ -99,6 +103,30 @@ class PatternPiece(pBase):
             childlist[child_group] = my_group_list
 
         return childlist
+
+    def makeLabel(self):
+        """
+        Create a label block for display on the pattern piece, which contains
+        information like pattern number, designer name, logo, etc
+        """
+        text = []
+        mi = self.cfg['metainfo']
+
+        text.append(mi['companyName'])
+
+        text.append('Designer: %s' % mi['designerName'])
+        text.append('Client: %s' % self.cfg['clientdata'].customername)
+        text.append(mi['patternNumber'])
+        text.append('Pattern Piece %s' % self.letter)
+        if self.fabric > 0:
+            text.append('Cut %d Fabric' % self.fabric)
+        if self.interfacing > 0:
+            text.append('Cut %d Interfacing' % self.interfacing)
+
+        tb = TextBlock('pattern', 'info', 'Headline', self.label_x, self.label_y, text, 'default_textblock_text_style', 'textblock_box_style')
+        self.add(tb)
+
+        return
 
     def boundingBox(self, grouplist = None):
         """

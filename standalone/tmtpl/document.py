@@ -59,11 +59,7 @@ class Document(pBase):
         self.cfg.update(prog_cfg)
         self.filename = self.cfg['args'][0]
         self.attrs = attributes
-        self.company = ''
-        self.pattern_number = ''
-        self.pattern_name = ''
-        self.paper_width = 0.0
-        self.border = 0.0
+
         # if any print groups specified, aset up the internal list
         if 'print_groups' in self.cfg:
             self.displayed_groups = self.cfg['print_groups'].split(',')
@@ -80,6 +76,10 @@ class Document(pBase):
                 todelete.append(gpname)
         for delgrp in todelete:
             self.displayed_groups.remove(delgrp)
+
+        # any sanity checks on configuration before drawing go here
+        if 'border' not in self.cfg:
+            self.cfg['border'] = 0.0
 
         # if there are no groups in the list of ones to draw, then default to all of them
         if len(self.displayed_groups) == 0:
@@ -102,7 +102,21 @@ class Document(pBase):
         ttel = self.generateText(0, 0, 'tooltip', 'ToolTip', 'tooltip_text_style')
         ttel.setAttribute('visibility', 'hidden')
         sz.addElement(ttel)
+
+        # for some of the common information, make them attributes also
+        mi = self.cfg['metainfo']
+        for lbl in ['companyName', 'designerName', 'patternname', 'patternNumber']:
+            if lbl in mi:
+                self.attrs[lbl] = mi[lbl]
+
+        self.attrs['client-name'] = self.cfg['clientdata'].customername
         
+        # adjust any attributes in the list
+        self.attrs['margin-bottom'] = str(self.cfg['border'])
+        self.attrs['margin-left'] = str(self.cfg['border'])
+        self.attrs['margin-right'] = str(self.cfg['border'])
+        self.attrs['margin-top'] = str(self.cfg['border'])
+
         # Add attributes - TODO probably put these in a dictionary as
         # part of the document class
         #
@@ -141,13 +155,13 @@ class Document(pBase):
 
         # Add/modify the transform so that the whole pattern piece originates at 0,0 and is offset by border
         xlo, ylo, xhi, yhi = self.boundingBox()
-        xtrans = (-1.0 * xlo) + self.border
-        ytrans = (-1.0 * ylo) + self.border
+        xtrans = (-1.0 * xlo) + self.cfg['border']
+        ytrans = (-1.0 * ylo) + self.cfg['border']
         fixuptransform = ('translate(%f,%f)' % (xtrans, ytrans))
 
         # -spc- TODO This is clearly wrong - it sizes the document to the pattern and ignores paper size
-        xsize = (xhi - xlo) + (2.0 * self.border)
-        ysize = (yhi - ylo) + (2.0 * self.border)
+        xsize = (xhi - xlo) + (2.0 * self.cfg['border'])
+        ysize = (yhi - ylo) + (2.0 * self.cfg['border'])
         sz.set_height(ysize)
         sz.set_width(xsize)
 
@@ -178,14 +192,8 @@ class Document(pBase):
         return
         
 class TitleBlock(pBase):
-    def __init__(self, group, name, x, y, company_name = 'Company Name',
-                 pattern_name = 'Pattern Name', pattern_number = 'Pattern Number',
-                 client_name = 'Client Name', stylename = ''):
+    def __init__(self, group, name, x, y, stylename = ''):
         self.name = name
-        self.company_name = company_name
-        self.pattern_name = pattern_name
-        self.pattern_number = pattern_number
-        self.client_name = client_name
         self.groupname = group
         self.stylename = stylename
         self.x = x
@@ -211,13 +219,16 @@ class TitleBlock(pBase):
         text_space =  ( int(self.styledefs[self.stylename]['font-size']) * 1.1 )
         x = self.x
         y = self.y
-        tbg.addElement(self.generateText(x, y, 'company', self.company_name, self.stylename))
+        mi = self.cfg['metainfo']
+        tbg.addElement(self.generateText(x, y, 'company', mi['companyName'], self.stylename))
         y = y + text_space
-        tbg.addElement(self.generateText(x, y, 'pattern_number', self.pattern_number, self.stylename))
+        tbg.addElement(self.generateText(x, y, 'designer', mi['designerName'], self.stylename))
         y = y + text_space
-        tbg.addElement(self.generateText(x, y, 'pattern_name', self.pattern_name, self.stylename))
+        tbg.addElement(self.generateText(x, y, 'pattern_number', mi['patternNumber'], self.stylename))
         y = y + text_space
-        tbg.addElement(self.generateText(x, y, 'client', self.client_name, self.stylename))
+        tbg.addElement(self.generateText(x, y, 'pattern_name', mi['patternName'], self.stylename))
+        y = y + text_space
+        tbg.addElement(self.generateText(x, y, 'client', self.cfg['clientdata'].customername, self.stylename))
         y = y + text_space
 
         md[self.groupname].append(tbg)
