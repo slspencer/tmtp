@@ -93,7 +93,7 @@ class PatternDesign():
                     'client-name' : clientName
                     }
 
-        doc = Document(self.cfg['args'][0], name = 'document', attributes = docattrs)
+        doc = Document(self.cfg, name = 'document', attributes = docattrs)
 
         # TODO also extract these from this file to somewhere else
         if (printer == '36" wide carriage plotter'):
