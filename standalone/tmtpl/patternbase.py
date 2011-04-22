@@ -33,6 +33,7 @@ class pBase(object):
     displayed_groups = []
     debug = False
     styledefs = {}
+    cfg = {}
 
     def __init__(self):
         self.children = []

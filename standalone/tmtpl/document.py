@@ -49,14 +49,15 @@ class Document(pBase):
     the draw() method on the document, which creates the svg document, then the groups
     within that and calls the svg() methods on each item to be drawn
     """
-    def __init__(self, filename, name = 'UnnamedDocument', attributes = None):
+    def __init__(self, prog_cfg, name = 'UnnamedDocument', attributes = None):
         self.name = name
         self.id = name
         self.x = 0
         self.y = 0
         self.width = 8.5 * in_to_pt
         self.height = 11.0 * in_to_pt
-        self.filename = filename
+        self.cfg.update(prog_cfg)
+        self.filename = self.cfg['args'][0]
         self.attrs = attributes
         self.company = ''
         self.pattern_number = ''
@@ -66,6 +67,7 @@ class Document(pBase):
         pBase.__init__(self) 
        
     def draw(self):
+
         # if there are no groups in the list of ones to draw, then default to all of them
         if len(self.displayed_groups) == 0:
             for groupname in self.groups:
