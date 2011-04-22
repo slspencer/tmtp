@@ -64,9 +64,22 @@ class Document(pBase):
         self.pattern_name = ''
         self.paper_width = 0.0
         self.border = 0.0
+        # if any print groups specified, aset up the internal list
+        if 'print_groups' in self.cfg:
+            self.displayed_groups = self.cfg['print_groups'].split(',')
         pBase.__init__(self) 
        
     def draw(self):
+
+        # the user may have specified on the command line to draw groups that
+        # aren't present in the file. If so, print a warning and remove those.
+        todelete = []
+        for gpname in self.displayed_groups:
+            if gpname not in self.groups:
+                print 'Warning: Command line printgroups argument included group <%s> but that group is not in the pattern' % gpname
+                todelete.append(gpname)
+        for delgrp in todelete:
+            self.displayed_groups.remove(delgrp)
 
         # if there are no groups in the list of ones to draw, then default to all of them
         if len(self.displayed_groups) == 0:

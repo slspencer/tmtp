@@ -109,6 +109,9 @@ class Cmdline:
         stdo("        --styles=<styles file>                                                              \n")
         stdo("                         The full path to the styles file to use.                            \n")
         stdo("                                                                                             \n")
+        stdo("        --printgroups=<groupname1,groupname2, . . .>                                         \n")
+        stdo("                         The groups you want in the output (defaults to all).                \n")
+        stdo("                                                                                             \n")
         stdo("        --client=<client file>                                                               \n")
         stdo("                         The full path to the client data file to use.                       \n")
         stdo("                                                                                             \n")
@@ -131,7 +134,7 @@ class Cmdline:
         result = True
         try:
             optsShort = ''
-            optsLong  = ['help', 'verbose', 'config=', 'pattern=', 'styles=', 'client=', 'debug=']
+            optsLong  = ['help', 'verbose', 'config=', 'pattern=', 'printgroups=', 'styles=', 'client=', 'debug=']
             opts, args = getopt(argv[1:], optsShort, optsLong)
 
             if len(args) != 1:
@@ -151,6 +154,9 @@ class Cmdline:
 
                 elif opt in ('--pattern'):
                     self.cfg['pattern_file'] = val
+
+                elif opt in ('--printgroups'):
+                    self.cfg['print_groups'] = val
 
                 elif opt in ('--styles'):
                     self.cfg['styles_file'] = val
@@ -231,6 +237,13 @@ class AppTemplate(StdApp):
         else:
             cmdline.error('Error: You must specify a styles file\n\n', self.defaults)
             return
+
+        if self.cfg.has_key('print_groups'):
+            pgrps = self.cfg['print_groups']
+            if pgrps == '':
+                print "No groups specified for --printgroups="
+            if verbose:
+                print "Printing groups: <%s>" % pgrps
 
         dbgdump = False
         if self.cfg.has_key('debug'):

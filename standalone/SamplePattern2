@@ -491,10 +491,6 @@ class PatternDesign():
         path_svg.appendCubicCurveToPath(jf.seam.shoulder.c1.x, jf.seam.shoulder.c1.y, jf.seam.shoulder.c2.x,  jf.seam.shoulder.c2.y, \
                     jf.seam.shoulder.high.x,  jf.seam.shoulder.high.y,  relative = False)
 
-
-
-        doc.displayed_groups.append('pattern')
-        doc.displayed_groups.append('reference')
         doc.draw()
         return
 
