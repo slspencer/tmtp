@@ -493,19 +493,6 @@ class PatternDesign():
 
 
 
-# -spc- TODO clean this up
-#        boundgroups = ['pattern', 'reference']
-        #boundgroups = ['pattern']
-#        xlo, ylo, xhi, yhi = jf.boundingBox(boundgroups)
-
-
-#        print 'xlo = ', xlo
-#        print 'ylo = ', ylo
-#        doc.x = xlo
-#        doc.y = ylo
-
-#        doc.height = yhi-ylo
-#        doc.width = xhi-xlo
         doc.displayed_groups.append('pattern')
         doc.displayed_groups.append('reference')
         doc.draw()

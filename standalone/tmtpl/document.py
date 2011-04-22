@@ -68,9 +68,6 @@ class Document(pBase):
     def draw(self):
         # create the base document
         sz = svg()
-        #sz = svg(self.x, self.y) -spc- experiment
-        sz.set_height(self.height + (2 * self.border))
-        sz.set_width(self.width + (2 * self.border))
 
         # add the scripting we need to handle events
         sc = script()
@@ -116,12 +113,24 @@ class Document(pBase):
         # Recursively get everything to draw
         svgdict = self.svg()
 
-        # -spc- TODO somwhere in here -
-        # create a new group inside the top level, and set the sizes to get the borders
-        # correct
+        #
+        # -spc- TODO Future note - How can we get a list of all patternpieces, in order to do autolayout?
+        # here is where we would translate various pattern pieces
 
 
-        # and put it into the top level document
+
+        # Add/modify the transform so that the whole pattern piece originates at 0,0 and is offset by border
+        xlo, ylo, xhi, yhi = self.boundingBox()
+        xtrans = (-1.0 * xlo) + self.border
+        ytrans = (-1.0 * ylo) + self.border
+        fixuptransform = ('translate(%f,%f)' % (xtrans, ytrans))
+
+        # -spc- TODO This is clearly wrong - it sizes the document to the pattern and ignores paper size
+        xsize = (xhi - xlo) + (2.0 * self.border)
+        ysize = (yhi - ylo) + (2.0 * self.border)
+        sz.set_height(ysize)
+        sz.set_width(xsize)
+
         for dictname, dictelements in svgdict.items():
             if self.debug:
                 print 'processing group %s for output' % dictname
@@ -133,6 +142,9 @@ class Document(pBase):
             self.groups[dictname] = g()
             # Set the ID to the group name
             self.groups[dictname].set_id(dictname)
+
+            # set the transform in each group
+            self.groups[dictname].setAttribute('transform', fixuptransform)
 
             # Now add all the elements to it
             for svgel in dictelements:

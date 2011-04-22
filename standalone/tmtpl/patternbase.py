@@ -124,7 +124,7 @@ class pBase(object):
                         md[grpnm].append(svgitem)
         return md
 
-    def boundingBox(self, grouplist):
+    def boundingBox(self, grouplist = None):
         """
         Return two points which define a bounding box around the object
         """
@@ -148,18 +148,23 @@ class pBase(object):
             if self.debug:
                 print 'BB for child ', child.name
             if child.boundingBox:
-               cxlow, cylow, cxhigh, cyhigh = child.boundingBox(grouplist)
-               if cxlow != None:
-                   if xlow != None:
-                       xlow = min(xlow, cxlow)
-                       ylow = min(ylow, cylow)
-                       xhigh = max(xhigh, cxhigh)
-                       yhigh = max(yhigh, cyhigh)
-                   else:
-                       xlow = cxlow
-                       ylow = cylow
-                       xhigh = cxhigh
-                       yhigh = cyhigh
+                # if grouplist is None, use all groups
+                if grouplist is None:
+                    if self.debug:
+                        print 'calculating bounding box for all groups'
+                    grouplist = self.groups.keys()
+                cxlow, cylow, cxhigh, cyhigh = child.boundingBox(grouplist)
+                if cxlow != None:
+                    if xlow != None:
+                        xlow = min(xlow, cxlow)
+                        ylow = min(ylow, cylow)
+                        xhigh = max(xhigh, cxhigh)
+                        yhigh = max(yhigh, cyhigh)
+                    else:
+                        xlow = cxlow
+                        ylow = cylow
+                        xhigh = cxhigh
+                        yhigh = cyhigh
 
         return (xlow, ylow, xhigh, yhigh)
 

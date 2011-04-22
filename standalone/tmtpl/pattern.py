@@ -72,27 +72,17 @@ class PatternPiece(pBase):
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
 
-
-        # Get our bounding box, which can extend below zero coordinates
-        xlo, ylo, xhi, yhi = self.boundingBox(self.displayed_groups)
-        print 'PatternPiece-svg: bounding box is ', xlo, ylo, xhi, yhi
-
-        # -spc- TODO FIX THIS
-        # adjust the attributes on the group to get it contained correctly
-
         # We pass back everything but our layer untouched
         # For our layer, we bundle up all the children's SVG
         # and place it within a group that has our id
 
         childlist = pBase.svg(self) # returns all children
 
-        #
-        # put each group in it's own group element, and apply our transform
-        # to it to make sure everything stays aligned
-        #
-
         for child_group, members in childlist.items():
+            #print 'Group ', child_group, ' in PatternPiece->svg'
+
             my_group = g()
+
             grpid = self.id + '.' + child_group
             my_group.set_id(grpid)
             for attrname, attrvalue in self.attrs.items():
@@ -110,20 +100,16 @@ class PatternPiece(pBase):
 
         return childlist
 
-    def boundingBox(self, grouplist):
+    def boundingBox(self, grouplist = None):
         """
         Return two points which define a bounding box around the object
         """
         # get all the children
-        if self.groupname in grouplist:
-            xmin, ymin, xmax, ymax =  pBase.boundingBox(self, grouplist)
-            #print "Pattern BoundingBox before = ", xmin, ymin, xmax, ymax
-            xmin, ymin, xmax, ymax =  transformBoundingBox(xmin, ymin, xmax, ymax, self.attrs['transform'])
-            #print "Pattern BoundingBox after = ", xmin, ymin, xmax, ymax
-            return xmin, ymin, xmax, ymax
-        else:
-            return None, None, None, None
-
+        xmin, ymin, xmax, ymax =  pBase.boundingBox(self, grouplist)
+        #print "Pattern BoundingBox before = ", xmin, ymin, xmax, ymax
+        xmin, ymin, xmax, ymax =  transformBoundingBox(xmin, ymin, xmax, ymax, self.attrs['transform'])
+        #print "Pattern BoundingBox after = ", xmin, ymin, xmax, ymax
+        return xmin, ymin, xmax, ymax
 
 class Node(pBase):
     """
@@ -184,10 +170,12 @@ class Point(pBase):
 
         return md
 
-    def boundingBox(self, grouplist):
+    def boundingBox(self, grouplist = None):
         """
         Return two points which define a bounding box around the object
         """
+        if grouplist is None:
+            grouplist = self.groups.keys()
         if self.groupname in grouplist:
             return (self.x - (self.size/2), self.y - (self.size/2), self.x + (self.size/2), self.y + (self.size/2))
         else:
@@ -236,10 +224,12 @@ class Line(pBase):
 
         return md
 
-    def boundingBox(self, grouplist):
+    def boundingBox(self, grouplist = None):
         """
         Return two points which define a bounding box around the object
         """
+        if grouplist is None:
+            grouplist = self.groups.keys()
         if self.groupname in grouplist:
             return (min(self.xstart, self.xend), min(self.ystart, self.yend), max(self.xstart, self.xend), max(self.ystart, self.yend))
         else:
@@ -292,11 +282,13 @@ class Path(pBase):
 
         return md
 
-    def boundingBox(self, grouplist):
+    def boundingBox(self, grouplist = None):
         """
         Return two points which define a bounding box around the object
         """
         # This is not elegant, should perhaps be redone
+        if grouplist is None:
+            grouplist = self.groups.keys()
         if self.groupname in grouplist:
             dd = self.pathSVG.get_d()
             xmin, ymin, xmax, ymax =  boundingBox(dd)
