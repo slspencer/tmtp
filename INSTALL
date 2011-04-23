@@ -1,0 +1,33 @@
+This application is not packaged and must be run from this source tree.
+
+***** For Linux *****
+
+1. == Get the tmtp source code ==
+
+To get the source, do the following:
+
+$ git clone git@github.com:sconklin/tmtp.git
+
+2. == Get the required pySVG python library ==
+
+From this page:
+
+http://code.google.com/p/pysvg/downloads/list
+
+Download the file pysvg-0.2.1.zip
+
+Unzip it and install it:
+
+$ unzip pysvg-0.2.1.zip
+$ cd pysvg-0.2.1/
+$ sudo python setup.py install
+
+3. == Test it ==
+
+$ cd ../tmtp/standalone
+$ ./mkpattern --verbose --client=pdata-pants1.json --pattern=SamplePattern_Pants1.py --styles=tmtp_styles.json foo.svg
+
+
+***** For Windows *****
+
+Need this
