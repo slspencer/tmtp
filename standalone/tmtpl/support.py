@@ -273,7 +273,6 @@ def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
     Take a set of points representing a bounding box, and
     put them through a supplied transform, returning the result
     """
-    # TODO this is really terrible
     if transform == '':
         return xmin, ymin, xmax, ymax
 
