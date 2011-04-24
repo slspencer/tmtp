@@ -21,6 +21,7 @@
 import sys
 import math
 import string
+import re
 
 from utils import debug
 
@@ -182,30 +183,104 @@ def boundingBox(path):
     #print 'boundingBox returning: ', xmin, ymin, xmax, ymax
     return xmin, ymin, xmax, ymax
 
+def transformPoint(x, y, transform):
+    """
+    Apply an SVG transformation string to a 2D point and return the resulting x,y pair
+    """
+    #
+    # -spc- TODO - use numpy to do a proper handling of all transformations in order
+    # Postponing this until after the LGM workshop in order not to introduce
+    # a new dependency - for now we will only handle a few transformation types
+    #
+
+    if transform == '':
+        return x, y
+
+    # Every transform in the list ends with a close paren
+    transforms = re.split(r'\)', transform)
+    for tr in transforms:
+        # I don't know why we get an empty string at the end
+        if tr == '':
+            continue
+        tr = tr.strip()
+
+        trparts = re.split(r',|\(', tr)
+        trtype = trparts[0].strip()
+
+        if trtype == 'translate':
+            tx = float(trparts[1].strip())
+            x = x + tx
+            try:
+                ty = float(trparts[2].strip())
+                y = y + ty
+            except IndexError:
+                pass
+
+        elif trtype == 'scale':
+            sx = float(trparts[1].strip())
+            try:
+                sy = float(trparts[2].strip())
+            except IndexError:
+                sy = sx
+            x = x * sx
+            y = y * sy
+
+        elif trtype == 'skewX':
+            sx = float(trparts[1].strip())
+            # now do the thing
+            print 'skewX transform not handled yet'
+            raise NotImplementedError
+
+        elif trtype == 'skewY':
+            sy = float(trparts[1].strip())
+            # now do the thing
+            print 'skewY not handled yet'
+            raise NotImplementedError
+
+        elif trtype == 'rotate':
+            an = float(trparts[1].strip())
+            try:
+                rx = float(trparts[2].strip())
+            except IndexError:
+                rx = 0
+                ry = 0
+            try:
+                ry = float(trparts[3].strip())
+            except IndexError:
+                ry = 0
+            # now do the thing
+            print 'rotate not handled yet'
+            raise NotImplementedError
+
+        elif trtype == 'matrix':
+            ma = float(trparts[1].strip())
+            mb = float(trparts[2].strip())
+            mc = float(trparts[3].strip())
+            md = float(trparts[3].strip())
+            me = float(trparts[3].strip())
+            mf = float(trparts[3].strip())
+            # now do the thing
+            print 'matrix not handled yet'
+            raise NotImplementedError
+        else:
+            print 'Unexpected transformation %s' % trtype
+            raise ValueError
+
+    return x, y
+
 def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
+    """
+    Take a set of points representing a bounding box, and
+    put them through a supplied transform, returning the result
+    """
     # TODO this is really terrible
     if transform == '':
         return xmin, ymin, xmax, ymax
-    rparts = transform.split('(')
-    ttype = rparts[0].strip().lower()
-    if ttype == 'translate':
-        x, y = rparts[1].rstrip(' )').split(',')
-    else:
-        raise ValueError('Unhandled transformation type')
-        
-    # translate (x,y)
-    # scale (sx, sy)
-    # rotate (angle, cx, cy)
-    # skewX(angle)
-    # skewY(angle)
-    # matrix(a, b, c, d, e, f,)
 
-    xmin = xmin + float(x)
-    ymin = ymin + float(y)
-    xmax = xmax + float(x)
-    ymax = ymax + float(y)
-    #print 'trandformBoundingBox returning: ', xmin, ymin, xmax, ymax
-    return xmin, ymin, xmax, ymax
+    new_xmin, new_ymin = transformPoint(xmin, ymin, transform)
+    new_xmax, new_ymax = transformPoint(xmax, ymax, transform)
+
+    return new_xmin, new_ymin, new_xmax, new_ymax
 
 def lineLength(xstart, ystart, xend, yend):
     #a^2 + b^2 = c^2

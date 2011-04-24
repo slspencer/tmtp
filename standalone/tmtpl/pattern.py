@@ -47,6 +47,80 @@ class Pattern(pBase):
         self.name = name
         pBase.__init__(self)
 
+    def autolayout(self):
+        """
+        find out the bounding box for each pattern piece in this pattern, then make them fit within the
+        width of the paper we're using
+        """
+        #
+        # -spc- TODO Future note - How can we get a list of all patternpieces, in order to do autolayout?
+        # here is where we would translate various pattern pieces
+        parts = {}
+        for chld in self.children:
+            if isinstance(chld, PatternPiece):
+                xlo, ylo, xhi, yhi = chld.boundingBox()
+                parts[chld] = {}
+                parts[chld]['xlo'] = xlo
+                parts[chld]['ylo'] = ylo
+                parts[chld]['xhi'] = xhi
+                parts[chld]['yhi'] = yhi
+
+        # our available paper width is reduced by twice the border
+        pg_width = self.cfg['paper_width'] - (2 * self.cfg['border'])
+
+        next_x = 0
+        # -spc- FIX Figure out how to leave room for the title block!
+        next_y = 6.0 * in_to_pt # this should be zero
+        max_y_this_row = 0
+        # a very simple algorithm
+
+        # we want to process these in alphabetical order of part letters
+        index_by_letter = {}
+        letters = []
+        for pp, info in parts.items():
+            letter = pp.letter
+            if letter in index_by_letter:
+                raise ValueError('The same Pattern Piece letter <%s> is used on more than one pattern piece' % letter)
+            index_by_letter[letter] = pp
+            letters.append(letter)
+
+        # sort the list
+        letters.sort()
+
+        for thisletter in letters:
+            pp = index_by_letter[thisletter]
+            info = parts[pp]
+            pp_width = info['xhi'] - info['xlo']
+            pp_height = info['yhi'] - info['ylo']
+
+            if pp_width > pg_width:
+                print 'Error: Pattern piece <%s> is too wide to print on page width' % pp.name
+                # figure out something smarter
+                raise
+
+            if next_x + pp_width > pg_width:
+                # start a new row
+                next_y = max_y_this_row + PATTERN_OFFSET
+                max_y_this_row = 0
+                next_x = 0
+            else:
+                if pp_height > max_y_this_row:
+                    max_y_this_row = pp_height
+
+            # now set up a transform to move this part to next_x, next_y
+            xtrans = (next_x - info['xlo'])
+            ytrans = (next_y - info['ylo'])
+            pp.attrs['transform'] = pp.attrs['transform'] + (' translate(%f,%f)' % (xtrans, ytrans))
+
+            next_x = next_x + pp_width + PATTERN_OFFSET
+        return
+
+    def svg(self):
+        self.autolayout()
+        return pBase.svg(self)
+
+
+
 class PatternPiece(pBase):
     """
     Create an instance of the PatternPiece class, eg jacket.back, pants.frontPocket, corset.stayCover will contain the set of seams and all other pattern piece info,

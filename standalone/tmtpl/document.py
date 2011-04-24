@@ -139,19 +139,8 @@ class Document(pBase):
         sz.setAttribute('xmlns:sodipodi', 'http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd')
         # //svg:svg/sodipodi:namedspace/inkscape:document-units
 
-        # reference & pattern layers - implemented as groups
-        # TODO DELETE, these should be automatic now
-        #pat_grp = g()  # pattern_layer = pattern lines & marks
-        #pat_grp.set_id('Pattern')
-
         # Recursively get everything to draw
         svgdict = self.svg()
-
-        #
-        # -spc- TODO Future note - How can we get a list of all patternpieces, in order to do autolayout?
-        # here is where we would translate various pattern pieces
-
-
 
         # Add/modify the transform so that the whole pattern piece originates at 0,0 and is offset by border
         xlo, ylo, xhi, yhi = self.boundingBox()
