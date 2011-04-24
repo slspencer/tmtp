@@ -1,0 +1,63 @@
+== Cruft that really needs fixing ==
+
+* Account for title block size during autolayout
+
+* Complete the transformation cases which are handled in
+  support.py method transformPoint(). Add numpy for real
+  processing of transformations
+
+* Implement bounding box calculations for arcs in support.py
+
+* Come up with better way to space and handle multi-line text
+
+== Features/Fixes ==
+
+* Add ability to define seam offsets and draw cutting line
+
+* Deal with paper other than roll printers?
+
+* Deal with multi-sheet layout?
+
+* Implement a default set of auto-loaded styles, overridden
+  by a user specified style file if desired
+
+* Change names 'debug' and 'svg' methods to reduce confusion
+  with attribute and pySVG method
+
+* Allow addition of images to title block and pattern pieces
+  For designer logo, etc
+
+* Add optional line markers to lines and paths,
+  define similarly to styles
+
+* Mark alignment notches for aligning different
+  pattern pieces
+
+* Add support for copying 'elements' and using them
+  in another part of a pattrn
+
+* Implement a per-user default config file
+
+* Add a documentation group so the designer can turn
+  off the noise while designing
+
+* Add optional outline to text blocks
+
+* Customize text size and/or scale info block for
+  each pattern piece
+
+* Add Symbols to reference notes and assmble notes on
+  pattern output
+
+* Add line end decoration support
+
+* Add grainline support
+
+* Add more mouseover support
+
+== Additional tools needed ==
+
+* Editor for client data
+
+* Editor for style data file
+
