@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-# SamplePattern_Pants1.py
-# Shaped hem trousers - Front
+# SamplePattern_Pants2.py
+# Shaped hem trousers - Back
+# Swank-1870-M-T-1
 
 #
 # This is a sample pattern design distributed as part of the tmtp

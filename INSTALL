@@ -24,13 +24,12 @@ $ sudo python setup.py install
 
 3. == Test it ==
 
-$ cd ../tmtp/standalone/tests
-$ ./run-layout-test.sh
+$ cd ../tmtp/standalone
+$ ./mkpattern --verbose --client=pdata-pants1.json --pattern=SamplePattern_Pants1.py --styles=tmtp_styles.json foo.svg
 
 If this completes without error, everything is probably good.
-You can look at the output file, layout-test.svg to see what it
-looks like (it's boring, it's just a test pattern)
-
+You can look at the output file, foo.svg to see what it
+looks like
 
 ***** For Windows *****
 
