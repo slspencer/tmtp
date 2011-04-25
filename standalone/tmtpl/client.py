@@ -122,7 +122,7 @@ class Client(object):
                 raise ValueError('Unknown type ' + ty + 'in client data')
         return
 
-    def __dump__(self, obj, parent = '', outtxt = []):
+    def __dump__(self, obj, parent = '', parentstring = '', outtxt = []):
         objAttrs = dir(obj)
 
         # walk through the attributes in this object
@@ -138,12 +138,16 @@ class Client(object):
             # is it one of our own clientdata objects?
             if isinstance(thisobj, ClientData):
                 # if so, then call dump on it
-                self.__dump__(thisobj, oname, outtxt)
+                if parentstring != '':
+                    dot = '.'
+                else:
+                    dot = ''
+                self.__dump__(thisobj, oname, (parentstring + dot + oname), outtxt)
             else:
                 # if not, then it is an 'end item' bit of information
                 # TODO convert back to the units used for input (not pts)
                 if parent != '':
-                    outtxt.append(parent + "." + oname + " " + str(thisobj) + "\n")
+                    outtxt.append(parentstring + "." + oname + " " + str(thisobj) + "\n")
                 else:
                     outtxt.append(oname + " " + str(thisobj) + "\n")
         return(outtxt)
