@@ -52,9 +52,8 @@ class Pattern(pBase):
         find out the bounding box for each pattern piece in this pattern, then make them fit within the
         width of the paper we're using
         """
-        #
-        # -spc- TODO Future note - How can we get a list of all patternpieces, in order to do autolayout?
-        # here is where we would translate various pattern pieces
+
+        # get a collection of all the parts, we'll sort them before layout
         parts = {}
         for chld in self.children:
             if isinstance(chld, PatternPiece):
@@ -67,6 +66,12 @@ class Pattern(pBase):
 
         # our available paper width is reduced by twice the border
         pg_width = self.cfg['paper_width'] - (2 * self.cfg['border'])
+        if 'verbose' in self.cfg:
+            print 'Autolayout:'
+            print '    total paperwidth = ', self.cfg['paper_width']
+            print '    border width = ', self.cfg['border']
+            print '    available paperwidth = ', pg_width
+            print '    pattern offset = ', PATTERN_OFFSET
 
         next_x = 0
         # -spc- FIX Figure out how to leave room for the title block!
@@ -93,6 +98,13 @@ class Pattern(pBase):
             pp_width = info['xhi'] - info['xlo']
             pp_height = info['yhi'] - info['ylo']
 
+            if 'verbose' in self.cfg:
+                print '      Part letter: ', thisletter
+                print '        part width = ', pp_width
+                print '        part height = ', pp_height
+                print '        next_x = ', next_x
+                print '        next_y = ', next_y
+
             if pp_width > pg_width:
                 print 'Error: Pattern piece <%s> is too wide to print on page width' % pp.name
                 # figure out something smarter
@@ -100,6 +112,8 @@ class Pattern(pBase):
 
             if next_x + pp_width > pg_width:
                 # start a new row
+                if 'verbose' in self.cfg:
+                    print '        Starting new row, right side of piece would have been = ', next_x + pp_width
                 next_y = max_y_this_row + PATTERN_OFFSET
                 max_y_this_row = 0
                 next_x = 0
@@ -113,6 +127,8 @@ class Pattern(pBase):
             pp.attrs['transform'] = pp.attrs['transform'] + (' translate(%f,%f)' % (xtrans, ytrans))
 
             next_x = next_x + pp_width + PATTERN_OFFSET
+        if 'verbose' in self.cfg:
+            print 'Autolayout END'
         return
 
     def svg(self):
