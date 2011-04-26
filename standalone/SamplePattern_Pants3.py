@@ -93,7 +93,7 @@ class PatternDesign():
         doc = Document(self.cfg, name = 'document', attributes = docattrs)
 
         # Set up the title block
-        tb = TitleBlock('pattern', 'titleblock', self.cfg['border'], self.cfg['border'], stylename = 'titleblock_text_style')
+        tb = TitleBlock('notes', 'titleblock', self.cfg['border'], self.cfg['border'], stylename = 'titleblock_text_style')
         doc.add(tb)
 
         #
