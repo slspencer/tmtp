@@ -117,13 +117,6 @@ class Document(pBase):
         self.attrs['margin-right'] = str(self.cfg['border'])
         self.attrs['margin-top'] = str(self.cfg['border'])
 
-        # Add attributes - TODO probably put these in a dictionary as
-        # part of the document class
-        #
-        if self.attrs:
-            for attr, value in self.attrs.items():
-                sz.setAttribute(attr, value)
-
         # Add namespaces
         #
         # TODO - note sure if any of these are required
@@ -131,10 +124,18 @@ class Document(pBase):
         # dc xmlns:dc="http://purl.org/dc/elements/1.1/"
         # u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
         # u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
-        # u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
+        if 'noinkscape' not in self.cfg:
+            self.attrs['xmlns:inkscape'] = 'http://www.inkscape.org/namespaces/inkscape'
         # u'xml'      :u'http://www.w3.org/XML/1998/namespace',
         # u'xpath'    :u'http://www.w3.org/TR/xpath',
         # u'xsl'      :u'http://www.w3.org/1999/XSL/Transform'
+
+        # Add attributes - TODO probably put these in a dictionary as
+        # part of the document class
+        #
+        if self.attrs:
+            for attr, value in self.attrs.items():
+                sz.setAttribute(attr, value)
 
         sz.setAttribute('xmlns:sodipodi', 'http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd')
         # //svg:svg/sodipodi:namedspace/inkscape:document-units
@@ -162,19 +163,24 @@ class Document(pBase):
                     print 'Group %s is not enabled for display' % dictname
                 continue
                 
-            self.groups[dictname] = g()
+            wg = g()
+            self.groups[dictname] = wg
             # Set the ID to the group name
-            self.groups[dictname].set_id(dictname)
+            wg.set_id(dictname)
 
             # set the transform in each group
-            self.groups[dictname].setAttribute('transform', fixuptransform)
+            wg.setAttribute('transform', fixuptransform)
+            if 'noinkscape' not in self.cfg:
+                # add inkscape layer attributes
+                wg.setAttribute('inkscape:groupmode', 'layer')
+                wg.setAttribute('inkscape:label', ('Label-%s' % dictname))
 
             # Now add all the elements to it
             for svgel in dictelements:
-                self.groups[dictname].addElement(svgel)
+                wg.addElement(svgel)
 
             # Now add the top level group to the document
-            sz.addElement(self.groups[dictname])
+            sz.addElement(wg)
 
         # Write out the svg file
         sz.save(self.filename)
