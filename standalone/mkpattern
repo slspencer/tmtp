@@ -134,7 +134,7 @@ class Cmdline:
         result = True
         try:
             optsShort = ''
-            optsLong  = ['help', 'verbose', 'config=', 'pattern=', 'printgroups=', 'styles=', 'client=', 'debug=']
+            optsLong  = ['help', 'verbose', 'config=', 'pattern=', 'cfgoptions=', 'printgroups=', 'styles=', 'client=', 'debug=']
             opts, args = getopt(argv[1:], optsShort, optsLong)
 
             if len(args) != 1:
@@ -160,6 +160,10 @@ class Cmdline:
 
                 elif opt in ('--styles'):
                     self.cfg['styles_file'] = val
+
+                # this is more for debugging than anything else
+                elif opt in ('--cfgoptions'):
+                    self.cfg['config_options'] = val
 
                 elif opt in ('--client'):
                     self.cfg['client_file'] = val
@@ -244,6 +248,15 @@ class AppTemplate(StdApp):
                 print "No groups specified for --printgroups="
             if verbose:
                 print "Printing groups: <%s>" % pgrps
+
+        # A somewhat dangerous debugging tool, allows one to push attributes
+        # into the self.cfg dictionary
+        if self.cfg.has_key('config_options'):
+            pgrps = self.cfg['config_options']
+            if pgrps != '':
+                doptions = self.cfg['config_options'].split(',')
+                for dopt in doptions:
+                    self.cfg[dopt] = True
 
         dbgdump = False
         if self.cfg.has_key('debug'):
