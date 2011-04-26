@@ -76,7 +76,7 @@ class Pattern(pBase):
         next_x = 0
         # -spc- FIX Figure out how to leave room for the title block!
         next_y = 6.0 * in_to_pt # this should be zero
-        max_y_this_row = 0
+        max_height_this_row = 0
         # a very simple algorithm
 
         # we want to process these in alphabetical order of part letters
@@ -112,14 +112,19 @@ class Pattern(pBase):
 
             if next_x + pp_width > pg_width:
                 # start a new row
+                real_next_y = next_y + max_height_this_row + PATTERN_OFFSET
                 if 'verbose' in self.cfg:
                     print '        Starting new row, right side of piece would have been = ', next_x + pp_width
-                next_y = max_y_this_row + PATTERN_OFFSET
-                max_y_this_row = 0
+                    print '        Previous y was', next_y
+                    print '        New y is', real_next_y
+                next_y = real_next_y
+                max_height_this_row = 0
                 next_x = 0
             else:
-                if pp_height > max_y_this_row:
-                    max_y_this_row = pp_height
+                if pp_height > max_height_this_row:
+                    max_height_this_row = pp_height
+                    if 'verbose' in self.cfg:
+                        print '        Setting new max_height for this row = ', max_height_this_row
 
             # now set up a transform to move this part to next_x, next_y
             xtrans = (next_x - info['xlo'])
