@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# SamplePattern_Pants2.py
+# SamplePattern_Pants3_ratios.py
 # Shaped hem trousers - Back
 # Swank-1870-M-T-1
 
@@ -64,14 +64,24 @@ class PatternDesign():
         cd = self.cd
         self.cfg['clientdata'] = cd
 
+        in_to_px = 90
+        in_to_pt = 72.72
+        in_to_cm = 2.54
+        cm_to_in = 1/(2.54)
+        cm_to_px = in_to_px/in_to_cm
+        cm_to_pt = in_to_pt/in_to_cm
+        HEM_ALLOWANCE = 5*cm_to_px
+        SEAM_ALLOWANCE = 1.5*cm_to_px
+
         # pattern name
         pattern_pieces    = 4
+
 
         # TODO also extract these from this file to somewhere else
         printer='36" wide carriage plotter'
         if (printer == '36" wide carriage plotter'):
             self.cfg['paper_width']  = ( 36 * in_to_pt )
-            self.cfg['border']       = ( 5*cm_to_pt )        # document borders
+            self.cfg['border']       = ( 5*cm_to_px )        # document borders
 
         border = self.cfg['border']
 
@@ -100,18 +110,39 @@ class PatternDesign():
         # Begin the real work here
         #
 
+
+
         # pattern start, count & placement
         x = border
         y = border
 
-        begin = Point('reference', 'begin', x,   (y + PATTERN_OFFSET), 'point_style')
+        begin = Point('reference', 'begin', x, y, 'point_style')
         doc.add(begin)
 
+        #client data is cd.
+
         # pattern constants
-        rise = cd.outside_leg - cd.inside_leg
         scale = cd.seat/2
         scale_1_4 = scale/4
         scale_1_8 = scale/8
+
+        # pattern values
+        patternOutsideLeg = 112*cm_to_px
+        patternInsideLeg = 80*cm_to_px
+        patternWaist = 86*cm_to_px
+        patternSeat = 102*cm_to_px
+        patternKnee = 50*cm_to_px
+        patternBottomWidth = 43*cm_to_px
+        patternRise = abs(patternOutsideLeg - patternInsideLeg)
+
+        #client values
+        cd.outside_leg = 42.25*in_to_pt
+        cd.inside_leg = 31*in_to_pt
+        cd.waist = 36*in_to_pt
+        cd.seat = 43*in_to_pt
+        cd.knee = 16*in_to_pt + ((3.75*in_to_pt)*(cd.knee/patternKnee))
+        cd.bottom_width = cd.knee * (patternBottomWidth/patternKnee)
+        rise = abs(cd.outside_leg - cd.inside_leg)
 
         # The whole pattern in trousers object
         trousers = Pattern('trousers')
@@ -123,7 +154,6 @@ class PatternDesign():
         # Create the back pattern piece
         front = PatternPiece('pattern', 'front', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
         trousers.add(front)
-
         tf = trousers.front
 
         start =  Point('reference', 'start', begin.x, begin.y, 'point_style')
@@ -133,55 +163,62 @@ class PatternDesign():
         tf.add(Point('reference', 'low', 0, 0, 'point_style'))
         tf.add(Point('reference', 'high', 0, 0, 'point_style'))
 
-        tf.width = border + ( scale_1_8 + (0.5*cm_to_pt)  ) + scale_1_4  + (2*SEAM_ALLOWANCE) + border # (2 to D) + (C to 10) + a seam allowance and a border space for each side
-        tf.height = border + (4*cm_to_pt) + cd.outside_leg + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #4cm waist height + outside_leg length + 2" hem + a seam allowance and border for waist & hem
+        tf.width = border + ( scale_1_8 + ((0.5*cm_to_px)*(cd.seat/patternSeat)) ) + scale_1_4  + (2*SEAM_ALLOWANCE) + border # (2 to D) + (C to 10) + a seam allowance and a border space for each side
+        #tf.width = border + ( scale_1_8 + (0.5*cm_to_px)  ) + scale_1_4  + (2*SEAM_ALLOWANCE) + border # (2 to D) + (C to 10) + a seam allowance and a border space for each side
+        tf.height = border + ((4*cm_to_px)*(rise/patternRise)) + cd.outside_leg + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #4cm waist height + outside_leg length + 2" hem + a seam allowance and border for waist & hem
+        #tf.height = border + (4*cm_to_px) + cd.outside_leg + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #4cm waist height + outside_leg length + 2" hem + a seam allowance and border for waist & hem
 
         # Points
-        tf.add(Point('reference', 'A', start.x + ( scale_1_8 + (0.5*cm_to_pt) ), start.y, 'point_style')) # A is on start top line, over by distance of 2 to D
-        tf.add(Point('reference', 'B', tf.A.x, tf.A.y + (4*cm_to_pt), 'point_style')) # B is waistline
-        tf.add(Point('reference', 'C', tf.A.x, tf.B.y + (19*cm_to_pt), 'point_style')) # C is seatline
+        tf.add(Point('reference', 'A', start.x + ( scale_1_8 + ((0.5*cm_to_px)*(cd.seat/patternSeat)) ), start.y, 'point_style')) # A is on start top line, over by distance of 2 to D
+        tf.add(Point('reference', 'B', tf.A.x, tf.A.y + ((4*cm_to_px)*(rise/patternRise)), 'point_style')) # B is waistline
+        tf.add(Point('reference', 'C', tf.A.x, tf.B.y + ((19*cm_to_px)*(rise/patternRise)), 'point_style')) # C is seatline
         tf.add(Point('reference', 'D', tf.A.x, tf.A.y + rise, 'point_style')) # D is riseline
-        tf.add(Point('reference', 'E', tf.A.x, tf.D.y + ( abs(cd.inside_leg/2) - (0.5*cm_to_pt) ), 'point_style')) # E is kneeline
-        tf.add(Point('reference', 'F', tf.A.x, tf.D.y + cd.inside_leg, 'point_style')) # F is hemline
-        tf.add(Point('reference', 'I', tf.A.x, tf.B.y + ( abs(tf.C.y - tf.B.y)/2 ) , 'point_style')) # I is midpoint b/w waist and rise
+        tf.add(Point('reference', 'E', tf.A.x, ( tf.D.y + (cd.inside_leg*.5) - ((0.5*cm_to_px)*(cd.inside_leg/patternInsideLeg)) ), 'point_style')) # E is kneeline
+        tf.add(Point('reference', 'F', tf.A.x, ( tf.D.y + cd.inside_leg ), 'point_style')) # F is hemline
+        tf.add(Point('reference', 'I', tf.A.x, tf.B.y + ( abs(tf.C.y - tf.B.y)*0.5 ) , 'point_style')) # I is midpoint b/w waist and rise
 
-        tf.add(Point('reference', '_2', tf.D.x - ( scale_1_8 + (0.5*cm_to_pt) ),  tf.D.y, 'point_style'))
-        distance = (tf.D.x - tf._2.x)/2
-        x, y = pointAlongLine(tf.D.x, tf.D.y, tf.D.x - 100, tf.D.y - 100, distance)
+        tf.add(Point('reference', '_2', tf.D.x - ( scale_1_8 + ((0.5*cm_to_px)*(cd.seat/patternSeat)) ),  tf.D.y, 'point_style'))
+        distance = (tf.D.x - tf._2.x)*(.5)
+        x, y = pointAlongLine(tf.D.x, tf.D.y, tf.D.x - 100, tf.D.y - 100, distance)  # 100pt is arbitrary distance to create 45degree angle
         tf.add(Point('reference', '_3', x, y, 'point_style'))
-        tf.add(Point('reference', '_4', tf.A.x - (4*cm_to_pt), tf.E.y, 'point_style'))
-        tf.add(Point('reference', '_5', tf.A.x - (2.5*cm_to_pt), tf.F.y, 'point_style'))
-        tf.add(Point('reference', '_6', tf._4.x, tf.D.y, 'point_style'))
+        tf.add(Point('reference', '_4', (tf.E.x - ((4*cm_to_px)*(cd.knee/patternKnee))), tf.E.y, 'point_style'))
+        tf.add(Point('reference', '_5', (tf.F.x - ((2.5*cm_to_px)*(cd.knee/patternKnee))), tf.F.y, 'point_style'))
+        m = (tf._5.y - tf._4.y)/(tf._5.x-tf._4.x)
+        b = (tf._4.y - (m*tf._4.x))
+        x = (tf.D.y - b)/m
+        tf.add(Point('reference', '_6', x, tf.D.y, 'point_style'))
         tf.add(Point('reference', '_7', tf.B.x + (cd.waist/4),  tf.B.y, 'point_style'))
-        tf.add(Point('reference', '_8', tf._7.x + (0.5*cm_to_pt), tf.A.y, 'point_style'))
-        tf.add(Point('reference', '_9', tf.I.x + (cd.seat/4) - (1*cm_to_pt), tf.I.y, 'point_style'))
+        tf.add(Point('reference', '_8', tf._7.x + ((0.5*cm_to_px)*(cd.waist/patternWaist) ), tf.A.y, 'point_style'))
+        tf.add(Point('reference', '_9', tf.I.x + (cd.seat/4) - ((1*cm_to_px)*(cd.seat/patternSeat)), tf.I.y, 'point_style'))
         tf.add(Point('reference', '_10', tf.C.x + (cd.seat/4) , tf.C.y, 'point_style'))
-        tf.add(Point('reference', '_11', tf._10.x - (0.5*cm_to_pt), tf.D.y, 'point_style'))
+        tf.add(Point('reference', '_11', tf._10.x - ((0.5*cm_to_px)*(cd.seat/patternSeat)), tf.D.y, 'point_style'))
         tf.add(Point('reference', '_12', tf._4.x + (cd.knee/2), tf._4.y, 'point_style'))
         tf.add(Point('reference', '_13', tf._5.x + (cd.bottom_width/2), tf._5.y, 'point_style'))
-        tf.add(Point('reference', '_14', tf._5.x + ( (tf._13.x - tf._5.x)/2 ), tf._5.y, 'point_style'))
-        tf.add(Point('reference', '_15', tf._14.x, tf._14.y - (2*cm_to_pt), 'point_style'))
-        tf.add(Point('reference', '_16', tf._2.x + ( (tf._11.x - tf._2.x)/2 ), tf._2.y, 'point_style'))
+        tf.add(Point('reference', '_14', tf._5.x + ( cd.bottom_width/4 ), tf._5.y, 'point_style'))
+        tf.add(Point('reference', '_15', tf._14.x, tf._14.y - ((2*cm_to_px)*(cd.inside_leg/patternInsideLeg)), 'point_style'))
+        tf.add(Point('reference', '_16', tf._2.x + ( abs(tf._11.x - tf._2.x)/2 ), tf._2.y, 'point_style'))
 
         tf.add(Point('reference', 'c1', tf._2.x + ( abs(tf._2.x - tf._3.x)*.34 ), tf._2.y - ( abs(tf._2.y - tf._3.y)*.28 ), 'point_style')) #b/w 2 & 3
         tf.add(Point('reference', 'c2', tf._2.x + ( abs(tf._2.x - tf._3.x)*.75 ), tf._2.y - ( abs(tf._2.y - tf._3.y)*.51 ), 'point_style')) #b/w 2 & 3
         tf.add(Point('reference', 'c3', tf._3.x + ( abs(tf._3.x - tf.C.x)*.63 ), tf._3.y - ( abs(tf._3.y - tf.C.y)*.27 ), 'point_style'))  #b/w 3 & C
         tf.add(Point('reference', 'c4', tf.C.x, tf._3.y - ( abs(tf._3.y - tf.C.y)*.65 ), 'point_style')) # b/w 3 & C
-        tf.add(Point('reference', 'c5', tf.C.x, tf.C.y - ( abs(tf.C.y - tf.A.y)*.31 ), 'point_style')) # b/w C & A
-        tf.add(Point('reference', 'c6', tf.C.x, tf.A.y, 'point_style')) # b/w C & A
+        #tf.add(Point('reference', 'c5', tf.C.x, tf.C.y - ( abs(tf.C.y - tf.A.y)*.31 ), 'point_style')) # b/w C & A
+        #tf.add(Point('reference', 'c6', tf.C.x, tf.A.y, 'point_style')) # b/w C & A
 
         tf.add(Point('reference', 'G', tf._16.x , tf.A.y, 'point_style'))
-        distance = (tf._4.y - tf._6.y)/2
-        x, y = pointAlongLine(tf._4.x, tf._4.y, tf._5.x, tf._5.y, -distance)
+
+        # Points J, K, L, M, & X were added to formula -- J & X are inflection points in seam line curves. K,L,& M are extensions of leg length for a hem allowance
+        distance = ( math.sqrt( ((tf._4.x - tf._6.x)**2) + ((tf._4.y - tf._2.y)**2) ) ) * (0.5)
+        #distance = (tf._4.y - tf._6.y)/2
+        x, y = pointAlongLine( tf._4.x, tf._4.y, tf._5.x, tf._5.y, -distance )
         tf.add(Point('reference', 'J', x,  y, 'point_style'))
-
-        tf.add(Point('reference', 'c7', tf.J.x - ( (tf.J.x - tf._2.x)*.07 ), tf.J.y - ( (tf.J.y - tf._2.y)*.29 ), 'point_style')) #b/w J & _2
-        tf.add(Point('reference', 'c8', tf.J.x - ( (tf.J.x - tf._2.x)*.11 ), tf.J.y - ( (tf.J.y - tf._2.y)*.64 ), 'point_style')) #b/w J & _2
-
         tf.add(Point('reference', 'K',  tf._5.x, tf._5.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'L',  tf._13.x, tf._13.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'M',  tf._15.x, tf._15.y + HEM_ALLOWANCE, 'point_style'))
-        tf.add(Point('reference', 'X', tf._11.x - ( (tf._11.x - tf._12.x)*.57 ), tf._11.y - ( (tf._11.y - tf._12.y)*.5 ), 'point_style')) #inflection point b/w 11 & 12
+        tf.add(Point('reference', 'X', tf._11.x - ( abs(tf._11.x - tf._12.x)*.57 ), tf._11.y - ( (tf._11.y - tf._12.y)*.5 ), 'point_style')) #inflection point b/w 11 & 12
+
+        tf.add(Point('reference', 'c7', tf.J.x - ( (tf.J.x - tf._2.x)*.07 ), tf.J.y - ( (tf.J.y - tf._2.y)*.29 ), 'point_style')) #b/w J & _2
+        tf.add(Point('reference', 'c8', tf.J.x - ( (tf.J.x - tf._2.x)*.11 ), tf.J.y - ( (tf.J.y - tf._2.y)*.64 ), 'point_style')) #b/w J & _2
 
         tf.add(Point('reference', 'c9', tf._7.x - ( (tf._7.x - tf._9.x)*.4 ), tf._7.y - ( (tf._7.y - tf._9.y)*.33 ), 'point_style')) #b/w 7 & 9
         tf.add(Point('reference', 'c10', tf._7.x - ( (tf._7.x - tf._9.x)*.81 ), tf._7.y - ( (tf._7.y - tf._9.y)*.66 ), 'point_style')) #b/w 7 & 9
@@ -231,7 +268,8 @@ class PatternDesign():
         seamline_path_svg.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf._2.x, tf._2.y,  relative = False)
         seamline_path_svg.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf._3.x, tf._3.y,  relative = False)
         seamline_path_svg.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.C.x, tf.C.y,  relative = False)
-        seamline_path_svg.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.A.x, tf.A.y,  relative = False)
+        #seamline_path_svg.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.A.x, tf.A.y,  relative = False)
+        seamline_path_svg.appendLineToPath(tf.A.x, tf.A.y, relative = False)
 
         cuttingline_path_svg = path()
         tf.add(Path('pattern', 'path', 'Trousers Front Cuttingline Path', cuttingline_path_svg, 'cuttingline_style'))
@@ -253,7 +291,8 @@ class PatternDesign():
         cuttingline_path_svg.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf._2.x, tf._2.y,  relative = False)
         cuttingline_path_svg.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf._3.x, tf._3.y,  relative = False)
         cuttingline_path_svg.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.C.x, tf.C.y,  relative = False)
-        cuttingline_path_svg.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.A.x, tf.A.y,  relative = False)
+        #cuttingline_path_svg.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.A.x, tf.A.y,  relative = False)
+        cuttingline_path_svg.appendLineToPath(tf.A.x, tf.A.y, relative = False)
 
         hemline_path_svg = path()
         tf.add(Path('pattern', 'path', 'Trousers Front Hemline Path', hemline_path_svg, 'dart_style'))
@@ -267,7 +306,7 @@ class PatternDesign():
         waistline_path_svg.appendLineToPath(tf._7.x, tf._7.y, relative = False)
 
         # set the label location. Somday this should be automatic
-        tf.label_x = tf._16.x + 30
+        tf.label_x = tf._16.x
         tf.label_y = tf._16.y
 
         # end of first pattern piece
@@ -284,16 +323,16 @@ class PatternDesign():
         tb.attrs['transform'] = 'translate(' + tb.start.coords + ' )'
         tb.add(Point('reference', 'low', 0, 0, 'point_style'))
         tb.add(Point('reference', 'high', 0, 0, 'point_style'))
-        distance = max( abs(tf._11.x - tf.A.x),  abs(tf._9.x - tf.A.x  ) + (4*cm_to_pt),  abs( tf._8.x - tf.A.x) + (9*cm_to_pt)   )
-        tb.width = border + (3*cm_to_pt)+( abs(tf._2.x - tf.A.x)  ) + distance +(2*SEAM_ALLOWANCE) + border # (17 to max(22, 26, 27) + a seam allowance and a border space for each side --> adds crotch extension + max(waist extension, hip extension, seat extension)
-        tb.height = border +  ( (2+5+2.5)*cm_to_pt ) + ( abs(tf.A.y - tf._5.y) ) + (1.3*cm_to_pt) +HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #best guess waist height extension + front trouser length + 1.3cm back hem extension + 5cm hem allowance+ a seam allowance and border for waist (top) & hem (bottom)
+        distance = max( abs(tf._11.x - tf.A.x),  abs(tf._9.x - tf.A.x  ) + (4*cm_to_px),  abs( tf._8.x - tf.A.x) + (9*cm_to_px)   )
+        tb.width = border + (3*cm_to_px)+( abs(tf._2.x - tf.A.x)  ) + distance +(2*SEAM_ALLOWANCE) + border # (17 to max(22, 26, 27) + a seam allowance and a border space for each side --> adds crotch extension + max(waist extension, hip extension, seat extension)
+        tb.height = border +  ( (2+5+2.5)*cm_to_px ) + ( abs(tf.A.y - tf._5.y) ) + (1.3*cm_to_px) +HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #best guess waist height extension + front trouser length + 1.3cm back hem extension + 5cm hem allowance+ a seam allowance and border for waist (top) & hem (bottom)
 
         # Points
-        tb.add(Point('reference', '_17', tf._2.x - (3*cm_to_pt),  tf._2.y + (.4*cm_to_pt), 'point_style')) # _17 is extends crotch measurement by 3cm
-        tb.add(Point('reference', '_18', tf.I.x + (2*cm_to_pt), tf.I.y,  'point_style')) # _18 is  back high hip line
-        tb.add(Point('reference', '_19', tf.A.x + (5*cm_to_pt), tf.A.y, 'point_style')) # _19 is on back center line
+        tb.add(Point('reference', '_17', tf._2.x - (3*cm_to_px),  tf._2.y + (.4*cm_to_px), 'point_style')) # _17 is extends crotch measurement by 3cm
+        tb.add(Point('reference', '_18', tf.I.x + (2*cm_to_px), tf.I.y,  'point_style')) # _18 is  back high hip line
+        tb.add(Point('reference', '_19', tf.A.x + (5*cm_to_px), tf.A.y, 'point_style')) # _19 is on back center line
 
-        distance = (2*cm_to_pt)
+        distance = (2*cm_to_px)
         x, y = pointAlongLine(tb._19.x,  tb._19.y, tb._18.x,  tb._18.y, distance)
         tb.add(Point('reference', '_20', x, y, 'point_style')) # 20 back center line at waistline
 
@@ -303,35 +342,35 @@ class PatternDesign():
         # sqrt( (x-a)**2 ) = sqrt( (r**2 - (y-b)**2)
         #  x - a  = abs( sqrt( r**2 - (y-b)**2) )
         # x = abs( sqrt( r**2 - (y-b)**2) ) + a
-        r = (cd.waist/4) + (2*cm_to_pt)
+        r = (cd.waist/4) + (2*cm_to_px)
         a = tb._20.x
         b = tb._20.y
         y = tf.B.y
         x = abs( math.sqrt( r**2 - (y-b)**2) ) + a
         tb.add(Point('reference', '_21', x, y, 'point_style')) # 21 side seam at waistline
 
-        tb.add(Point('reference', '_22', tb._21.x + (.5*cm_to_pt), tf.A.y, 'point_style')) # 22 side seam at top of waistband
+        tb.add(Point('reference', '_22', tb._21.x + (.5*cm_to_px), tf.A.y, 'point_style')) # 22 side seam at top of waistband
 
-        distance = (5*cm_to_pt)
+        distance = (5*cm_to_px)
         x, y = pointAlongLine(tb._20.x,  tb._20.y, tb._19.x,  tb._19.y, distance) # positive distance places point extended out from 1st (x,y) parameter using slope of line
         tb.add(Point('reference', '_23', x, y, 'point_style')) # 23 back center line at top of waistband
 
-        distance = (4.5*cm_to_pt)
+        distance = (4.5*cm_to_px)
         x, y = pointAlongLine(tb._23.x,  tb._23.y, tb._22.x,  tb._22.y, distance) # negative distance places point on existing line
         tb.add(Point('reference', '_24', x, y, 'point_style')) # 24 is back button placement for back of braces or suspenders
 
-        distance = (2.5*cm_to_pt)
+        distance = (2.5*cm_to_px)
         x, y = pointAlongLine(tb._24.x,  tb._24.y, tb._23.x,  tb._23.y, distance,  90) # distance places point extended out from 1st (x,y) parameter using angle of rotation (90)
         tb.add(Point('reference', '_25', x, y, 'point_style')) # 25 is high point of back waistband, directly above 24 back button
 
-        distance = (7.5*cm_to_pt)
+        distance = (7.5*cm_to_px)
         x, y = pointAlongLine(tb._22.x,  tb._22.y, tb._23.x,  tb._23.y, distance) # -distance places point extended in from 1st (x,y) parameter
         tb.add(Point('reference', 'H', x, y, 'point_style')) # H is on center fold of back dart at top of waistband
 
-        distance = (11.5*cm_to_pt)
+        distance = (11.5*cm_to_px)
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb._22.x,  tb._22.y, distance,  90) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
         tb.add(Point('reference', 'P', x, y, 'point_style')) # Y is endpoint of back dart
-        distance = ( (1.3)/2*cm_to_pt)
+        distance = ( (1.3)/2*cm_to_px)
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb._22.x,  tb._22.y, distance)
         tb.add(Point('reference', 'Q', x, y, 'point_style')) # Q marks the inside dart point at top of waistband
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb._22.x,  tb._22.y, -distance) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
@@ -339,17 +378,17 @@ class PatternDesign():
 
         x, y = intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, tb._20.x, tb._20.y, tb._21.x, tb._21.y)
         tb.add(Point('reference', 'S', x, y, 'point_style')) # S is on center fold of back dart at waistline
-        distance = ( (2/2)*cm_to_pt)  # 2cm is the width of dart at waistline where S is at center of dart - leave this way if we wish to change 2cm to something else later
+        distance = ( (2/2)*cm_to_px)  # 2cm is the width of dart at waistline where S is at center of dart - leave this way if we wish to change 2cm to something else later
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb._21.x,  tb._21.y, distance)
         tb.add(Point('reference', 'T', x, y, 'point_style')) # Q marks the inside dart point at top of waistband
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb._21.x,  tb._21.y, -distance) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
         tb.add(Point('reference', 'U', x, y, 'point_style')) # R marks the outside dart point at top of waistband
 
-        tb.add(Point('reference', '_26', tf._9.x + (4*cm_to_pt), tf._9.y, 'point_style')) # 26 is upper hip at side seam
-        tb.add(Point('reference', '_27', tf._10.x + (2.5*cm_to_pt), tf._10.y, 'point_style')) # 27 is seat at side seam
-        tb.add(Point('reference', '_28', tf._11.x + ( (2)*cm_to_pt), tf._11.y, 'point_style')) # 28 is rise at side seam
+        tb.add(Point('reference', '_26', tf._9.x + (4*cm_to_px), tf._9.y, 'point_style')) # 26 is upper hip at side seam
+        tb.add(Point('reference', '_27', tf._10.x + (2.5*cm_to_px), tf._10.y, 'point_style')) # 27 is seat at side seam
+        tb.add(Point('reference', '_28', tf._11.x + ( (2)*cm_to_px), tf._11.y, 'point_style')) # 28 is rise at side seam
         tb.add(Point('reference', 'V', tb._28.x - ( abs( tb._28.x - tf._12.x)*(.44) ), tb._28.y + ( abs( tb._28.y - tf._12.y)*(.4) ), 'point_style'))
-        tb.add(Point('reference', '_29', tf._14.x, tf._14.y + ( (1.3)*cm_to_pt), 'point_style')) # 29 is lowered back trouser hem
+        tb.add(Point('reference', '_29', tf._14.x, tf._14.y + ( (1.3)*cm_to_px), 'point_style')) # 29 is lowered back trouser hem
         tb.add(Point('reference', 'O', tb._29.x, tb._29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
 
         #control points hem
@@ -477,7 +516,7 @@ class PatternDesign():
         button_back_path_svg.appendLineToPath(tb._24.x,  tb._24.y,  relative = False)
 
         # set the label location. Somday this should be automatic
-        tb.label_x = tf._16.x + (3*cm_to_pt)
+        tb.label_x = tf._16.x + (3*cm_to_px)
         tb.label_y = tf._16.y
 
         # call draw once for the entire pattern
