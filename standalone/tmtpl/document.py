@@ -139,6 +139,36 @@ class Document(pBase):
 
         sz.setAttribute('xmlns:sodipodi', 'http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd')
         # //svg:svg/sodipodi:namedspace/inkscape:document-units
+        sz.appendTextContent("""<sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:document-units="pt"
+     showgrid="false"
+     inkscape:window-maximized="0" />\n""")
+# Original taken from an empty inkscape test file
+#        sz.appendTextContent("""<sodipodi:namedview
+#     id="base"
+#     pagecolor="#ffffff"
+#     bordercolor="#666666"
+#     borderopacity="1.0"
+#     inkscape:pageopacity="0.0"
+#     inkscape:pageshadow="2"
+#     inkscape:zoom="0.35"
+#     inkscape:cx="375"
+#     inkscape:cy="520"
+#     inkscape:document-units="px"
+#     inkscape:current-layer="layer1"
+#     showgrid="false"
+#     inkscape:window-width="613"
+#     inkscape:window-height="504"
+#     inkscape:window-x="1349"
+#     inkscape:window-y="29"
+#     inkscape:window-maximized="0" />\n""")
 
         # Recursively get everything to draw
         svgdict = self.svg()
