@@ -75,7 +75,8 @@ class Pattern(pBase):
 
         next_x = 0
         # -spc- FIX Figure out how to leave room for the title block!
-        next_y = 6.0 * in_to_pt # this should be zero
+        #next_y = 6.0 * in_to_pt # this should be zero
+        next_y = 0 # this should be zero
         max_height_this_row = 0
         # a very simple algorithm
 
