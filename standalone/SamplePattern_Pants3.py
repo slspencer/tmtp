@@ -97,11 +97,12 @@ class PatternDesign():
         doc = Document(self.cfg, name = 'document', attributes = docattrs)
 
         # Set up the title block
-        tb = TitleBlock('notes', 'titleblock', border, border, stylename = 'titleblock_text_style')
+        tb = TitleBlock('notes', 'titleblock', 0, 0, stylename = 'titleblock_text_style')
         doc.add(tb)
 
         # pattern start, count & placement
-        x,  y = 0,  0
+        x = 0
+        y =  4.0 * in_to_pt # leave room for title block
         begin = Point('reference', 'begin', x, y, 'point_style')
         doc.add(begin)
 
