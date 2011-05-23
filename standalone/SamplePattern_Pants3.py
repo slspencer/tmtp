@@ -77,8 +77,6 @@ class PatternDesign():
             self.cfg['paper_width']  = ( 36 * in_to_pt )
             self.cfg['border']       = ( 5*cm_to_pt )        # document borders
 
-        border = self.cfg['border']
-
         # create the document info and fill it in
         # TODO - abstract these into configuration file(s)
 
@@ -165,11 +163,6 @@ class PatternDesign():
         tf.attrs['transform'] = 'translate(' + tf.start.coords + ' )'
         tf.add(Point('reference', 'low', 0, 0, 'point_style'))
         tf.add(Point('reference', 'high', 0, 0, 'point_style'))
-
-        tf.width = border + ( scale_1_8 + ((0.5*cm_to_pt)*(cd.seat/patternSeat)) ) + scale_1_4  + (2*SEAM_ALLOWANCE) + border # (2 to D) + (C to 10) + a seam allowance and a border space for each side
-        #tf.width = border + ( scale_1_8 + (0.5*cm_to_pt)  ) + scale_1_4  + (2*SEAM_ALLOWANCE) + border # (2 to D) + (C to 10) + a seam allowance and a border space for each side
-        tf.height = border + ((4*cm_to_pt)*(rise/patternRise)) + cd.outside_leg + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #4cm waist height + outside_leg length + 2" hem + a seam allowance and border for waist & hem
-        #tf.height = border + (4*cm_to_pt) + cd.outside_leg + HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #4cm waist height + outside_leg length + 2" hem + a seam allowance and border for waist & hem
 
         # Points
         tf.add(Point('reference', 'A', start.x + ( scale_1_8 + ((0.5*cm_to_pt)*(cd.seat/patternSeat)) ), start.y, 'point_style')) # A is on start top line, over by distance of 2 to D
@@ -327,8 +320,6 @@ class PatternDesign():
         tb.add(Point('reference', 'low', 0, 0, 'point_style'))
         tb.add(Point('reference', 'high', 0, 0, 'point_style'))
         distance = max( abs(tf._11.x - tf.A.x),  abs(tf._9.x - tf.A.x  ) + (4*cm_to_pt),  abs( tf._8.x - tf.A.x) + (9*cm_to_pt)   )
-        tb.width = border + (3*cm_to_pt)+( abs(tf._2.x - tf.A.x)  ) + distance +(2*SEAM_ALLOWANCE) + border # (17 to max(22, 26, 27) + a seam allowance and a border space for each side --> adds crotch extension + max(waist extension, hip extension, seat extension)
-        tb.height = border +  ( (2+5+2.5)*cm_to_pt ) + ( abs(tf.A.y - tf._5.y) ) + (1.3*cm_to_pt) +HEM_ALLOWANCE + (2*SEAM_ALLOWANCE) + border  #best guess waist height extension + front trouser length + 1.3cm back hem extension + 5cm hem allowance+ a seam allowance and border for waist (top) & hem (bottom)
 
         # Points
         tb.add(Point('reference', '_17', tf._2.x - (3*cm_to_pt),  tf._2.y + (.4*cm_to_pt), 'point_style')) # _17 is extends crotch measurement by 3cm
