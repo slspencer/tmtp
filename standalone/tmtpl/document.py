@@ -89,19 +89,20 @@ class Document(pBase):
         # create the base document
         sz = svg()
 
-        # add the scripting we need to handle events
-        sc = script()
-        sc.set_xlink_href('tmtp_mouse.js')
-        sc.set_xlink_type('text/ecmascript')
-        sz.addElement(sc)
-        sz.set_onload('init(evt)')
+        if 'tooltips' in self.cfg:
+            # add the scripting we need to handle events
+            sc = script()
+            sc.set_xlink_href('tmtp_mouse.js')
+            sc.set_xlink_type('text/ecmascript')
+            sz.addElement(sc)
+            sz.set_onload('init(evt)')
 
-        #
-        # Add the tooltip text element
-        #
-        ttel = self.generateText(0, 0, 'tooltip', 'ToolTip', 'tooltip_text_style')
-        ttel.setAttribute('visibility', 'hidden')
-        sz.addElement(ttel)
+            #
+            # Add the tooltip text element
+            #
+            ttel = self.generateText(0, 0, 'tooltip', 'ToolTip', 'tooltip_text_style')
+            ttel.setAttribute('visibility', 'hidden')
+            sz.addElement(ttel)
 
         # for some of the common information, make them attributes also
         mi = self.cfg['metainfo']

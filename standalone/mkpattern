@@ -99,6 +99,9 @@ class Cmdline:
         stdo("        --verbose        Give some feedback of what is happening while the script is         \n")
         stdo("                         running.                                                            \n")
         stdo("                                                                                             \n")
+        stdo("        --tooltips       Add tooltips to the reference layer points which display the point  \n")
+        stdo("                         name when you hover of it                                           \n")
+        stdo("                                                                                             \n")
         stdo("        --config=<cfg file>                                                                  \n")
         stdo("                         The full path to the configuration file to use instead of           \n")
         stdo("                         the default location.                                               \n")
@@ -134,7 +137,7 @@ class Cmdline:
         result = True
         try:
             optsShort = ''
-            optsLong  = ['help', 'verbose', 'config=', 'pattern=', 'cfgoptions=', 'printgroups=', 'styles=', 'client=', 'debug=']
+            optsLong  = ['help', 'verbose', 'tooltips', 'config=', 'pattern=', 'cfgoptions=', 'printgroups=', 'styles=', 'client=', 'debug=']
             opts, args = getopt(argv[1:], optsShort, optsLong)
 
             if len(args) != 1:
@@ -148,6 +151,9 @@ class Cmdline:
 
                 elif (opt == '--verbose'):
                     self.cfg['verbose'] = True
+
+                elif (opt == '--tooltips'):
+                    self.cfg['tooltips'] = True
 
                 elif opt in ('--config'):
                     self.cfg['configuration_file'] = val

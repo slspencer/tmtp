@@ -279,8 +279,9 @@ class Point(pBase):
         p = circle(self.x, self.y, self.size)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
-        p.set_onmouseover('ShowTooltip(evt)')
-        p.set_onmouseout('HideTooltip(evt)')
+        if 'tooltips' in self.cfg:
+            p.set_onmouseover('ShowTooltip(evt)')
+            p.set_onmouseout('HideTooltip(evt)')
 
         for attrname, attrvalue in self.attrs.items():
             p.setAttribute(attrname, attrvalue)
