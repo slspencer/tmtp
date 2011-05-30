@@ -29,8 +29,8 @@
 # 8. changed /4, /2, etc. to *0.25, *0.5, etc. for Python accuracy
 
 # 110530 - Susan Spencer - changes:
-# 1. Investigate curve along back side seam:
-# a.
+# 1. Changed point names from example: _7 to p7
+# 2.
 
 from tmtpl.constants import *
 from tmtpl.pattern   import *
@@ -283,7 +283,13 @@ class PatternDesign():
         tf.label_x = tf.p16.x
         tf.label_y = tf.p16.y
 
-        # end of first pattern piece
+        # end trousers front (tf)
+
+
+
+
+
+        # Begin trousers back (tb)
 
         # Create the back pattern piece
         back = PatternPiece('pattern', 'back', letter = 'B', fabric = 2, interfacing = 0, lining = 0)
@@ -348,9 +354,9 @@ class PatternDesign():
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p20.x,  tb.p20.y, distance) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
         tb.add(Point('reference', 'U', x, y, 'point_style')) # U marks the outside dart point at waistband
 
-        tb.add(Point('reference', 'p26', tf.p9.x + (4*cm_to_pt)*(cd.waist/patternWaist), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
-        tb.add(Point('reference', 'p27', tf.p10.x + (2.5*cm_to_pt)*(cd.seat/patternSeat), tf.p10.y, 'point_style')) # 27 is seat at side seam
-        tb.add(Point('reference', 'p28', tf.p11.x + (2*cm_to_pt)*(cd.seat/patternSeat), tf.p11.y, 'point_style')) # 28 is rise at side seam
+        tb.add(Point('reference', 'p26', tf.p9.x + (4*cm_to_pt)*(cd.seat/patternSeat), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
+        tb.add(Point('reference', 'p27', tf.p10.x + (3.5*cm_to_pt)*(cd.seat/patternSeat), tf.p10.y, 'point_style')) # 27 is seat at side seam
+        tb.add(Point('reference', 'p28', tf.p11.x + (3*cm_to_pt)*(cd.seat/patternSeat), tf.p11.y, 'point_style')) # 28 is rise at side seam
         tb.add(Point('reference', 'V', tb.p28.x - ( abs( tb.p28.x - tf.p12.x)*(.44) ), tb.p28.y + ( abs( tb.p28.y - tf.p12.y)*(.4) ), 'point_style')) #V is side seam inflection point
         tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + ( (1.3)*cm_to_pt*(cd.outside_leg/patternOutsideLeg) ), 'point_style')) # 29 is lowered back trouser hem
         tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
@@ -383,15 +389,17 @@ class PatternDesign():
 
         #control points side seam
         tb.add(Point('reference', 'c17', tb.p21.x, tb.p21.y , 'point_style')) # b/w 21 & 26
-        tb.add(Point('reference', 'c18', tb.p21.x + ( abs( tb.p21.x - tb.p26.x)*(1.29) ), tb.p21.y + ( abs( tb.p21.y - tb.p26.y)*(.66) ), 'point_style')) # b/w 21 & 26
-        tb.add(Point('reference', 'c19', tb.p26.x - ( abs( tb.p26.x - tb.p27.x)*(.25) ), tb.p26.y + ( abs( tb.p26.y - tb.p27.y)*(.34) ), 'point_style')) # b/w  26 & 27
-        tb.add(Point('reference', 'c20', tb.p26.x - ( abs( tb.p26.x - tb.p27.x)*(.5) ),   tb.p26.y + ( abs( tb.p26.y - tb.p27.y)*(.67) ), 'point_style')) # b/w 26 & 27
-        tb.add(Point('reference', 'c21', tb.p27.x - ( abs( tb.p27.x - tb.p28.x)*(.26) ), tb.p27.y + ( abs( tb.p27.y - tb.p28.y)*(.34) ), 'point_style')) # b/w  27 & 28
-        tb.add(Point('reference', 'c22', tb.p27.x - ( abs( tb.p27.x - tb.p28.x)*(.58) ), tb.p27.y + ( abs( tb.p27.y - tb.p28.y)*(.67) ), 'point_style')) # b/w  27 & 28
-        tb.add(Point('reference', 'c23', tb.p28.x - ( abs( tb.p28.x - tb.V.x)*(.33) ), tb.p28.y + ( abs( tb.p28.y - tb.V.y)*(.35) ), 'point_style')) # b/w  28 & V
-        tb.add(Point('reference', 'c24', tb.p28.x - ( abs( tb.p28.x - tb.V.x)*(.65) ), tb.p28.y + ( abs( tb.p28.y - tb.V.y)*(.66) ), 'point_style')) # b/w  28 & V
-        tb.add(Point('reference', 'c25', tb.V.x - ( abs( tb.V.x - tf.p12.x)*(.41) ), tb.V.y + ( abs( tb.V.y - tf.p12.y)*(.33) ), 'point_style')) # b/w  V & 12
-        tb.add(Point('reference', 'c26', tb.V.x - ( abs( tb.V.x - tf.p12.x)*(.91) ), tb.V.y + ( abs( tb.V.y - tf.p12.y)*(.66) ), 'point_style')) # b/w  V & 12
+        tb.add(Point('reference', 'c18', tb.p21.x + ( abs( tb.p21.x - tb.p26.x)*(.79) ), tb.p21.y + ( abs( tb.p21.y - tb.p26.y)*(.66) ), 'point_style')) # b/w 21 & 26
+        tb.add(Point('reference', 'c19', tb.p26.x + ( abs( tb.p26.x - tb.p27.x)*(.8) ), tb.p26.y + ( abs( tb.p26.y - tb.p27.y)*(.33) ), 'point_style')) # b/w  26 & 27
+        tb.add(Point('reference', 'c20', tb.p26.x + ( abs( tb.p26.x - tb.p27.x)*(1.2) ),   tb.p26.y + ( abs( tb.p26.y - tb.p27.y)*(.67) ), 'point_style')) # b/w 26 & 27
+        tb.add(Point('reference', 'c21', tb.p27.x - ( abs( tb.p27.x - tb.p28.x)*(.1) ), tb.p27.y + ( abs( tb.p27.y - tb.p28.y)*(.34) ), 'point_style')) # b/w  27 & 28
+        tb.add(Point('reference', 'c22', tb.p27.x - ( abs( tb.p27.x - tb.p28.x)*(.43) ), tb.p27.y + ( abs( tb.p27.y - tb.p28.y)*(.67) ), 'point_style')) # b/w  27 & 28
+        tb.add(Point('reference', 'c23', tb.p28.x - ( abs( tb.p28.x - tb.V.x)*(.24) ), tb.p28.y + ( abs( tb.p28.y - tb.V.y)*(.34) ), 'point_style')) # b/w  28 & V
+        tb.add(Point('reference', 'c24', tb.p28.x - ( abs( tb.p28.x - tb.V.x)*(.61) ), tb.p28.y + ( abs( tb.p28.y - tb.V.y)*(.67) ), 'point_style')) # b/w  28 & V
+        tb.add(Point('reference', 'c25', tb.V.x - ( abs( tb.V.x - tf.p12.x)*(.45) ), tb.V.y + ( abs( tb.V.y - tf.p12.y)*(.33) ), 'point_style')) # b/w  V & 12
+        distance = (abs(tb.V.y - tf.p12.y)*(0.15))
+        x, y = pointAlongLine(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, -distance)
+        tb.add(Point('reference', 'c26', x, y, 'point_style')) # b/w  V & 12
 
        # Assemble all paths down here
         # Paths are a bit differemt - we create the SVG and then create the object to hold
