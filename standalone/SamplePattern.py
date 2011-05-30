@@ -111,6 +111,7 @@ class PatternDesign():
         # Begin the real work here
         #
 
+
         # pattern values
         patternOutsideLeg = 112*cm_to_pt
         patternInsideLeg = 80*cm_to_pt
@@ -121,7 +122,7 @@ class PatternDesign():
         patternRise = abs(patternOutsideLeg - patternInsideLeg)
 
         #client values
-        cd.knee = cd.knee*(cd.knee/patternKnee)
+        cd.knee = (cd.knee + (2*in_to_pt))  * (cd.seat/patternSeat)
         cd.bottom_width = patternBottomWidth * (cd.knee/patternKnee)
         rise = abs(cd.outside_leg - cd.inside_leg)
         scale = cd.seat/2  # scale is 1/2 body circumference of reference measurement
