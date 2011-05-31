@@ -30,7 +30,7 @@
 
 # 110530 - Susan Spencer - changes:
 # 1. Changed point names from example: _7 to p7
-# 2.
+# 2. Fixed back side seam Bezier Points to be more "fair"
 
 from tmtpl.constants import *
 from tmtpl.pattern   import *
@@ -200,21 +200,29 @@ class PatternDesign():
         tf.add(Point('reference', 'c7', tf.J.x - ( (tf.J.x - tf.p2.x)*.07 ), tf.J.y - ( (tf.J.y - tf.p2.y)*.29 ), 'point_style')) #b/w J & _2
         tf.add(Point('reference', 'c8', tf.J.x - ( (tf.J.x - tf.p2.x)*.11 ), tf.J.y - ( (tf.J.y - tf.p2.y)*.64 ), 'point_style')) #b/w J & _2
         tf.add(Point('reference', 'c9', tf.p7.x - ( (tf.p7.x - tf.p9.x)*.4 ), tf.p7.y - ( (tf.p7.y - tf.p9.y)*.33 ), 'point_style')) #b/w 7 & 9
-        tf.add(Point('reference', 'c10', tf.p7.x - ( (tf.p7.x - tf.p9.x)*.81 ), tf.p7.y - ( (tf.p7.y - tf.p9.y)*.66 ), 'point_style')) #b/w 7 & 9
-        tf.add(Point('reference', 'c11', tf.p9.x - ( (tf.p9.x - tf.p10.x)*.7 ), tf.p9.y - ( (tf.p9.y - tf.p10.y)*.35 ), 'point_style')) #b/w 9 & 10
-        tf.add(Point('reference', 'c12', tf.p9.x - ( (tf.p9.x - tf.p10.x)*.96 ), tf.p9.y - ( (tf.p9.y - tf.p10.y)*.67 ), 'point_style')) #b/w 9 & 10
-        tf.add(Point('reference', 'c13', tf.p10.x - ( (tf.p10.x - tf.p11.x)*.2 ), tf.p10.y - ( (tf.p10.y - tf.p11.y)*.34 ), 'point_style')) #b/w 10 & 11
-        tf.add(Point('reference', 'c14', tf.p10.x - ( (tf.p10.x - tf.p11.x)*.4 ), tf.p10.y - ( (tf.p10.y - tf.p11.y)*.68 ), 'point_style')) #b/w 10 & 11
-        tf.add(Point('reference', 'c15', tf.X.x - ( (tf.X.x - tf.p12.x)*.53 ), tf.X.y - ( (tf.X.y - tf.p12.y)*.35 ), 'point_style')) #b/w X & 12
-        tf.add(Point('reference', 'c16', tf.X.x - ( (tf.X.x - tf.p12.x)*.74 ), tf.X.y - ( (tf.X.y - tf.p12.y)*.67 ), 'point_style')) #b/w X & 12
-        tf.add(Point('reference', 'c17', tf.L.x, tf.L.y, 'point_style')) #b/w L & M
-        tf.add(Point('reference', 'c18', tf.L.x - ( (tf.L.x - tf.M.x)*.66 ),  tf.M.y, 'point_style')) #b/w L & M
-        tf.add(Point('reference', 'c19', tf.M.x - ( (tf.M.x - tf.K.x)*.34 ), tf.M.y, 'point_style')) #b/w M & K
-        tf.add(Point('reference', 'c20', tf.K.x,  tf.K.y, 'point_style')) #b/w M & K
-        tf.add(Point('reference', 'c21', tf.p13.x, tf.p13.y, 'point_style')) #b/w 13 & 15
-        tf.add(Point('reference', 'c22', tf.p13.x - ( (tf.p13.x - tf.p15.x)*.66 ), tf.p15.y, 'point_style')) #b/w 13 & 15
-        tf.add(Point('reference', 'c23', tf.p15.x - ( (tf.p15.x - tf.p5.x)*.34 ), tf.p15.y, 'point_style')) #b/w 15 & 5
-        tf.add(Point('reference', 'c24', tf.p5.x, tf.p5.y, 'point_style')) #b/w 15 & 5
+        tf.add(Point('reference', 'c10', tf.p7.x - ( (tf.p7.x - tf.p9.x)*.83 ), tf.p7.y - ( (tf.p7.y - tf.p9.y)*.66 ), 'point_style')) #b/w 7 & 9
+        tf.add(Point('reference', 'c11', tf.p9.x - ( (tf.p9.x - tf.p10.x)*.77 ), tf.p9.y - ( (tf.p9.y - tf.p10.y)*.35 ), 'point_style')) #b/w 9 & 10
+        tf.add(Point('reference', 'c12', tf.p9.x - ( (tf.p9.x - tf.p10.x)*1.03 ), tf.p9.y - ( (tf.p9.y - tf.p10.y)*.67 ), 'point_style')) #b/w 9 & 10
+        tf.add(Point('reference', 'c13', tf.p10.x - ( (tf.p10.x - tf.p11.x)*.06 ), tf.p10.y - ( (tf.p10.y - tf.p11.y)*.34 ), 'point_style')) #b/w 10 & 11
+        tf.add(Point('reference', 'c14', tf.p10.x - ( (tf.p10.x - tf.p11.x)*.32 ), tf.p10.y - ( (tf.p10.y - tf.p11.y)*.68 ), 'point_style')) #b/w 10 & 11
+
+        tf.add(Point('reference', 'c15', tf.p11.x - ( abs(tf.p11.x - tf.X.x)*.19 ), tf.p11.y + ( abs(tf.p11.y - tf.X.y)*.34 ), 'point_style')) #b/w 11 & X
+        tf.add(Point('reference', 'c16', tf.p11.x - ( abs(tf.p11.x - tf.X.x)*.58 ), tf.p11.y + ( abs(tf.p11.y - tf.X.y)*.65 ), 'point_style')) #b/w 11 & X
+
+
+        tf.add(Point('reference', 'c17', tf.X.x - ( abs(tf.X.x - tf.p12.x)*(0.57) ), tf.X.y + ( abs(tf.X.y - tf.p12.y)*(0.35) ), 'point_style')) #b/w X & 12
+        distance = (abs(tf.X.y - tf.p12.y)*(0.15))
+        x, y = pointAlongLine(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, -distance)
+        tf.add(Point('reference', 'c18', x, y, 'point_style')) # b/w  X & 12
+
+        tf.add(Point('reference', 'c19', tf.L.x, tf.L.y, 'point_style')) #b/w L & M
+        tf.add(Point('reference', 'c20', tf.L.x - ( (tf.L.x - tf.M.x)*.66 ),  tf.M.y, 'point_style')) #b/w L & M
+        tf.add(Point('reference', 'c21', tf.M.x - ( (tf.M.x - tf.K.x)*.34 ), tf.M.y, 'point_style')) #b/w M & K
+        tf.add(Point('reference', 'c22', tf.K.x,  tf.K.y, 'point_style')) #b/w M & K
+        tf.add(Point('reference', 'c23', tf.p13.x, tf.p13.y, 'point_style')) #b/w 13 & 15
+        tf.add(Point('reference', 'c24', tf.p13.x - ( (tf.p13.x - tf.p15.x)*.66 ), tf.p15.y, 'point_style')) #b/w 13 & 15
+        tf.add(Point('reference', 'c25', tf.p15.x - ( (tf.p15.x - tf.p5.x)*.34 ), tf.p15.y, 'point_style')) #b/w 15 & 5
+        tf.add(Point('reference', 'c26', tf.p5.x, tf.p5.y, 'point_style')) #b/w 15 & 5
 
 
        # Assemble all paths down here
@@ -229,12 +237,12 @@ class PatternDesign():
         sps.appendCubicCurveToPath(tf.c9.x, tf.c9.y, tf.c10.x,  tf.c10.y,  tf.p9.x, tf.p9.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c11.x, tf.c11.y, tf.c12.x,  tf.c12.y,  tf.p10.x, tf.p10.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c13.x, tf.c13.y, tf.c14.x,  tf.c14.y,  tf.p11.x, tf.p11.y,  relative = False)
-        sps.appendLineToPath(tf.X.x, tf.X.y, relative = False)
-        sps.appendCubicCurveToPath(tf.c15.x, tf.c15.y, tf.c16.x,  tf.c16.y,  tf.p12.x, tf.p12.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c15.x, tf.c15.y, tf.c16.x,  tf.c16.y,  tf.X.x, tf.X.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.p12.x, tf.p12.y,  relative = False)
         sps.appendLineToPath(tf.p13.x, tf.p13.y, relative = False)
         sps.appendLineToPath(tf.L.x, tf.L.y, relative = False)
-        sps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.M.x, tf.M.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c19.x, tf.c19.y, tf.c20.x,  tf.c20.y,  tf.K.x, tf.K.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c19.x, tf.c19.y, tf.c20.x,  tf.c20.y,  tf.M.x, tf.M.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.K.x, tf.K.y,  relative = False)
         sps.appendLineToPath(tf.p5.x, tf.p5.y, relative = False)
         sps.appendLineToPath(tf.p4.x, tf.p4.y, relative = False)
         sps.appendLineToPath(tf.J.x, tf.J.y, relative = False)
@@ -252,12 +260,12 @@ class PatternDesign():
         cps.appendCubicCurveToPath(tf.c9.x, tf.c9.y, tf.c10.x,  tf.c10.y,  tf.p9.x, tf.p9.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c11.x, tf.c11.y, tf.c12.x,  tf.c12.y,  tf.p10.x, tf.p10.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c13.x, tf.c13.y, tf.c14.x,  tf.c14.y,  tf.p11.x, tf.p11.y,  relative = False)
-        cps.appendLineToPath(tf.X.x, tf.X.y, relative = False)
-        cps.appendCubicCurveToPath(tf.c15.x, tf.c15.y, tf.c16.x,  tf.c16.y,  tf.p12.x, tf.p12.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c15.x, tf.c15.y, tf.c16.x,  tf.c16.y,  tf.X.x, tf.X.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.p12.x, tf.p12.y,  relative = False)
         cps.appendLineToPath(tf.p13.x, tf.p13.y, relative = False)
         cps.appendLineToPath(tf.L.x, tf.L.y, relative = False)
-        cps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.M.x, tf.M.y,  relative = False)
-        cps.appendCubicCurveToPath(tf.c19.x, tf.c19.y, tf.c20.x,  tf.c20.y,  tf.K.x, tf.K.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c19.x, tf.c19.y, tf.c20.x,  tf.c20.y,  tf.M.x, tf.M.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.K.x, tf.K.y,  relative = False)
         cps.appendLineToPath(tf.p5.x, tf.p5.y, relative = False)
         cps.appendLineToPath(tf.p4.x, tf.p4.y, relative = False)
         cps.appendLineToPath(tf.J.x, tf.J.y, relative = False)
@@ -270,8 +278,8 @@ class PatternDesign():
         hps = hemline_path_svg
         tf.add(Path('pattern', 'path', 'Trousers Front Hemline Path', hps, 'dart_style'))
         hps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
-        hps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.p15.x, tf.p15.y,  relative = False)
-        hps.appendCubicCurveToPath(tf.c23.x, tf.c23.y, tf.c24.x,  tf.c24.y,  tf.p5.x, tf.p5.y,  relative = False)
+        hps.appendCubicCurveToPath(tf.c23.x, tf.c23.y, tf.c24.x,  tf.c24.y,  tf.p15.x, tf.p15.y,  relative = False)
+        hps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x,  tf.c26.y,  tf.p5.x, tf.p5.y,  relative = False)
 
         waistline_path_svg = path()
         wps = waistline_path_svg
