@@ -247,7 +247,7 @@ class Point(pBase):
     """
     Creates instance of Python class Point
     """
-    def __init__(self, group, name, x,  y, styledef = 'default', transform = '') :
+    def __init__(self, group, name, x = 0,  y = 0, styledef = 'default', transform = '') :
 
         self.groupname = group
         self.name = name
