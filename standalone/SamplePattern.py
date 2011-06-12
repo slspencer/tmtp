@@ -32,6 +32,10 @@
 # 1. Changed point names from example: _7 to p7
 # 2. Fixed back side seam Bezier Points to be more "fair"
 
+#110531 - Susan Spencer - changes:
+#1. utilized appendCubicShorthandCurveToPath(self,  controlendx, controlendy, endx,endy,relative=True): from pySVG's shape.py
+
+
 from tmtpl.constants import *
 from tmtpl.pattern   import *
 from tmtpl.document   import *
@@ -50,6 +54,7 @@ from pysvg.structure import *
 from pysvg.style import *
 from pysvg.text import *
 from pysvg.builders import *
+
 
 class PatternDesign():
 
@@ -167,17 +172,17 @@ class PatternDesign():
         m = (tf.p5.y - tf.p4.y)/(tf.p5.x-tf.p4.x)
         b = (tf.p4.y - (m*tf.p4.x))
         x = (tf.D.y - b)/m
-        tf.add(Point('reference', 'p6', x, tf.D.y, 'point_style'))
-        tf.add(Point('reference', 'p7', ( tf.B.x + (cd.waist*0.25) ),  tf.B.y, 'point_style'))
-        tf.add(Point('reference', 'p8', ( tf.p7.x + ((0.5*cm_to_pt)*(cd.waist/patternWaist)) ), tf.A.y, 'point_style'))
-        tf.add(Point('reference', 'p9', ( tf.I.x + (cd.seat*0.25) - ((1*cm_to_pt)*(cd.seat/patternSeat)) ), tf.I.y, 'point_style'))
-        tf.add(Point('reference', 'p10', ( tf.C.x + (cd.seat*0.25) ) , tf.C.y, 'point_style'))
-        tf.add(Point('reference', 'p11', ( tf.p10.x - ((0.5*cm_to_pt)*(cd.seat/patternSeat)) ), tf.D.y, 'point_style'))
-        tf.add(Point('reference', 'p12', ( tf.p4.x + (cd.knee*0.5) ), tf.p4.y, 'point_style'))
-        tf.add(Point('reference', 'p13', ( tf.p5.x + (cd.bottom_width*0.5) ), tf.p5.y, 'point_style'))
-        tf.add(Point('reference', 'p14', ( tf.p5.x + ( cd.bottom_width*0.25) ), tf.p5.y, 'point_style'))
-        tf.add(Point('reference', 'p15', tf.p14.x, ( tf.p14.y - ((2*cm_to_pt)*(cd.inside_leg/patternInsideLeg)) ), 'point_style'))
-        tf.add(Point('reference', 'p16', ( tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5) ), tf.p2.y, 'point_style'))
+        tf.add(Point('reference', 'p6',   x, tf.D.y, 'point_style'))
+        tf.add(Point('reference', 'p7',   tf.B.x + (cd.waist*0.25),  tf.B.y, 'point_style'))
+        tf.add(Point('reference', 'p8',   tf.p7.x + (0.5*cm_to_pt*cd.waist/patternWaist), tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'p9',    tf.I.x + (cd.seat*0.25) - min( ( 1*cm_to_pt*cd.seat/patternSeat), 1*cm_to_pt ), tf.I.y, 'point_style'))
+        tf.add(Point('reference', 'p10',  tf.C.x + (cd.seat*0.25) , tf.C.y, 'point_style'))
+        tf.add(Point('reference', 'p11',  tf.p10.x - min( (0.5*cm_to_pt*cd.seat/patternSeat), 0.5*cm_to_pt ) , tf.D.y, 'point_style'))
+        tf.add(Point('reference', 'p12',  tf.p4.x + (cd.knee*0.5) , tf.p4.y, 'point_style'))
+        tf.add(Point('reference', 'p13',  tf.p5.x + (cd.bottom_width*0.5) , tf.p5.y, 'point_style'))
+        tf.add(Point('reference', 'p14',  tf.p5.x + ( cd.bottom_width*0.25), tf.p5.y, 'point_style'))
+        tf.add(Point('reference', 'p15',  tf.p14.x, tf.p14.y - (2*cm_to_pt*cd.inside_leg/patternInsideLeg), 'point_style'))
+        tf.add(Point('reference', 'p16',  tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y, 'point_style'))
 
         tf.add(Point('reference', 'G', tf.p16.x , tf.A.y, 'point_style'))
 
@@ -211,7 +216,7 @@ class PatternDesign():
 
 
         tf.add(Point('reference', 'c17', tf.X.x - ( abs(tf.X.x - tf.p12.x)*(0.57) ), tf.X.y + ( abs(tf.X.y - tf.p12.y)*(0.35) ), 'point_style')) #b/w X & 12
-        distance = (abs(tf.X.y - tf.p12.y)*(0.15))
+        distance = (abs(tf.X.y - tf.p12.y)*(0.4))
         x, y = pointAlongLine(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, -distance)
         tf.add(Point('reference', 'c18', x, y, 'point_style')) # b/w  X & 12
 
@@ -234,12 +239,40 @@ class PatternDesign():
         sps.appendMoveToPath(tf.A.x, tf.A.y, relative = False)
         sps.appendLineToPath(tf.p8.x, tf.p8.y, relative = False)
         sps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
-        sps.appendCubicCurveToPath(tf.c9.x, tf.c9.y, tf.c10.x,  tf.c10.y,  tf.p9.x, tf.p9.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c11.x, tf.c11.y, tf.c12.x,  tf.c12.y,  tf.p10.x, tf.p10.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c13.x, tf.c13.y, tf.c14.x,  tf.c14.y,  tf.p11.x, tf.p11.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c15.x, tf.c15.y, tf.c16.x,  tf.c16.y,  tf.X.x, tf.X.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.p12.x, tf.p12.y,  relative = False)
-        sps.appendLineToPath(tf.p13.x, tf.p13.y, relative = False)
+        sps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
+        sps.appendLineToPath(tf.p12.x,  tf.p12.y,  relative = False)
+        if (tf.p12.y - tf.X.y != 0):
+            distance = abs(tf.p12.y - tf.X.y)*(0.25)
+        else:
+            distance = abs(tf.p12.x - tf.X.x)*(0.25)
+        x,  y = pointAlongLine( tf.p12.x,  tf.p12.y,  tf.p13.x,  tf.p13.y, distance )
+        sps.appendCubicShorthandCurveToPath(x,  y,  tf.X.x, tf.X.y,  relative = False)
+        if (tf.X.y - tf.p11.y != 0):
+            distance = abs(tf.X.y - tf.p11.y)*(0.33)
+        else:
+            distance = abs(tf.X.x - tf.p11.x)*(0.33)
+        x,  y = pointAlongLine( tf.X.x,  tf.X.y,  tf.p11.x,  tf.p11.y, distance )
+        sps.appendCubicShorthandCurveToPath(tf.c15.x, tf.c15.y,  tf.p11.x, tf.p11.y,  relative = False)
+        if (tf.p11.y - tf.p10.y != 0):
+            distance = abs(tf.p11.y - tf.p10.y)*(0.33)
+        else:
+            distance = abs(tf.p11.x - tf.p10.x)*(0.33)
+        sps.appendCubicShorthandCurveToPath(tf.c13.x, tf.c13.y,  tf.p10.x, tf.p10.y,  relative = False)
+        if (tf.p10.y - tf.p9.y != 0):
+            distance = abs(tf.p10.y - tf.p9.y)*(0.33)
+        else:
+            distance = abs(tf.p10.x - tf.p9.x)*(0.33)
+        sps.appendCubicShorthandCurveToPath( tf.c11.x, tf.c11.y,  tf.p9.x, tf.p9.y,  relative = False)
+        if (tf.p9.y - tf.p7.y != 0):
+            distance = abs(tf.p9.y - tf.p7.y)*(0.33)
+        else:
+            distance = abs(tf.p9.x - tf.p7.x)*(0.33)
+        sps.appendCubicShorthandCurveToPath(tf.c9.x, tf.c9.y,   tf.p7.x, tf.p7.y,  relative = False)
+
+
+
+
+        sps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
         sps.appendLineToPath(tf.L.x, tf.L.y, relative = False)
         sps.appendCubicCurveToPath(tf.c19.x, tf.c19.y, tf.c20.x,  tf.c20.y,  tf.M.x, tf.M.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.K.x, tf.K.y,  relative = False)
