@@ -1,3 +1,10 @@
+*.odp
+*.odg
+*.ods
+standalone/BezierSpline/
+standalone/extrafiles/
+standalone/foo.*
+standalone/json/
 *~
 *.pyc
 
