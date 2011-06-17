@@ -1,0 +1,10 @@
+The tmtp project supports open fashion design by allowing designers to create pattern design files that are adjusted to fit individual measurements, and generate SVG output for printing.
+
+Initial development was done as an inkscape plugin.
+
+Continuing work is taking place on a 'standalone' application called mkpattern, which runs on the command line and uses a pattern design file and client measurements to generate pattern output.
+
+The application is free software, but designers who create pattern designs may use any license they wish for their designs.
+
+The application is being developed using python and pysvg.
+
