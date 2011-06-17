@@ -52,6 +52,13 @@
         "stroke-miterlimit": "4",
         "stroke-width": "4"
     },
+    "grid_path_style": {
+        "fill": "none",
+        "stroke": "black",
+        "stroke-linejoin": "miter",
+        "stroke-miterlimit": "4",
+        "stroke-width": "1"
+    },
     "hemline_path_style": {
         "fill": "none",
         "stroke": "gray",
@@ -78,6 +85,11 @@
     "point_style": {
         "fill": "red",
         "stroke": "red",
+        "stroke-width": "1"
+    },
+    "controlpoint_style": {
+        "fill": "none",
+        "stroke": "blue",
         "stroke-width": "1"
     },
     "point_text_style": {
