@@ -120,7 +120,7 @@ def GetCurveControlPoints(name, knots):
         firstControlPoints[i] = pnt
         fcpnum = fcpnum + 1
 
-        pnt = Point('reference', '%s-fcp%d' % (name, scpnum))
+        pnt = Point('reference', '%s-scp%d' % (name, scpnum))
         pnt.x = 2 * knots[i + 1].x - xx[i + 1]
         pnt.y = 2 * knots[i + 1].y - yy[i + 1]
         secondControlPoints[i] = pnt
