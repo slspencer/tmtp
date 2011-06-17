@@ -132,7 +132,7 @@ class PatternDesign():
         patternRise = abs(patternOutsideLeg - patternInsideLeg)
 
         #client values
-        rise = abs(cd.outside_leg - cd.inside_leg)
+        rise = abs(cd.outside_leg - cd.inside_leg) - (0.5*cm_to_pt)
         scale = cd.seat/2  # scale is 1/2 body circumference of reference measurement
         scale_1_4 = scale/4
         scale_1_8 = scale/8
@@ -155,14 +155,14 @@ class PatternDesign():
 
         # Points
         tf.add(Point('reference', 'A', start.x + scale_1_8 + (0.5*cm_to_pt), start.y, 'point_style')) # A is on start top line, over by distance of 2 to D
-        tf.add(Point('reference', 'B', tf.A.x, tf.A.y + (4*cm_to_pt), 'point_style')) # B is waistline
-        tf.add(Point('reference', 'C', tf.A.x, tf.B.y + (17*cm_to_pt), 'point_style')) # C is seatline
+        tf.add(Point('reference', 'B', tf.A.x, tf.A.y + (3.8*cm_to_pt), 'point_style')) # B is waistline
+        tf.add(Point('reference', 'C', tf.A.x, tf.B.y + (18.5*cm_to_pt), 'point_style')) # C is seatline
         tf.add(Point('reference', 'D', tf.A.x, tf.A.y + rise, 'point_style')) # D is riseline
-        tf.add(Point('reference', 'E', tf.A.x, tf.D.y + (cd.inside_leg*0.5) - (0.5*cm_to_pt),  'point_style')) # E is kneeline
+        tf.add(Point('reference', 'E', tf.A.x, tf.D.y + (cd.inside_leg*0.5) - (5.5*cm_to_pt),  'point_style')) # E is kneeline
         tf.add(Point('reference', 'F', tf.A.x, tf.D.y + cd.inside_leg, 'point_style')) # F is hemline
         tf.add(Point('reference', 'I', tf.A.x, tf.B.y + ( abs(tf.C.y - tf.B.y)*0.5 ), 'point_style')) # I is midpoint b/w waist B and seatline (rise) C
 
-        tf.add(Point('reference', 'p2', tf.D.x - scale_1_8 + (0.5*cm_to_pt),  tf.D.y, 'point_style'))
+        tf.add(Point('reference', 'p2', tf.D.x - scale_1_8 + (0.75*cm_to_pt),  tf.D.y, 'point_style'))
 
         length = (tf.D.x - tf.p2.x)*(.5)
         x, y = pointAlongLine( tf.D.x, tf.D.y, (tf.D.x - 100), (tf.D.y - 100), length)  # 100pt is arbitrary distance to create 45degree angle
@@ -176,7 +176,7 @@ class PatternDesign():
         x = (tf.D.y - b)/m
         tf.add(Point('reference', 'p6',   x, tf.D.y, 'point_style'))
         tf.add(Point('reference', 'p7',   tf.B.x + (cd.waist*0.25),  tf.B.y, 'point_style'))
-        tf.add(Point('reference', 'p8',   tf.A.x + (cd.waist*0.25)+(0.5*cm_to_pt), tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'p8',   tf.A.x + (cd.waist*0.25)+(0.75*cm_to_pt), tf.A.y, 'point_style'))
         tf.add(Point('reference', 'p9',    tf.I.x + (cd.seat*0.25) - ( 1*cm_to_pt), tf.I.y, 'point_style'))
         tf.add(Point('reference', 'p10',  tf.C.x + (cd.seat*0.25) , tf.C.y, 'point_style'))
         tf.add(Point('reference', 'p11',  tf.D.x + (cd.seat*0.25) - (0.5*cm_to_pt) , tf.D.y, 'point_style'))
