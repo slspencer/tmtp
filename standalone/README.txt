@@ -17,6 +17,7 @@ In order to generate a pattern from the sample, use the following command line:
 
 ./mkpattern --client=pdata.json --pattern=SamplePattern --styles=tmtp_styles.json foo.svg
 ./mkpattern --client=pdata-pants1.json --pattern=SamplePattern_Pants3.py --styles=tmtp_styles.json foo.svg
+./mkpattern --client=pdata.json --pattern=SamplePattern.py --styles=tmtp_styles.json foo.svg
 
 The output can then be viewed with most browsers or inkscape with the following command line:
 inkscape --file=foo.svg --verb=ZoomPage --verb=FullScreen --verb=FitCanvasToDrawing
