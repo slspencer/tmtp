@@ -80,13 +80,13 @@ def GetCurveControlPoints(name, knots):
 
     if len(knots) == 2:
         # Special case: Bezier curve should be a straight line.
-        pnt = Point('reference', '%s-fcp%d' % (name, fcpnum))
+        pnt = Point('reference', '%s-fcp%d' % (name, fcpnum), styledef = 'controlpoint_style')
         pnt.x = (2 * knots[0].x + knots[1].x) / 3
         pnt.y = (2 * knots[0].y + knots[1].y) / 3
         firstControlPoints[0] = pnt
         fcpnum = fcpnum + 1
 
-        pnt = Point('reference', '%s-fcp%d' % (name, scpnum))
+        pnt = Point('reference', '%s-fcp%d' % (name, scpnum), styledef = 'controlpoint_style')
         pnt.x = 2 * firstControlPoints[0].x - knots[0].x
         pnt.y = 2 *	firstControlPoints[0].y - knots[0].y
         secondControlPoints[0] = pnt
@@ -116,11 +116,11 @@ def GetCurveControlPoints(name, knots):
 
     for i in range(0, np-1):
         # First control point
-        pnt = Point('reference', '%s-fcp%d' % (name, fcpnum), xx[i], yy[i])
+        pnt = Point('reference', '%s-fcp%d' % (name, fcpnum), xx[i], yy[i], styledef = 'controlpoint_style')
         firstControlPoints[i] = pnt
         fcpnum = fcpnum + 1
 
-        pnt = Point('reference', '%s-scp%d' % (name, scpnum))
+        pnt = Point('reference', '%s-scp%d' % (name, scpnum), styledef = 'controlpoint_style')
         pnt.x = 2 * knots[i + 1].x - xx[i + 1]
         pnt.y = 2 * knots[i + 1].y - yy[i + 1]
         secondControlPoints[i] = pnt
@@ -129,11 +129,11 @@ def GetCurveControlPoints(name, knots):
     # now do the last point
     i = np-1
 
-    pnt = Point('reference', '%s-fcp%d' % (name, fcpnum), xx[i], yy[i])
+    pnt = Point('reference', '%s-fcp%d' % (name, fcpnum), xx[i], yy[i], styledef = 'controlpoint_style')
     firstControlPoints[i] = pnt
     fcpnum = fcpnum + 1
 
-    pnt = Point('reference', '%s-fcp%d' % (name, scpnum))
+    pnt = Point('reference', '%s-fcp%d' % (name, scpnum), styledef = 'controlpoint_style')
     pnt.x = (knots[np].x + xx[np - 1]) / 2
     pnt.y = (knots[np].y + yy[np - 1]) / 2
     secondControlPoints[i] = pnt
