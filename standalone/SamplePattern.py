@@ -18,22 +18,7 @@
 #
 #
 #
-# 110524 - Susan Spencer - changes:
-# 1. cleaned up blank lines
-# 2. removed 'border' statements from document creation & start of pattern
-# 3. moved 'pattern pieces' next to metainfo section
-# 4. moved 'scale' variables to client values section
-# 5. added 'scale' variables to cd object
-# 6. removed points 'begin', 'low', 'high', 'width', 'height'
-# 7. all pattern pieces have .start at 0,0
-# 8. changed /4, /2, etc. to *0.25, *0.5, etc. for Python accuracy
 
-# 110530 - Susan Spencer - changes:
-# 1. Changed point names from example: _7 to p7
-# 2. Fixed back side seam Bezier Points to be more "fair"
-
-#110531 - Susan Spencer - changes:
-#1. utilized appendCubicShorthandCurveToPath(self,  controlendx, controlendy, endx,endy,relative=True): from pySVG's shape.py
 
 
 from tmtpl.constants import *
