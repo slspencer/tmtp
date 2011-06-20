@@ -372,10 +372,10 @@ class PatternDesign():
         tb.attrs['transform'] = 'translate(' + tb.start.coords + ' )'
 
         # Points
-        tb.add(Point('reference', 'p17', tf.p2.x - (3*cm_to_pt) ,  tf.p2.y + (.4*cm_to_pt), 'point_style')) # _17 is extends back crotch measurement by 3cm, down by .4cm
-        tb.add(Point('reference', 'p18', tf.I.x + (2*cm_to_pt), tf.I.y,  'point_style')) # p18 is  on back center at mid-rise
+        tb.add(Point('reference', 'p17', tf.p2.x - (3*cm_to_pt) ,  tf.p2.y, 'point_style')) # p17 is extends back crotch measurement by 3cm
+        tb.add(Point('reference', 'p18', tf.I.x + (2*cm_to_pt), tf.I.y,  'point_style')) # p18 is  on back center at high hip
         tb.add(Point('reference', 'p19', tf.A.x +(5*cm_to_pt), tf.A.y, 'point_style')) # p19 is on back center waist line
-        distance = (2*cm_to_pt)
+        distance = -(2*cm_to_pt)
         x, y = pointAlongLine(tb.p19.x,  tb.p19.y, tb.p18.x,  tb.p18.y, distance)
         tb.add(Point('reference', 'p20', x, y, 'point_style')) # p20 back center line at waistline
 
@@ -388,7 +388,7 @@ class PatternDesign():
         tb.add(Point('reference', 'p21', x, y, 'point_style')) # 21 defines side seam at waistline (waist/4 + 2cm) away from 20
 
         tb.add(Point('reference', 'p22', tb.p21.x + (0.5*cm_to_pt), tf.A.y, 'point_style')) # 22 side seam at top of waistband
-        distance = (5*cm_to_pt)
+        distance = -(5*cm_to_pt)
         x, y = pointAlongLine(tb.p20.x,  tb.p20.y, tb.p19.x,  tb.p19.y, distance) # adds distance to end of line at 20, determines height of back waistband at center seam
         tb.add(Point('reference', 'p23', x, y, 'point_style')) # 23 back center line at top of waistband
 
@@ -422,8 +422,8 @@ class PatternDesign():
         tb.add(Point('reference', 'U', x, y, 'point_style')) # U marks the outside dart point at waistband
 
         tb.add(Point('reference', 'p26', tf.p9.x + (4*cm_to_pt), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
-        tb.add(Point('reference', 'p27', tf.p10.x + (3.5*cm_to_pt), tf.p10.y, 'point_style')) # 27 is seat at side seam
-        tb.add(Point('reference', 'p28', tf.p11.x + (3*cm_to_pt), tf.p11.y, 'point_style')) # 28 is rise at side seam
+        tb.add(Point('reference', 'p27', tf.p10.x + (2*cm_to_pt), tf.p10.y, 'point_style')) # 27 is seat at side seam
+        tb.add(Point('reference', 'p28', tf.p11.x + (1.5*cm_to_pt), tf.p11.y, 'point_style')) # 28 is rise at side seam
         tb.add(Point('reference', 'V', tb.p28.x - ( abs( tb.p28.x - tf.p12.x)*(.44) ), tb.p28.y + ( abs( tb.p28.y - tf.p12.y)*(.4) ), 'point_style')) #V is side seam inflection point
         tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + (1.3*cm_to_pt ), 'point_style')) # 29 is lowered back trouser hem
         tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
@@ -471,6 +471,29 @@ class PatternDesign():
        # Assemble all paths down here
         # Paths are a bit differemt - we create the SVG and then create the object to hold
         # See the pysvg library docs for the pysvg methods
+
+        # Draw reference grid
+        grid_back_path_svg =path()
+        gbps = grid_back_path_svg
+        tb.add(Path('pattern','path', 'Trousers Back Gridline Path',  gbps,  'grid_path_style'))
+        # horizontal grid
+        gbps.appendMoveToPath(tb.p19.x,  tb.p19.y, relative = False)
+        gbps.appendLineToPath(tb.p22.x,  tb.p22.y, relative = False)
+        gbps.appendMoveToPath(tf.p7.x,  tf.p7.y, relative = False)
+        gbps.appendLineToPath(tb.p21.x,  tb.p21.y, relative = False)
+        gbps.appendMoveToPath(tb.p18.x,  tb.p18.y, relative = False)
+        gbps.appendLineToPath(tb.p26.x,  tb.p26.y, relative = False)
+        gbps.appendMoveToPath(tf.C.x,  tf.C.y, relative = False)
+        gbps.appendLineToPath(tb.p27.x,  tb.p27.y, relative = False)
+        gbps.appendMoveToPath(tb.p17.x,  tb.p17.y, relative = False)
+        gbps.appendLineToPath(tb.p28.x,  tb.p28.y, relative = False)
+        gbps.appendMoveToPath(tf.p4.x,  tf.p4.y, relative = False)
+        gbps.appendLineToPath(tf.p12.x,  tf.p12.y, relative = False)
+        gbps.appendMoveToPath(tf.p5.x,  tf.p5.y, relative = False)
+        gbps.appendLineToPath(tf.p13.x,  tf.p13.y, relative = False)
+
+
+        # seamline
         seamline_back_path_svg = path()
         sbps = seamline_back_path_svg
         tb.add(Path('pattern', 'path', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
