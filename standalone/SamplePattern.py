@@ -430,9 +430,9 @@ class PatternDesign():
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p20.x,  tb.p20.y, distance) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
         tb.add(Point('reference', 'U', x, y, 'point_style')) # U marks the outside dart point at waistband
 
-        tb.add(Point('reference', 'p26', tf.p9.x + (4*cm_to_pt), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
-        tb.add(Point('reference', 'p27', tf.p10.x + (2*cm_to_pt), tf.p10.y, 'point_style')) # 27 is seat at side seam
-        tb.add(Point('reference', 'p28', tf.p11.x + (1.5*cm_to_pt), tf.p11.y, 'point_style')) # 28 is rise at side seam
+        tb.add(Point('reference', 'p26', tf.p9.x + (4.5*cm_to_pt), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
+        tb.add(Point('reference', 'p27', tf.p10.x + (3*cm_to_pt), tf.p10.y, 'point_style')) # 27 is seat at side seam
+        tb.add(Point('reference', 'p28', tf.p11.x + (1.75*cm_to_pt), tf.p11.y, 'point_style')) # 28 is rise at side seam
         tb.add(Point('reference', 'V', tb.p28.x - ( abs( tb.p28.x - tf.p12.x)*(.44) ), tb.p28.y + ( abs( tb.p28.y - tf.p12.y)*(.4) ), 'point_style')) #V is side seam inflection point
         tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + (1.3*cm_to_pt ), 'point_style')) # 29 is lowered back trouser hem
         tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
