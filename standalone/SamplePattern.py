@@ -455,7 +455,6 @@ class PatternDesign():
         pointlist.append(tb.p26)
         pointlist.append(tb.p27)
         pointlist.append(tb.p28)
-        pointlist.append(tb.V)
         pointlist.append(tf.p12)
         fcp, scp = GetCurveControlPoints('BackSideSeam', pointlist)
         tb.add(Point('reference', 'c11', fcp[0].x, fcp[0].y, 'controlpoint_style')) #b/w p21 & p26
@@ -464,10 +463,16 @@ class PatternDesign():
         tb.add(Point('reference', 'c14', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w  p26 & p27
         tb.add(Point('reference', 'c15', fcp[2].x, fcp[2].y, 'controlpoint_style')) #b/w p27 & p28
         tb.add(Point('reference', 'c16', scp[2].x, scp[2].y, 'controlpoint_style')) #b/w  p27 & p28
-        tb.add(Point('reference', 'c17', fcp[3].x, fcp[3].y, 'controlpoint_style')) #b/w p28 & V
-        tb.add(Point('reference', 'c18', scp[3].x, scp[3].y, 'controlpoint_style')) #b/w  p28 & V
-        tb.add(Point('reference', 'c19', fcp[4].x, fcp[4].y, 'controlpoint_style')) #b/w V & p12
-        tb.add(Point('reference', 'c20', scp[4].x, scp[4].y, 'controlpoint_style')) #b/w  V & p12
+        tb.add(Point('reference', 'c17', fcp[3].x, fcp[3].y, 'controlpoint_style')) #b/w p28 & 12
+        tb.add(Point('reference', 'c18', scp[3].x, scp[3].y, 'controlpoint_style')) #b/w  p28 & 12
+        # don't use [3] except for their distance from p28 and p12. Re-create control points c17 & c18 along slopes from opposing lines ( with p27 & p13) using these distances.
+        distance = ( math.sqrt( ((fcp[3].x - tb.p28.x)**2) + ((fcp[3].y - tb.p28.y)**2) ) )
+        x, y = pointAlongLine(tb.p28.x,  tb.p28.y, tb.p27.x,  tb.p27.y, -distance)
+        tb.add(Point('reference', 'c17', x,  y, 'point_style'))   # c17 is on slope of line from p13 to p12 at distance of tf.V.y to create smooth transition from p28 to p12
+
+        distance = ( math.sqrt( ((scp[3].x - tf.p12.x)**2) + ((scp[3].y - tf.p12.y)**2) ) )
+        x, y = pointAlongLine(tf.p12.x,  tf.p12.y, tf.p13.x,  tf.p13.y, -distance)
+        tb.add(Point('reference', 'c18', x,  y, 'point_style'))   # c17 is on slope of line from p13 to p12 at distance of tf.V.y to create smooth transition from p28 to p12
 
         #control points hem line
         pointlist = []
@@ -531,6 +536,30 @@ class PatternDesign():
         gbps.appendMoveToPath(tf.p5.x,  tf.p5.y, relative = False)
         gbps.appendLineToPath(tf.p13.x,  tf.p13.y, relative = False)
 
+        # seam line back path
+        seamline_back_path_svg = path()
+        sbps = seamline_back_path_svg
+        tb.add(Path('pattern', 'path', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
+        sbps.appendMoveToPath(tb.p17.x, tb.p17.y, relative = False)
+        sbps.appendCubicCurveToPath(tb.c1.x, tb.c1.y, tb.c2.x, tb.c2.y, tf.C.x, tf.C.y, relative = False)
+        sbps.appendLineToPath(tb.p18.x, tb.p18.y, relative = False)
+        sbps.appendLineToPath(tb.p23.x, tb.p23.y, relative = False)
+        sbps.appendLineToPath(tb.p25.x, tb.p25.y, relative = False)
+        sbps.appendCubicCurveToPath(tb.c3.x, tb.c3.y, tb.c4.x, tb.c4.y, tb.p22.x, tb.p22.y, relative = False)
+        sbps.appendLineToPath(tb.p21.x, tb.p21.y, relative = False)
+        sbps.appendCubicCurveToPath(tb.c11.x, tb.c11.y, tb.c12.x, tb.c12.y, tb.p26.x, tb.p26.y, relative = False)
+        sbps.appendCubicCurveToPath(tb.c13.x, tb.c13.y, tb.c14.x, tb.c14.y, tb.p27.x, tb.p27.y, relative = False)
+        sbps.appendCubicCurveToPath(tb.c15.x, tb.c15.y, tb.c16.x,  tb.c16.y,  tb.p28.x, tb.p28.y,  relative = False)
+        sbps.appendCubicCurveToPath(tb.c17.x, tb.c17.y, tb.c18.x,  tb.c18.y,  tf.p12.x, tf.p12.y,  relative = False)
+        sbps.appendLineToPath(tf.p13.x, tf.p13.y, relative = False)
+        sbps.appendLineToPath(tf.L.x, tf.L.y, relative = False)
+        sbps.appendCubicCurveToPath(tb.c25.x,  tb.c25.y,  tb.c26.x,  tb.c26.y,  tb.O.x,  tb.O.y,  relative = False)
+        sbps.appendCubicCurveToPath(tb.c27.x,  tb.c27.y,  tb.c28.x,  tb.c28.y,  tf.K.x,  tf.K.y,  relative = False)
+        sbps.appendLineToPath(tf.p5.x, tf.p5.y, relative = False)
+        sbps.appendLineToPath(tf.p4.x, tf.p4.y, relative = False)
+        sbps.appendLineToPath(tb.Y.x,  tb.Y.y,  relative = False)
+        sbps.appendCubicCurveToPath(tb.c31.x,  tb.c31.y,  tb.c32.x,  tb.c32.y,  tb.p17.x,  tb.p17.y,  relative = False)
+
 
         # cutting line back path
         cuttingline_back_path_svg = path()
@@ -546,8 +575,7 @@ class PatternDesign():
         cbps.appendCubicCurveToPath(tb.c11.x, tb.c11.y, tb.c12.x, tb.c12.y, tb.p26.x, tb.p26.y, relative = False)
         cbps.appendCubicCurveToPath(tb.c13.x, tb.c13.y, tb.c14.x, tb.c14.y, tb.p27.x, tb.p27.y, relative = False)
         cbps.appendCubicCurveToPath(tb.c15.x, tb.c15.y, tb.c16.x,  tb.c16.y,  tb.p28.x, tb.p28.y,  relative = False)
-        cbps.appendCubicCurveToPath(tb.c17.x, tb.c17.y, tb.c18.x,  tb.c18.y,  tb.V.x, tb.V.y,  relative = False)
-        cbps.appendCubicCurveToPath(tb.c19.x, tb.c19.y, tb.c20.x,  tb.c20.y,  tf.p12.x, tf.p12.y,  relative = False)
+        cbps.appendCubicCurveToPath(tb.c17.x, tb.c17.y, tb.c18.x,  tb.c18.y,  tf.p12.x, tf.p12.y,  relative = False)
         cbps.appendLineToPath(tf.p13.x, tf.p13.y, relative = False)
         cbps.appendLineToPath(tf.L.x, tf.L.y, relative = False)
         cbps.appendCubicCurveToPath(tb.c25.x,  tb.c25.y,  tb.c26.x,  tb.c26.y,  tb.O.x,  tb.O.y,  relative = False)
