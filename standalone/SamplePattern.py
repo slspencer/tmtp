@@ -372,47 +372,42 @@ class PatternDesign():
         tb.attrs['transform'] = 'translate(' + tb.start.coords + ' )'
 
         # Points
-        tb.add(Point('reference', 'p17', ( tf.p2.x - ((3*cm_to_pt) *(cd.seat/patternSeat)) ),  ( tf.p2.y + ((.4*cm_to_pt)*(rise/patternRise)) ), 'point_style')) # _17 is extends back crotch measurement by 3cm, down by .4cm
-        tb.add(Point('reference', 'p18', ( tf.I.x + ((2*cm_to_pt)*(cd.seat/patternSeat)) ), tf.I.y,  'point_style')) # _18 is  on back center at mid-rise
-        tb.add(Point('reference', 'p19', ( tf.A.x + ((5*cm_to_pt)*(cd.waist/patternWaist)) ), tf.A.y, 'point_style')) # _19 is on back center waist line
-        distance = ((2*cm_to_pt)*(rise/patternRise))
+        tb.add(Point('reference', 'p17', tf.p2.x - (3*cm_to_pt) ,  tf.p2.y + (.4*cm_to_pt), 'point_style')) # _17 is extends back crotch measurement by 3cm, down by .4cm
+        tb.add(Point('reference', 'p18', tf.I.x + (2*cm_to_pt), tf.I.y,  'point_style')) # p18 is  on back center at mid-rise
+        tb.add(Point('reference', 'p19', tf.A.x +(5*cm_to_pt), tf.A.y, 'point_style')) # p19 is on back center waist line
+        distance = (2*cm_to_pt)
         x, y = pointAlongLine(tb.p19.x,  tb.p19.y, tb.p18.x,  tb.p18.y, distance)
-        tb.add(Point('reference', 'p20', x, y, 'point_style')) # 20 back center line at waistline
+        tb.add(Point('reference', 'p20', x, y, 'point_style')) # p20 back center line at waistline
 
         #if (20.x, 20.y) is center of circle (a,b), (waist/4) + 2cm is radius r of circle,  (x,y) are points on circle, what is x when y = B.y? x-a & y-b are positive values
-        # circle => (x-a)**2 + (y-b)**2 = r**2
-        # (x-a)**2 =  r**2 - (y-b)**2
-        # sqrt( (x-a)**2 ) = sqrt( (r**2 - (y-b)**2)
-        #  x - a  = abs( sqrt( r**2 - (y-b)**2) )
-        # x = abs( sqrt( r**2 - (y-b)**2) ) + a
-        r = (cd.waist*0.25) + ((2*cm_to_pt)*(cd.waist/patternWaist) )
+        r = (cd.waist*0.25) + (2*cm_to_pt)
         a = tb.p20.x
         b = tb.p20.y
         y = tf.B.y
         x = abs( math.sqrt( r**2 - (y-b)**2) ) + a
         tb.add(Point('reference', 'p21', x, y, 'point_style')) # 21 defines side seam at waistline (waist/4 + 2cm) away from 20
 
-        tb.add(Point('reference', 'p22', ( tb.p21.x + ((0.5*cm_to_pt)*(cd.waist/patternWaist)) ), tf.A.y, 'point_style')) # 22 side seam at top of waistband
-        distance = (5*cm_to_pt)*(rise/patternRise)
+        tb.add(Point('reference', 'p22', tb.p21.x + (0.5*cm_to_pt), tf.A.y, 'point_style')) # 22 side seam at top of waistband
+        distance = (5*cm_to_pt)
         x, y = pointAlongLine(tb.p20.x,  tb.p20.y, tb.p19.x,  tb.p19.y, distance) # adds distance to end of line at 20, determines height of back waistband at center seam
         tb.add(Point('reference', 'p23', x, y, 'point_style')) # 23 back center line at top of waistband
 
-        distance = (4.5*cm_to_pt)*(cd.waist/patternWaist)
+        distance = (4.5*cm_to_pt)
         x, y = pointAlongLine(tb.p23.x,  tb.p23.y, tb.p22.x,  tb.p22.y, distance) # negative distance to end of line at 23, determines placement of back suspender button
         tb.add(Point('reference', 'p24', x, y, 'point_style')) # 24 is back button placement
 
-        distance = (2.5*cm_to_pt)*(rise/patternRise)
+        distance = (2.5*cm_to_pt)
         x, y = pointAlongLine(tb.p24.x,  tb.p24.y, tb.p23.x,  tb.p23.y, distance,  90) # distance places point extended out from 1st (x,y) parameter using angle of rotation (90)
         tb.add(Point('reference', 'p25', x, y, 'point_style')) # 25 is point on back waistband, directly above 24 back button
 
-        distance = (7.5*cm_to_pt)*(cd.waist/patternWaist)
+        distance = (7.5*cm_to_pt)
         x, y = pointAlongLine(tb.p22.x,  tb.p22.y, tb.p23.x,  tb.p23.y, distance) # -distance places center of back dart on line from 22 to 23
         tb.add(Point('reference', 'H', x, y, 'point_style')) # H is center of back dart near top of waistband
 
-        distance = (11.5*cm_to_pt)*(rise/patternRise)
+        distance = (11.5*cm_to_pt)
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, distance,  90) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
         tb.add(Point('reference', 'P', x, y, 'point_style')) # P is endpoint of back dart
-        distance = ( (1.3)*cm_to_pt )*(0.5)*(cd.waist/patternWaist)   #1.3 is width of entire back dart
+        distance = ( 1.3*cm_to_pt) *(0.5)  #1.3 is width of entire back dart
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p23.x,  tb.p23.y, distance)
         tb.add(Point('reference', 'Q', x, y, 'point_style')) # Q marks the inside dart point at top of waistband
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, distance)
@@ -420,17 +415,17 @@ class PatternDesign():
 
         x, y = intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, tb.p20.x, tb.p20.y, tb.p21.x, tb.p21.y)
         tb.add(Point('reference', 'S', x, y, 'point_style')) # S is on fold of back dart at waistline
-        distance = ( (2*cm_to_pt*(0.5)) ) * (cd.waist/patternWaist) # 2cm is the width of dart at waistline - leave this way if we wish to change 2cm to something else later
+        distance = (2*cm_to_pt)*(0.5)   #2cm is the width of dart at waistline - leave this way if we wish to change 2cm to something else later
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p21.x,  tb.p21.y, distance)
         tb.add(Point('reference', 'T', x, y, 'point_style')) # T marks the inside dart point at waistband
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p20.x,  tb.p20.y, distance) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
         tb.add(Point('reference', 'U', x, y, 'point_style')) # U marks the outside dart point at waistband
 
-        tb.add(Point('reference', 'p26', tf.p9.x + (4*cm_to_pt)*(cd.seat/patternSeat), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
-        tb.add(Point('reference', 'p27', tf.p10.x + (3.5*cm_to_pt)*(cd.seat/patternSeat), tf.p10.y, 'point_style')) # 27 is seat at side seam
-        tb.add(Point('reference', 'p28', tf.p11.x + (3*cm_to_pt)*(cd.seat/patternSeat), tf.p11.y, 'point_style')) # 28 is rise at side seam
+        tb.add(Point('reference', 'p26', tf.p9.x + (4*cm_to_pt), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
+        tb.add(Point('reference', 'p27', tf.p10.x + (3.5*cm_to_pt), tf.p10.y, 'point_style')) # 27 is seat at side seam
+        tb.add(Point('reference', 'p28', tf.p11.x + (3*cm_to_pt), tf.p11.y, 'point_style')) # 28 is rise at side seam
         tb.add(Point('reference', 'V', tb.p28.x - ( abs( tb.p28.x - tf.p12.x)*(.44) ), tb.p28.y + ( abs( tb.p28.y - tf.p12.y)*(.4) ), 'point_style')) #V is side seam inflection point
-        tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + ( (1.3)*cm_to_pt*(cd.outside_leg/patternOutsideLeg) ), 'point_style')) # 29 is lowered back trouser hem
+        tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + (1.3*cm_to_pt ), 'point_style')) # 29 is lowered back trouser hem
         tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
 
         #control points hem
@@ -500,7 +495,6 @@ class PatternDesign():
         sbps.appendCubicCurveToPath(tb.c15.x, tb.c15.y, tb.c16.x,  tb.c16.y,  tf.C.x, tf.C.y,  relative = False)
         sbps.appendLineToPath(tb.p18.x, tb.p18.y, relative = False)
         sbps.appendLineToPath(tb.p23.x, tb.p23.y, relative = False)
-
 
         cuttingline_back_path_svg = path()
         cbps = cuttingline_back_path_svg
