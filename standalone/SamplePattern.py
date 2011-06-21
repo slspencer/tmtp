@@ -191,7 +191,10 @@ class PatternDesign():
         x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
         tf.add(Point('reference', 'Knee', x, y, 'point_style'))
         x, y = intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p13p30 and p11Knee
-        tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p27 & p28
+        tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee
+        x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, tf.p2.x, tf.p2.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p4p5 and p2Knee
+        tf.add(Point('reference', 'p33', x, y, 'point_style')) #b/w  p2 & Knee
+
 
         #control points for side seam
         pointlist = []
