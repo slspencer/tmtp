@@ -382,7 +382,6 @@ class PatternDesign():
         tb.add(Point('reference', 'bB', tf.B.x ,  tf.B.y, 'point_style'))
         tb.add(Point('reference', 'bC', tf.B.x ,  tf.C.y, 'point_style'))
         tb.add(Point('reference', 'bI', tf.I.x, tf.I.y,  'point_style'))
-        tb.add(Point('reference', 'bJ', tf.J.x, tf.J.y,  'point_style'))
         tb.add(Point('reference', 'bL', tf.L.x, tf.L.y,  'point_style'))
         tb.add(Point('reference', 'bK', tf.K.x, tf.K.y,  'point_style'))
         tb.add(Point('reference', 'bp2', tf.p2.x ,  tf.p2.y, 'point_style'))
@@ -402,12 +401,11 @@ class PatternDesign():
 
         #back center points
         tb.add(Point('reference', 'p17', tf.p2.x - (3*cm_to_pt) ,  tf.p2.y, 'point_style')) # p17 --> extends back crotch measurement by 3cm
-        tb.add(Point('reference', 'p18', tf.I.x + (2*cm_to_pt), tf.I.y,  'point_style')) # p18 --> high hip at back center seam
         tb.add(Point('reference', 'p19', tf.A.x +(5*cm_to_pt), tf.A.y, 'point_style')) # p19
         # back waist points
         distance = -(2*cm_to_pt)
-        x, y = pointAlongLine(tb.p19.x,  tb.p19.y, tb.p18.x,  tb.p18.y, distance)
-        tb.add(Point('reference', 'p20', x, y, 'point_style')) # p20 --> waistline at back center seam
+        x, y = pointAlongLine(tb.p19.x,  tb.p19.y, tf.C.x,  tf.C.y, distance)
+        tb.add(Point('reference', 'p20', x,y, 'point_style')) # p20 --> waistline at back center seam
         r = (cd.waist*0.25) + (2*cm_to_pt)
         a, b,  y = tb.p20.x,  tb.p20.y,  tf.B.y
         x = abs( math.sqrt( r**2 - (y - b)**2) ) + a
@@ -464,9 +462,9 @@ class PatternDesign():
         tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
 
         #control points for back center curve
-        tb.add(Point('reference', 'c1', tb.p17.x, tb.p17.y, 'controlpoint_style')) # b/w  p17 & C --> c1 = p17
-        x, y = intersectionOfLines(tf.C.x, tf.C.y, tb.p18.x, tb.p18.y, tb.p17.x, tb.p17.y, tb.p28.x, tb.p28.y)
-        tb.add(Point('reference', 'c2', x, y, 'controlpoint_style')) # c2 is b/w p17 & C
+        tb.add(Point('reference', 'c1', tb.p17.x, tb.p17.y, 'controlpoint_style')) # b/w  p17 & C --> c1 = p17, 1st control point = 1st knot of curve
+        x, y = intersectionOfLines(tf.C.x, tf.C.y, tb.p19.x, tb.p19.y, tb.p17.x, tb.p17.y, tb.p28.x, tb.p28.y)
+        tb.add(Point('reference', 'c2', x, y, 'controlpoint_style')) # c2 is b/w p17 & C , so this curve is a Quadratic curve
 
         #control points waistband
         tb.add(Point('reference', 'c3', tb.p25.x, tb.p25.y, 'controlpoint_style')) # c3 = p25 --> 1st control point for top waist band curve = 1st knot point
@@ -507,10 +505,10 @@ class PatternDesign():
         pointlist.append(tb.p29)
         pointlist.append(tf.p5)
         fcp, scp = GetCurveControlPoints('HemLine', pointlist)
-        tb.add(Point('reference', 'c21', fcp[0].x, fcp[0].y, 'point_style')) # b/w 13 & 29
-        tb.add(Point('reference', 'c22', scp[0].x, scp[0].y, 'point_style')) # b/w 13 & 29
-        tb.add(Point('reference', 'c23', fcp[1].x, fcp[1].y, 'point_style')) # b/w 29 & 5
-        tb.add(Point('reference', 'c24', scp[1].x, scp[1].y, 'point_style')) # b/w 29 & 5
+        tb.add(Point('reference', 'c21', fcp[0].x, fcp[0].y, 'controlpoint_style')) # b/w 13 & 29
+        tb.add(Point('reference', 'c22', scp[0].x, scp[0].y, 'controlpoint_style')) # b/w 13 & 29
+        tb.add(Point('reference', 'c23', fcp[1].x, fcp[1].y, 'controlpoint_style')) # b/w 29 & 5
+        tb.add(Point('reference', 'c24', scp[1].x, scp[1].y, 'controlpoint_style')) # b/w 29 & 5
 
         # control points hem allowance
         pointlist = []
@@ -518,26 +516,18 @@ class PatternDesign():
         pointlist.append(tb.O)
         pointlist.append(tf.K)
         fcp, scp = GetCurveControlPoints('HemAllowance', pointlist)
-        tb.add(Point('reference', 'c25', fcp[0].x, fcp[0].y, 'point_style')) # b/w L & O
-        tb.add(Point('reference', 'c26', scp[0].x, scp[0].y, 'point_style')) # b/w L & O
-        tb.add(Point('reference', 'c27', fcp[1].x, fcp[1].y, 'point_style')) # b/w O & K
-        tb.add(Point('reference', 'c28', scp[1].x, scp[1].y, 'point_style')) # b/w O & K
+        tb.add(Point('reference', 'c25', fcp[0].x, fcp[0].y, 'controlpoint_style')) # b/w L & O
+        tb.add(Point('reference', 'c26', scp[0].x, scp[0].y, 'controlpoint_style')) # b/w L & O
+        tb.add(Point('reference', 'c27', fcp[1].x, fcp[1].y, 'controlpoint_style')) # b/w O & K
+        tb.add(Point('reference', 'c28', scp[1].x, scp[1].y, 'controlpoint_style')) # b/w O & K
 
         # control points inseam
-        pointlist = []
-        pointlist.append(tf.p5)
-        pointlist.append(tf.p4)
-        pointlist.append(tb.p17)
-        fcp, scp = GetCurveControlPoints('Inseam', pointlist)
-        tb.add(Point('reference', 'c29', fcp[0].x, fcp[0].y, 'point_style')) # b/w p5 & p4  -- don't use this -- p5 to p4 is straight line
-        tb.add(Point('reference', 'c30', scp[0].x, scp[0].y, 'point_style')) # b/w p4 & p4 -- ""      ""
-        # Re-create c31 & c32
-        distance = ( math.sqrt( ((tf.J.x - tf.p4.x)**2) + ((tf.J.y - tf.p4.y)**2) ) )
+        distance = ( math.sqrt( ((tf.p4.x - tf.J.x)**2) + ((tf.p4.y - tf.J.y)**2) ) ) # c31 is same distance from p4 as J
         x, y = pointAlongLine(tf.p4.x,  tf.p4.y, tf.p5.x,  tf.p5.y, -distance)
-        tb.add(Point('reference', 'c31', x,  y, 'point_style'))   # c31 is on slope of line p5p4 at J.x (midpoint b/w knee & rise )
-        distance = ( math.sqrt( ((scp[1].x - tf.p4.x)**2) + ((scp[1].y - tf.p4.y)**2) ) ) # keep 2nd control point at same distance from p4
-        x, y = pointAlongLine(tf.p4.x,  tf.p4.y, tf.p5.x,  tf.p5.y, -distance) # put 2nd control point on line p5p4
-        tb.add(Point('reference', 'c32', x,  y, 'point_style'))   # c32 is on line p5p4 to 'push' curve inwards
+        tb.add(Point('reference', 'c31', x,  y, 'controlpoint_style'))   # c31 is on slope of line p5p4 at J distance from p4
+        x, y = intersectionOfLines(tb.p17.x, tb.p17.y, tf.Knee.x, tf.Knee.y, tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y) #c32 is intersection of line p17 to Knee and p4p5
+        tb.add(Point('reference', 'c32', x, y, 'controlpoint_style'))
+
 
         # Assemble all paths down here
         # Paths are a bit differemt - we create the SVG and then create the object to hold
@@ -547,12 +537,15 @@ class PatternDesign():
         grid_back_path_svg =path()
         gbps = grid_back_path_svg
         tb.add(Path('pattern','path', 'Trousers Back Gridline Path',  gbps,  'grid_path_style'))
+        # vertical grid
+        gbps.appendMoveToPath(tf.p5.x, tf.p5.y, relative = False)
+        gbps.appendLineToPath(tf.p6.x, tf.p6.y, relative = False)
         # horizontal grid
         gbps.appendMoveToPath(tb.p19.x,  tb.p19.y, relative = False)
         gbps.appendLineToPath(tb.p22.x,  tb.p22.y, relative = False)
         gbps.appendMoveToPath(tf.p7.x,  tf.p7.y, relative = False)
         gbps.appendLineToPath(tb.p21.x,  tb.p21.y, relative = False)
-        gbps.appendMoveToPath(tb.p18.x,  tb.p18.y, relative = False)
+        gbps.appendMoveToPath(tf.I.x,  tf.I.y, relative = False)
         gbps.appendLineToPath(tb.p26.x,  tb.p26.y, relative = False)
         gbps.appendMoveToPath(tf.C.x,  tf.C.y, relative = False)
         gbps.appendLineToPath(tb.p27.x,  tb.p27.y, relative = False)
@@ -564,7 +557,7 @@ class PatternDesign():
         gbps.appendLineToPath(tf.p13.x,  tf.p13.y, relative = False)
         #diagonal grid
         gbps.appendMoveToPath(tb.p17.x,  tb.p17.y, relative = False)
-        gbps.appendLineToPath(tb.bKnee.x,  tb.bKnee.y, relative = False)
+        gbps.appendLineToPath(tf.Knee.x,  tf.Knee.y, relative = False)
         gbps.appendLineToPath(tb.p28.x,  tb.p28.y, relative = False)
 
         # seam line back path
@@ -573,7 +566,6 @@ class PatternDesign():
         tb.add(Path('pattern', 'path', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
         sbps.appendMoveToPath(tb.p17.x, tb.p17.y, relative = False)
         sbps.appendCubicCurveToPath(tb.c1.x, tb.c1.y, tb.c2.x, tb.c2.y, tf.C.x, tf.C.y, relative = False)
-        sbps.appendLineToPath(tb.p18.x, tb.p18.y, relative = False)
         sbps.appendLineToPath(tb.p23.x, tb.p23.y, relative = False)
         sbps.appendLineToPath(tb.p25.x, tb.p25.y, relative = False)
         sbps.appendCubicCurveToPath(tb.c3.x, tb.c3.y, tb.c4.x, tb.c4.y, tb.p22.x, tb.p22.y, relative = False)
@@ -598,7 +590,6 @@ class PatternDesign():
         tb.add(Path('pattern', 'path', 'Trousers Back Cuttingline Path', cbps, 'cuttingline_style'))
         cbps.appendMoveToPath(tb.p17.x, tb.p17.y, relative = False)
         cbps.appendCubicCurveToPath(tb.c1.x, tb.c1.y, tb.c2.x, tb.c2.y, tf.C.x, tf.C.y, relative = False)
-        cbps.appendLineToPath(tb.p18.x, tb.p18.y, relative = False)
         cbps.appendLineToPath(tb.p23.x, tb.p23.y, relative = False)
         cbps.appendLineToPath(tb.p25.x, tb.p25.y, relative = False)
         cbps.appendCubicCurveToPath(tb.c3.x, tb.c3.y, tb.c4.x, tb.c4.y, tb.p22.x, tb.p22.y, relative = False)
