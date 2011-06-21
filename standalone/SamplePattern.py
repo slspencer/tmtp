@@ -175,6 +175,7 @@ class PatternDesign():
         x = (tf.D.y - b)/m
         tf.add(Point('reference', 'p30',   x, tf.D.y, 'point_style'))
 
+
         length = abs(tf.D.y - tf.A.y)
         x, y = pointAlongLine( tf.p16.x, tf.p16.y, tf.p15.x, tf.p15.y, -length)
         tf.add(Point('reference', 'G', x , y, 'point_style'))
@@ -189,6 +190,8 @@ class PatternDesign():
         tf.add(Point('reference', 'X', tf.p11.x - ( abs(tf.p11.x - tf.p12.x)*.6 ), tf.p11.y - ( (tf.p11.y - tf.p12.y)*.5 ), 'point_style')) #inflection point b/w 11 & 12
         x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
         tf.add(Point('reference', 'Knee', x, y, 'point_style'))
+        x, y = intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p13p30 and p11Knee
+        tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p27 & p28
 
         #control points for side seam
         pointlist = []
