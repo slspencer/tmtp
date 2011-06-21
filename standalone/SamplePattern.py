@@ -283,6 +283,7 @@ class PatternDesign():
         gps.appendLineToPath(tf.p3.x,  tf.p3.y,  relative = False)
         gps.appendMoveToPath(tf.p2.x,  tf.p2.y,  relative = False)
         gps.appendLineToPath(tf.Knee.x,  tf.Knee.y,  relative = False)
+        gps.appendLineToPath(tf.p11.x,  tf.p11.y,  relative = False)
 
 
 
