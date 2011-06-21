@@ -538,12 +538,16 @@ class PatternDesign():
         gbps = grid_back_path_svg
         tb.add(Path('pattern','path', 'Trousers Back Gridline Path',  gbps,  'grid_path_style'))
         # vertical grid
+        gbps.appendMoveToPath(tf.C.x, tf.C.y, relative = False)
+        gbps.appendLineToPath(tf.A.x, tf.A.y, relative = False)
         gbps.appendMoveToPath(tf.p5.x, tf.p5.y, relative = False)
         gbps.appendLineToPath(tf.p6.x, tf.p6.y, relative = False)
+        gbps.appendMoveToPath(tf.p14.x, tf.p14.y, relative = False)
+        gbps.appendLineToPath(tf.G.x, tf.G.y, relative = False)
         # horizontal grid
-        gbps.appendMoveToPath(tb.p19.x,  tb.p19.y, relative = False)
+        gbps.appendMoveToPath(tf.A.x,  tf.A.y, relative = False)
         gbps.appendLineToPath(tb.p22.x,  tb.p22.y, relative = False)
-        gbps.appendMoveToPath(tf.p7.x,  tf.p7.y, relative = False)
+        gbps.appendMoveToPath(tf.B.x,  tf.B.y, relative = False)
         gbps.appendLineToPath(tb.p21.x,  tb.p21.y, relative = False)
         gbps.appendMoveToPath(tf.I.x,  tf.I.y, relative = False)
         gbps.appendLineToPath(tb.p26.x,  tb.p26.y, relative = False)
@@ -556,6 +560,8 @@ class PatternDesign():
         gbps.appendMoveToPath(tf.p5.x,  tf.p5.y, relative = False)
         gbps.appendLineToPath(tf.p13.x,  tf.p13.y, relative = False)
         #diagonal grid
+        gbps.appendMoveToPath(tb.W.x,  tb.W.y, relative = False)
+        gbps.appendLineToPath(tb.p22.x,  tb.p22.y, relative = False)
         gbps.appendMoveToPath(tb.p17.x,  tb.p17.y, relative = False)
         gbps.appendLineToPath(tf.Knee.x,  tf.Knee.y, relative = False)
         gbps.appendLineToPath(tb.p28.x,  tb.p28.y, relative = False)
