@@ -445,23 +445,23 @@ class PatternDesign():
         tb.add(Point('reference', 'p25', x, y, 'point_style')) # p25 is highpoint on back waistband, directly above p24 back button
 
         # back waist dart
-        distance = (7.5*cm_to_pt)
+        distance = (9.5*cm_to_pt) # dart center from side seam
         x, y = pointAlongLine(tb.p22.x,  tb.p22.y, tb.p23.x,  tb.p23.y, distance) # -distance places center of back dart on line from 22 to 23
         tb.add(Point('reference', 'H', x, y, 'point_style')) # H is center of back dart near top of waistband
-        distance = (11.5*cm_to_pt)
-        x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, distance,  90) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
+        distance = (11.5*cm_to_pt) # length of dart
+        x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, distance,  90) # draw dart center line at 90degrees from point H on line Hp22
         tb.add(Point('reference', 'P', x, y, 'point_style')) # P is endpoint of back dart
-        distance = ( 1.3*cm_to_pt) *(0.5)  #1.3 is width of entire back dart
-        x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p23.x,  tb.p23.y, distance)
-        tb.add(Point('reference', 'Q', x, y, 'point_style')) # Q marks the inside dart point at top of waistband
+        distance = ( 1.3*cm_to_pt)*(0.5)  #1.3cm is width of entire back dart
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, distance)
+        tb.add(Point('reference', 'Q', x, y, 'point_style')) # Q marks the inside dart point at top of waistband
+        x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, -distance)
         tb.add(Point('reference', 'R', x, y, 'point_style')) # R marks the outside dart point at top of waistband
         x, y = intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, tb.p20.x, tb.p20.y, tb.p21.x, tb.p21.y)
-        tb.add(Point('reference', 'S', x, y, 'point_style')) # S is on fold of back dart at waistline
-        distance = (2*cm_to_pt)*(0.5)   #2cm is the width of dart at waistline - leave this way if we wish to change 2cm to something else later
+        tb.add(Point('reference', 'S', x, y, 'point_style')) # S is center of back dart at waistline
+        distance = (2*cm_to_pt)*(0.5)   #2cm is the width of dart at waistline
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p21.x,  tb.p21.y, distance)
         tb.add(Point('reference', 'T', x, y, 'point_style')) # T marks the inside dart point at waistband
-        x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p20.x,  tb.p20.y, distance) # distance places point extended from 1st (x,y) parameter using angle of rotation (270)
+        x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p21.x,  tb.p21.y, -distance)
         tb.add(Point('reference', 'U', x, y, 'point_style')) # U marks the outside dart point at waistband
 
         # side seam points
@@ -649,10 +649,10 @@ class PatternDesign():
         dart_back_path_svg.appendMoveToPath(tb.H.x,  tb.H.y, relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
         dart_back_path_svg.appendMoveToPath(tb.Q.x,  tb.Q.y, relative = False)
-        dart_back_path_svg.appendLineToPath(tb.U.x,  tb.U.y,  relative = False)
+        dart_back_path_svg.appendLineToPath(tb.T.x,  tb.T.y,  relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
         dart_back_path_svg.appendMoveToPath(tb.R.x,  tb.R.y, relative = False)
-        dart_back_path_svg.appendLineToPath(tb.T.x,  tb.T.y,  relative = False)
+        dart_back_path_svg.appendLineToPath(tb.U.x,  tb.U.y,  relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
 
         # button back marking path
