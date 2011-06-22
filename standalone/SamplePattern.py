@@ -180,20 +180,19 @@ class PatternDesign():
         x, y = pointAlongLine( tf.p16.x, tf.p16.y, tf.p15.x, tf.p15.y, -length)
         tf.add(Point('reference', 'G', x , y, 'point_style'))
 
-        # Points J, K, L, M, & X were added to formula -- J & X are inflection points in side seam line curves. K,L,& M are extensions of leg length for a hem allowance
-        distance = ( math.sqrt( ((tf.p4.x - tf.p6.x)**2) + ((tf.p4.y - tf.p6.y)**2) ) ) * (0.5)   # J is at midpoint on line from p4 to p6
+        # Points J, K, L, M were added to formula -- J is an inflection point to calculate inseam curve. K, L,& M are extensions of leg length for a hem allowance
+        distance = ( math.sqrt( ((tf.p4.x - tf.p6.x)**2) + ((tf.p4.y - tf.p6.y)**2) ) ) * (0.5)   # J is at midpoint on line from p4 to p6, not at midpoint on line between p4 & p2
         x, y = pointAlongLine( tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, -distance )
         tf.add(Point('reference', 'J', x,  y, 'point_style'))
         tf.add(Point('reference', 'K',  tf.p5.x, tf.p5.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'L',  tf.p13.x, tf.p13.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'M',  tf.p15.x, tf.p15.y + HEM_ALLOWANCE, 'point_style'))
-        tf.add(Point('reference', 'X', tf.p11.x - ( abs(tf.p11.x - tf.p12.x)*.6 ), tf.p11.y - ( (tf.p11.y - tf.p12.y)*.5 ), 'point_style')) #inflection point b/w 11 & 12
         x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
         tf.add(Point('reference', 'Knee', x, y, 'point_style'))
         x, y = intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p13p30 and p11Knee
-        tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee
+        tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee, used to calculate sideseam curve
         x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, tf.p2.x, tf.p2.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p4p5 and p2Knee
-        tf.add(Point('reference', 'p33', x, y, 'point_style')) #b/w  p2 & Knee
+        tf.add(Point('reference', 'p33', x, y, 'point_style')) #b/w  p2 & Knee, used to calculate inseam curve
 
 
         #control points for side seam
@@ -202,8 +201,6 @@ class PatternDesign():
         pointlist.append(tf.p9)
         pointlist.append(tf.p10)
         pointlist.append(tf.p11)
-        pointlist.append(tf.X)
-
         fcp, scp = GetCurveControlPoints('SideSeam', pointlist)
         tf.add(Point('reference', 'c1', fcp[0].x, fcp[0].y, 'controlpoint_style')) #b/w 7 & 9
         tf.add(Point('reference', 'c2', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  7 & 9
@@ -211,10 +208,12 @@ class PatternDesign():
         tf.add(Point('reference', 'c4', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w  9 & 10
         tf.add(Point('reference', 'c5', fcp[2].x, fcp[2].y, 'controlpoint_style')) #b/w 10 & 11
         tf.add(Point('reference', 'c6', scp[2].x, scp[2].y, 'controlpoint_style')) #b/w  10 & 11
-        tf.add(Point('reference', 'c7', fcp[3].x, fcp[3].y, 'controlpoint_style')) #b/w 11 & X
-        tf.add(Point('reference', 'c8', scp[3].x, scp[3].y, 'controlpoint_style')) #b/w 11 & X
-        #tf.add(Point('reference', 'c9', fcp[4].x, fcp[4].y, 'controlpoint_style')) #b/w 12 & 13
-        #tf.add(Point('reference', 'c10', scp[4].x, scp[4].y, 'controlpoint_style')) #b/w 12 & 13
+        distance = ( math.sqrt( ((tf.p11.x - tf.p32.x)**2) + ((tf.p11.y - tf.p32.y)**2) ) ) # find distance of p32 from p11
+        x, y = pointAlongLine(tf.p11.x,  tf.p11.y, tf.c6.x,  tf.c6.y, -distance) #find point along line of c6p11 at distance of intersect. b/w knee diag & side seam leg vertical
+        tf.add(Point('reference', 'c7', x,  y, 'controlpoint_style'))  # c7 is on slope c6p11 for continuous curve past p11 --> b/w p11 & p12
+        distance = ( math.sqrt( ((tf.p12.x - tf.p11.x)**2) + ((tf.p12.y - tf.p11.y)**2) ) )* (0.5) # middistance of line between p12 & p11
+        x, y = pointAlongLine(tf.p12.x,  tf.p12.y, tf.p13.x,  tf.p13.y, -distance) # find point on slope of lower leg line p13 & p12
+        tf.add(Point('reference', 'c8', x,  y, 'controlpoint_style'))   # c8 is on slope of p13p12, at midpoint on p12p11, to smooth transition to line p13p12 --> b/2 p11 & 12
 
         #control points for hemallowance
         pointlist = []
@@ -235,8 +234,10 @@ class PatternDesign():
         fcp, scp = GetCurveControlPoints('Inseam', pointlist)
         tf.add(Point('reference', 'c15', fcp[0].x, fcp[0].y, 'controlpoint_style')) #b/w 4 & J -- don't use this
         tf.add(Point('reference', 'c16', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  4 & J -- don't use this
-        tf.add(Point('reference', 'c17', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w   J & 2
-        tf.add(Point('reference', 'c18', tf.J.x, scp[1].y, 'controlpoint_style')) #b/w J & 2 -- skew curve towards J.x
+        distance = ( math.sqrt( ((tf.p4.x - fcp[1].x)**2) + ((tf.p4.y - fcp[1].y)**2) ) ) # find distance of J's 1st control point from p4 - use this distance & discard J
+        x, y = pointAlongLine(tf.p4.x,  tf.p4.y, tf.p5.x,  tf.p5.y, -distance) #find point along line of p4p5 at distance from p4
+        tf.add(Point('reference', 'c17', x,  y, 'controlpoint_style'))  # b/w p4 & p2--> on slope of p4p5 at sufficient length away from p4 to create nice inseam curve
+        tf.add(Point('reference', 'c18', tf.p33.x, tf.p33.y, 'controlpoint_style')) #b/w p4 & p2 at intersection of knee diagonal and inseam vertical lines
 
         #control points at front fly curve
         pointlist = []
@@ -308,8 +309,7 @@ class PatternDesign():
         sps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p9.x, tf.p9.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p10.x, tf.p10.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.p11.x, tf.p11.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.X.x, tf.X.y,  relative = False)
-        sps.appendLineToPath(tf.p12.x, tf.p12.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.p12.x, tf.p12.y,  relative = False)
         sps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
         sps.appendLineToPath(tf.L.x,  tf.L.y,  relative = False)
         #hemallowance
@@ -318,7 +318,6 @@ class PatternDesign():
         #inseam
         sps.appendLineToPath(tf.p5.x,  tf.p5.y,  relative = False)
         sps.appendLineToPath( tf.p4.x, tf.p4.y,  relative = False)
-        sps.appendLineToPath(tf.J.x, tf.J.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.p2.x, tf.p2.y,  relative = False)
         #front fly curve
         sps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.p3.x, tf.p3.y,  relative = False)
@@ -337,8 +336,7 @@ class PatternDesign():
         cps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p9.x, tf.p9.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p10.x, tf.p10.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.p11.x, tf.p11.y,  relative = False)
-        cps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.X.x, tf.X.y,  relative = False)
-        cps.appendLineToPath(tf.p12.x, tf.p12.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.p12.x, tf.p12.y,  relative = False)
         cps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
         cps.appendLineToPath(tf.L.x,  tf.L.y,  relative = False)
         #hemallowance
@@ -347,7 +345,6 @@ class PatternDesign():
         #inseam
         cps.appendLineToPath(tf.p5.x,  tf.p5.y,  relative = False)
         cps.appendLineToPath( tf.p4.x, tf.p4.y,  relative = False)
-        cps.appendLineToPath(tf.J.x, tf.J.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.p2.x, tf.p2.y,  relative = False)
         #front fly curve
         cps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.p3.x, tf.p3.y,  relative = False)
