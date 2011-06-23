@@ -52,12 +52,14 @@
         "stroke-miterlimit": "4",
         "stroke-width": "4"
     },
-    "grid_path_style": {
+    "gridline_style": {
         "fill": "none",
-        "stroke": "black",
+        "stroke": "gray",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "1"
+        "stroke-width": "1",
+        "stroke-dasharray": "6,6",
+        "stroke-dashoffset": "0"
     },
     "hemline_path_style": {
         "fill": "none",

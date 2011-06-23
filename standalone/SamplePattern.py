@@ -230,13 +230,11 @@ class PatternDesign():
         pointlist.append(tf.J)
         pointlist.append(tf.p2)
         fcp, scp = GetCurveControlPoints('Inseam', pointlist)
-        tf.add(Point('reference', 'c15', fcp[0].x, fcp[0].y, 'controlpoint_style')) #b/w 4 & J -- don't use this
-        tf.add(Point('reference', 'c16', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  4 & J -- don't use this
-        distance = ( math.sqrt( ((tf.p4.x - fcp[1].x)**2) + ((tf.p4.y - fcp[1].y)**2) ) ) # find distance of J's 1st control point from p4 - use this distance & discard J
-        x, y = pointAlongLine(tf.p4.x,  tf.p4.y, tf.p5.x,  tf.p5.y, -distance) #find point along line of p4p5 at distance from p4
-        tf.add(Point('reference', 'c17', x,  y, 'controlpoint_style'))  # b/w p4 & p2--> on slope of p4p5 at sufficient length away from p4 to create nice inseam curve
-        x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, tf.p2.x, tf.p2.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p4p5 and p2Knee
-        tf.add(Point('reference', 'c18', x, y, 'controlpoint_style')) #b/w  p2 & Knee, used to calculate inseam curve
+        distance = ( math.sqrt( ((tf.p4.x - fcp[1].x)**2) + ((tf.p4.y - fcp[1].y)**2) ) ) # find distance of J's 1st control point from p4 - use this to make 1st control point from p4
+        x, y = pointAlongLine(tf.p4.x,  tf.p4.y, tf.p5.x,  tf.p5.y, -distance) # point along p4p5 at sufficient length away from p4 to create nice inseam curve
+        tf.add(Point('reference', 'c17', x,  y, 'controlpoint_style'))  # b/w p4 & p2
+        x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, tf.p2.x, tf.p2.y,  tf.Knee.x,  tf.Knee.y) #  intersection of p4p5 and p2Knee
+        tf.add(Point('reference', 'c18', x, y, 'controlpoint_style')) #b/w  p4 & p2
 
         # control points at front fly curve
         tf.add(Point('reference', 'c21', tf.p2.x + abs(tf.p2.x - tf.D.x)*(0.5), tf.p2.y, 'controlpoint_style')) #b/w p2 & C
@@ -260,7 +258,7 @@ class PatternDesign():
         # Draw reference lines
         grid_path_svg =path()
         gps = grid_path_svg
-        tf.add(Path('pattern','path', 'Trousers Front Gridline Path',  gps,  'grid_path_style'))
+        tf.add(Path('pattern','path', 'Trousers Front Gridline Path',  gps,  'gridline_style'))
         # vertical grid
         gps.appendMoveToPath(tf.A.x,  tf.A.y,  relative = False)
         gps.appendLineToPath(tf.F.x,  tf.F.y,  relative = False)
@@ -539,7 +537,7 @@ class PatternDesign():
         # Draw reference grid
         grid_back_path_svg =path()
         gbps = grid_back_path_svg
-        tb.add(Path('pattern','path', 'Trousers Back Gridline Path',  gbps,  'grid_path_style'))
+        tb.add(Path('pattern','path', 'Trousers Back Gridline Path',  gbps,  'gridline_style'))
         # vertical grid
         gbps.appendMoveToPath(tf.C.x, tf.C.y, relative = False)
         gbps.appendLineToPath(tf.A.x, tf.A.y, relative = False)
