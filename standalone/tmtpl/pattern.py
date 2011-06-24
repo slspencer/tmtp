@@ -119,7 +119,7 @@ class Pattern(pBase):
                     print '        Previous y was', next_y
                     print '        New y is', real_next_y
                 next_y = real_next_y
-                max_height_this_row = 0
+                max_height_this_row = pp_height
                 next_x = 0
             else:
                 if pp_height > max_height_this_row:
