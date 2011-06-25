@@ -135,7 +135,7 @@ class PatternDesign():
         trousers.add(front)
         tf = trousers.front
 
-        start =  Point('reference', 'start', 4*in_to_pt,  6*in_to_pt, 'point_style')
+        start =  Point('reference', 'start', 0,  6*in_to_pt, 'point_style')
         tf.add(start)
         tf.attrs['transform'] = 'translate(' + tf.start.coords + ' )'
 
@@ -673,42 +673,64 @@ class PatternDesign():
         start =  Point('reference', 'start', 0,  0, 'point_style')
         wf.add(start)
         transform_coords = str(- tf.A.x) + ', ' + str( - tf.A.y) # doesn't do anything
-        dx = -tf.A.x
-        dy = -tf.A.y
         wf.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
-
-        #add hem to waistband, at reflection of angle of side of waistband
-        wf.add(Point('reference', 'p34', (tf.B.x + dx), (tf.B.y +dy) + (1*cm_to_pt),  'point_style'))
-        x, y = intersectionOfLines(wf.p34.x, wf.p34.y, (wf.p34.x + 30), wf.p34.y, (tf.p7.x + dx),  (tf.p7.y + dy), (tf.p7.x + dx) + abs(tf.p8.x - tf.p7.x), (tf.p7.y + dy) + abs(tf.p7.y - tf.p8.y))
-        wf.add(Point('reference', 'p35', x,  y,  'point_style'))
-
+        dx,  dy = -tf.A.x,  -tf.A.y
         # waistfront seamline path
         waistfront_seam_path_svg = path()
-        wps= waistfront_seam_path_svg
-        wf.add(Path('pattern', 'path', 'Trousers Waistband Front Seam Line Path',  wps,  'seamline_path_style'))
-        wps.appendMoveToPath( tf.A.x + dx,  tf.A.y + dy, relative = False)
-        wps.appendLineToPath( tf.p8.x + dx, tf.p8.y + dy, relative = False)
-        wps.appendLineToPath( tf.p7.x + dx, tf.p7.y + dy, relative = False)
-        wps.appendLineToPath( wf.p35.x, wf.p35.y, relative = False)
-        wps.appendLineToPath( wf.p34.x, wf.p34.y, relative = False)
-        wps.appendLineToPath( tf.B.x + dx, tf.B.y + dy,  relative = False)
-        wps.appendLineToPath( tf.A.x + dx, tf.A.y + dy,  relative = False)
+        wfsp= waistfront_seam_path_svg
+        wf.add(Path('pattern', 'path', 'Trousers Waistband Front Seam Line Path',  wfsp,  'seamline_path_style'))
+        wfsp.appendMoveToPath( tf.A.x + dx,  tf.A.y + dy, relative = False)
+        wfsp.appendLineToPath( tf.p8.x+ dx, tf.p8.y + dy, relative = False)
+        wfsp.appendLineToPath( tf.p7.x+ dx, tf.p7.y + dy, relative = False)
+        wfsp.appendLineToPath( tf.B.x+ dx, tf.B.y + dy,  relative = False)
+        wfsp.appendLineToPath( tf.A.x+ dx, tf.A.y + dy,  relative = False)
         # waistfront cuttingline path
-        waistfront_cutting_path_svg = path()
-        wcps = waistfront_cutting_path_svg
-        wf.add(Path('pattern', 'path', 'Trousers Waistband Front Cutting Line Path',  wcps,  'cuttingline_style'))
-        wcps.appendMoveToPath( tf.A.x + dx,  tf.A.y + dy, relative = False)
-        wcps.appendLineToPath( tf.p8.x + dx, tf.p8.y + dy, relative = False)
-        wcps.appendLineToPath( tf.p7.x + dx, tf.p7.y + dy, relative = False)
-        wcps.appendLineToPath( wf.p35.x, wf.p35.y, relative = False)
-        wcps.appendLineToPath( wf.p34.x, wf.p34.y, relative = False)
-        wcps.appendLineToPath( tf.B.x + dx, tf.B.y + dy,  relative = False)
-        wcps.appendLineToPath( tf.A.x + dx, tf.A.y + dy,  relative = False)
-
-
+        waistfront_cuttingline_path_svg = path()
+        wfcp= waistfront_cuttingline_path_svg
+        wf.add(Path('pattern', 'path', 'Trousers Waistband Front Cuttingline Path',  wfcp,  'cuttingline_style'))
+        wfcp.appendMoveToPath( tf.A.x + dx,  tf.A.y + dy, relative = False)
+        wfcp.appendLineToPath( tf.p8.x+ dx, tf.p8.y + dy, relative = False)
+        wfcp.appendLineToPath( tf.p7.x+ dx, tf.p7.y + dy, relative = False)
+        wfcp.appendLineToPath( tf.B.x+ dx, tf.B.y + dy,  relative = False)
+        wfcp.appendLineToPath( tf.A.x+ dx, tf.A.y + dy,  relative = False)
         # set the label location. Somday this should be automatic
         wf.label_x = wf.start.x + (1*cm_to_pt)
         wf.label_y = wf.start.y + (1*cm_to_pt)
+
+        # Create the waist back lining pattern
+        waistback = PatternPiece('pattern', 'waistback', letter = 'D', fabric = 2, interfacing = 0, lining = 0)
+        trousers.add(waistback)
+        wb = trousers.waistback
+        start =  Point('reference', 'start', 0,  0, 'point_style')
+        wb.add(start)
+        transform_coords = str(- tf.A.x) + ', ' + str( - tf.A.y) # doesn't do anything
+        wb.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
+        dx,  dy = -abs(tb.p20.x - tb.start.x),  -abs(tb.p25.y - tb.start.y)
+        # waistback seamline path
+        waistback_seam_path_svg = path()
+        wbsp= waistback_seam_path_svg
+        wb.add(Path('pattern', 'path', 'Trousers Waistband Back Seam Line Path',  wbsp,  'seamline_path_style'))
+        wbsp.appendMoveToPath( tb.p23.x+ dx,  tb.p23.y + dy, relative = False)
+        wbsp.appendLineToPath( tb.p25.x+ dx, tb.p25.y + dy, relative = False)
+        wbsp.appendCubicCurveToPath(tb.c3.x+ dx, tb.c3.y + dy, tb.c4.x+ dx, tb.c4.y + dy, tb.p22.x+ dx, tb.p22.y + dy, relative = False)
+        wbsp.appendLineToPath( tb.p21.x+ dx, tb.p21.y + dy, relative = False)
+        wbsp.appendLineToPath( tb.p20.x+ dx, tb.p20.y + dy,  relative = False)
+        wbsp.appendLineToPath( tb.p23.x+ dx, tb.p23.y + dy,  relative = False)
+        # waistback cuttingline path
+        waistback_cuttingline_path_svg = path()
+        wbcp= waistback_cuttingline_path_svg
+        wb.add(Path('pattern', 'path', 'Trousers Waistband Back Cuttingline Path',  wbcp,  'cuttingline_style'))
+        wbcp.appendMoveToPath( tb.p23.x+ dx,  tb.p23.y + dy, relative = False)
+        wbcp.appendLineToPath( tb.p25.x+ dx, tb.p25.y + dy, relative = False )
+        wbcp.appendCubicCurveToPath(tb.c3.x+ dx, tb.c3.y + dy, tb.c4.x+ dx, tb.c4.y + dy, tb.p22.x+ dx, tb.p22.y + dy, relative = False)
+        wbcp.appendLineToPath( tb.p21.x+ dx, tb.p21.y + dy, relative = False)
+        wbcp.appendLineToPath( tb.p20.x+ dx, tb.p20.y + dy,  relative = False)
+        wbcp.appendLineToPath( tb.p23.x+ dx, tb.p23.y + dy,  relative = False)
+
+        # set the label location. Somday this should be automatic
+        wb.label_x = wb.start.x + (3*cm_to_pt)
+        wb.label_y = wb.start.y + (3*cm_to_pt)
+
 
         # call draw once for the entire pattern
         doc.draw()
