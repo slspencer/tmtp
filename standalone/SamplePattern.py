@@ -590,6 +590,10 @@ class PatternDesign():
         gbps.appendLineToPath(tb.c2.x,  tb.c2.y, relative = False)
         gbps.appendMoveToPath(tb.p21.x,  tb.p21.y, relative = False)
         gbps.appendLineToPath(tf.p2.x,  tf.p2.y, relative = False)
+        gbps.appendMoveToPath(tb.p23.x, tb.p23.y, relative = False)
+        gbps.appendLineToPath(tb.p22.x, tb.p22.y, relative = False)
+        gbps.appendMoveToPath(tb.p25.x,  tb.p25.y, relative = False) # back waistband button path
+        gbps.appendLineToPath(tb.p24.x,  tb.p24.y,  relative = False) # back waistband button path
 
         # seam line back path
         seamline_back_path_svg = path()
@@ -653,13 +657,6 @@ class PatternDesign():
         wbps.appendMoveToPath(tb.p20.x, tb.p20.y, relative = False)
         wbps.appendLineToPath(tb.p21.x, tb.p21.y, relative = False)
 
-        # waistband back marking path
-        waistbandline_back_path_svg = path()
-        wbbps = waistbandline_back_path_svg
-        tb.add(Path('pattern', 'path', 'Trousers Back Waistbandline Path', wbbps, 'dart_style'))
-        wbbps.appendMoveToPath(tb.p23.x, tb.p23.y, relative = False)
-        wbbps.appendLineToPath(tb.p22.x, tb.p22.y, relative = False)
-
         # dart back marking path
         dart_back_path_svg = path()
         tb.add(Path('pattern', 'path', 'Trousers Back Dart Path',  dart_back_path_svg,  'dart_style'))
@@ -672,11 +669,6 @@ class PatternDesign():
         dart_back_path_svg.appendLineToPath(tb.U.x,  tb.U.y,  relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
 
-        # button back marking path
-        button_back_path_svg = path()
-        tb.add(Path('pattern', 'path', 'Trousers Back Button Path',  button_back_path_svg,  'dart_style'))
-        button_back_path_svg.appendMoveToPath(tb.p25.x,  tb.p25.y, relative = False)
-        button_back_path_svg.appendLineToPath(tb.p24.x,  tb.p24.y,  relative = False)
 
         # set the label location. Somday this should be automatic
         tb.label_x = tf.p16.x + (3*cm_to_pt)
