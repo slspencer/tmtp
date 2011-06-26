@@ -269,7 +269,7 @@ class PatternDesign():
         # Draw reference lines
         grid_path_svg =path()
         gps = grid_path_svg
-        tf.add(Path('pattern','path', 'Trousers Front Gridline Path',  gps,  'gridline_style'))
+        tf.add(Path('reference','path', 'Trousers Front Gridline Path',  gps,  'gridline_style'))
         # vertical grid
         gps.appendMoveToPath(tf.A.x,  tf.A.y,  relative = False)
         gps.appendLineToPath(tf.F.x,  tf.F.y,  relative = False)
@@ -383,7 +383,7 @@ class PatternDesign():
         #grainline path
         front_grainline_path_svg = path()
         fgp = front_grainline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Grainline Path', fgp, 'dart_style'))
+        tf.add(Path('pattern', 'path', 'Trousers Front Grainline Path', fgp, 'grainline_style'))
         x, y = pointAlongLine(tf.G.x,  tf.G.y, tf.p16.x,  tf.p16.y,  abs(tf.G.y - tf.p16.y)*(0.5))
         fgp.appendMoveToPath(x, y, relative = False)
         x, y = pointAlongLine( tf.Knee.x,  tf.Knee.y, tf.p15.x,  tf.p15.y,  abs(tf.Knee.y - tf.p15.y)*(0.5) )
@@ -564,7 +564,7 @@ class PatternDesign():
         # Draw reference grid
         grid_back_path_svg =path()
         gbps = grid_back_path_svg
-        tb.add(Path('pattern','path', 'Trousers Back Gridline Path',  gbps,  'gridline_style'))
+        tb.add(Path('reference','path', 'Trousers Back Gridline Path',  gbps,  'gridline_style'))
         # vertical grid
         gbps.appendMoveToPath(tf.C.x, tf.C.y, relative = False)
         gbps.appendLineToPath(tf.A.x, tf.A.y, relative = False)
@@ -681,7 +681,7 @@ class PatternDesign():
         #grainline path
         back_grainline_path_svg = path()
         bgp = back_grainline_path_svg
-        tb.add(Path('pattern', 'path', 'Trousers Back Grainline Path', bgp, 'dart_style'))
+        tb.add(Path('pattern', 'path', 'Trousers Back Grainline Path', bgp, 'grainline_style'))
         x, y = pointAlongLine(tf.G.x,  tf.G.y, tf.p16.x,  tf.p16.y,  abs(tf.G.y - tf.p16.y)*(0.5))
         bgp.appendMoveToPath(x, y, relative = False)
         x, y = pointAlongLine( tf.Knee.x,  tf.Knee.y, tf.p15.x,  tf.p15.y,  abs(tf.Knee.y - tf.p15.y)*(0.5) )
@@ -725,7 +725,7 @@ class PatternDesign():
         #grainline path
         waistfront_grainline_path_svg = path()
         wfgp = waistfront_grainline_path_svg
-        wf.add(Path('pattern', 'path', 'Trousers Waist Front Grainline Path', wfgp, 'dart_style'))
+        wf.add(Path('pattern', 'path', 'Trousers Waist Front Grainline Path', wfgp, 'grainline_style'))
         wfgp.appendMoveToPath(tf.A.x + dx + (9*cm_to_pt), tf.A.y + dy + (0.5*cm_to_pt), relative = False)
         wfgp.appendLineToPath(tf.A.x + dx + (9*cm_to_pt), tf.B.y + dy - (0.5*cm_to_pt), relative = False)
 
@@ -778,7 +778,7 @@ class PatternDesign():
         #grainline path
         waistback_grainline_path_svg = path()
         wbgp = waistback_grainline_path_svg
-        wb.add(Path('pattern', 'path', 'Trousers Waist Back Grainline Path', wbgp, 'dart_style'))
+        wb.add(Path('pattern', 'path', 'Trousers Waist Back Grainline Path', wbgp, 'grainline_style'))
         wbgp.appendMoveToPath(tb.p23.x + dx + (3.5*cm_to_pt), tb.p24.y + dy - (1*cm_to_pt), relative = False)
         wbgp.appendLineToPath(tb.p20.x+ dx + (3.5*cm_to_pt), tb.p24.y + dy + (4*cm_to_pt), relative = False)
 
