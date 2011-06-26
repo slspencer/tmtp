@@ -339,15 +339,7 @@ class PatternDesign():
         sps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.C.x, tf.C.y,  relative = False)
         sps.appendLineToPath(tf.A.x, tf.A.y,  relative = False)
 
-        # front fly stitching line
-        fly_stitch_path_svg = path()
-        fsps = seamline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
-        fsps.appendMoveToPath(tf.p3.x,  tf.p3.y,  relative = False)
-        fsps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
-        fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
-
-
+        # front cutting line path
         cuttingline_path_svg = path()
         cps = cuttingline_path_svg
         tf.add(Path('pattern', 'path', 'Trousers Front Cuttingline Path', cps, 'cuttingline_style'))
@@ -387,6 +379,15 @@ class PatternDesign():
         tf.add(Path('pattern', 'path', 'Trousers Front Waistline Path', wps, 'dart_style'))
         wps.appendMoveToPath(tf.B.x, tf.B.y, relative = False)
         wps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
+
+        # front fly stitching line
+        fly_stitch_path_svg = path()
+        fsps = seamline_path_svg
+        tf.add(Path('pattern', 'path', 'Trousers Front Fly Stitching Path', fsps, 'seamline_path_style'))
+        fsps.appendMoveToPath(tf.p3.x,  tf.p3.y,  relative = False)
+        fsps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
+        fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
+
 
         #grainline path
         front_grainline_path_svg = path()
@@ -809,22 +810,31 @@ class PatternDesign():
         fly_seam_path_svg = path()
         fsp= fly_seam_path_svg
         f.add(Path('pattern', 'path', 'Trousers Fly Seam Line Path',  fsp,  'seamline_path_style'))
-        fsp.appendMoveToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
-        fsp.appendLineToPath(tf.f2.x + dx,  tf.f2.y + dy,  relative = False)
-        fsp.appendLineToPath(tf.f3.x + dx,  tf.f3.y + dy,  relative = False)
+        fsp.appendMoveToPath(tf.p3.x + dx,  tf.p3.y + dy,  relative = False)
         fsp.appendCubicCurveToPath(tf.c29.x + dx,  tf.c29.y + dy,  tf.c30.x + dx,  tf.c30.y + dy,  tf.f4.x + dx,  tf.f4.y + dy,  relative = False)
         fsp.appendLineToPath(tf.f5.x + dx,  tf.f5.y + dy,  relative = False)
-        fsp.appendLineToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
-        # create clip path cutting line as a test:
+        fsp.appendLineToPath(tf.A.x + dx, tf.A.y + dy,  relative = False)
+        fsp.appendLineToPath(tf.C.x + dx,  tf.C.y + dy,  relative = False)
+        fsp.appendCubicCurveToPath(tf.c22.x + dx,  tf.c22.y + dy,  tf.c21.x + dx,  tf.c21.y + dy,  tf.p2.x + dx,  tf.p2.y + dy,  relative = False)
+
+        # fly cutting line path
         fly_cutting_path_svg = path()
         fcp= fly_cutting_path_svg
         f.add(Path('pattern', 'path', 'Trousers Fly Cutting Line Path',  fcp,  'cuttingline_style'))
-        fcp.appendMoveToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
-        fcp.appendLineToPath(tf.f2.x + dx,  tf.f2.y + dy,  relative = False)
-        fcp.appendLineToPath(tf.f3.x + dx,  tf.f3.y + dy,  relative = False)
+        fcp.appendMoveToPath(tf.p3.x + dx,  tf.p3.y + dy,  relative = False)
         fcp.appendCubicCurveToPath(tf.c29.x + dx,  tf.c29.y + dy,  tf.c30.x + dx,  tf.c30.y + dy,  tf.f4.x + dx,  tf.f4.y + dy,  relative = False)
         fcp.appendLineToPath(tf.f5.x + dx,  tf.f5.y + dy,  relative = False)
-        fcp.appendLineToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
+        fcp.appendLineToPath(tf.A.x + dx, tf.A.y + dy,  relative = False)
+        fcp.appendLineToPath(tf.C.x + dx,  tf.C.y + dy,  relative = False)
+        fcp.appendCubicCurveToPath(tf.c22.x + dx,  tf.c22.y + dy,  tf.c21.x + dx,  tf.c21.y + dy,  tf.p2.x + dx,  tf.p2.y + dy,  relative = False)
+
+        #grainline path
+        fly_grainline_path_svg = path()
+        flgp = fly_grainline_path_svg
+        f.add(Path('pattern', 'path', 'Trousers Fly Grainline Path', flgp, 'grainline_style'))
+        flgp.appendMoveToPath(tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (5*cm_to_pt)+ dy, relative = False)
+        flgp.appendLineToPath( tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (20*cm_to_pt) + dy, relative = False)
+
 
         # set the label location. Somday this should be automatic
         f.label_x = f.start.x - 1*cm_to_pt
