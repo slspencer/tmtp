@@ -384,7 +384,7 @@ class PatternDesign():
         front_grainline_path_svg = path()
         fgp = front_grainline_path_svg
         tf.add(Path('pattern', 'path', 'Trousers Front Grainline Path', fgp, 'dart_style'))
-        fgp.appendMoveToPath(tf.p16.x, tf.p4.y, relative = False)
+        fgp.appendMoveToPath(tf.p16.x, tf.p4.y  + abs(tf.p4.y - tf.p5.y)*(0.5), relative = False)
         fgp.appendLineToPath(tf.p16.x, tf.C.y, relative = False)
 
         # set the label location. Somday this should be automatic
@@ -675,6 +675,13 @@ class PatternDesign():
         dart_back_path_svg.appendMoveToPath(tb.R.x,  tb.R.y, relative = False)
         dart_back_path_svg.appendLineToPath(tb.U.x,  tb.U.y,  relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
+
+        #grainline path
+        back_grainline_path_svg = path()
+        bgp = back_grainline_path_svg
+        tb.add(Path('pattern', 'path', 'Trousers Back Grainline Path', bgp, 'dart_style'))
+        bgp.appendMoveToPath(tf.p16.x, tf.p4.y + abs(tf.p4.y - tf.p5.y)*(0.5), relative = False)
+        bgp.appendLineToPath(tf.p16.x, tf.C.y, relative = False)
 
 
         # set the label location. Somday this should be automatic
