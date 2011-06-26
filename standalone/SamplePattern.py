@@ -384,8 +384,10 @@ class PatternDesign():
         front_grainline_path_svg = path()
         fgp = front_grainline_path_svg
         tf.add(Path('pattern', 'path', 'Trousers Front Grainline Path', fgp, 'dart_style'))
-        fgp.appendMoveToPath(tf.p16.x, tf.p4.y  + abs(tf.p4.y - tf.p5.y)*(0.5), relative = False)
-        fgp.appendLineToPath(tf.p16.x, tf.C.y, relative = False)
+        x, y = pointAlongLine(tf.G.x,  tf.G.y, tf.p16.x,  tf.p16.y,  abs(tf.G.y - tf.p16.y)*(0.5))
+        fgp.appendMoveToPath(x, y, relative = False)
+        x, y = pointAlongLine( tf.Knee.x,  tf.Knee.y, tf.p15.x,  tf.p15.y,  abs(tf.Knee.y - tf.p15.y)*(0.5) )
+        fgp.appendLineToPath(x, y, relative = False)
 
         # set the label location. Somday this should be automatic
         tf.label_x = tf.p16.x + 2*cm_to_pt
@@ -680,8 +682,10 @@ class PatternDesign():
         back_grainline_path_svg = path()
         bgp = back_grainline_path_svg
         tb.add(Path('pattern', 'path', 'Trousers Back Grainline Path', bgp, 'dart_style'))
-        bgp.appendMoveToPath(tf.p16.x, tf.p4.y + abs(tf.p4.y - tf.p5.y)*(0.5), relative = False)
-        bgp.appendLineToPath(tf.p16.x, tf.C.y, relative = False)
+        x, y = pointAlongLine(tf.G.x,  tf.G.y, tf.p16.x,  tf.p16.y,  abs(tf.G.y - tf.p16.y)*(0.5))
+        bgp.appendMoveToPath(x, y, relative = False)
+        x, y = pointAlongLine( tf.Knee.x,  tf.Knee.y, tf.p15.x,  tf.p15.y,  abs(tf.Knee.y - tf.p15.y)*(0.5) )
+        bgp.appendLineToPath(x, y, relative = False)
 
 
         # set the label location. Somday this should be automatic
