@@ -30,6 +30,7 @@ class pBase(object):
     # and 'reference' These are grouped so that display of the reference group
     # can be turned on and off
     groups = {}
+    ids = []
     displayed_groups = []
     debug = False
     styledefs = {}
@@ -43,7 +44,14 @@ class pBase(object):
         Add a class instance to parent, while setting the id
         of the child to include the 'dotted path' fo all ancestors
         """
-        obj.id = self.id + '.' + obj.name
+        newid =  self.id + '.' + obj.name
+        # Check to make sure we don't have any duplicate IDs
+        if newid in self.ids:
+            raise ValueError("The name %s is used in more than one pattern object" % newid)
+        self.ids.append(newid)
+            
+        obj.id =newid
+        
         setattr(self, obj.name, obj)
         self.children.append(obj)
         try:
