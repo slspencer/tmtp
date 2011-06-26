@@ -339,6 +339,14 @@ class PatternDesign():
         sps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.C.x, tf.C.y,  relative = False)
         sps.appendLineToPath(tf.A.x, tf.A.y,  relative = False)
 
+        # front fly stitching line
+        fly_stitch_path_svg = path()
+        fsps = seamline_path_svg
+        tf.add(Path('pattern', 'path', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
+        fsps.appendMoveToPath(tf.p3.x,  tf.p3.y,  relative = False)
+        fsps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
+        fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
+
 
         cuttingline_path_svg = path()
         cps = cuttingline_path_svg
