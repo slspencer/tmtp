@@ -380,8 +380,15 @@ class PatternDesign():
         wps.appendMoveToPath(tf.B.x, tf.B.y, relative = False)
         wps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
 
+        #grainline path
+        front_grainline_path_svg = path()
+        fgp = front_grainline_path_svg
+        tf.add(Path('pattern', 'path', 'Trousers Front Grainline Path', fgp, 'dart_style'))
+        fgp.appendMoveToPath(tf.p16.x, tf.p4.y, relative = False)
+        fgp.appendLineToPath(tf.p16.x, tf.C.y, relative = False)
+
         # set the label location. Somday this should be automatic
-        tf.label_x = tf.p16.x
+        tf.label_x = tf.p16.x + 2*cm_to_pt
         tf.label_y = tf.p16.y
 
         # end trousers front (tf)
@@ -716,6 +723,17 @@ class PatternDesign():
         transform_coords = str(- tf.A.x) + ', ' + str( - tf.A.y) # doesn't do anything
         wb.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
         dx,  dy = -abs(tb.p20.x - tb.start.x),  -abs(tb.p25.y - tb.start.y)
+        # waistback dart path
+        waistback_dart_path_svg = path()
+        wbdp= waistback_dart_path_svg
+        wb.add(Path('pattern', 'path', 'Trousers Waistband Dart Line Path',  wbdp,  'dart_style'))
+        wbdp.appendMoveToPath(tb.H.x + dx,  tb.H.y + dy, relative = False)
+        wbdp.appendLineToPath(tb.S.x + dx,  tb.S.y + dy,  relative = False)
+        wbdp.appendMoveToPath(tb.Q.x + dx,  tb.Q.y + dy, relative = False)
+        wbdp.appendLineToPath(tb.T.x + dx,  tb.T.y + dy,  relative = False)
+        wbdp.appendMoveToPath(tb.R.x + dx,  tb.R.y + dy, relative = False)
+        wbdp.appendLineToPath(tb.U.x + dx,  tb.U.y + dy,  relative = False)
+
         # waistback seamline path
         waistback_seam_path_svg = path()
         wbsp= waistback_seam_path_svg
@@ -726,6 +744,7 @@ class PatternDesign():
         wbsp.appendLineToPath( tb.p21.x+ dx, tb.p21.y + dy, relative = False)
         wbsp.appendLineToPath( tb.p20.x+ dx, tb.p20.y + dy,  relative = False)
         wbsp.appendLineToPath( tb.p23.x+ dx, tb.p23.y + dy,  relative = False)
+
         # waistback cuttingline path
         waistback_cuttingline_path_svg = path()
         wbcp= waistback_cuttingline_path_svg
