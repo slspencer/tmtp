@@ -717,6 +717,14 @@ class PatternDesign():
         wfcp.appendLineToPath( tf.p7.x+ dx, tf.p7.y + dy, relative = False)
         wfcp.appendLineToPath( tf.B.x+ dx, tf.B.y + dy,  relative = False)
         wfcp.appendLineToPath( tf.A.x+ dx, tf.A.y + dy,  relative = False)
+
+        #grainline path
+        waistfront_grainline_path_svg = path()
+        wfgp = waistfront_grainline_path_svg
+        wf.add(Path('pattern', 'path', 'Trousers Waist Front Grainline Path', wfgp, 'dart_style'))
+        wfgp.appendMoveToPath(tf.A.x + dx + (9*cm_to_pt), tf.A.y + dy + (0.5*cm_to_pt), relative = False)
+        wfgp.appendLineToPath(tf.A.x + dx + (9*cm_to_pt), tf.B.y + dy - (0.5*cm_to_pt), relative = False)
+
         # set the label location. Somday this should be automatic
         wf.label_x = wf.start.x + (1*cm_to_pt)
         wf.label_y = wf.start.y + (1*cm_to_pt)
@@ -763,9 +771,16 @@ class PatternDesign():
         wbcp.appendLineToPath( tb.p20.x+ dx, tb.p20.y + dy,  relative = False)
         wbcp.appendLineToPath( tb.p23.x+ dx, tb.p23.y + dy,  relative = False)
 
+        #grainline path
+        waistback_grainline_path_svg = path()
+        wbgp = waistback_grainline_path_svg
+        wb.add(Path('pattern', 'path', 'Trousers Waist Back Grainline Path', wbgp, 'dart_style'))
+        wbgp.appendMoveToPath(tb.p23.x + dx + (3.5*cm_to_pt), tb.p24.y + dy - (1*cm_to_pt), relative = False)
+        wbgp.appendLineToPath(tb.p20.x+ dx + (3.5*cm_to_pt), tb.p24.y + dy + (4*cm_to_pt), relative = False)
+
         # set the label location. Somday this should be automatic
-        wb.label_x = wb.start.x + (3*cm_to_pt)
-        wb.label_y = wb.start.y + (3*cm_to_pt)
+        wb.label_x = wb.start.x + (7*cm_to_pt)
+        wb.label_y = wb.start.y + (4*cm_to_pt)
 
 
 
