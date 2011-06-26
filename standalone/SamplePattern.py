@@ -255,6 +255,17 @@ class PatternDesign():
         tf.add(Point('reference', 'c27', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w 15 & 5
         tf.add(Point('reference', 'c28', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w 15 & 5
 
+        #create fly clip path:
+        tf.add(Point('reference', 'f1', tf.A.x - 2.5*cm_to_pt, tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'f2', tf.f1.x, tf.p3.y, 'point_style'))
+        tf.add(Point('reference', 'f3', tf.p3.x, tf.p3.y, 'point_style'))
+        tf.add(Point('reference', 'f4', tf.A.x + 5*cm_to_pt, tf.C.y, 'point_style'))
+        tf.add(Point('reference', 'f5', tf.f4.x, tf.A.y, 'point_style'))
+
+        tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'point_style')) # b/w f3 & f4
+        tf.add(Point('reference', 'c30', tf.f4.x, tf.c22.y, 'point_style')) # b/w f3 & f4
+
+
         # Draw reference lines
         grid_path_svg =path()
         gps = grid_path_svg
@@ -287,6 +298,13 @@ class PatternDesign():
         gps.appendMoveToPath(tf.p2.x,  tf.p2.y,  relative = False)
         gps.appendLineToPath(tf.Knee.x,  tf.Knee.y,  relative = False)
         gps.appendLineToPath(tf.p11.x,  tf.p11.y,  relative = False)
+        # fly clip-path
+        gps.appendMoveToPath(tf.f1.x,  tf.f1.y,  relative = False)
+        gps.appendLineToPath(tf.f2.x,  tf.f2.y,  relative = False)
+        gps.appendLineToPath(tf.f3.x,  tf.f3.y,  relative = False)
+        gps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
+        gps.appendLineToPath(tf.f5.x,  tf.f5.y,  relative = False)
+        gps.appendLineToPath(tf.f1.x,  tf.f1.y,  relative = False)
 
 
 
@@ -730,6 +748,43 @@ class PatternDesign():
         # set the label location. Somday this should be automatic
         wb.label_x = wb.start.x + (3*cm_to_pt)
         wb.label_y = wb.start.y + (3*cm_to_pt)
+
+
+
+        # Create the fly extension
+        fly = PatternPiece('pattern', 'fly', letter = 'E', fabric = 2, interfacing = 0, lining = 3)
+        trousers.add(fly)
+        f = trousers.fly
+        start =  Point('reference', 'start', 0,  0, 'point_style')
+        f.add(start)
+        transform_coords = str(- tf.A.x) + ', ' + str( - tf.A.y) # doesn't do anything
+        f.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
+        dx,  dy = -tf.A.x,  -tf.A.y
+        #create clip path as a test:
+        fly_seam_path_svg = path()
+        fsp= fly_seam_path_svg
+        f.add(Path('pattern', 'path', 'Trousers Fly Seam Line Path',  fsp,  'seamline_path_style'))
+        fsp.appendMoveToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
+        fsp.appendLineToPath(tf.f2.x + dx,  tf.f2.y + dy,  relative = False)
+        fsp.appendLineToPath(tf.f3.x + dx,  tf.f3.y + dy,  relative = False)
+        fsp.appendCubicCurveToPath(tf.c29.x + dx,  tf.c29.y + dy,  tf.c30.x + dx,  tf.c30.y + dy,  tf.f4.x + dx,  tf.f4.y + dy,  relative = False)
+        fsp.appendLineToPath(tf.f5.x + dx,  tf.f5.y + dy,  relative = False)
+        fsp.appendLineToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
+        # create clip path cutting line as a test:
+        fly_cutting_path_svg = path()
+        fcp= fly_cutting_path_svg
+        f.add(Path('pattern', 'path', 'Trousers Fly Cutting Line Path',  fcp,  'cuttingline_style'))
+        fcp.appendMoveToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
+        fcp.appendLineToPath(tf.f2.x + dx,  tf.f2.y + dy,  relative = False)
+        fcp.appendLineToPath(tf.f3.x + dx,  tf.f3.y + dy,  relative = False)
+        fcp.appendCubicCurveToPath(tf.c29.x + dx,  tf.c29.y + dy,  tf.c30.x + dx,  tf.c30.y + dy,  tf.f4.x + dx,  tf.f4.y + dy,  relative = False)
+        fcp.appendLineToPath(tf.f5.x + dx,  tf.f5.y + dy,  relative = False)
+        fcp.appendLineToPath(tf.f1.x + dx,  tf.f1.y + dy,  relative = False)
+
+        # set the label location. Somday this should be automatic
+        f.label_x = f.start.x - 1*cm_to_pt
+        f.label_y = f.start.y + 2*cm_to_pt
+
 
 
         # call draw once for the entire pattern
