@@ -122,7 +122,7 @@ class PatternDesign():
         scale = cd.seat/2  # scale is 1/2 body circumference of reference measurement
         scale_1_4 = scale/4
         scale_1_8 = scale/8
-
+        cd.bottom_width = patternBottomWidth*(cd.knee/patternKnee) # determine hem width based on knee width
 
         # client ratios
         outsideLegRatio = (cd.outside_leg/patternOutsideLeg)
