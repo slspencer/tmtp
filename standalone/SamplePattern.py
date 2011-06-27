@@ -123,6 +123,17 @@ class PatternDesign():
         scale_1_4 = scale/4
         scale_1_8 = scale/8
 
+
+        # client ratios
+        outsideLegRatio = (cd.outside_leg/patternOutsideLeg)
+        insideLegRatio = (cd.inside_leg/patternInsideLeg)
+        waistRatio = (cd.waist/patternWaist)
+        seatRatio = (cd.seat/patternSeat)
+        kneeRatio = (cd.knee/patternKnee)
+        bottomWidthRatio = (cd.bottom_width/patternBottomWidth)
+        riseRatio = (rise/patternRise)
+
+
         # Create trousers object to hold all pattern pieces
         trousers = Pattern('trousers')
         doc.add(trousers)
@@ -262,8 +273,8 @@ class PatternDesign():
         tf.add(Point('reference', 'f4', tf.A.x + 5*cm_to_pt, tf.C.y, 'point_style'))
         tf.add(Point('reference', 'f5', tf.f4.x, tf.A.y, 'point_style'))
 
-        tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'point_style')) # b/w f3 & f4
-        tf.add(Point('reference', 'c30', tf.f4.x, tf.c22.y, 'point_style')) # b/w f3 & f4
+        tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'controlpoint_style')) # b/w f3 & f4
+        tf.add(Point('reference', 'c30', tf.f4.x, tf.c22.y, 'controlpoint_style')) # b/w f3 & f4
 
 
         # Draw reference lines
@@ -382,9 +393,9 @@ class PatternDesign():
 
         # front fly stitching line
         fly_stitch_path_svg = path()
-        fsps = seamline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Fly Stitching Path', fsps, 'seamline_path_style'))
-        fsps.appendMoveToPath(tf.p3.x,  tf.p3.y,  relative = False)
+        fsps = fly_stitch_path_svg
+        tf.add(Path('pattern', 'path', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
+        fsps.appendMoveToPath(tf.f3.x,  tf.f3.y,  relative = False)
         fsps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
         fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
 
