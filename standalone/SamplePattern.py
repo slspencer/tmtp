@@ -802,15 +802,15 @@ class PatternDesign():
         wf.label_x = wf.start.x + (1*cm_to_pt*waistRatio)
         wf.label_y = wf.start.y + (1*cm_to_pt*riseRatio)
 
-        # Create the waist back lining pattern
-        waistback = PatternPiece('pattern', 'waistback', letter = 'D', fabric = 2, interfacing = 0, lining = 0)
+        # Create the waist back pattern
+        waistback = PatternPiece('pattern', 'waistback', letter = 'D', fabric = 1, interfacing = 0, lining = 0)
         trousers.add(waistback)
         wb = trousers.waistback
         start =  Point('reference', 'start', 0,  0, 'point_style')
         wb.add(start)
-        transform_coords = str(- tf.A.x) + ', ' + str( - tf.A.y) # doesn't do anything
+        transform_coords = str(- tb.p20.x) + ', ' + str( - tb.p20.y) # doesn't do anything
         wb.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
-        dx,  dy = -abs(tb.p20.x - tb.start.x),  -abs(tb.p25.y - tb.start.y)
+        dx,  dy = -tb.start.x - tb.p20.x,  -tb.start.y - tb.p25.y
         # waistback dart path
         waistback_dart_path_svg = path()
         wbdp= waistback_dart_path_svg
