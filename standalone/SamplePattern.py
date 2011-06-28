@@ -103,10 +103,7 @@ class PatternDesign():
         TB = TitleBlock('notes', 'titleblock', self.cfg['border'], self.cfg['border'],  stylename = 'titleblock_text_style')
         doc.add(TB)
 
-        #
         # Begin the real work here
-        #
-
 
         # pattern values
         patternOutsideLeg = 112*cm_to_pt
@@ -122,7 +119,6 @@ class PatternDesign():
         scale = cd.seat/2  # scale is 1/2 body circumference of reference measurement
         scale_1_4 = scale/4
         scale_1_8 = scale/8
-        cd.bottom_width = patternBottomWidth*(cd.knee/patternKnee) # determine hem width based on knee width
 
         # client ratios
         outsideLegRatio = (cd.outside_leg/patternOutsideLeg)
@@ -132,6 +128,8 @@ class PatternDesign():
         kneeRatio = (cd.knee/patternKnee)
         bottomWidthRatio = (cd.bottom_width/patternBottomWidth)
         riseRatio = (rise/patternRise)
+        cd.bottom_width = patternBottomWidth*(kneeRatio) # determine hem width based on knee width
+        cd.seat = 102*cm_to_pt
 
 
         # Create trousers object to hold all pattern pieces
@@ -141,46 +139,96 @@ class PatternDesign():
         # Set up styles dictionary in the pattern object
         trousers.styledefs.update(self.styledefs)
 
+        # Create the Test Grid
+        testGrid = PatternPiece('pattern', 'testGrid', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
+        trousers.add(testGrid)
+        TG= trousers.testGrid
+        # TODO - make first pattern start automatically without putting in 12cm y offset
+        start =  Point('reference', 'start', 25*cm_to_pt,  0*cm_to_pt, 'point_style') # start underneath the Title Block, make this automatic someday
+        TG.add(start)
+        TG.attrs['transform'] = 'translate(' + TG.start.coords + ' )'
+        TG_path_svg =path()
+        TGps = TG_path_svg
+        TG.add(Path('reference','path', 'Trousers Test Grid',  TGps,  'cuttingline_style'))
+
+        # Points
+        TG.add(Point('reference', 'X0', TG.start.x, TG.start.y, 'point_style'))
+        i,  j = 0,  0 #
+        while (i<= 20):
+            x = TG.start.x + i*cm_to_pt
+            y = TG.start.y + j*cm_to_pt
+            TGps.appendMoveToPath(x,  y,  relative = False)
+            TGps.appendLineToPath(x,  y + 20*cm_to_pt,  relative = False) # draw vertical lines of test grid
+            i = i + 1
+        i,  j = 0,  0
+        while (j<= 20):
+            x = TG.start.x + i*cm_to_pt
+            y = TG.start.y + j*cm_to_pt
+            TGps.appendMoveToPath(x,  y,  relative = False)
+            TGps.appendLineToPath(x + 20*cm_to_pt,  y,  relative = False) # draw vertical lines of test grid
+            j = j + 1
+
+        i,  j = 0,  0 #
+        while (i<= 8):
+            x = TG.start.x + 25*cm_to_pt+ i*in_to_pt
+            y = TG.start.y + j*in_to_pt
+            TGps.appendMoveToPath(x,  y,  relative = False)
+            TGps.appendLineToPath(x,  y + 8*in_to_pt,  relative = False) # draw vertical lines of test grid
+            i = i + 1
+        i,  j = 0,  0
+        while (j<= 8):
+            x = TG.start.x + 25*cm_to_pt  + i*in_to_pt
+            y = TG.start.y + j*in_to_pt
+            TGps.appendMoveToPath(x,  y,  relative = False)
+            TGps.appendLineToPath(x + 8*in_to_pt,  y,  relative = False) # draw vertical lines of test grid
+            j = j + 1
+
+        # set the label location. Somday this should be automatic
+        TG.label_x = TG.start.x + (25*cm_to_pt) +(9*in_to_pt)
+        TG.label_y = TG.start.y + (2*cm_to_pt)
+
+
         # Create the front pattern piece
-        front = PatternPiece('pattern', 'front', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
+        front = PatternPiece('pattern', 'front', letter = 'AA', fabric = 2, interfacing = 0, lining = 0)
         trousers.add(front)
         tf = trousers.front
-
-        start =  Point('reference', 'start', 0,  6*in_to_pt, 'point_style')
+        # TODO - make first pattern start automatically without putting in 12cm y offset
+        start =  Point('reference', 'start', 0,  0, 'point_style') # start underneath the Title Block, make this automatic someday
         tf.add(start)
         tf.attrs['transform'] = 'translate(' + tf.start.coords + ' )'
 
         # Points
-        tf.add(Point('reference', 'A', start.x + scale_1_8 + (0.5*cm_to_pt), start.y, 'point_style')) # A is on start top line, over by distance of 2 to D
-        tf.add(Point('reference', 'B', tf.A.x, tf.A.y + (3.8*cm_to_pt), 'point_style')) # B is waistline
-        tf.add(Point('reference', 'C', tf.A.x, tf.B.y + (18.5*cm_to_pt), 'point_style')) # C is seatline
+        tf.add(Point('reference', 'A', tf.start.x + scale_1_8 + (0.5*cm_to_pt*seatRatio), tf.start.y, 'point_style')) # A is on start top line, over by distance of 2 to D
+        tf.add(Point('reference', 'B', tf.A.x, tf.A.y + (3.8*cm_to_pt*riseRatio), 'point_style')) # B is waistline
+        tf.add(Point('reference', 'C', tf.A.x, tf.B.y + (18.5*cm_to_pt*riseRatio), 'point_style')) # C is seatline
         tf.add(Point('reference', 'D', tf.A.x, tf.A.y + rise, 'point_style')) # D is riseline
-        tf.add(Point('reference', 'E', tf.A.x, tf.D.y + (cd.inside_leg*0.5) - (5.5*cm_to_pt),  'point_style')) # E is kneeline
-        tf.add(Point('reference', 'F', tf.A.x, tf.D.y + cd.inside_leg - (1*cm_to_pt ), 'point_style')) # F is hemline
+        tf.add(Point('reference', 'E', tf.A.x, tf.D.y + (cd.inside_leg*0.5) - (5.5*cm_to_pt*riseRatio),  'point_style')) # E is kneeline
+        tf.add(Point('reference', 'F', tf.A.x, tf.D.y + cd.inside_leg - (1*cm_to_pt*insideLegRatio ), 'point_style')) # F is hemline
         tf.add(Point('reference', 'I', tf.A.x, tf.B.y + ( abs(tf.C.y - tf.B.y)*0.5 ), 'point_style')) # I is midpoint b/w waist B and seatline (rise) C
 
-        tf.add(Point('reference', 'p2', tf.D.x - scale_1_8 - (0.50*cm_to_pt),  tf.D.y, 'point_style'))
+        tf.add(Point('reference', 'p2', tf.D.x - scale_1_8 - (0.50*cm_to_pt*seatRatio),  tf.D.y, 'point_style'))
 
         length = (tf.D.x - tf.p2.x)*(.5)
         x, y = pointAlongLine( tf.D.x, tf.D.y, (tf.D.x - 100), (tf.D.y - 100), length)  # 100pt is arbitrary distance to create 45degree angle
         tf.add(Point('reference', 'p3', x, y, 'point_style'))
 
-        tf.add(Point('reference', 'p4', tf.E.x - (3.75*cm_to_pt), tf.E.y, 'point_style'))
-        tf.add(Point('reference', 'p5', tf.F.x - (2.8*cm_to_pt), tf.F.y, 'point_style'))
+        tf.add(Point('reference', 'p4', tf.E.x - (3.75*cm_to_pt*insideLegRatio), tf.E.y, 'point_style'))
+        tf.add(Point('reference', 'p5', tf.F.x - (2.8*cm_to_pt*insideLegRatio), tf.F.y, 'point_style'))
 
         m = (tf.p5.y - tf.p4.y)/(tf.p5.x-tf.p4.x)
         b = tf.p4.y - (m*tf.p4.x)
         x = (tf.D.y - b)/m
         tf.add(Point('reference', 'p6',   x, tf.D.y, 'point_style'))
         tf.add(Point('reference', 'p7',   tf.B.x + (cd.waist*0.25),  tf.B.y, 'point_style'))
-        tf.add(Point('reference', 'p8',   tf.A.x + (cd.waist*0.25)+(0.75*cm_to_pt), tf.A.y, 'point_style'))
-        tf.add(Point('reference', 'p9',    tf.I.x + (cd.seat*0.25) - ( 1*cm_to_pt), tf.I.y, 'point_style'))
+        tf.add(Point('reference', 'p8',   tf.A.x + (cd.waist*0.25)+(0.75*cm_to_pt*waistRatio), tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'p9',    tf.I.x + (cd.seat*0.25) - ( 1*cm_to_pt*seatRatio), tf.I.y, 'point_style'))
         tf.add(Point('reference', 'p10',  tf.C.x + (cd.seat*0.25) , tf.C.y, 'point_style'))
-        tf.add(Point('reference', 'p11',  tf.D.x + (cd.seat*0.25) - (0.5*cm_to_pt) , tf.D.y, 'point_style'))
+        tf.add(Point('reference', 'p11',  tf.D.x + (cd.seat*0.25) - (0.5*cm_to_pt*seatRatio) , tf.D.y, 'point_style'))
+        # TODO - set knee & hem width to be proportional to seat
         tf.add(Point('reference', 'p12',  tf.p4.x + (cd.knee*0.5) , tf.p4.y, 'point_style'))
         tf.add(Point('reference', 'p13',  tf.p5.x + (cd.bottom_width*0.5) , tf.p5.y, 'point_style'))
-        tf.add(Point('reference', 'p14',  tf.p5.x + (cd.bottom_width*0.25) + (0.5*cm_to_pt),  tf.p5.y, 'point_style'))
-        tf.add(Point('reference', 'p15',  tf.p14.x, tf.p14.y - (2*cm_to_pt), 'point_style'))
+        tf.add(Point('reference', 'p14',  tf.p5.x + (cd.bottom_width*0.25) + (0.5*cm_to_pt*seatRatio),  tf.p5.y, 'point_style'))
+        tf.add(Point('reference', 'p15',  tf.p14.x, tf.p14.y - (2*cm_to_pt*insideLegRatio), 'point_style'))
         tf.add(Point('reference', 'p16',  tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y, 'point_style'))
         m = (tf.p13.y - tf.p12.y)/(tf.p13.x-tf.p12.x)
         b = tf.p13.y - (m*tf.p13.x)
@@ -217,12 +265,13 @@ class PatternDesign():
         tf.add(Point('reference', 'c4', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w  9 & 10
         tf.add(Point('reference', 'c5', fcp[2].x, fcp[2].y, 'controlpoint_style')) #b/w 10 & 11
         tf.add(Point('reference', 'c6', scp[2].x, scp[2].y, 'controlpoint_style')) #b/w  10 & 11
-        distance = ( math.sqrt( ((tf.p11.x - tf.p32.x)**2) + ((tf.p11.y - tf.p32.y)**2) ) ) # find distance of p32 from p11
-        x, y = pointAlongLine(tf.p11.x,  tf.p11.y, tf.c6.x,  tf.c6.y, -distance) #find point along line of c6p11 at distance of intersect. b/w knee diag & side seam leg vertical
-        tf.add(Point('reference', 'c7', x,  y, 'controlpoint_style'))  # c7 is on slope c6p11 for continuous curve past p11 --> b/w p11 & p12
-        distance = ( math.sqrt( ((tf.p12.x - tf.p11.x)**2) + ((tf.p12.y - tf.p11.y)**2) ) )* (0.5) # middistance of line between p12 & p11
-        x, y = pointAlongLine(tf.p12.x,  tf.p12.y, tf.p13.x,  tf.p13.y, -distance) # find point on slope of lower leg line p13 & p12
-        tf.add(Point('reference', 'c8', x,  y, 'controlpoint_style'))   # c8 is on slope of p13p12, at midpoint on p12p11, to smooth transition to line p13p12 --> b/2 p11 & 12
+        #distance = ( math.sqrt( ((tf.p11.x - tf.p32.x)**2) + ((tf.p11.y - tf.p32.y)**2) ) )*(0.3) # find distance of p32 from p11
+        #x, y = pointAlongLine(tf.p11.x,  tf.p11.y, tf.c6.x,  tf.c6.y, -distance) #find point along line of c6p11 at distance of intersect. b/w knee diag & side seam leg vertical
+        distance = ( math.sqrt( ((tf.p11.x - tf.p12.x)**2) + ((tf.p11.y - tf.p12.y)**2) ) )*(0.3) # 1/3 distance from p12 from p11
+        x, y = pointAlongLine(tf.p11.x,  tf.p11.y, tf.c6.x,  tf.c6.y, -distance) #find point along line of c6p11
+        tf.add(Point('reference', 'c7', x,  y, 'controlpoint_style'))  # maintains slope of curve p10p11
+        x, y = pointAlongLine(tf.p12.x,  tf.p12.y, tf.p13.x,  tf.p13.y, -distance) # find point along line p13p12
+        tf.add(Point('reference', 'c8', x,  y, 'controlpoint_style'))   # maintains slope of line p13p12
 
         #control points for hemallowance
         pointlist = []
@@ -267,10 +316,10 @@ class PatternDesign():
         tf.add(Point('reference', 'c28', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w 15 & 5
 
         #create fly clip path:
-        tf.add(Point('reference', 'f1', tf.A.x - 2.5*cm_to_pt, tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'f1', tf.A.x - (2*cm_to_pt*seatRatio), tf.A.y, 'point_style'))
         tf.add(Point('reference', 'f2', tf.f1.x, tf.p3.y, 'point_style'))
         tf.add(Point('reference', 'f3', tf.p3.x, tf.p3.y, 'point_style'))
-        tf.add(Point('reference', 'f4', tf.A.x + 5*cm_to_pt, tf.C.y, 'point_style'))
+        tf.add(Point('reference', 'f4', tf.A.x + (5*cm_to_pt*seatRatio), tf.C.y, 'point_style'))
         tf.add(Point('reference', 'f5', tf.f4.x, tf.A.y, 'point_style'))
 
         tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'controlpoint_style')) # b/w f3 & f4
@@ -455,65 +504,65 @@ class PatternDesign():
         tb.add(Point('reference','bKnee', tf.Knee.x, tf.Knee.y, 'point_style'))
 
         #back center points
-        tb.add(Point('reference', 'p17', tf.p2.x - (3*cm_to_pt) ,  tf.p2.y, 'point_style')) # p17 --> extends back crotch measurement by 3cm
-        tb.add(Point('reference', 'p19', tf.A.x +(5*cm_to_pt), tf.A.y, 'point_style')) # p19
+        tb.add(Point('reference', 'p17', tf.p2.x - (3*cm_to_pt*seatRatio) ,  tf.p2.y, 'point_style')) # p17 --> extends back crotch measurement by 3cm
+        tb.add(Point('reference', 'p19', tf.A.x +(5*cm_to_pt*waistRatio), tf.A.y, 'point_style')) # p19
         # back waist points
-        distance = -(2*cm_to_pt)
+        distance = -(2*cm_to_pt*waistRatio)
         x, y = pointAlongLine(tb.p19.x,  tb.p19.y, tf.C.x,  tf.C.y, distance)
         tb.add(Point('reference', 'p20', x,y, 'point_style')) # p20 --> waistline at back center seam
-        r = (cd.waist*0.25) + (2*cm_to_pt)
+        r = (cd.waist*0.25) + (2*cm_to_pt*waistRatio)
         a, b,  y = tb.p20.x,  tb.p20.y,  tf.B.y
         x = abs( math.sqrt( r**2 - (y - b)**2) ) + a
         tb.add(Point('reference', 'p21', x, y, 'point_style')) # 21 --> waistline at side seamside seam --> waist/4 + 2cm) away from p20
-        distance = -(3.8*cm_to_pt)
+        distance = -(3.8*cm_to_pt*riseRatio)
         x, y = pointAlongLine(tb.p20.x,  tb.p20.y, tb.p19.x,  tb.p19.y, distance) #
         tb.add(Point('reference', 'W', x, y, 'point_style')) # W --> (4cm) up from waistline, same as waistband height at side seam.
-        distance= (cd.waist*0.25) + (2*cm_to_pt) + (0.75*cm_to_pt)
+        distance= (cd.waist*0.25) + (2*cm_to_pt*waistRatio) + (0.75*cm_to_pt*waistRatio)
         x1 = tb.W.x + (tb.p21.x - tb.p20.x) # find x of a point through W at same slope as waistline p20p21
         y1 = tb.W.y + (tb.p21.y - tb.p20.y)  # find y of point through W at same slope as waistline p20p21
         x, y = pointAlongLine(tb.W.x,  tb.W.y, x1,  y1,  distance) # adds line from W parallel to p20p21 to find p22
         tb.add(Point('reference', 'p22', x, y, 'point_style')) # p22 --> top of waistband at side seam (4cm from waistline)
-        distance = -(5*cm_to_pt)
+        distance = -(5*cm_to_pt*riseRatio)
         x, y = pointAlongLine(tb.p20.x,  tb.p20.y, tb.p19.x,  tb.p19.y, distance) # adds 5cm distance to top of line at p20 to find top to waistband at center back
         tb.add(Point('reference', 'p23', x, y, 'point_style')) # p23 --> top of waistband at center back seam (5cm from waistline)
 
         #button
-        distance = (4.5*cm_to_pt)
+        distance = (4.5*cm_to_pt*waistRatio)
         x, y = pointAlongLine(tb.p23.x,  tb.p23.y, tb.p22.x,  tb.p22.y, distance) # negative distance to end of line at 23, determines placement of back suspender button
         tb.add(Point('reference', 'p24', x, y, 'point_style')) # p24 is back button placement
 
         # back waistband highpoint
-        distance = (2.5*cm_to_pt)
+        distance = (2.5*cm_to_pt*riseRatio)
         x, y = pointAlongLine(tb.p24.x,  tb.p24.y, tb.p23.x,  tb.p23.y, distance,  90) # (x,y)  is 2.5cm (90 degrees from p24 on line p24p23
         tb.add(Point('reference', 'p25', x, y, 'point_style')) # p25 is highpoint on back waistband, directly above p24 back button
 
         # back waist dart
-        distance = (9.5*cm_to_pt) # dart center from side seam
+        distance = (9.5*cm_to_pt*waistRatio) # dart center from side seam
         x, y = pointAlongLine(tb.p22.x,  tb.p22.y, tb.p23.x,  tb.p23.y, distance) # -distance places center of back dart on line from 22 to 23
         tb.add(Point('reference', 'H', x, y, 'point_style')) # H is center of back dart near top of waistband
-        distance = (11.5*cm_to_pt) # length of dart
+        distance = (11.5*cm_to_pt*riseRatio) # length of dart
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, distance,  90) # draw dart center line at 90degrees from point H on line Hp22
         tb.add(Point('reference', 'P', x, y, 'point_style')) # P is endpoint of back dart
-        distance = ( 1.3*cm_to_pt)*(0.5)  #1.3cm is width of entire back dart
+        distance = ( 1.3*cm_to_pt*waistRatio)*(0.5)  #1.3cm is width at top line of back dart
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, distance)
         tb.add(Point('reference', 'Q', x, y, 'point_style')) # Q marks the inside dart point at top of waistband
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, -distance)
         tb.add(Point('reference', 'R', x, y, 'point_style')) # R marks the outside dart point at top of waistband
         x, y = intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, tb.p20.x, tb.p20.y, tb.p21.x, tb.p21.y)
         tb.add(Point('reference', 'S', x, y, 'point_style')) # S is center of back dart at waistline
-        distance = (2*cm_to_pt)*(0.5)   #2cm is the width of dart at waistline
+        distance = (2*cm_to_pt*waistRatio)*(0.5)   #2cm is the width of dart at waistline
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p21.x,  tb.p21.y, distance)
         tb.add(Point('reference', 'T', x, y, 'point_style')) # T marks the inside dart point at waistband
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p21.x,  tb.p21.y, -distance)
         tb.add(Point('reference', 'U', x, y, 'point_style')) # U marks the outside dart point at waistband
 
         # side seam points
-        tb.add(Point('reference', 'p26', tf.p9.x + (4.5*cm_to_pt), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
-        tb.add(Point('reference', 'p27', tf.p10.x + (3*cm_to_pt), tf.p10.y, 'point_style')) # 27 is seat at side seam
-        tb.add(Point('reference', 'p28', tf.p11.x + (1.75*cm_to_pt), tf.p11.y, 'point_style')) # 28 is rise at side seam
+        tb.add(Point('reference', 'p26', tf.p9.x + (4.5*cm_to_pt*seatRatio), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
+        tb.add(Point('reference', 'p27', tf.p10.x + (3*cm_to_pt*seatRatio), tf.p10.y, 'point_style')) # 27 is seat at side seam
+        tb.add(Point('reference', 'p28', tf.p11.x + (1.75*cm_to_pt*seatRatio), tf.p11.y, 'point_style')) # 28 is rise at side seam
 
         # back hem allowance
-        tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + (1.3*cm_to_pt ), 'point_style')) # 29 is lowered back trouser hem
+        tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + (1.3*cm_to_pt*insideLegRatio ), 'point_style')) # 29 is lowered back trouser hem
         tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
 
         #control points for back center curve
@@ -539,13 +588,13 @@ class PatternDesign():
         tb.add(Point('reference', 'c15', fcp[2].x, fcp[2].y, 'controlpoint_style')) #b/w p27 & p28
         tb.add(Point('reference', 'c16', scp[2].x, scp[2].y, 'controlpoint_style')) #b/w  p27 & p28
 
-        x, y = intersectionOfLines(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, tb.p28.x, tb.p28.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p12p30 and p28Knee
-        distance = ( math.sqrt( ((tb.p28.x - x)**2) + ((tb.p28.y - y)**2) ) ) # find distance of x,y from p28
+        #x, y = intersectionOfLines(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, tb.p28.x, tb.p28.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p12p30 and p28Knee
+        #distance = ( math.sqrt( ((tb.p28.x - x)**2) + ((tb.p28.y - y)**2) ) ) # find distance of x,y from p28
+        distance = ( math.sqrt( ((tb.p28.x - tf.p12.x)**2) + ((tb.p28.y - tf.p12.y)**2) ) )* (0.3) # 1/3 distance from p28 to p12
         x, y = pointAlongLine(tb.p28.x,  tb.p28.y, tb.c16.x,  tb.c16.y, -distance) #find point along line of c16p28
-        tb.add(Point('reference', 'c17', x,  y, 'controlpoint_style'))  # c17 is along line c16p28, at distance of intersection of hip tangent and lower leg tangent from p28
-        distance = ( math.sqrt( ((tb.p28.x - tf.p12.x)**2) + ((tb.p28.y - tf.p12.y)**2) ) )* (0.5)
-        x, y = pointAlongLine(tf.p12.x,  tf.p12.y, tf.p13.x,  tf.p13.y, -distance)
-        tb.add(Point('reference', 'c18', x,  y, 'controlpoint_style'))   # c18 is along line p13p12, at half the distance between p28 & p12
+        tb.add(Point('reference', 'c17', x,  y, 'controlpoint_style'))  # maintains slope from curve p27p28
+        x, y = pointAlongLine(tf.p12.x,  tf.p12.y, tf.p13.x,  tf.p13.y, -distance) # find point along line of p13p12
+        tb.add(Point('reference', 'c18', x,  y, 'controlpoint_style'))   # maintains slope from line p13p12
 
         #control points hem line
         pointlist = []
@@ -709,7 +758,7 @@ class PatternDesign():
 
 
         # set the label location. Somday this should be automatic
-        tb.label_x = tf.p16.x + (3*cm_to_pt)
+        tb.label_x = tf.p16.x + (3*cm_to_pt*seatRatio)
         tb.label_y = tf.p16.y
 
 
@@ -746,12 +795,12 @@ class PatternDesign():
         waistfront_grainline_path_svg = path()
         wfgp = waistfront_grainline_path_svg
         wf.add(Path('pattern', 'path', 'Trousers Waist Front Grainline Path', wfgp, 'grainline_style'))
-        wfgp.appendMoveToPath(tf.A.x + dx + (9*cm_to_pt), tf.A.y + dy + (0.5*cm_to_pt), relative = False)
-        wfgp.appendLineToPath(tf.A.x + dx + (9*cm_to_pt), tf.B.y + dy - (0.5*cm_to_pt), relative = False)
+        wfgp.appendMoveToPath(tf.A.x + dx + (9*cm_to_pt*waistRatio), tf.A.y + dy + (0.5*cm_to_pt*riseRatio), relative = False)
+        wfgp.appendLineToPath(tf.A.x + dx + (9*cm_to_pt*waistRatio), tf.B.y + dy - (0.5*cm_to_pt*riseRatio), relative = False)
 
         # set the label location. Somday this should be automatic
-        wf.label_x = wf.start.x + (1*cm_to_pt)
-        wf.label_y = wf.start.y + (1*cm_to_pt)
+        wf.label_x = wf.start.x + (1*cm_to_pt*waistRatio)
+        wf.label_y = wf.start.y + (1*cm_to_pt*riseRatio)
 
         # Create the waist back lining pattern
         waistback = PatternPiece('pattern', 'waistback', letter = 'D', fabric = 2, interfacing = 0, lining = 0)
@@ -803,13 +852,13 @@ class PatternDesign():
         wbgp.appendLineToPath(tb.p20.x+ dx + (3.5*cm_to_pt), tb.p24.y + dy + (4*cm_to_pt), relative = False)
 
         # set the label location. Somday this should be automatic
-        wb.label_x = wb.start.x + (7*cm_to_pt)
-        wb.label_y = wb.start.y + (4*cm_to_pt)
+        wb.label_x = wb.start.x + (7*cm_to_pt*waistRatio)
+        wb.label_y = wb.start.y + (4*cm_to_pt*riseRatio)
 
 
 
         # Create the fly extension
-        fly = PatternPiece('pattern', 'fly', letter = 'E', fabric = 2, interfacing = 0, lining = 3)
+        fly = PatternPiece('pattern', 'fly', letter = 'E', fabric = 5, interfacing = 0, lining = 3)
         trousers.add(fly)
         f = trousers.fly
         start =  Point('reference', 'start', 0,  0, 'point_style')
@@ -848,8 +897,8 @@ class PatternDesign():
 
 
         # set the label location. Somday this should be automatic
-        f.label_x = f.start.x - 1*cm_to_pt
-        f.label_y = f.start.y + 2*cm_to_pt
+        f.label_x = f.start.x - (1*cm_to_pt*waistRatio)
+        f.label_y = f.start.y + (2*cm_to_pt*riseRatio)
 
 
 
