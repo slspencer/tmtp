@@ -255,18 +255,13 @@ class PatternDesign():
         #control points for side seam
         pointlist = []
         pointlist.append(tf.p7)
-        pointlist.append(tf.p9)
         pointlist.append(tf.p10)
         pointlist.append(tf.p11)
         fcp, scp = GetCurveControlPoints('SideSeam', pointlist)
-        tf.add(Point('reference', 'c1', fcp[0].x, fcp[0].y, 'controlpoint_style')) #b/w 7 & 9
-        tf.add(Point('reference', 'c2', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  7 & 9
-        tf.add(Point('reference', 'c3', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w 9 & 10
-        tf.add(Point('reference', 'c4', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w  9 & 10
-        tf.add(Point('reference', 'c5', fcp[2].x, fcp[2].y, 'controlpoint_style')) #b/w 10 & 11
-        tf.add(Point('reference', 'c6', scp[2].x, scp[2].y, 'controlpoint_style')) #b/w  10 & 11
-        #distance = ( math.sqrt( ((tf.p11.x - tf.p32.x)**2) + ((tf.p11.y - tf.p32.y)**2) ) )*(0.3) # find distance of p32 from p11
-        #x, y = pointAlongLine(tf.p11.x,  tf.p11.y, tf.c6.x,  tf.c6.y, -distance) #find point along line of c6p11 at distance of intersect. b/w knee diag & side seam leg vertical
+        tf.add(Point('reference', 'c1', fcp[0].x, fcp[0].y, 'controlpoint_style')) #b/w 7 & 10
+        tf.add(Point('reference', 'c2', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  7 & 10
+        tf.add(Point('reference', 'c5', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w 10 & 11
+        tf.add(Point('reference', 'c6', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w  10 & 11
         distance = ( math.sqrt( ((tf.p11.x - tf.p12.x)**2) + ((tf.p11.y - tf.p12.y)**2) ) )*(0.3) # 1/3 distance from p12 from p11
         x, y = pointAlongLine(tf.p11.x,  tf.p11.y, tf.c6.x,  tf.c6.y, -distance) #find point along line of c6p11
         tf.add(Point('reference', 'c7', x,  y, 'controlpoint_style'))  # maintains slope of curve p10p11
@@ -382,8 +377,7 @@ class PatternDesign():
         sps.appendLineToPath(tf.p8.x, tf.p8.y, relative = False)
         sps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
         #sideseam
-        sps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p9.x, tf.p9.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p10.x, tf.p10.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p10.x, tf.p10.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.p11.x, tf.p11.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.p12.x, tf.p12.y,  relative = False)
         sps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
@@ -408,8 +402,7 @@ class PatternDesign():
         cps.appendLineToPath(tf.p8.x, tf.p8.y, relative = False)
         cps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
         #sideseam
-        cps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p9.x, tf.p9.y,  relative = False)
-        cps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p10.x, tf.p10.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p10.x, tf.p10.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.p11.x, tf.p11.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.p12.x, tf.p12.y,  relative = False)
         cps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
