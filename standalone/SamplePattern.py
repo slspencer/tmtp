@@ -444,10 +444,10 @@ class PatternDesign():
         front_grainline_path_svg = path()
         fgp = front_grainline_path_svg
         tf.add(Path('pattern', 'path', 'Trousers Front Grainline Path', fgp, 'grainline_style'))
-        x, y = pointAlongLine(tf.G.x,  tf.G.y, tf.p16.x,  tf.p16.y,  abs(tf.G.y - tf.p16.y)*(0.5))
-        fgp.appendMoveToPath(x, y, relative = False)
-        x, y = pointAlongLine( tf.Knee.x,  tf.Knee.y, tf.p15.x,  tf.p15.y,  abs(tf.Knee.y - tf.p15.y)*(0.5) )
-        fgp.appendLineToPath(x, y, relative = False)
+        x1,  y1 = ( tf.p4.x + abs( tf.p12.x - tf.p4.x)*(0.5) + (2*cm_to_px) ),  tf.C.y
+        x2,  y2 = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
+        fgp.appendMoveToPath(x1, y1, relative = False)
+        fgp.appendLineToPath(x2, y2, relative = False)
 
         # set the label location. Somday this should be automatic
         tf.label_x = tf.p16.x + 2*cm_to_px
@@ -732,10 +732,10 @@ class PatternDesign():
         back_grainline_path_svg = path()
         bgp = back_grainline_path_svg
         tb.add(Path('pattern', 'path', 'Trousers Back Grainline Path', bgp, 'grainline_style'))
-        x, y = pointAlongLine(tf.G.x,  tf.G.y, tf.p16.x,  tf.p16.y,  abs(tf.G.y - tf.p16.y)*(0.5))
-        bgp.appendMoveToPath(x, y, relative = False)
-        x, y = pointAlongLine( tf.Knee.x,  tf.Knee.y, tf.p15.x,  tf.p15.y,  abs(tf.Knee.y - tf.p15.y)*(0.5) )
-        bgp.appendLineToPath(x, y, relative = False)
+        x1,  y1 = ( tf.p4.x + abs( tf.p12.x - tf.p4.x)*(0.5) ),  tf.C.y
+        x2,  y2 = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
+        bgp.appendMoveToPath(x1, y1, relative = False)
+        bgp.appendLineToPath(x2, y2, relative = False)
 
 
         # set the label location. Somday this should be automatic
@@ -776,8 +776,10 @@ class PatternDesign():
         waistfront_grainline_path_svg = path()
         wfgp = waistfront_grainline_path_svg
         wf.add(Path('pattern', 'path', 'Trousers Waist Front Grainline Path', wfgp, 'grainline_style'))
-        wfgp.appendMoveToPath(tf.A.x + dx + (9*cm_to_px*waistRatio), tf.A.y + dy + (0.5*cm_to_px*riseRatio), relative = False)
-        wfgp.appendLineToPath(tf.A.x + dx + (9*cm_to_px*waistRatio), tf.B.y + dy - (0.5*cm_to_px*riseRatio), relative = False)
+        x1,  y1 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.A.y + (0.5*cm_to_px*riseRatio))
+        x2,  y2 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.B.y - (0.5*cm_to_px*riseRatio))
+        wfgp.appendMoveToPath( x1 + dx, y1 + dy, relative = False)
+        wfgp.appendLineToPath( x2 + dx,  y2 + dy, relative = False)
 
         # set the label location. Somday this should be automatic
         wf.label_x = wf.start.x + (1*cm_to_px*waistRatio)
@@ -829,8 +831,10 @@ class PatternDesign():
         waistback_grainline_path_svg = path()
         wbgp = waistback_grainline_path_svg
         wb.add(Path('pattern', 'path', 'Trousers Waist Back Grainline Path', wbgp, 'grainline_style'))
-        wbgp.appendMoveToPath(tb.p23.x + dx + (3.5*cm_to_px), tb.p24.y + dy - (1*cm_to_px), relative = False)
-        wbgp.appendLineToPath(tb.p20.x+ dx + (3.5*cm_to_px), tb.p24.y + dy + (4*cm_to_px), relative = False)
+        x1,  y1 = ( tb.p23.x + (3.5*cm_to_px) ), ( tb.p24.y - (1*cm_to_px) )
+        x2,  y2 = ( tb.p20.x + (3.5*cm_to_px) ), ( tb.p24.y + (4*cm_to_px) )
+        wbgp.appendMoveToPath(x1 + dx, y1 + dy, relative = False)
+        wbgp.appendLineToPath( x2 + dx, y2 + dy, relative = False)
 
         # set the label location. Somday this should be automatic
         wb.label_x = wb.start.x + (7*cm_to_px*waistRatio)
