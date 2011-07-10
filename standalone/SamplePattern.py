@@ -46,6 +46,7 @@ class PatternDesign():
 
     def __init__(self):
         self.styledefs = {}
+        self.markerdefs = {}
         return
 
     def pattern(self):
@@ -59,6 +60,7 @@ class PatternDesign():
         # self.cd - Client Data, which has been loaded from the client data file
         #
         # self.styledefs - the style difinition dictionary, loaded from the styles file
+        # self.markerdefs - the marker definition dictionary
         #
         # self.cfg - configuration settings from the main app framework
         #
@@ -143,8 +145,10 @@ class PatternDesign():
         trousers = Pattern('trousers')
         doc.add(trousers)
 
-        # Set up styles dictionary in the pattern object
+        # Set up styles dictionary and marker dictionary in the pattern object
+        # TODO - this should be transparent
         trousers.styledefs.update(self.styledefs)
+        trousers.markerdefs.update(self.markerdefs)
 
         # Create the Test Grid
         testGrid = PatternPiece('pattern', 'testGrid', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
@@ -156,7 +160,7 @@ class PatternDesign():
         TG.attrs['transform'] = 'translate(' + TG.start.coords + ' )'
         TG_path_svg =path()
         TGps = TG_path_svg
-        TG.add(Path('reference','path', 'Trousers Test Grid',  TGps,  'cuttingline_style'))
+        TG.add(Path('reference','testgrid', 'Trousers Test Grid',  TGps,  'cuttingline_style'))
 
         # Points
         TG.add(Point('reference', 'X0', TG.start.x, TG.start.y, 'point_style'))
@@ -328,7 +332,7 @@ class PatternDesign():
         # Draw reference lines
         grid_path_svg =path()
         gps = grid_path_svg
-        tf.add(Path('reference','path', 'Trousers Front Gridline Path',  gps,  'gridline_style'))
+        tf.add(Path('reference','tfgrid', 'Trousers Front Gridline Path',  gps,  'gridline_style'))
         # vertical grid
         gps.appendMoveToPath(tf.A.x,  tf.A.y,  relative = False)
         gps.appendLineToPath(tf.F.x,  tf.F.y,  relative = False)
@@ -366,16 +370,12 @@ class PatternDesign():
         gps.appendLineToPath(tf.f1.x,  tf.f1.y,  relative = False)
 
 
-
-
-
-
         # Assemble all paths down here
         # Paths are a bit differemt - we create the SVG and then create the object to hold it
         # See the pysvg library docs for the pysvg methods
         seamline_path_svg = path()
         sps = seamline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Seamline Path', sps, 'seamline_path_style'))
+        tf.add(Path('pattern', 'tfsp', 'Trousers Front Seamline Path', sps, 'seamline_path_style'))
         #waistband
         sps.appendMoveToPath(tf.A.x, tf.A.y, relative = False)
         sps.appendLineToPath(tf.p8.x, tf.p8.y, relative = False)
@@ -399,7 +399,7 @@ class PatternDesign():
         # front cutting line path
         cuttingline_path_svg = path()
         cps = cuttingline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Cuttingline Path', cps, 'cuttingline_style'))
+        tf.add(Path('pattern', 'tfcp', 'Trousers Front Cuttingline Path', cps, 'cuttingline_style'))
         #waist
         cps.appendMoveToPath(tf.A.x, tf.A.y, relative = False)
         cps.appendLineToPath(tf.p8.x, tf.p8.y, relative = False)
@@ -423,7 +423,7 @@ class PatternDesign():
         # hemline path
         hemline_path_svg = path()
         hps = hemline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Hemline Path', hps, 'dart_style'))
+        tf.add(Path('pattern', 'tfhp', 'Trousers Front Hemline Path', hps, 'dart_style'))
         hps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
         hps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x,  tf.c26.y,  tf.p15.x, tf.p15.y,  relative = False)
         hps.appendCubicCurveToPath(tf.c27.x, tf.c27.y, tf.c28.x,  tf.c28.y,  tf.p5.x, tf.p5.y,  relative = False)
@@ -431,27 +431,25 @@ class PatternDesign():
         #waistline path
         waistline_path_svg = path()
         wps = waistline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Waistline Path', wps, 'dart_style'))
+        tf.add(Path('pattern', 'tfwp', 'Trousers Front Waistline Path', wps, 'dart_style'))
         wps.appendMoveToPath(tf.B.x, tf.B.y, relative = False)
         wps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
 
         # front fly stitching line
         fly_stitch_path_svg = path()
         fsps = fly_stitch_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
+        tf.add(Path('pattern', 'ffsp', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
         fsps.appendMoveToPath(tf.f3.x,  tf.f3.y,  relative = False)
         fsps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
         fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
 
 
         #grainline path
-        front_grainline_path_svg = path()
-        fgp = front_grainline_path_svg
-        tf.add(Path('pattern', 'path', 'Trousers Front Grainline Path', fgp, 'grainline_style'))
         x1,  y1 = ( tf.p4.x + abs( tf.p12.x - tf.p4.x)*(0.5) + (2*cm_to_pt) ),  tf.C.y
-        x2,  y2 = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
-        fgp.appendMoveToPath(x1, y1, relative = False)
-        fgp.appendLineToPath(x2, y2, relative = False)
+        x2,    y2   = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
+
+        # Add the grainline
+        tf.add(Grainline(group="pattern", name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
         tf.label_x = tf.p16.x + 2*cm_to_pt
@@ -630,7 +628,7 @@ class PatternDesign():
         # Draw reference grid
         grid_back_path_svg =path()
         gbps = grid_back_path_svg
-        tb.add(Path('reference','path', 'Trousers Back Gridline Path',  gbps,  'gridline_style'))
+        tb.add(Path('reference','tbgp', 'Trousers Back Gridline Path',  gbps,  'gridline_style'))
         # vertical grid
         gbps.appendMoveToPath(tf.C.x, tf.C.y, relative = False)
         gbps.appendLineToPath(tf.A.x, tf.A.y, relative = False)
@@ -673,7 +671,7 @@ class PatternDesign():
         # seam line back path
         seamline_back_path_svg = path()
         sbps = seamline_back_path_svg
-        tb.add(Path('pattern', 'path', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
+        tb.add(Path('pattern', 'tbsp', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
         sbps.appendMoveToPath(tb.p17.x, tb.p17.y, relative = False)
         sbps.appendCubicCurveToPath(tb.c1.x, tb.c1.y, tb.c2.x, tb.c2.y, tf.C.x, tf.C.y, relative = False)
         sbps.appendLineToPath(tb.p23.x, tb.p23.y, relative = False)
@@ -695,7 +693,7 @@ class PatternDesign():
         # cutting line back path
         cuttingline_back_path_svg = path()
         cbps = cuttingline_back_path_svg
-        tb.add(Path('pattern', 'path', 'Trousers Back Cuttingline Path', cbps, 'cuttingline_style'))
+        tb.add(Path('pattern', 'tbcp', 'Trousers Back Cuttingline Path', cbps, 'cuttingline_style'))
         cbps.appendMoveToPath(tb.p17.x, tb.p17.y, relative = False)
         cbps.appendCubicCurveToPath(tb.c1.x, tb.c1.y, tb.c2.x, tb.c2.y, tf.C.x, tf.C.y, relative = False)
         cbps.appendLineToPath(tb.p23.x, tb.p23.y, relative = False)
@@ -716,7 +714,7 @@ class PatternDesign():
         # hemline back marking path
         hemline_back_path_svg = path()
         hbps = hemline_back_path_svg
-        tb.add(Path('pattern', 'path', 'Trousers Back Hemline Path', hbps, 'dart_style'))
+        tb.add(Path('pattern', 'tbhp', 'Trousers Back Hemline Path', hbps, 'dart_style'))
         hbps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
         hbps.appendCubicCurveToPath(tb.c21.x, tb.c21.y, tb.c22.x,  tb.c22.y,  tb.p29.x, tb.p29.y,  relative = False)
         hbps.appendCubicCurveToPath(tb.c23.x, tb.c23.y, tb.c24.x,  tb.c24.y,  tf.p5.x, tf.p5.y,  relative = False)
@@ -724,13 +722,13 @@ class PatternDesign():
         # waistline back marking path
         waistline_back_path_svg = path()
         wbps = waistline_back_path_svg
-        tb.add(Path('pattern', 'path', 'Trousers Back Waistline Path', wbps, 'dart_style'))
+        tb.add(Path('pattern', 'tbwp', 'Trousers Back Waistline Path', wbps, 'dart_style'))
         wbps.appendMoveToPath(tb.p20.x, tb.p20.y, relative = False)
         wbps.appendLineToPath(tb.p21.x, tb.p21.y, relative = False)
 
         # dart back marking path
         dart_back_path_svg = path()
-        tb.add(Path('pattern', 'path', 'Trousers Back Dart Path',  dart_back_path_svg,  'dart_style'))
+        tb.add(Path('pattern', 'tbdp', 'Trousers Back Dart Path',  dart_back_path_svg,  'dart_style'))
         dart_back_path_svg.appendMoveToPath(tb.H.x,  tb.H.y, relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
         dart_back_path_svg.appendMoveToPath(tb.Q.x,  tb.Q.y, relative = False)
@@ -740,15 +738,10 @@ class PatternDesign():
         dart_back_path_svg.appendLineToPath(tb.U.x,  tb.U.y,  relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
 
-        #grainline path
-        back_grainline_path_svg = path()
-        bgp = back_grainline_path_svg
-        tb.add(Path('pattern', 'path', 'Trousers Back Grainline Path', bgp, 'grainline_style'))
+        #grainline
         x1,  y1 = ( tf.p4.x + abs( tf.p12.x - tf.p4.x)*(0.5) ),  tf.C.y
         x2,  y2 = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
-        bgp.appendMoveToPath(x1, y1, relative = False)
-        bgp.appendLineToPath(x2, y2, relative = False)
-
+        tb.add(Grainline(group="pattern", name="dartbackgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
         tb.label_x = tf.p16.x + (3*cm_to_pt*seatRatio)
@@ -768,7 +761,7 @@ class PatternDesign():
         # waistfront seamline path
         waistfront_seam_path_svg = path()
         wfsp= waistfront_seam_path_svg
-        wf.add(Path('pattern', 'path', 'Trousers Waistband Front Seam Line Path',  wfsp,  'seamline_path_style'))
+        wf.add(Path('pattern', 'twfsl', 'Trousers Waistband Front Seam Line Path',  wfsp,  'seamline_path_style'))
         wfsp.appendMoveToPath( tf.A.x + dx,  tf.A.y + dy, relative = False)
         wfsp.appendLineToPath( tf.p8.x+ dx, tf.p8.y + dy, relative = False)
         wfsp.appendLineToPath( tf.p7.x+ dx, tf.p7.y + dy, relative = False)
@@ -777,7 +770,7 @@ class PatternDesign():
         # waistfront cuttingline path
         waistfront_cuttingline_path_svg = path()
         wfcp= waistfront_cuttingline_path_svg
-        wf.add(Path('pattern', 'path', 'Trousers Waistband Front Cuttingline Path',  wfcp,  'cuttingline_style'))
+        wf.add(Path('pattern', 'twfcl', 'Trousers Waistband Front Cuttingline Path',  wfcp,  'cuttingline_style'))
         wfcp.appendMoveToPath( tf.A.x + dx,  tf.A.y + dy, relative = False)
         wfcp.appendLineToPath( tf.p8.x+ dx, tf.p8.y + dy, relative = False)
         wfcp.appendLineToPath( tf.p7.x+ dx, tf.p7.y + dy, relative = False)
@@ -785,13 +778,9 @@ class PatternDesign():
         wfcp.appendLineToPath( tf.A.x+ dx, tf.A.y + dy,  relative = False)
 
         #grainline path
-        waistfront_grainline_path_svg = path()
-        wfgp = waistfront_grainline_path_svg
-        wf.add(Path('pattern', 'path', 'Trousers Waist Front Grainline Path', wfgp, 'grainline_style'))
-        x1,  y1 = (tf.A.x + (9*cm_to_pt*waistRatio)),  (tf.A.y + (0.5*cm_to_pt*riseRatio))
-        x2,  y2 = (tf.A.x + (9*cm_to_pt*waistRatio)),  (tf.B.y - (0.5*cm_to_pt*riseRatio))
-        wfgp.appendMoveToPath( x1 + dx, y1 + dy, relative = False)
-        wfgp.appendLineToPath( x2 + dx,  y2 + dy, relative = False)
+        x1,  y1 = (tf.A.x + (9*cm_to_pt*waistRatio)),  (tf.A.y + (0.7*cm_to_pt*riseRatio))
+        x2,  y2 = (tf.A.x + (9*cm_to_pt*waistRatio)),  (tf.B.y - (0.7*cm_to_pt*riseRatio))
+        wf.add(Grainline(group="pattern", name="waistfrontgrainpath", label="Waist Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
         wf.label_x = wf.start.x + (1*cm_to_pt*waistRatio)
@@ -809,7 +798,7 @@ class PatternDesign():
         # waistback dart path
         waistback_dart_path_svg = path()
         wbdp= waistback_dart_path_svg
-        wb.add(Path('pattern', 'path', 'Trousers Waistband Dart Line Path',  wbdp,  'dart_style'))
+        wb.add(Path('pattern', 'twdp', 'Trousers Waistband Dart Line Path',  wbdp,  'dart_style'))
         wbdp.appendMoveToPath(tb.H.x + dx,  tb.H.y + dy, relative = False)
         wbdp.appendLineToPath(tb.S.x + dx,  tb.S.y + dy,  relative = False)
         wbdp.appendMoveToPath(tb.Q.x + dx,  tb.Q.y + dy, relative = False)
@@ -820,7 +809,7 @@ class PatternDesign():
         # waistback seamline path
         waistback_seam_path_svg = path()
         wbsp= waistback_seam_path_svg
-        wb.add(Path('pattern', 'path', 'Trousers Waistband Back Seam Line Path',  wbsp,  'seamline_path_style'))
+        wb.add(Path('pattern', 'twbsl', 'Trousers Waistband Back Seam Line Path',  wbsp,  'seamline_path_style'))
         wbsp.appendMoveToPath( tb.p23.x+ dx,  tb.p23.y + dy, relative = False)
         wbsp.appendLineToPath( tb.p25.x+ dx, tb.p25.y + dy, relative = False)
         wbsp.appendCubicCurveToPath(tb.c3.x+ dx, tb.c3.y + dy, tb.c4.x+ dx, tb.c4.y + dy, tb.p22.x+ dx, tb.p22.y + dy, relative = False)
@@ -831,7 +820,7 @@ class PatternDesign():
         # waistback cuttingline path
         waistback_cuttingline_path_svg = path()
         wbcp= waistback_cuttingline_path_svg
-        wb.add(Path('pattern', 'path', 'Trousers Waistband Back Cuttingline Path',  wbcp,  'cuttingline_style'))
+        wb.add(Path('pattern', 'twbcl', 'Trousers Waistband Back Cuttingline Path',  wbcp,  'cuttingline_style'))
         wbcp.appendMoveToPath( tb.p23.x+ dx,  tb.p23.y + dy, relative = False)
         wbcp.appendLineToPath( tb.p25.x+ dx, tb.p25.y + dy, relative = False )
         wbcp.appendCubicCurveToPath(tb.c3.x+ dx, tb.c3.y + dy, tb.c4.x+ dx, tb.c4.y + dy, tb.p22.x+ dx, tb.p22.y + dy, relative = False)
@@ -840,13 +829,9 @@ class PatternDesign():
         wbcp.appendLineToPath( tb.p23.x+ dx, tb.p23.y + dy,  relative = False)
 
         #grainline path
-        waistback_grainline_path_svg = path()
-        wbgp = waistback_grainline_path_svg
-        wb.add(Path('pattern', 'path', 'Trousers Waist Back Grainline Path', wbgp, 'grainline_style'))
         x1,  y1 = ( tb.p23.x + (3.5*cm_to_pt) ), ( tb.p24.y - (1*cm_to_pt) )
         x2,  y2 = ( tb.p20.x + (3.5*cm_to_pt) ), ( tb.p24.y + (4*cm_to_pt) )
-        wbgp.appendMoveToPath(x1 + dx, y1 + dy, relative = False)
-        wbgp.appendLineToPath( x2 + dx, y2 + dy, relative = False)
+        wb.add(Grainline(group="pattern", name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
         wb.label_x = wb.start.x + (7*cm_to_pt*waistRatio)
@@ -866,7 +851,7 @@ class PatternDesign():
         #create clip path as a test:
         fly_seam_path_svg = path()
         fsp= fly_seam_path_svg
-        f.add(Path('pattern', 'path', 'Trousers Fly Seam Line Path',  fsp,  'seamline_path_style'))
+        f.add(Path('pattern', 'tfsl', 'Trousers Fly Seam Line Path',  fsp,  'seamline_path_style'))
         fsp.appendMoveToPath(tf.p3.x + dx,  tf.p3.y + dy,  relative = False)
         fsp.appendCubicCurveToPath(tf.c29.x + dx,  tf.c29.y + dy,  tf.c30.x + dx,  tf.c30.y + dy,  tf.f4.x + dx,  tf.f4.y + dy,  relative = False)
         fsp.appendLineToPath(tf.f5.x + dx,  tf.f5.y + dy,  relative = False)
@@ -877,7 +862,7 @@ class PatternDesign():
         # fly cutting line path
         fly_cutting_path_svg = path()
         fcp= fly_cutting_path_svg
-        f.add(Path('pattern', 'path', 'Trousers Fly Cutting Line Path',  fcp,  'cuttingline_style'))
+        f.add(Path('pattern', 'tfcl', 'Trousers Fly Cutting Line Path',  fcp,  'cuttingline_style'))
         fcp.appendMoveToPath(tf.p3.x + dx,  tf.p3.y + dy,  relative = False)
         fcp.appendCubicCurveToPath(tf.c29.x + dx,  tf.c29.y + dy,  tf.c30.x + dx,  tf.c30.y + dy,  tf.f4.x + dx,  tf.f4.y + dy,  relative = False)
         fcp.appendLineToPath(tf.f5.x + dx,  tf.f5.y + dy,  relative = False)
@@ -885,13 +870,10 @@ class PatternDesign():
         fcp.appendLineToPath(tf.C.x + dx,  tf.C.y + dy,  relative = False)
         fcp.appendCubicCurveToPath(tf.c22.x + dx,  tf.c22.y + dy,  tf.c21.x + dx,  tf.c21.y + dy,  tf.p2.x + dx,  tf.p2.y + dy,  relative = False)
 
-        #grainline path
-        fly_grainline_path_svg = path()
-        flgp = fly_grainline_path_svg
-        f.add(Path('pattern', 'path', 'Trousers Fly Grainline Path', flgp, 'grainline_style'))
-        flgp.appendMoveToPath(tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (5*cm_to_pt)+ dy, relative = False)
-        flgp.appendLineToPath( tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (20*cm_to_pt) + dy, relative = False)
-
+        #grainline
+        x1, y1 = (tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (5*cm_to_pt)+ dy)
+        x2, y2 = (tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (20*cm_to_pt) + dy)
+        f.add(Grainline(group="pattern", name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
         f.label_x = f.start.x - (1*cm_to_pt*waistRatio)

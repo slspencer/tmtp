@@ -34,7 +34,7 @@ from pysvg.builders import *
 
 from constants import *
 from patternbase import pBase
-from support import boundingBox, transformBoundingBox
+from support import boundingBox, transformBoundingBox, extractMarkerId
 
 # ---- Pattern Classes ----------------------------------------
 
@@ -353,6 +353,79 @@ class Line(pBase):
         """
         Return two points which define a bounding box around the object
         """
+        if grouplist is None:
+            grouplist = self.groups.keys()
+        if self.groupname in grouplist:
+            return (min(self.xstart, self.xend), min(self.ystart, self.yend), max(self.xstart, self.xend), max(self.ystart, self.yend))
+        else:
+            return None, None, None, None
+
+class Grainline(pBase):
+    """
+    Creates instance of Python class Grainline
+    """
+    def __init__(self, group, name, label, xstart, ystart, xend, yend, styledef = 'grainline_style', transform = ''):
+
+        self.groupname = group
+        self.name = name
+        self.sdef = styledef
+        self.label = label
+        self.xstart = xstart
+        self.ystart = ystart
+        self.xend = xend
+        self.yend = yend
+        self.attrs = {}
+        self.attrs['transform'] = transform
+
+        # TODO - this is terrible, should not hard code the marker name
+        # make some checks
+        if self.sdef not in self.styledefs:
+            raise ValueError("Style %s was specified but isn't defined" % self.sdef)
+
+        for amarker in ['grainline_marker_start', 'grainline_marker_end']:
+            if amarker not in self.markerdefs:
+                print self.markerdefs
+                raise ValueError("Marker %s was specified but isn't defined" % amarker)
+            else:
+                # List it as used so we put it in the output file
+                self.markers.append(amarker)
+
+        mid = extractMarkerId(self.markerdefs['grainline_marker_start'])
+        self.attrs['marker-start'] = "url(#%s)" % mid
+        mid = extractMarkerId(self.markerdefs['grainline_marker_end'])
+        self.attrs['marker-end'] = "url(#%s)" % mid
+
+        pBase.__init__(self)
+
+    def add(self, obj):
+        # Grainlines don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The Grainline class can not have children')
+
+    def svg(self):
+        """
+        generate the svg for this item and return it as a pysvg object
+        """
+        if self.debug:
+            print 'svg() called for Grainline ID ', self.id
+
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
+
+        pstyle = StyleBuilder(self.styledefs[self.sdef])
+        p = line(self.xstart, self.ystart, self.xend, self.yend)
+        p.set_style(pstyle.getStyle())
+        p.set_id(self.id)
+        for attrname, attrvalue in self.attrs.items():
+            p.setAttribute(attrname, attrvalue)
+        md[self.groupname].append(p)
+
+        return md
+
+    def boundingBox(self, grouplist = None):
+        """
+        Return two points which define a bounding box around the object
+        """
+        # TODO make this account for markers
         if grouplist is None:
             grouplist = self.groups.keys()
         if self.groupname in grouplist:

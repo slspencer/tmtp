@@ -325,6 +325,13 @@ def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2,
     y = (m1 * x) + b1
     return x, y
 
+def extractMarkerId(markertext):
+    # Regex -
+    # <marker id=\"grainline_mk\"\nviewBox=
+    # one or more WS, followed by 'id' followed by zero or more WS followed by '=' followed by zero or more WS, followed by '"',
+    m = re.search('(\s+id\s*=\s*\"\w+\")', markertext, re.I)
+    mid = m.group(0).split('"')[1]
+    return mid
 
 ################ End of things which have been adapted and are used in the new framework ################
 #
@@ -442,11 +449,11 @@ def Circle(layer, x, y, radius, color, name):
                 'r'   : str(radius) }
     inkex.etree.SubElement( layer, inkex.addNS( 'circle', 'svg' ), attribs )
 
-def Grainline(self, parent, x1, y1, x2, y2, name, trans = ''):
-    grain_path = 'M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
-    self.DrawPath( parent, grain_path, 'grainline', name, trans )
-    self.Arrow( parent, x1, y1, x2, y2, name, trans )
-    self.Arrow( parent, x2, y2, x1, y1, name, trans )
+#def Grainline(self, parent, x1, y1, x2, y2, name, trans = ''):
+#    grain_path = 'M '+str(x1)+' '+str(y1)+' L '+str(x2)+' '+str(y2)
+#    self.DrawPath( parent, grain_path, 'grainline', name, trans )
+#    self.Arrow( parent, x1, y1, x2, y2, name, trans )
+#    self.Arrow( parent, x2, y2, x1, y1, name, trans )
 
 def DrawGrainline(parent, path, name, trans = ''):
     #!!!!!!not in use at this time

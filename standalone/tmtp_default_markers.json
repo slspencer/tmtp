@@ -1,4 +1,4 @@
 {
-    "grainline_marker": "<marker id=\"grainline_mk\"\nviewBox=\"0 0 10 10\" refX=\"0\" refY=\"5\"\nmarkerUnits=\"strokeWidth\"\nmarkerWidth=\"4\" markerHeight=\"3\"norient=\"auto\">\n<path d=\"M 0 0 L 10 5 L 0 10 z\" />\n</marker>\n",
-    "random_marker": "<marker id=\"random_mk\"\nviewBox=\"0 0 10 10\" refX=\"0\" refY=\"5\"\nmarkerUnits=\"strokeWidth\"\nmarkerWidth=\"4\" markerHeight=\"3\"norient=\"auto\">\n<path d=\"M 0 0 L 10 5 L 0 10 z\" />\n</marker>\n"
+    "grainline_marker_start": "<marker id=\"grainline_mk_start\"\nviewBox=\"-10 0 10 10\" refX=\"0\" refY=\"5\"\nmarkerUnits=\"strokeWidth\"\nmarkerWidth=\"7\" markerHeight=\"4\" orient=\"auto\">\n<path d=\"M 0 0 L -10 5 L 0 10 z\" />\n</marker>\n",
+    "grainline_marker_end": "<marker id=\"grainline_mk_end\"\nviewBox=\"0 0 10 10\" refX=\"0\" refY=\"5\"\nmarkerUnits=\"strokeWidth\"\nmarkerWidth=\"7\" markerHeight=\"4\" orient=\"auto\">\n<path d=\"M 0 0 L 10 5 L 0 10 z\" />\n</marker>\n"
 }
