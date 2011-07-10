@@ -120,8 +120,6 @@ class PatternDesign():
         scale_1_4 = scale/4
         scale_1_8 = scale/8
 
-
-
         # client ratios
         outsideLegRatio = (cd.outside_leg/patternOutsideLeg)
         insideLegRatio = (cd.inside_leg/patternInsideLeg)
@@ -130,11 +128,15 @@ class PatternDesign():
         kneeRatio = (cd.knee/patternKnee)
         bottomWidthRatio = (cd.bottom_width/patternBottomWidth)
         riseRatio = (rise/patternRise)
-        cd.bottom_width = patternBottomWidth*(kneeRatio) # determine hem width based on knee width
-        cd.seat = 102*cm_to_pt
 
         # Debug client measurements
-        debug( 'Outside Leg --> Client = ' + str(cd.outside_leg) + '.. pattern = ' + str(patternOutsideLeg))
+        debug ( '                   Client              Pattern')
+        debug( 'Outside Leg   --> ' + str(cd.outside_leg) + '  ...  ' + str(patternOutsideLeg))
+        debug( 'Insisde_Leg   --> ' + str(cd.inside_leg) + '  ...  ' + str(patternInsideLeg))
+        debug( 'Waist         --> ' + str(cd.waist) + '  ...  ' + str(patternWaist))
+        debug( 'Seat          --> ' + str(cd.seat) + '  ...  ' + str(patternSeat))
+        debug( 'Knee          --> ' + str(cd.knee) + '  ...  ' + str(patternKnee))
+        debug( 'Bottom Width  --> ' + str(cd.bottom_width) + '  ...  ' + str(patternBottomWidth))
 
 
         # Create trousers object to hold all pattern pieces
