@@ -252,21 +252,21 @@ class PatternDesign():
         x, y = intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p13p30 and p11Knee
         tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee, used to calculate sideseam curve
 
-        #control points for side seam
-        pointlist = []
-        pointlist.append(tf.p7)
-        pointlist.append(tf.p10)
-        pointlist.append(tf.p11)
-        fcp, scp = GetCurveControlPoints('SideSeam', pointlist)
-        tf.add(Point('reference', 'c1', fcp[0].x, fcp[0].y, 'controlpoint_style')) #b/w 7 & 10
-        tf.add(Point('reference', 'c2', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  7 & 10
-        tf.add(Point('reference', 'c5', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w 10 & 11
-        tf.add(Point('reference', 'c6', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w  10 & 11
-        distance = ( math.sqrt( ((tf.p11.x - tf.p12.x)**2) + ((tf.p11.y - tf.p12.y)**2) ) )*(0.3) # 1/3 distance from p12 from p11
-        x, y = pointAlongLine(tf.p11.x,  tf.p11.y, tf.c6.x,  tf.c6.y, -distance) #find point along line of c6p11
-        tf.add(Point('reference', 'c7', x,  y, 'controlpoint_style'))  # maintains slope of curve p10p11
-        x, y = pointAlongLine(tf.p12.x,  tf.p12.y, tf.p13.x,  tf.p13.y, -distance) # find point along line p13p12
-        tf.add(Point('reference', 'c8', x,  y, 'controlpoint_style'))   # maintains slope of line p13p12
+        # control points for side seam
+        # p9 & p11 are not used as knots in curve.
+        # Side Seam curve is 3 points --> p7 (waist), p10 (seat), p12 (knee).
+        # Curve b/w p7 & p10
+        # c1 = p7
+        # c2 = p9
+        tf.add(Point('reference', 'c1', tf.p7.x,  tf.p7.y, 'controlpoint_style'))
+        tf.add(Point('reference', 'c2', tf.p9.x,  tf.p9.y, 'controlpoint_style'))
+        # Curve b/w p10 and p12
+        # c3 = 40% of length p10-p12, along line of c2-p10 to maintain continuity
+        # c4 = p32 --> intersection of line p12-p13 and line p11-Knee
+        distance = ( math.sqrt( ((tf.p10.x - tf.p12.x)**2) + ((tf.p10.y - tf.p12.y)**2) ) )*(0.4) # 40%
+        x, y = pointAlongLine(tf.p10.x,  tf.p10.y, tf.c2.x,  tf.c2.y, -distance)
+        tf.add(Point('reference', 'c3', x,  y, 'controlpoint_style'))
+        tf.add(Point('reference', 'c4', tf.p32.x,  tf.p32.y, 'controlpoint_style'))
 
         #control points for hemallowance
         pointlist = []
@@ -378,8 +378,7 @@ class PatternDesign():
         sps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
         #sideseam
         sps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p10.x, tf.p10.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.p11.x, tf.p11.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.p12.x, tf.p12.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p12.x, tf.p12.y,  relative = False)
         sps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
         sps.appendLineToPath(tf.L.x,  tf.L.y,  relative = False)
         #hemallowance
@@ -403,8 +402,7 @@ class PatternDesign():
         cps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
         #sideseam
         cps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p10.x, tf.p10.y,  relative = False)
-        cps.appendCubicCurveToPath(tf.c5.x, tf.c5.y, tf.c6.x,  tf.c6.y,  tf.p11.x, tf.p11.y,  relative = False)
-        cps.appendCubicCurveToPath(tf.c7.x, tf.c7.y, tf.c8.x,  tf.c8.y,  tf.p12.x, tf.p12.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p12.x, tf.p12.y,  relative = False)
         cps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
         cps.appendLineToPath(tf.L.x,  tf.L.y,  relative = False)
         #hemallowance
