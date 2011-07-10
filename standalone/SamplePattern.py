@@ -555,6 +555,8 @@ class PatternDesign():
         tb.add(Point('reference', 'p26', tf.p9.x + (4.5*cm_to_pt*seatRatio), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
         tb.add(Point('reference', 'p27', tf.p10.x + (3*cm_to_pt*seatRatio), tf.p10.y, 'point_style')) # 27 is seat at side seam
         tb.add(Point('reference', 'p28', tf.p11.x + (1.75*cm_to_pt*seatRatio), tf.p11.y, 'point_style')) # 28 is rise at side seam
+        x, y = intersectionOfLines(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, tb.p28.x, tb.p28.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p12p13 and p28Knee
+        tb.add(Point('reference', 'p33', x, y, 'point_style')) #b/w  p28 & Knee, used to calculate sideseam curve
 
         # back hem allowance
         tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + (1.3*cm_to_pt*insideLegRatio ), 'point_style')) # 29 is lowered back trouser hem
@@ -574,16 +576,22 @@ class PatternDesign():
         # Back Side Seam curve is 3 points --> p21 (waist), p27 (seat), p12 (knee).
         # Curve b/w p21 & p27
         # c11 = p21
-        # c12 = p26
+        # c12 = x on line with p27 & parallel to center back line, p26.y
         tb.add(Point('reference', 'c11', tb.p21.x,  tb.p21.y, 'controlpoint_style'))
-        tb.add(Point('reference', 'c12', tb.p26.x,  tb.p26.y, 'controlpoint_style'))
+        m = ( tb.p20.y - tb.bC.y)/(tb.p20.x - tb.bC.x) # slope of center back seam
+        b = tb.p27.y - m*tb.p27.x # intercept for line of slope m through p27
+        y= tb.p26.y
+        x1 = ((y - b )/m)
+        x = tb.p26.x + abs(x1 - tb.p26.x)*(0.5) # find x at midpoint b/w x1 and tb.p26.x
+        tb.add(Point('reference', 'c12', x,  y, 'controlpoint_style')) # upper half of tangent at p27
         # Curve b/w p27 and p12
-        # c13 = 40% of length p27-p12, along line of c12-p27 to maintain continuity
-        # c14 = tf.p32 --> intersection of line p12-p13 and line p11-Knee
-        distance = ( math.sqrt( ((tb.p27.x - tf.p12.x)**2) + ((tb.p27.y - tf.p12.y)**2) ) )* (0.4)
-        x, y = pointAlongLine(tb.p27.x,  tb.p27.y, tb.c12.x,  tb.c12.y, -distance)
-        tb.add(Point('reference', 'c13', x,  y, 'controlpoint_style'))
-        tb.add(Point('reference', 'c14', tf.p32.x,  tf.p32.y, 'controlpoint_style'))
+        # c13 = x on line with c12p17, tb.p33.y
+        m = ( tb.c12.y - tb.p27.y)/(tb.c12.x - tb.p27.x)
+        b =  tb.p27.y -  m*tb.p27.x
+        y = tb.p33.y
+        x = (y - b )/m
+        tb.add(Point('reference', 'c13', x,  y, 'controlpoint_style')) # lower half of tangent at p27
+        tb.add(Point('reference', 'c14', tb.p33.x,  tb.p33.y, 'controlpoint_style'))
 
         #control points hem line
         pointlist = []
