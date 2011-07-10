@@ -34,6 +34,8 @@ class pBase(object):
     displayed_groups = []
     debug = False
     styledefs = {}
+    markerdefs = {}
+    markers = []
     cfg = {}
 
     def __init__(self):

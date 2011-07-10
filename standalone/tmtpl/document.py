@@ -171,6 +171,13 @@ class Document(pBase):
 #     inkscape:window-y="29"
 #     inkscape:window-maximized="0" />\n""")
 
+        # Add any markers that we will need later
+        if len(self.markers):
+            pdefs = defs()
+            for mname in self.markers:
+                pdefs.appendTextContent(self.markerdefs[mname])
+            sz.addElement(pdefs)
+
         # Recursively get everything to draw
         svgdict = self.svg()
 

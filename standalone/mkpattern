@@ -291,6 +291,21 @@ class AppTemplate(StdApp):
             print 'unable to load Styles File <%s>' % self.cfg['styles_file']
             return
 
+        # open the default markers and read them, if present
+        dmfile = "tmtp_default_markers.json"
+        try:
+            f = open(dmfile, 'r')
+            self.markerdefs = json.load(f)
+            f.close()
+        except ValueError:
+            raise
+        except:
+            self.markerdefs = {}
+            print 'unable to load default Markers File <%s>' % dmfile
+            return
+
+        # TODO now open any user supplied marker files
+
         # Now we load the actual design, which is in the form of a python module
         try:
             mod_name,file_ext = path.splitext(path.split(self.cfg['pattern_file'])[-1])
@@ -304,6 +319,7 @@ class AppTemplate(StdApp):
         # set Client Data for the design object
         design.cd = cd
         design.styledefs = self.styledefs
+        design.markerdefs = self.markerdefs
         design.cfg = self.cfg
 
         # Call the design to generate the pattern
