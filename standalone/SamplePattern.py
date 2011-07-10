@@ -261,18 +261,15 @@ class PatternDesign():
 
         # control points for side seam
         # p9 & p11 are not used as knots in curve.
-        # Side Seam curve is 3 points --> p7 (waist), p10 (seat), p12 (knee).
-        # Curve b/w p7 & p10
+        # Side Seam curve is 3 points --> p7 (waist), p10 (seat), p12 (knee).  Control points c2 & c3 create vertical tangent at p10.x
         # c1 = p7
-        # c2 = p9
+        # c2 = p10.x, p9.y
         tf.add(Point('reference', 'c1', tf.p7.x,  tf.p7.y, 'controlpoint_style'))
-        tf.add(Point('reference', 'c2', tf.p9.x,  tf.p9.y, 'controlpoint_style'))
+        tf.add(Point('reference', 'c2', tf.p10.x,  tf.p9.y, 'controlpoint_style'))
         # Curve b/w p10 and p12
-        # c3 = 40% of length p10-p12, along line of c2-p10 to maintain continuity
+        # c3 = p10.x, p32.y
         # c4 = p32 --> intersection of line p12-p13 and line p11-Knee
-        distance = ( math.sqrt( ((tf.p10.x - tf.p12.x)**2) + ((tf.p10.y - tf.p12.y)**2) ) )*(0.4) # 40%
-        x, y = pointAlongLine(tf.p10.x,  tf.p10.y, tf.c2.x,  tf.c2.y, -distance)
-        tf.add(Point('reference', 'c3', x,  y, 'controlpoint_style'))
+        tf.add(Point('reference', 'c3', tf.p10.x,  tf.p32.y, 'controlpoint_style'))
         tf.add(Point('reference', 'c4', tf.p32.x,  tf.p32.y, 'controlpoint_style'))
 
         #control points for hemallowance
