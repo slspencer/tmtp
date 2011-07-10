@@ -5,32 +5,32 @@
 		  "gui_text":"Client Name"
 		  },
   "measureunit": {
-  		 "value":"in",
+  		 "value":"cm",
 		  "type":"string",
 		  "gui_text":"Units of measurement (in or cm)"
 		  },
   "outside_leg": {
-  		  "value":"43.0",
+  		  "value":"109.22",
 		  "type":"float",
 		  "gui_text":"Outside Leg"
 		  },
   "inside_leg": {
-  		  "value":"31.0",
+  		  "value":"78.74",
 		  "type":"float",
 		  "gui_text":"Inside Leg"
 		  },
   "waist": {
-  		  "value":"34.5",
+  		  "value":"87.63",
 		  "type":"float",
 		  "gui_text":"Waist"
 		  },
   "seat": {
-  		  "value":"43.25",
+  		  "value":"109.86",
 		  "type":"float",
 		  "gui_text":"Seat"
 		  },
   "knee": {
-  		  "value":"15.25",
+  		  "value":"50",
 		  "type":"float",
 		  "gui_text":"Knee"
 		  },
