@@ -20,7 +20,7 @@
 		  "gui_text":"Inside Leg"
 		  },
   "waist": {
-  		  "value":"86",
+  		  "value":"86.0",
 		  "type":"float",
 		  "gui_text":"Waist"
 		  },
@@ -30,12 +30,12 @@
 		  "gui_text":"Seat"
 		  },
   "knee": {
-  		  "value":"50",
+  		  "value":"50.0",
 		  "type":"float",
 		  "gui_text":"Knee"
 		  },
   "bottom_width": {
-  		  "value":"43",
+  		  "value":"43.0",
 		  "type":"float",
 		  "gui_text":"Bottom Width"
 		  }
