@@ -1,24 +1,26 @@
 {
     "buttonhole_style": {
         "fill": "none",
-        "stroke": "gray",
+        "stroke": "green",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "4"
+        "stroke-width": "3"
     },
     "cuttingline_style": {
         "fill": "none",
         "stroke": "green",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "6"
+        "stroke-width": "4"
     },
     "dart_style": {
         "fill": "none",
-        "stroke": "gray",
+        "stroke": "green",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "5"
+        "stroke-width": "3",
+        "stroke-dasharray": "6,6",
+        "stroke-dashoffset": "0"
     },
     "default": {
         "fill": "none",
@@ -40,10 +42,12 @@
     },
     "foldline_style": {
         "fill": "none",
-        "stroke": "gray",
+        "stroke": "green",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "2"
+        "stroke-width": "3",
+        "stroke-dasharray": "6,6",
+        "stroke-dashoffset": "0"
     },
     "grainline_style": {
         "fill": "none",
@@ -52,26 +56,30 @@
         "stroke-miterlimit": "4",
         "stroke-width": "4"
     },
-    "grid_path_style": {
-        "fill": "none",
-        "stroke": "black",
-        "stroke-linejoin": "miter",
-        "stroke-miterlimit": "4",
-        "stroke-width": "1"
-    },
-    "hemline_path_style": {
+    "gridline_style": {
         "fill": "none",
         "stroke": "gray",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "2"
+        "stroke-width": "2",
+        "stroke-dasharray": "6,6",
+        "stroke-dashoffset": "0"
+    },
+    "hemline_path_style": {
+        "fill": "none",
+        "stroke": "green",
+        "stroke-linejoin": "miter",
+        "stroke-miterlimit": "4",
+        "stroke-width": "3",
+        "stroke-dasharray": "6,6",
+        "stroke-dashoffset": "0"
     },
     "line_path_style": {
         "fill": "none",
         "stroke": "pink",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "5"
+        "stroke-width": "4"
     },
     "placement_style": {
         "fill": "none",
@@ -110,7 +118,7 @@
         "stroke-dashoffset": "0",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "4"
+        "stroke-width": "2"
     },
     "seamline_path_style": {
         "fill": "none",
