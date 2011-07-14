@@ -24,6 +24,16 @@
 		  "type":"float",
 		  "gui_text":"Hip Circumference"
           },
+  "neck_circumference": {
+          "value":"36",
+		  "type":"float",
+		  "gui_text":"Neck Circumference"
+          },
+  "neck_width": {
+          "value":"13.97",
+		  "type":"float",
+		  "gui_text":"Neck Width"
+          },
   "back_shoulder_height": {
           "value":"45",
 		  "type":"float",
