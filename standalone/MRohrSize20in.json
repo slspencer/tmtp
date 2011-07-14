@@ -1,6 +1,6 @@
 {
   "customername": {
-  		  "value":"MRohrMissesSize20",
+  		  "value":"MRohrMissesSize20in",
 		  "type":"string",
 		  "gui_text":"Client Name"
 		  },
@@ -23,6 +23,16 @@
           "value":"42",
 		  "type":"float",
 		  "gui_text":"Hip Circumference"
+          },
+  "neck_circumference": {
+          "value":"13.78",
+		  "type":"float",
+		  "gui_text":"Neck Circumference"
+          },
+  "neck_width": {
+          "value":"5.5",
+		  "type":"float",
+		  "gui_text":"Neck Width"
           },
   "back_shoulder_height": {
           "value":"17.75",
