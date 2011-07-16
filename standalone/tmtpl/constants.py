@@ -25,7 +25,7 @@ cm_to_in = ( 1 / 2.54 )   #convert centimeters to inches
 in_to_cm = ( 2.54 / 1 )   #convert inches to centimeters
 
 in_to_px = ( 90 / 1 )   	  # convert inches to pixels - Inkscape value
-cm_to_px = ( 72.72 /  2.54 )  #convert cm to px - Inkscape value
+cm_to_px = ( 90 /  2.54 )  #convert cm to px - Inkscape value
 
 # sewing constants
 QUARTER_SEAM_ALLOWANCE = ( in_to_px * 1 / 4 ) # 1/4" seam allowance
