@@ -71,9 +71,11 @@ class Client(object):
         try:
             units = self.client['measureunit']['value']
             if units == 'cm':
-                self.__conversion__ = cm_to_pt
+                #self.__conversion__ = cm_to_pt
+                self.__conversion__ = cm_to_px
             elif  units == 'in':
-                self.__conversion__ = in_to_pt
+                #self.__conversion__ = in_to_pt
+                self.__conversion__ = in_to_px
         except KeyError:
             print 'Client Data measurement units not defined in client data file'
             raise
@@ -82,7 +84,7 @@ class Client(object):
         # read all these and then create a heirarchy of objects and
         # attributes, based on the 'dotted path' notation.
         #
-        
+
         # read everything into attributes
         for key, val in self.client.items():
             keyparts = key.split('.')
