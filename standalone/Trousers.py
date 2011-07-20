@@ -855,13 +855,6 @@ class PatternDesign():
         f.label_x = f.start.x - (1*cm_to_px*waistRatio)
         f.label_y = f.start.y + (2*cm_to_px*riseRatio)
 
-        # Create the trousers front hemlining pattern piece
-        front_hemlining = PatternPiece('pattern', 'front_hemlining', letter = 'F', fabric = 0, interfacing = 0, lining = 2)
-        trousers.add(front_hemlining)
-        tfh = trousers.front_hemlining
-        start =  Point('reference', 'start', 0,  0, 'point_style')
-
-
 
         # call draw once for the entire pattern
         doc.draw()
