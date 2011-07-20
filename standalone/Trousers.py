@@ -1,25 +1,18 @@
 #!/usr/bin/env python
-# SamplePattern.py
-# Shaped hem trousers
-# Swank-1870-M-T-1
+# Trousers.py
+# Shaped hem trousers - circa 1850-1890
+# Seamly-1870-M-T-1
 #
 # This is a sample pattern design distributed as part of the tmtp
 # open fashion design project. It contains a design for one piece
 # of the back of a trousers, and will be expanded in the future.
 #
 # In order to allow designers to control the licensing of their fashion
-# designs, this file is not licensed under the GPL but may be used
-# in any manner commercial or otherwise, with or without attribution.
-#
-# Designers are strongly encouraged to release their designs under a
-# creative commons license:
-#
-#  http://creativecommons.org/
+# designs, this design file is released under the creative commons license
+# http://creativecommons.org/
 #
 #
 #
-
-
 
 from tmtpl.constants import *
 from tmtpl.pattern   import *
