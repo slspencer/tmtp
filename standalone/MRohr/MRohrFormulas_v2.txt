@@ -1,0 +1,57 @@
+MRohr Women's Bodice Formula - v2 - 2010716
+
+FRONT
+A = (cd.bust_circumference )*(0.5)+ (4in), 0                                                               # v2 - added *(0.5) - missed this the 1st time - it's in the .py though
+B = A.x, A.y + cd.back_shoulder_height
+C = A.x - (cd.across_back*(0.5)) + (0.5)*in_to_px, A.y                                                   # v2 - added +(0.5*in_to_px ) - from half sizes, (3/8" in womens & misses)
+D = C.x,  C.y + cd.back_shoulder_slope_depth                                                               # default is 2" for all sizes
+E = Intersection of circle (center = D, radius = shoulder_seam + (.5*in_to_pt) with line AC            #v2 - added +(.5*in_to_pt) - missed this the first time - (3/8" in womens & misses)
+F = A.x, B.y - cd.center_back_length
+G = A.x,  F.y + ((B.y - F.y)*(0.5)) +(1.5*in_to_px)                                                      #v2 - added (1.5*in_to_px) -  (.75*in_to_px in womens & misses)
+H = A.x - (cd.full_back_width*(0.5). Gy                                                                     #v2 - (bust_circumference)*(0.5) + (2in) in womens & misses
+I =  A.x,  F.y +( (G.y - F.y)*(0.5))
+J = A.x - ((cd.mid_back)*(0.5)),  I.y                                                                           #v2 - changed cd.across_back to cd.mid_back
+K = J.x, G.y
+L = 45degrees NW of K -->(for bust_circumference = 37, length = 1.25*in_to_px, add 1/16" per every 2" increase)  # v2 - (1-3/8in in womens & misses)
+M = A.x - ((bust_circumference)*(0.25)),                                                                  G.y
+
+FRONT BUST DART
+CC = G.x - ((G.x - K.x)*(0.5)),                                                                                     G.y
+DD= CC.x + (.75in).                                                                                                     B.y
+EE = DD.x - (1.5in),                                                                                                    DD.y
+H.x,                                                                                                                       H.y + (2in)
+
+BACK
+N = H.x                                                                                                                     A.y
+O = N.x,                                                                                                                    N.y + front_shoulder_height + 2in
+P = O.x,                                                                                                                    O.y - front_shoulder_height
+Q = P.x + ((across_chest)*(0.5)) + (3/8in),                                                                 P.y
+R = Q.x,                                                                                                                     Q.y + (front_shoulder_slope_depth)
+S = Intersection of circle (center = R, radius = shoulder_seam ) with line PQ,            P.y
+T = O.x,                                                                                                                    O.y - center_front_length
+U = Circle (center = P, radius  = (length PS + 0.5in), 45 degree angle SE of P
+V = T.x                                                                                                                     T.y + ((H.y - T.y)*(0.5))
+W = V.x + (across_chest)*(0.5)                                                                                  V.y
+X = W.x,                                                                                                                     H.y
+Y = X.x + ??,   45degrees NE of X                                                                               X.y - ??
+Z =
+AA = M.x + (3/8in),                                                                                                       Z.y
+BB = Side Seam Length from M through AA
+BACK SHOULDER DART
+FF = Z.x + ((V.x - H.x)*(0.5)) + (0.5in),                                                                       Z.y
+GG = FF.x - (.75in),                                                                                                    O.y
+HH = GG.x + (2-1/8in),                                                                                                 GG.y
+II = (2-1/8in) from HH to BB
+
+FRONT BODICE PATHS:
+Line(F,B,BB,M)
+Curve(M,L,J,D)
+Line(D,E)
+Curve(E,F)
+Line(EE,CC,DD)
+
+BACK BODICE PATHS:
+Line(T,O,HH,BB,M)
+Curve(M,Y,W,R)
+Line(R,S)
+Curve(S,U,T)
