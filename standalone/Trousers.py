@@ -318,14 +318,14 @@ class PatternDesign():
         tf.add(Point('reference', 'c28', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w 15 & 5
 
         #create fly clip path:
-        tf.add(Point('reference', 'f1', tf.A.x - (2*cm_to_px*seatRatio), tf.A.y, 'point_style'))
-        tf.add(Point('reference', 'f2', tf.f1.x, tf.p3.y, 'point_style'))
-        tf.add(Point('reference', 'f3', tf.p3.x, tf.p3.y, 'point_style'))
+        tf.add(Point('reference', 'f1', tf.p3.x, tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'f2', tf.p3.x, tf.p3.y, 'point_style'))
+        #tf.add(Point('reference', 'f3', tf.p3.x, tf.p3.y, 'point_style')) --> no longer in use
         tf.add(Point('reference', 'f4', tf.A.x + (5*cm_to_px*seatRatio), tf.C.y, 'point_style'))
         tf.add(Point('reference', 'f5', tf.f4.x, tf.A.y, 'point_style'))
 
-        tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'controlpoint_style')) # b/w f3 & f4
-        tf.add(Point('reference', 'c30', tf.f4.x, tf.c22.y, 'controlpoint_style')) # b/w f3 & f4
+        tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'controlpoint_style')) # b/w f2 & f4
+        tf.add(Point('reference', 'c30', tf.f4.x, tf.c22.y, 'controlpoint_style')) # b/w f2 & f4
 
 
         # Draw reference lines
@@ -363,7 +363,6 @@ class PatternDesign():
         # fly clip-path
         gps.appendMoveToPath(tf.f1.x,  tf.f1.y,  relative = False)
         gps.appendLineToPath(tf.f2.x,  tf.f2.y,  relative = False)
-        gps.appendLineToPath(tf.f3.x,  tf.f3.y,  relative = False)
         gps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
         gps.appendLineToPath(tf.f5.x,  tf.f5.y,  relative = False)
         gps.appendLineToPath(tf.f1.x,  tf.f1.y,  relative = False)
@@ -438,7 +437,7 @@ class PatternDesign():
         fly_stitch_path_svg = path()
         fsps = fly_stitch_path_svg
         tf.add(Path('pattern', 'ffsp', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
-        fsps.appendMoveToPath(tf.f3.x,  tf.f3.y,  relative = False)
+        fsps.appendMoveToPath(tf.f2.x,  tf.f2.y,  relative = False)
         fsps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
         fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
 
@@ -827,10 +826,14 @@ class PatternDesign():
         wbcp.appendLineToPath( tb.p20.x+ dx, tb.p20.y + dy,  relative = False)
         wbcp.appendLineToPath( tb.p23.x+ dx, tb.p23.y + dy,  relative = False)
 
-        #grainline path
-        x1,  y1 = ( tb.p23.x + dx + (3.5*cm_to_px) ), ( tb.p24.y + dy - (1*cm_to_px) )
-        x2,  y2 = ( tb.p20.x + dx + (3.5*cm_to_px) ), ( tb.p24.y + dy + (4*cm_to_px) )
-        wb.add(Grainline(group="pattern", name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        #waistback grainline path --> make 3cm parallel to line p20p23
+        m = (tb.p23.y - tb.p20.y) / (tb.p23.x - tb.p20.x)
+        x1 = tb.p20.x + (3*cm_to_px)
+        y1 = tb.p20.y - (.5*cm_to_px)
+        b = y1 - m*x1
+        y2 = tb.p24.y
+        x2 = (y2 - b)/m
+        wb.add(Grainline(group="pattern", name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1+dx, ystart=y1+dy, xend=x2+dx, yend=y2+dy, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
         wb.label_x = wb.start.x + (7*cm_to_px*waistRatio)
@@ -869,9 +872,9 @@ class PatternDesign():
         fcp.appendLineToPath(tf.C.x + dx,  tf.C.y + dy,  relative = False)
         fcp.appendCubicCurveToPath(tf.c22.x + dx,  tf.c22.y + dy,  tf.c21.x + dx,  tf.c21.y + dy,  tf.p2.x + dx,  tf.p2.y + dy,  relative = False)
 
-        #grainline
-        x1, y1 = (tf.f3.x + 5*cm_to_px + dx,  tf.f3.y - (5*cm_to_px)+ dy)
-        x2, y2 = (tf.f3.x + 5*cm_to_px + dx,  tf.f3.y - (20*cm_to_px) + dy)
+        #fly grainline
+        x1, y1 = (tf.f2.x + 5*cm_to_px + dx,  tf.f2.y - (5*cm_to_px)+ dy)
+        x2, y2 = (tf.f2.x + 5*cm_to_px + dx,  tf.f2.y - (20*cm_to_px) + dy)
         f.add(Grainline(group="pattern", name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
