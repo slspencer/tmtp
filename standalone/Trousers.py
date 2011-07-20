@@ -775,9 +775,9 @@ class PatternDesign():
         wfcp.appendLineToPath( tf.B.x+ dx, tf.B.y + dy,  relative = False)
         wfcp.appendLineToPath( tf.A.x+ dx, tf.A.y + dy,  relative = False)
 
-        #grainline path
-        x1,  y1 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.A.y + (0.7*cm_to_px*riseRatio))
-        x2,  y2 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.B.y - (0.7*cm_to_px*riseRatio))
+        # waistfront grainline path
+        x1,  y1 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.A.y + (1*cm_to_px*riseRatio))
+        x2,  y2 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.B.y - (1*cm_to_px*riseRatio))
         wf.add(Grainline(group="pattern", name="waistfrontgrainpath", label="Waist Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
