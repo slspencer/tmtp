@@ -210,11 +210,18 @@ class PatternDesign():
         tf.add(Point('reference', 'F', tf.A.x, tf.D.y + cd.inside_leg - (1*cm_to_px*insideLegRatio ), 'point_style')) # F is hemline
         tf.add(Point('reference', 'I', tf.A.x, tf.B.y + ( abs(tf.C.y - tf.B.y)*0.5 ), 'point_style')) # I is midpoint b/w waist B and seatline (rise) C
 
-        tf.add(Point('reference', 'p2', tf.D.x - scale_1_8 - (0.50*cm_to_px*seatRatio),  tf.D.y, 'point_style'))
+        tf.add(Point('reference', 'p2', tf.D.x - (scale_1_8 + 0.50*cm_to_px*seatRatio),  tf.D.y, 'point_style'))
 
         length = (tf.D.x - tf.p2.x)*(.5)
-        x, y = pointAlongLine( tf.D.x, tf.D.y, (tf.D.x - 100), (tf.D.y - 100), length)  # 100pt is arbitrary distance to create 45degree angle
+        x, y = pointAlongLine( tf.D.x, tf.D.y, (tf.D.x - 100), (tf.D.y - 100), length)  # 100pt is arbitrary distance to create 45degree angle, p3 is 45 degrees NW of D at half the length b/w D & p2
         tf.add(Point('reference', 'p3', x, y, 'point_style'))
+
+        tf.add(Point('reference', 'p7',   tf.B.x + (cd.waist*0.25),  tf.B.y, 'point_style'))
+        tf.add(Point('reference', 'p8',   tf.A.x + (cd.waist*0.25)+(0.75*cm_to_px*waistRatio), tf.A.y, 'point_style'))
+        tf.add(Point('reference', 'p9',    tf.I.x + (cd.seat*0.25) - ( 1*cm_to_px*seatRatio), tf.I.y, 'point_style'))
+        tf.add(Point('reference', 'p10',  tf.C.x + (cd.seat*0.25) , tf.C.y, 'point_style'))
+        tf.add(Point('reference', 'p11',  tf.D.x + (cd.seat*0.25) - (0.5*cm_to_px*seatRatio) , tf.D.y, 'point_style'))
+        tf.add(Point('reference', 'p16',  tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y, 'point_style'))
 
         tf.add(Point('reference', 'p4', tf.E.x - (3.75*cm_to_px*insideLegRatio), tf.E.y, 'point_style'))
         tf.add(Point('reference', 'p5', tf.F.x - (2.8*cm_to_px*insideLegRatio), tf.F.y, 'point_style'))
@@ -223,17 +230,13 @@ class PatternDesign():
         b = tf.p4.y - (m*tf.p4.x)
         x = (tf.D.y - b)/m
         tf.add(Point('reference', 'p6',   x, tf.D.y, 'point_style'))
-        tf.add(Point('reference', 'p7',   tf.B.x + (cd.waist*0.25),  tf.B.y, 'point_style'))
-        tf.add(Point('reference', 'p8',   tf.A.x + (cd.waist*0.25)+(0.75*cm_to_px*waistRatio), tf.A.y, 'point_style'))
-        tf.add(Point('reference', 'p9',    tf.I.x + (cd.seat*0.25) - ( 1*cm_to_px*seatRatio), tf.I.y, 'point_style'))
-        tf.add(Point('reference', 'p10',  tf.C.x + (cd.seat*0.25) , tf.C.y, 'point_style'))
-        tf.add(Point('reference', 'p11',  tf.D.x + (cd.seat*0.25) - (0.5*cm_to_px*seatRatio) , tf.D.y, 'point_style'))
+
         # TODO - set knee & hem width to be proportional to seat
         tf.add(Point('reference', 'p12',  tf.p4.x + (cd.knee*0.5) , tf.p4.y, 'point_style'))
         tf.add(Point('reference', 'p13',  tf.p5.x + (cd.bottom_width*0.5) , tf.p5.y, 'point_style'))
         tf.add(Point('reference', 'p14',  tf.p5.x + (cd.bottom_width*0.25) + (0.5*cm_to_px*seatRatio),  tf.p5.y, 'point_style'))
         tf.add(Point('reference', 'p15',  tf.p14.x, tf.p14.y - (2*cm_to_px*insideLegRatio), 'point_style'))
-        tf.add(Point('reference', 'p16',  tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y, 'point_style'))
+
         m = (tf.p13.y - tf.p12.y)/(tf.p13.x-tf.p12.x)
         b = tf.p13.y - (m*tf.p13.x)
         x = (tf.D.y - b)/m
