@@ -252,9 +252,15 @@ class PatternDesign():
         distance = ( math.sqrt( ((tf.p4.x - tf.p6.x)**2) + ((tf.p4.y - tf.p6.y)**2) ) ) * (0.5)   # J is at midpoint on line from p4 to p6, not at midpoint on line between p4 & p2
         x, y = pointAlongLine( tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, -distance )
         tf.add(Point('reference', 'J', x,  y, 'point_style'))
-        tf.add(Point('reference', 'K',  tf.p5.x, tf.p5.y + HEM_ALLOWANCE, 'point_style'))
-        tf.add(Point('reference', 'L',  tf.p13.x, tf.p13.y + HEM_ALLOWANCE, 'point_style'))
-        tf.add(Point('reference', 'M',  tf.p15.x, tf.p15.y + HEM_ALLOWANCE, 'point_style'))
+        #tf.add(Point('reference', 'K',  tf.p5.x, tf.p5.y + HEM_ALLOWANCE, 'point_style'))
+        distance =HEM_ALLOWANCE
+        x, y = pointAlongLine( tf.p5.x, tf.p5.y, tf.p4.x, tf.p4.y, distance )
+        tf.add(Point('reference', 'K', x,  y, 'point_style'))
+        #tf.add(Point('reference', 'L',  tf.p13.x, tf.p13.y + HEM_ALLOWANCE, 'point_style'))
+        distance = HEM_ALLOWANCE
+        x, y = pointAlongLine( tf.p13.x, tf.p13.y, tf.p12.x, tf.p12.y, distance )
+        tf.add(Point('reference', 'L', x,  y, 'point_style'))
+        tf.add(Point('reference', 'M',  tf.p15.x, tf.p15.y - HEM_ALLOWANCE, 'point_style'))
         #x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
         #tf.add(Point('reference', 'Knee', x, y, 'point_style'))
         tf.add(Point('reference', 'Knee', tf.p16.x, tf.E.y, 'point_style'))
@@ -541,7 +547,7 @@ class PatternDesign():
 
         # back hem allowance
         tb.add(Point('reference', 'p29', tf.p14.x, tf.p14.y + (1.3*cm_to_px*insideLegRatio ), 'point_style')) # 29 is lowered back trouser hem
-        tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y + HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
+        tb.add(Point('reference', 'O', tb.p29.x, tb.p29.y - HEM_ALLOWANCE, 'point_style')) # O is lowered back trouser hemallowance
 
         #control points for back center curve
         tb.add(Point('reference', 'c1', tb.p17.x, tb.p17.y, 'controlpoint_style')) # b/w  p17 & C --> c1 = p17, 1st control point = 1st knot of curve
@@ -864,7 +870,7 @@ class PatternDesign():
         fh.add(start)
         transform_coords = '0 , 0' # doesn't do anything
         f.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
-        dx,  dy = -fh.start.x - tf.p5.x,  fh.start.y - tf.p15.y  # slide pattern piece to where A is defined on trouser front
+        dx,  dy = -fh.start.x - tf.p5.x,  fh.start.y - tf.M.y  # slide pattern piece to where A is defined on trouser front
         front_hemlining_seam_path = path()
         fhsp = front_hemlining_seam_path
         fh.add(Path('pattern', 'fhsp', 'front_hemlining_seam_path',  fhsp,  'seamline_path_style'))
@@ -886,8 +892,9 @@ class PatternDesign():
         fhcp.appendCubicCurveToPath(tf.c25.x + dx,  tf.c25.y + dy,  tf.c26.x + dx,  tf.c26.y + dy,  tf.p15.x + dx,  tf.p15.y + dy,  relative = False)
         fhcp.appendCubicCurveToPath(tf.c27.x + dx,  tf.c27.y + dy,  tf.c28.x + dx,  tf.c28.y + dy,  tf.p5.x + dx,  tf.p5.y + dy,  relative = False)
         #front hemlining grainline
-        x1, y1 = ( tf.p15.x + dx,  tf.p15.y  + (1.5*cm_to_px) +  dy )
-        x2, y2 = ( tf.p15.x + dx,  tf.M.y - (1.5*cm_to_px) + dy)
+        x1, y1 = ( tf.p15.x + dx,  tf.M.y + (1.5*cm_to_px) + dy)
+        x2, y2 = ( tf.p15.x + dx,  tf.p15.y  - (1.5*cm_to_px) +  dy )
+
         fh.add(Grainline(group="pattern", name="frontHemLiningGrainline", label="Front Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
         # set the label location. Somday this should be automatic
         fh.label_x = fh.start.x + (2*cm_to_px)
@@ -901,7 +908,7 @@ class PatternDesign():
         bh.add(start)
         transform_coords = '0 , 0' # doesn't do anything
         bh.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
-        dx,  dy = -bh.start.x - tf.p5.x,  bh.start.y - tf.p5.y  # slide pattern piece to where A is defined on trouser front
+        dx,  dy = -bh.start.x - tf.K.x,  bh.start.y - tf.K.y  # slide pattern piece to where A is defined on trouser front
         back_hemlining_seam_path = path()
         bhsp = back_hemlining_seam_path
         bh.add(Path('pattern', 'bhsp', 'back_hemlining_seam_path',  bhsp,  'seamline_path_style'))
@@ -923,8 +930,9 @@ class PatternDesign():
         bhcp.appendCubicCurveToPath(tb.c21.x + dx,  tb.c21.y + dy,  tb.c22.x + dx,  tb.c22.y + dy,  tb.p29.x + dx,  tb.p29.y + dy,  relative = False)
         bhcp.appendCubicCurveToPath(tb.c23.x + dx,  tb.c23.y + dy,  tb.c24.x + dx,  tb.c24.y + dy,  tf.p5.x + dx,  tf.p5.y + dy,  relative = False)
         #back hemlining grainline
-        x1, y1 = ( tb.p29.x + dx,  tb.p29.y  + (1.5*cm_to_px) +  dy )
-        x2, y2 = ( tb.p29.x + dx,  tb.O.y - (1.5*cm_to_px) + dy)
+        x1, y1 = ( tb.O.x + dx,  tb.O.y + (1.5*cm_to_px) + dy)
+        x2, y2 = ( tb.O.x + dx,  tb.p29.y  - (1.5*cm_to_px) +  dy )
+
         bh.add(Grainline(group="pattern", name="backHemLiningGrainline", label="Back Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
         # set the label location. Somday this should be automatic
         bh.label_x = bh.start.x + (2*cm_to_px)
