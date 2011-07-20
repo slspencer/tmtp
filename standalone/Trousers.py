@@ -736,10 +736,10 @@ class PatternDesign():
         dart_back_path_svg.appendLineToPath(tb.U.x,  tb.U.y,  relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
 
-        #grainline
-        x1,  y1 = ( tf.p4.x + abs( tf.p12.x - tf.p4.x)*(0.5) ),  tf.C.y
-        x2,  y2 = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
-        tb.add(Grainline(group="pattern", name="dartbackgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        #Trousers Back grainline
+        x1,  y1 = tf.p16.x,  tf.C.y
+        x2,  y2 = tf.p16.x,  tf.p4.y + ( abs(tf.p14.y - tf.p4.y)*(0.5) )
+        tb.add(Grainline(group="pattern", name="trousersbackgrainlinepath", label="Trousers Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
         tb.label_x = tf.p16.x + (3*cm_to_px*seatRatio)
