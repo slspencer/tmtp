@@ -382,12 +382,10 @@ class PatternDesign():
         sps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p10.x, tf.p10.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p12.x, tf.p12.y,  relative = False)
         sps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
-        sps.appendLineToPath(tf.L.x,  tf.L.y,  relative = False)
-        #hemallowance
-        sps.appendCubicCurveToPath(tf.c11.x, tf.c11.y, tf.c12.x,  tf.c12.y,  tf.M.x, tf.M.y,  relative = False)
-        sps.appendCubicCurveToPath(tf.c13.x, tf.c13.y, tf.c14.x,  tf.c14.y,  tf.K.x, tf.K.y,  relative = False)
+        #hemline
+        sps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x,  tf.c26.y,  tf.p15.x, tf.p15.y,  relative = False)
+        sps.appendCubicCurveToPath(tf.c27.x, tf.c27.y, tf.c28.x,  tf.c28.y,  tf.p5.x, tf.p5.y,  relative = False)
         #inseam
-        sps.appendLineToPath(tf.p5.x,  tf.p5.y,  relative = False)
         sps.appendLineToPath( tf.p4.x, tf.p4.y,  relative = False)
         sps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.p2.x, tf.p2.y,  relative = False)
         #front fly curve
@@ -406,25 +404,15 @@ class PatternDesign():
         cps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x,  tf.c2.y,  tf.p10.x, tf.p10.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x,  tf.c4.y,  tf.p12.x, tf.p12.y,  relative = False)
         cps.appendLineToPath(tf.p13.x, tf.p13.y,  relative = False)
-        cps.appendLineToPath(tf.L.x,  tf.L.y,  relative = False)
-        #hemallowance
-        cps.appendCubicCurveToPath(tf.c11.x, tf.c11.y, tf.c12.x,  tf.c12.y,  tf.M.x, tf.M.y,  relative = False)
-        cps.appendCubicCurveToPath(tf.c13.x, tf.c13.y, tf.c14.x,  tf.c14.y,  tf.K.x, tf.K.y,  relative = False)
+        #hemline
+        cps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x,  tf.c26.y,  tf.p15.x, tf.p15.y,  relative = False)
+        cps.appendCubicCurveToPath(tf.c27.x, tf.c27.y, tf.c28.x,  tf.c28.y,  tf.p5.x, tf.p5.y,  relative = False)
         #inseam
-        cps.appendLineToPath(tf.p5.x,  tf.p5.y,  relative = False)
         cps.appendLineToPath( tf.p4.x, tf.p4.y,  relative = False)
         cps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x,  tf.c18.y,  tf.p2.x, tf.p2.y,  relative = False)
         #front fly curve
         cps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x,  tf.c22.y,  tf.C.x, tf.C.y,  relative = False)
         cps.appendLineToPath(tf.A.x, tf.A.y,  relative = False)
-
-        # hemline path
-        hemline_path_svg = path()
-        hps = hemline_path_svg
-        tf.add(Path('pattern', 'tfhp', 'Trousers Front Hemline Path', hps, 'dart_style'))
-        hps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
-        hps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x,  tf.c26.y,  tf.p15.x, tf.p15.y,  relative = False)
-        hps.appendCubicCurveToPath(tf.c27.x, tf.c27.y, tf.c28.x,  tf.c28.y,  tf.p5.x, tf.p5.y,  relative = False)
 
         #waistline path
         waistline_path_svg = path()
@@ -454,9 +442,6 @@ class PatternDesign():
         tf.label_y = tf.p16.y
 
         # end trousers front (tf)
-
-
-
 
 
 
@@ -680,12 +665,11 @@ class PatternDesign():
         sbps.appendCubicCurveToPath(tb.c13.x, tb.c13.y, tb.c14.x,  tb.c14.y,  tf.p12.x, tf.p12.y,  relative = False)
         sbps.appendLineToPath(tf.p12.x, tf.p12.y, relative = False)
         sbps.appendLineToPath(tf.p13.x, tf.p13.y, relative = False)
-        sbps.appendLineToPath(tf.L.x, tf.L.y, relative = False)
-        sbps.appendCubicCurveToPath(tb.c25.x,  tb.c25.y,  tb.c26.x,  tb.c26.y,  tb.O.x,  tb.O.y,  relative = False)
-        sbps.appendCubicCurveToPath(tb.c27.x,  tb.c27.y,  tb.c28.x,  tb.c28.y,  tf.K.x,  tf.K.y,  relative = False)
-        sbps.appendLineToPath(tf.p5.x, tf.p5.y, relative = False)
+        sbps.appendCubicCurveToPath(tb.c21.x, tb.c21.y, tb.c22.x,  tb.c22.y,  tb.p29.x, tb.p29.y,  relative = False)
+        sbps.appendCubicCurveToPath(tb.c23.x, tb.c23.y, tb.c24.x,  tb.c24.y,  tf.p5.x, tf.p5.y,  relative = False)
         sbps.appendLineToPath(tf.p4.x, tf.p4.y, relative = False)
         sbps.appendCubicCurveToPath(tb.c31.x,  tb.c31.y,  tb.c32.x,  tb.c32.y,  tb.p17.x,  tb.p17.y,  relative = False)
+
 
 
         # cutting line back path
@@ -702,20 +686,10 @@ class PatternDesign():
         cbps.appendCubicCurveToPath(tb.c13.x, tb.c13.y, tb.c14.x,  tb.c14.y,  tf.p12.x, tf.p12.y,  relative = False)
         cbps.appendLineToPath(tf.p12.x, tf.p12.y, relative = False)
         cbps.appendLineToPath(tf.p13.x, tf.p13.y, relative = False)
-        cbps.appendLineToPath(tf.L.x, tf.L.y, relative = False)
-        cbps.appendCubicCurveToPath(tb.c25.x,  tb.c25.y,  tb.c26.x,  tb.c26.y,  tb.O.x,  tb.O.y,  relative = False)
-        cbps.appendCubicCurveToPath(tb.c27.x,  tb.c27.y,  tb.c28.x,  tb.c28.y,  tf.K.x,  tf.K.y,  relative = False)
-        cbps.appendLineToPath(tf.p5.x, tf.p5.y, relative = False)
+        cbps.appendCubicCurveToPath(tb.c21.x, tb.c21.y, tb.c22.x,  tb.c22.y,  tb.p29.x, tb.p29.y,  relative = False)
+        cbps.appendCubicCurveToPath(tb.c23.x, tb.c23.y, tb.c24.x,  tb.c24.y,  tf.p5.x, tf.p5.y,  relative = False)
         cbps.appendLineToPath(tf.p4.x, tf.p4.y, relative = False)
         cbps.appendCubicCurveToPath(tb.c31.x,  tb.c31.y,  tb.c32.x,  tb.c32.y,  tb.p17.x,  tb.p17.y,  relative = False)
-
-        # hemline back marking path
-        hemline_back_path_svg = path()
-        hbps = hemline_back_path_svg
-        tb.add(Path('pattern', 'tbhp', 'Trousers Back Hemline Path', hbps, 'dart_style'))
-        hbps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
-        hbps.appendCubicCurveToPath(tb.c21.x, tb.c21.y, tb.c22.x,  tb.c22.y,  tb.p29.x, tb.p29.y,  relative = False)
-        hbps.appendCubicCurveToPath(tb.c23.x, tb.c23.y, tb.c24.x,  tb.c24.y,  tf.p5.x, tf.p5.y,  relative = False)
 
         # waistline back marking path
         waistline_back_path_svg = path()
@@ -880,6 +854,12 @@ class PatternDesign():
         # set the label location. Somday this should be automatic
         f.label_x = f.start.x - (1*cm_to_px*waistRatio)
         f.label_y = f.start.y + (2*cm_to_px*riseRatio)
+
+        # Create the trousers front hemlining pattern piece
+        front_hemlining = PatternPiece('pattern', 'front_hemlining', letter = 'F', fabric = 0, interfacing = 0, lining = 2)
+        trousers.add(front_hemlining)
+        tfh = trousers.front_hemlining
+        start =  Point('reference', 'start', 0,  0, 'point_style')
 
 
 
