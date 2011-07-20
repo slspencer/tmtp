@@ -223,10 +223,7 @@ class PatternDesign():
         tf.add(Point('reference', 'p11',  tf.D.x + (cd.seat*0.25) - (0.5*cm_to_px*seatRatio) , tf.D.y, 'point_style'))
         tf.add(Point('reference', 'p16',  tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y, 'point_style'))
 
-        #tf.add(Point('reference', 'p4', tf.E.x - (3.75*cm_to_px*insideLegRatio), tf.E.y, 'point_style'))
-        #tf.add(Point('reference', 'p4', (tf.p16.x - tf.D.x) - (3.75*cm_to_px*insideLegRatio), tf.E.y, 'point_style'))
         tf.add(Point('reference', 'p4', tf.p16.x - (cd.knee*0.25), tf.E.y, 'point_style'))
-        #tf.add(Point('reference', 'p5', (tf.p16.x - tf.D.x) - (2.8*cm_to_px*insideLegRatio), tf.F.y, 'point_style'))
         tf.add(Point('reference', 'p5', tf.p16.x - (cd.bottom_width*0.25), tf.F.y, 'point_style'))
 
         m = (tf.p5.y - tf.p4.y)/(tf.p5.x-tf.p4.x)
@@ -446,9 +443,9 @@ class PatternDesign():
         fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
 
 
-        #grainline path
-        x1,  y1 = ( tf.p4.x + abs( tf.p12.x - tf.p4.x)*(0.5) + (2*cm_to_px) ),  tf.C.y
-        x2,    y2   = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
+        # front grainline path
+        x1,  y1 = ( tf.p16.x,  tf.C.y )
+        x2,  y2   = tf.p16.x,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
 
         # Add the grainline
         tf.add(Grainline(group="pattern", name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
