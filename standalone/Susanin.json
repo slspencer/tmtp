@@ -19,6 +19,11 @@
 		  "type":"float",
 		  "gui_text":"Waist Circumference"
           },
+  "back_waist": {
+          "value":"34.25",
+		  "type":"float",
+		  "gui_text":"Back Width at Waist from Sideseam to Sideseam"
+          },
   "hip_circumference": {
           "value":"44.49",
 		  "type":"float",
@@ -49,10 +54,20 @@
 		  "type":"float",
 		  "gui_text":"Shoulder Seam"
           },
-  "across_back": {
+ "across_back": {
+          "value":"19",
+		  "type":"float",
+		  "gui_text":"Across Back at Top of Shoulder Seam"
+          },
+  "mid_back": {
           "value":"14.37",
 		  "type":"float",
-		  "gui_text":"Across Back"
+		  "gui_text":"Across Back at Narrowest width between Arms"
+          },
+  "full_back_width": {
+          "value":"20",
+		  "type":"float",
+		  "gui_text":"Across Back at Armpit from Sideseam to Sideseam"
           },
   "side_seam_length": {
           "value":"20.5",
@@ -60,82 +75,82 @@
 		  "gui_text":"Side Seam Length"
           },
   "front_shoulder_height": {
-          "value":"48",
+          "value":"19",
 		  "type":"float",
 		  "gui_text":"Front Shoulder Height"
           },
   "center_front_length": {
-          "value":"42.5",
+          "value":"16.75",
 		  "type":"float",
 		  "gui_text":"Center Front Length"
           },
   "across_chest": {
-          "value":"40.25",
+          "value":"16",
 		  "type":"float",
 		  "gui_text":"Across Chest"
           },
   "overarm_length": {
-          "value":"59",
+          "value":"23.25",
 		  "type":"float",
 		  "gui_text":"Overarm Length"
           },
   "underarm_length": {
-          "value":"49.5",
+          "value":"19.5",
 		  "type":"float",
 		  "gui_text":"Underarm Length"
           },
   "arm_circumference": {
-          "value":"29",
+          "value":"11.5",
 		  "type":"float",
 		  "gui_text":"Arm Circumference"
           },
   "elbow_circumference": {
-          "value":"27",
+          "value":"10.75",
 		  "type":"float",
 		  "gui_text":"Elbow Circumference"
           },
   "wrist_circumference": {
-          "value":"13.5",
+          "value":"5.5",
 		  "type":"float",
 		  "gui_text":"Wrist Circumference"
           },
   "back_shoulder_slope_depth": {
-          "value":"11.5",
+          "value":"4",
 		  "type":"float",
 		  "gui_text":"Back Shoulder Slope Depth"
           },
   "front_shoulder_slope_depth": {
-          "value":"9.5",
+          "value":"4",
 		  "type":"float",
 		  "gui_text":"Front Shoulder Slope Depth"
           },
   "outside_leg": {
-  		  "value":"109.22",
+  		  "value":"43",
 		  "type":"float",
 		  "gui_text":"Outside Leg"
 		  },
   "inside_leg": {
-  		  "value":"78.74",
+  		  "value":"31",
 		  "type":"float",
 		  "gui_text":"Inside Leg"
 		  },
   "waist": {
-  		  "value":"87.63",
+  		  "value":"34.75",
 		  "type":"float",
 		  "gui_text":"Waist"
 		  },
   "seat": {
-  		  "value":"109.86",
+  		  "value":"43.25",
 		  "type":"float",
 		  "gui_text":"Seat"
 		  },
   "knee": {
-  		  "value":"50",
+  		  "value":"19.75",
 		  "type":"float",
 		  "gui_text":"Knee"
 		  },
   "bottom_width": {
-  		  "value":"43",
+  		  "value":"17",
 		  "type":"float",
 		  "gui_text":"Bottom Width"
 		  }
