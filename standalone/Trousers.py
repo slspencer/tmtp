@@ -893,6 +893,44 @@ class PatternDesign():
         fh.label_x = fh.start.x + (2*cm_to_px)
         fh.label_y = fh.start.y + (2*cm_to_px)
 
+        # Create the trouser back hemlining
+        back_hemlining = PatternPiece('pattern', 'back_hemlining', letter = 'G', fabric = 2, interfacing = 0, lining = 0)
+        trousers.add(back_hemlining)
+        bh= trousers.back_hemlining
+        start =  Point('reference', 'start', 0,  0, 'point_style')  # calculate points relative to 0,0
+        bh.add(start)
+        transform_coords = '0 , 0' # doesn't do anything
+        bh.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
+        dx,  dy = -bh.start.x - tf.p5.x,  bh.start.y - tf.p5.y  # slide pattern piece to where A is defined on trouser front
+        back_hemlining_seam_path = path()
+        bhsp = back_hemlining_seam_path
+        bh.add(Path('pattern', 'bhsp', 'back_hemlining_seam_path',  bhsp,  'seamline_path_style'))
+        bhsp.appendMoveToPath(tf.p5.x + dx,  tf.p5.y + dy,  relative = False)
+        bhsp.appendLineToPath(tf.K.x + dx,  tf.K.y + dy,  relative = False)
+        bhsp.appendCubicCurveToPath(tb.c28.x + dx,  tb.c28.y + dy,  tb.c27.x + dx,  tb.c27.y + dy,  tb.O.x + dx,  tb.O.y + dy,  relative = False)
+        bhsp.appendCubicCurveToPath(tb.c26.x + dx,  tb.c26.y + dy,  tb.c25.x + dx,  tb.c25.y + dy,  tf.L.x + dx,  tf.L.y + dy,  relative = False)
+        bhsp.appendLineToPath(tf.p13.x + dx,  tf.p13.y + dy,  relative = False)
+        bhsp.appendCubicCurveToPath(tb.c21.x + dx,  tb.c21.y + dy,  tb.c22.x + dx,  tb.c22.y + dy,  tb.p29.x + dx,  tb.p29.y + dy,  relative = False)
+        bhsp.appendCubicCurveToPath(tb.c23.x + dx,  tb.c23.y + dy,  tb.c24.x + dx,  tb.c24.y + dy,  tf.p5.x + dx,  tf.p5.y + dy,  relative = False)
+        back_hemlining_cutting_path = path()
+        bhcp = back_hemlining_cutting_path
+        bh.add(Path('pattern', 'bhcp', 'back_hemlining_cutting_path',  bhcp,  'cuttingline_style'))
+        bhcp.appendMoveToPath(tf.p5.x + dx,  tf.p5.y + dy,  relative = False)
+        bhcp.appendLineToPath(tf.K.x + dx,  tf.K.y + dy,  relative = False)
+        bhcp.appendCubicCurveToPath(tb.c28.x + dx,  tb.c28.y + dy,  tb.c27.x + dx,  tb.c27.y + dy,  tb.O.x + dx,  tb.O.y + dy,  relative = False)
+        bhcp.appendCubicCurveToPath(tb.c26.x + dx,  tb.c26.y + dy,  tb.c25.x + dx,  tb.c25.y + dy,  tf.L.x + dx,  tf.L.y + dy,  relative = False)
+        bhcp.appendLineToPath(tf.p13.x + dx,  tf.p13.y + dy,  relative = False)
+        bhcp.appendCubicCurveToPath(tb.c21.x + dx,  tb.c21.y + dy,  tb.c22.x + dx,  tb.c22.y + dy,  tb.p29.x + dx,  tb.p29.y + dy,  relative = False)
+        bhcp.appendCubicCurveToPath(tb.c23.x + dx,  tb.c23.y + dy,  tb.c24.x + dx,  tb.c24.y + dy,  tf.p5.x + dx,  tf.p5.y + dy,  relative = False)
+        #back hemlining grainline
+        x1, y1 = ( tb.p29.x + dx,  tb.p29.y  + (1.5*cm_to_px) +  dy )
+        x2, y2 = ( tb.p29.x + dx,  tb.O.y - (1.5*cm_to_px) + dy)
+        bh.add(Grainline(group="pattern", name="backHemLiningGrainline", label="Back Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        # set the label location. Somday this should be automatic
+        bh.label_x = bh.start.x + (2*cm_to_px)
+        bh.label_y = bh.start.y + (2*cm_to_px)
+
+
 
 
         # call draw once for the entire pattern
