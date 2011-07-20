@@ -234,7 +234,8 @@ class PatternDesign():
         # TODO - set knee & hem width to be proportional to seat
         tf.add(Point('reference', 'p12',  tf.p4.x + (cd.knee*0.5) , tf.p4.y, 'point_style'))
         tf.add(Point('reference', 'p13',  tf.p5.x + (cd.bottom_width*0.5) , tf.p5.y, 'point_style'))
-        tf.add(Point('reference', 'p14',  tf.p5.x + (cd.bottom_width*0.25) + (0.5*cm_to_px*seatRatio),  tf.p5.y, 'point_style'))
+        # tf.add(Point('reference', 'p14',  tf.p5.x + (cd.bottom_width*0.25) + (0.5*cm_to_px*seatRatio),  tf.p5.y, 'point_style'))
+        tf.add(Point('reference', 'p14',  tf.p16.x,  tf.F.y, 'point_style'))
         tf.add(Point('reference', 'p15',  tf.p14.x, tf.p14.y - (2*cm_to_px*insideLegRatio), 'point_style'))
 
         m = (tf.p13.y - tf.p12.y)/(tf.p13.x-tf.p12.x)
@@ -254,8 +255,9 @@ class PatternDesign():
         tf.add(Point('reference', 'K',  tf.p5.x, tf.p5.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'L',  tf.p13.x, tf.p13.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'M',  tf.p15.x, tf.p15.y + HEM_ALLOWANCE, 'point_style'))
-        x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
-        tf.add(Point('reference', 'Knee', x, y, 'point_style'))
+        #x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
+        #tf.add(Point('reference', 'Knee', x, y, 'point_style'))
+        tf.add(Point('reference', 'Knee', tf.p16.x, tf.E.y, 'point_style'))
         x, y = intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p13p30 and p11Knee
         tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee, used to calculate sideseam curve
 
