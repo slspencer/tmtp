@@ -299,12 +299,9 @@ class PatternDesign():
         tf.add(Point('reference', 'c18', x, y, 'controlpoint_style')) #b/w  p4 & p2
 
         # control points at front fly curve
-        tf.add(Point('reference', 'c21', tf.p2.x + abs(tf.p2.x - tf.D.x)*(0.5), tf.p2.y, 'controlpoint_style')) #b/w p2 & C
-        m = (tf.p6.y - tf.p7.y)/(tf.p6.x - tf.p7.x)   # slope of p6p7
-        b = tf.p6.y - m*tf.p6.x # y-intersept of p6p7
-        x = tf.D.x # find control point c22with x = tf.D.x, this will be on vertical line AD
-        y = m*x + b # y of c22
-        tf.add(Point('reference', 'c22', x, y, 'controlpoint_style')) #b/w  p2 & C at intersection of lines ApD and p6p7
+        tf.add(Point('reference', 'c21', tf.p2.x + abs(tf.p2.x - tf.D.x)*(0.5), tf.p2.y, 'controlpoint_style')) #c21 --> b/w p2 & C, halfway b/w p2.x & D.x
+        x,  y= intersectionOfLines(tf.A.x,  tf.A.y,  tf.D.x,  tf.D.y,  tf.p6.x,  tf.p6.y,  tf.p7.x,  tf.p7.y)
+        tf.add(Point('reference', 'c22', x, y, 'controlpoint_style')) #b/w  p2 & C at intersection of lines AD and p6p7
 
         #control points for hemline
         pointlist = []
