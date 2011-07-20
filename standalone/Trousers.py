@@ -829,7 +829,7 @@ class PatternDesign():
         f.add(start)
         transform_coords = str(- tf.A.x) + ', ' + str( - tf.A.y) # doesn't do anything
         f.attrs['transform'] = 'translate( ' +  transform_coords +' )'   # doesn't do anything
-        dx,  dy = -tf.A.x,  -tf.A.y
+        dx,  dy = -f.start.x - tf.A.x,  -f.start.y - tf.A.y
         #create clip path as a test:
         fly_seam_path_svg = path()
         fsp= fly_seam_path_svg
@@ -858,8 +858,8 @@ class PatternDesign():
         f.add(Grainline(group="pattern", name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
 
         # set the label location. Somday this should be automatic
-        f.label_x = f.start.x - (1*cm_to_px*waistRatio)
-        f.label_y = f.start.y + (2*cm_to_px*riseRatio)
+        f.label_x = tf.A.x + (0.5*cm_to_px) + dx
+        f.label_y = tf.A.y + (2*cm_to_px) + dy
 
 
         # Create the trouser front hemlining
