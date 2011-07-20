@@ -151,7 +151,7 @@ class PatternDesign():
         trousers.markerdefs.update(self.markerdefs)
 
         # Create the Test Grid
-        testGrid = PatternPiece('pattern', 'testGrid', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
+        testGrid = PatternPiece('pattern', 'testGrid', letter = 'Z', fabric = 2, interfacing = 0, lining = 0)
         trousers.add(testGrid)
         TG= trousers.testGrid
         # TODO - make first pattern start automatically without putting in 12cm y offset
@@ -200,7 +200,7 @@ class PatternDesign():
 
 
         # Create the front pattern piece
-        front = PatternPiece('pattern', 'front', letter = 'AA', fabric = 2, interfacing = 0, lining = 0)
+        front = PatternPiece('pattern', 'front', letter = 'A', fabric = 2, interfacing = 0, lining = 0)
         trousers.add(front)
         tf = trousers.front
         # TODO - make first pattern start automatically without putting in 12cm y offset
@@ -792,7 +792,7 @@ class PatternDesign():
         wf.label_x = wf.start.x + (1*cm_to_px*waistRatio)
         wf.label_y = wf.start.y + (1*cm_to_px*riseRatio)
 
-        # Create the waist back pattern
+        # Create the waistback pattern
         waistback = PatternPiece('pattern', 'waistback', letter = 'D', fabric = 1, interfacing = 0, lining = 0)
         trousers.add(waistback)
         wb = trousers.waistback
@@ -846,7 +846,7 @@ class PatternDesign():
 
 
         # Create the fly extension
-        fly = PatternPiece('pattern', 'fly', letter = 'E', fabric = 5, interfacing = 0, lining = 3)
+        fly = PatternPiece('pattern', 'fly', letter = 'E', fabric = 2, interfacing = 0, lining = 3)
         trousers.add(fly)
         f = trousers.fly
         start =  Point('reference', 'start', 0,  0, 'point_style')
