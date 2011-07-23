@@ -323,10 +323,13 @@ class Line(pBase):
         self.attrs = {}
         self.attrs['transform'] = transform
 
+        # make some checks
+        if self.sdef not in self.styledefs:
+            raise ValueError("Style %s was specified but isn't defined" % self.sdef)
+
         pBase.__init__(self)
 
     def setMarker(self, markername = None, start = True, end = True):
-        print 'SetMarker', markername
 
         if markername not in self.markerdefs:
             raise ValueError("Marker %s was specified but isn't defined" % markername)
