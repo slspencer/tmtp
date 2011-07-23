@@ -449,7 +449,9 @@ class PatternDesign():
         x2,    y2   = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
 
         # Add the grainline
-        tf.add(Grainline(group="pattern", name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        gline = Line(group="pattern", name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style")
+        gline.setMarker('Arrow1M', start = True, end = True)
+        tf.add(gline)
 
         # set the label location. Somday this should be automatic
         tf.label_x = tf.p16.x + 2*cm_to_pt
@@ -741,7 +743,11 @@ class PatternDesign():
         #grainline
         x1,  y1 = ( tf.p4.x + abs( tf.p12.x - tf.p4.x)*(0.5) ),  tf.C.y
         x2,  y2 = x1,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
-        tb.add(Grainline(group="pattern", name="dartbackgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+
+        gline = Line(group="pattern", name="dartbackgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style")
+        gline.setMarker('Arrow1M', start = True, end = True)
+        tb.add(gline)
+
 
         # set the label location. Somday this should be automatic
         tb.label_x = tf.p16.x + (3*cm_to_pt*seatRatio)
@@ -780,7 +786,9 @@ class PatternDesign():
         #grainline path
         x1,  y1 = (tf.A.x + (9*cm_to_pt*waistRatio)),  (tf.A.y + (0.7*cm_to_pt*riseRatio))
         x2,  y2 = (tf.A.x + (9*cm_to_pt*waistRatio)),  (tf.B.y - (0.7*cm_to_pt*riseRatio))
-        wf.add(Grainline(group="pattern", name="waistfrontgrainpath", label="Waist Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        gline = Line(group="pattern", name="waistfrontgrainpath", label="Waist Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style")
+        gline.setMarker('Arrow1M', start = True, end = True)
+        wf.add(gline)
 
         # set the label location. Somday this should be automatic
         wf.label_x = wf.start.x + (1*cm_to_pt*waistRatio)
@@ -831,7 +839,9 @@ class PatternDesign():
         #grainline path
         x1,  y1 = ( tb.p23.x + (3.5*cm_to_pt) ), ( tb.p24.y - (1*cm_to_pt) )
         x2,  y2 = ( tb.p20.x + (3.5*cm_to_pt) ), ( tb.p24.y + (4*cm_to_pt) )
-        wb.add(Grainline(group="pattern", name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        gline = Line(group="pattern", name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style")
+        gline.setMarker('Arrow1M', start = True, end = True)
+        wb.add(gline)
 
         # set the label location. Somday this should be automatic
         wb.label_x = wb.start.x + (7*cm_to_pt*waistRatio)
@@ -873,7 +883,9 @@ class PatternDesign():
         #grainline
         x1, y1 = (tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (5*cm_to_pt)+ dy)
         x2, y2 = (tf.f3.x + 5*cm_to_pt + dx,  tf.f3.y - (20*cm_to_pt) + dy)
-        f.add(Grainline(group="pattern", name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        gline = Line(group="pattern", name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style")
+        gline.setMarker('Arrow1M', start = True, end = True)
+        f.add(gline)
 
         # set the label location. Somday this should be automatic
         f.label_x = f.start.x - (1*cm_to_pt*waistRatio)
