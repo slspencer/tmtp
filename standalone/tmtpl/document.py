@@ -175,7 +175,18 @@ class Document(pBase):
         if len(self.markers):
             pdefs = defs()
             for mname in self.markers:
-                pdefs.appendTextContent(self.markerdefs[mname])
+                #print 'Adding marker %s' % mname
+                if type(self.markerdefs[mname]) is str:
+                    # this is just a plain marker, append it
+                    pdefs.appendTextContent(self.markerdefs[mname])
+                elif type(self.markerdefs[mname]) is dict:
+                    # contains a dict of marks
+                    for submrk in self.markerdefs[mname]:
+                        # always has start and end, may also have mid
+                        pdefs.appendTextContent(self.markerdefs[mname][submrk])
+                else:
+                    print mname, 'marker is an unexpected type ***************'
+
             sz.addElement(pdefs)
 
         # Recursively get everything to draw

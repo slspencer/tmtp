@@ -34,6 +34,7 @@ from getopt          import getopt, GetoptError
 # for the pattern generation
 from tmtpl.utils     import stdo
 from tmtpl.std_app   import StdApp
+from tmtpl.markers   import markers
 
 from tmtpl.constants import *
 from tmtpl.pattern   import *
@@ -291,20 +292,10 @@ class AppTemplate(StdApp):
             print 'unable to load Styles File <%s>' % self.cfg['styles_file']
             return
 
-        # open the default markers and read them, if present
-        dmfile = "tmtp_default_markers.json"
-        try:
-            f = open(dmfile, 'r')
-            self.markerdefs = json.load(f)
-            f.close()
-        except ValueError:
-            raise
-        except:
-            self.markerdefs = {}
-            print 'unable to load default Markers File <%s>' % dmfile
-            return
+        # Load the markers from the python module where they are defined in a dictionary
+        self.markerdefs = markers.markerlist
 
-        # TODO now open any user supplied marker files
+        # TODO load any user-defined markers
 
         # Now we load the actual design, which is in the form of a python module
         try:

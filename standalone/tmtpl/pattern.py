@@ -325,6 +325,35 @@ class Line(pBase):
 
         pBase.__init__(self)
 
+    def setMarker(self, markername = None, start = True, end = True):
+        print 'SetMarker', markername
+
+        if markername not in self.markerdefs:
+            raise ValueError("Marker %s was specified but isn't defined" % markername)
+        else:
+            # List it as used so we put it in the output file
+            if markername not in self.markers:
+                self.markers.append(markername)
+
+            if type(self.markerdefs[markername]) is str:
+                # This is a plain marker, not start, end or mid markers in a dict
+                if start:
+                    startMarkID = extractMarkerId(self.markerdefs[markername])
+                    self.attrs['marker-start'] = "url(#%s)" % startMarkID
+                if end:
+                    endMarkID = extractMarkerId(self.markerdefs[markername])
+                    self.attrs['marker-end'] = "url(#%s)" % endMarkID
+            elif type(self.markerdefs[markername]) is dict:
+                # Extract start and end as needed
+                if start:
+                    startMarkID = extractMarkerId(self.markerdefs[markername]['start'])
+                    self.attrs['marker-start'] = "url(#%s)" % startMarkID
+                if end:
+                    endMarkID = extractMarkerId(self.markerdefs[markername]['end'])
+                    self.attrs['marker-end'] = "url(#%s)" % endMarkID
+            else:
+                raise ValueError('marker %s is an unexpected type of marker' % markername)
+
     def add(self, obj):
         # Lines don't have children. If this changes, change the svg method also.
         raise RuntimeError('The Line class can not have children')
@@ -360,11 +389,12 @@ class Line(pBase):
         else:
             return None, None, None, None
 
+
 class Grainline(pBase):
     """
     Creates instance of Python class Grainline
     """
-    def __init__(self, group, name, label, xstart, ystart, xend, yend, styledef = 'grainline_style', transform = ''):
+    def __init__(self, group, name, label, xstart, ystart, xend, yend, styledef = 'grainline_style', marker = 'Arrow1M', transform = ''):
 
         self.groupname = group
         self.name = name
@@ -377,23 +407,41 @@ class Grainline(pBase):
         self.attrs = {}
         self.attrs['transform'] = transform
 
-        # TODO - this is terrible, should not hard code the marker name
+        mkname = marker
+
         # make some checks
         if self.sdef not in self.styledefs:
             raise ValueError("Style %s was specified but isn't defined" % self.sdef)
 
-        for amarker in ['grainline_marker_start', 'grainline_marker_end']:
-            if amarker not in self.markerdefs:
-                print self.markerdefs
-                raise ValueError("Marker %s was specified but isn't defined" % amarker)
-            else:
-                # List it as used so we put it in the output file
-                self.markers.append(amarker)
+        if mkname not in self.markerdefs:
+            print 'markerdefs\n', self.markerdefs
+            raise ValueError("Marker %s was specified but isn't defined" % mkname)
+        else:
+            mdict = self.markerdefs[mkname]
 
-        mid = extractMarkerId(self.markerdefs['grainline_marker_start'])
-        self.attrs['marker-start'] = "url(#%s)" % mid
-        mid = extractMarkerId(self.markerdefs['grainline_marker_end'])
-        self.attrs['marker-end'] = "url(#%s)" % mid
+            startmarker = mdict['start']
+            endmarker = mdict['end']
+            # ZZZ remove starting here
+            if 'mid' in mdict:
+                midmarker = mdict['mid']
+            elif drawmids:
+                print 'drawmids requested but mo mid marker found in %s, ignoring' % mkname
+                drawmids = False
+            # ZZZ remove ending here
+                
+            # List it as used so we put it in the output file
+            if mkname not in self.markers:
+                self.markers.append(mkname)
+
+        markerID = extractMarkerId(startmarker)
+        self.attrs['marker-start'] = "url(#%s)" % markerID
+        markerID = extractMarkerId(endmarker)
+        self.attrs['marker-end'] = "url(#%s)" % markerID
+        # ZZZ remove starting here
+        if drawmids:
+            markerID = extractMarkerId(midmarker)
+            self.attrs['marker-mid'] = "url(#%s)" % markerID
+        # ZZZ remove ending here
 
         pBase.__init__(self)
 
