@@ -392,98 +392,6 @@ class Line(pBase):
         else:
             return None, None, None, None
 
-
-class Grainline(pBase):
-    """
-    Creates instance of Python class Grainline
-    """
-    def __init__(self, group, name, label, xstart, ystart, xend, yend, styledef = 'grainline_style', marker = 'Arrow1M', transform = ''):
-
-        self.groupname = group
-        self.name = name
-        self.sdef = styledef
-        self.label = label
-        self.xstart = xstart
-        self.ystart = ystart
-        self.xend = xend
-        self.yend = yend
-        self.attrs = {}
-        self.attrs['transform'] = transform
-
-        mkname = marker
-
-        # make some checks
-        if self.sdef not in self.styledefs:
-            raise ValueError("Style %s was specified but isn't defined" % self.sdef)
-
-        if mkname not in self.markerdefs:
-            print 'markerdefs\n', self.markerdefs
-            raise ValueError("Marker %s was specified but isn't defined" % mkname)
-        else:
-            mdict = self.markerdefs[mkname]
-
-            startmarker = mdict['start']
-            endmarker = mdict['end']
-            # ZZZ remove starting here
-            if 'mid' in mdict:
-                midmarker = mdict['mid']
-            elif drawmids:
-                print 'drawmids requested but mo mid marker found in %s, ignoring' % mkname
-                drawmids = False
-            # ZZZ remove ending here
-                
-            # List it as used so we put it in the output file
-            if mkname not in self.markers:
-                self.markers.append(mkname)
-
-        markerID = extractMarkerId(startmarker)
-        self.attrs['marker-start'] = "url(#%s)" % markerID
-        markerID = extractMarkerId(endmarker)
-        self.attrs['marker-end'] = "url(#%s)" % markerID
-        # ZZZ remove starting here
-        if drawmids:
-            markerID = extractMarkerId(midmarker)
-            self.attrs['marker-mid'] = "url(#%s)" % markerID
-        # ZZZ remove ending here
-
-        pBase.__init__(self)
-
-    def add(self, obj):
-        # Grainlines don't have children. If this changes, change the svg method also.
-        raise RuntimeError('The Grainline class can not have children')
-
-    def svg(self):
-        """
-        generate the svg for this item and return it as a pysvg object
-        """
-        if self.debug:
-            print 'svg() called for Grainline ID ', self.id
-
-        # an empty dict to hold our svg elements
-        md = self.mkgroupdict()
-
-        pstyle = StyleBuilder(self.styledefs[self.sdef])
-        p = line(self.xstart, self.ystart, self.xend, self.yend)
-        p.set_style(pstyle.getStyle())
-        p.set_id(self.id)
-        for attrname, attrvalue in self.attrs.items():
-            p.setAttribute(attrname, attrvalue)
-        md[self.groupname].append(p)
-
-        return md
-
-    def boundingBox(self, grouplist = None):
-        """
-        Return two points which define a bounding box around the object
-        """
-        # TODO make this account for markers
-        if grouplist is None:
-            grouplist = self.groups.keys()
-        if self.groupname in grouplist:
-            return (min(self.xstart, self.xend), min(self.ystart, self.yend), max(self.xstart, self.xend), max(self.ystart, self.yend))
-        else:
-            return None, None, None, None
-
 class Path(pBase):
     """
     Creates instance of Python class Path
@@ -500,6 +408,45 @@ class Path(pBase):
         self.attrs['transform'] = transform
 
         pBase.__init__(self)
+
+    def setMarker(self, markername = None, start = True, end = True, mid = True):
+
+        if markername not in self.markerdefs:
+            print 'Markerdefs: ', self.markerdefs
+            raise ValueError("Marker %s was specified but isn't defined" % markername)
+        else:
+            # List it as used so we put it in the output file
+            if markername not in self.markers:
+                self.markers.append(markername)
+
+            if type(self.markerdefs[markername]) is str:
+                # This is a plain marker, not start, end or mid markers in a dict
+                if start:
+                    markID = extractMarkerId(self.markerdefs[markername])
+                    self.attrs['marker-start'] = "url(#%s)" % markID
+                if end:
+                    markID = extractMarkerId(self.markerdefs[markername])
+                    self.attrs['marker-end'] = "url(#%s)" % markID
+                if mid:
+                    markID = extractMarkerId(self.markerdefs[markername])
+                    self.attrs['marker-mid'] = "url(#%s)" % markID
+            elif type(self.markerdefs[markername]) is dict:
+                # Extract start and end as needed
+                if start:
+                    markID = extractMarkerId(self.markerdefs[markername]['start'])
+                    self.attrs['marker-start'] = "url(#%s)" % markID
+                if end:
+                    markID = extractMarkerId(self.markerdefs[markername]['end'])
+                    self.attrs['marker-end'] = "url(#%s)" % markID
+                if mid:
+                    if 'mid' not in self.markerdefs[markername]:
+                        # TODO Not sure whether this should be an exception,
+                        # or just print a warning and not set mid markers
+                        raise ValueError()
+                    markID = extractMarkerId(self.markerdefs[markername]['mid'])
+                    self.attrs['marker-mid'] = "url(#%s)" % markID
+            else:
+                raise ValueError('marker %s is an unexpected type of marker' % markername)
 
     def add(self, obj):
         # Paths don't have children. If this changes, change the svg method also.
