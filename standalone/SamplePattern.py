@@ -59,7 +59,7 @@ class PatternDesign():
         #
         # self.cd - Client Data, which has been loaded from the client data file
         #
-        # self.styledefs - the style difinition dictionary, loaded from the styles file
+        # self.styledefs - the style definition dictionary, loaded from the styles file
         # self.markerdefs - the marker definition dictionary
         #
         # self.cfg - configuration settings from the main app framework
