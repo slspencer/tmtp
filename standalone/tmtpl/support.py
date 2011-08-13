@@ -35,11 +35,20 @@ from pysvg.style import *
 from pysvg.text import *
 from pysvg.builders import *
 
+#from pattern import Point
+
 def angleOfLine(x1, y1, x2, y2):
     """
-    Accepts two sets of coordinates and returns the angle between them
+    Accepts two sets of coordinates and returns the angle of the
+    vector between them
     """
     return math.atan2(y2-y1,x2-x1)
+
+def angleOfLineP(p1, p2):
+    """
+    Accepts two point objects and returns the angle of the vector between them
+    """
+    return math.atan2(p2.y-p1.y,p2.x-p1.x)
 
 def slopeOfLine(x1, y1, x2, y2):
     """
@@ -47,6 +56,16 @@ def slopeOfLine(x1, y1, x2, y2):
     """
     try:
         m = (y2-y1)/(x2-x1)
+    except ZeroDivisionError:
+        m = None
+    return m
+
+def slopeOfLineP(P1, p2):
+    """
+    Accepts two points and returns the slope
+    """
+    try:
+        m = (p2.y-p1.y)/(p2.x-p1.x)
     except ZeroDivisionError:
         m = None
     return m
@@ -62,6 +81,19 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     x = (distance * math.cos(angle)) + x1
     y = (distance * math.sin(angle)) + y1
     return x, y
+
+def pointAlongLineP(p1, p2, name, distance, rotation = 0):
+    """
+    Accepts two points and an optional rotation angle
+    returns a point along the line (can be extended from the line)
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    lineangle = angleOfLine(p1.x, p1.y, p2.x, p2.y)
+    angle = lineangle + (rotation * (math.pi/180))
+    pnt = Point('reference', '%s' % name, styledef = 'controlpoint_style')
+    pnt.x = (distance * math.cos(angle)) + p1.x
+    pnt.y = (distance * math.sin(angle)) + py.y
+    return pnt
 
 def boundingBox(path):
     xlist = []
@@ -285,10 +317,14 @@ def lineLength(xstart, ystart, xend, yend):
     #a^2 + b^2 = c^2
     return math.sqrt((xend-xstart)**2)+((yend-ystart)**2)
 
+def lineLengthP(p1, p2):
+    #a^2 + b^2 = c^2
+    return math.sqrt((p2.x-p1.x)**2)+((p2.y-p1.y)**2)
+
 def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
     """
     Find intersection between two lines.
-    Intersection does not have to be withint the supplied line segments
+    Intersection does not have to be within the supplied line segments
     """
     # TODO this can be improved
 
@@ -324,6 +360,18 @@ def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2,
     # find y where y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
     y = (m1 * x) + b1
     return x, y
+
+def intersectionOfLinesP(p1, p2, p3, p4, name):
+    """
+    Find intersection between two lines.
+    Intersection does not have to be within the supplied line segments
+    """
+    x, y = intersectionOfLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
+    pnt = Point('reference', '%s' % name, styledef = 'controlpoint_style')
+    pnt.x = x
+    pnt.y = y
+    return pnt
+
 
 def extractMarkerId(markertext):
     # Regex -
