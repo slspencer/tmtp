@@ -9,17 +9,62 @@
 		  "type":"string",
 		  "gui_text":"Units of measurement (in or cm)"
 		  },
+  "front_neck_width": {
+          "value":"5.5",
+		  "type":"float",
+		  "gui_text":"1) Front Neck Width: Mark short line across top of clavicle bones, mark Clavicle Point. Use L square to draw level Clavicle Line from Clavicle Point beyond width of neck. Square-up inside corner of L-square at widest point where neck meets the shoulder, both levels true. Mark Neck Width Point at highest point at side of neck. Use L-square inside edge to draw vertical line from Neck Width Point to Clavicle Line, both levels true. Measure from this intersection to Clavicle Point."
+          },
+  "front_neck_height": {
+          "value":"5.5",
+		  "type":"float",
+		  "gui_text":"2) Front Neck Height: Measure from Neck Width Point down to Clavicle Line."
+          },
+  "back_neck_width": {
+          "value":"5.5",
+		  "type":"float",
+		  "gui_text":"3) Back Neck Width: Mark Nape Point. Use L-square to draw level Nape Line beyond width of neck. Square-up L-square at Neck Width Point, draw vertical line down to Nape Line. Measure from this intersection to Nape Point"
+          },
+  "back_neck_height": {
+          "value":"5.5",
+		  "type":"float",
+		  "gui_text":"4) Back Neck Height: Measure from Neck Width Point down to Nape Line."
+          },
+  "shoulder_seam": {
+          "value":"6.75",
+		  "type":"float",
+		  "gui_text":"5) Shoulder Seam: Place 1st finger at end of  shoulder bone, then raise elbow. Mark Shoulder Point at fingernail. Put arm down. Use L-square to draw line from Neck Width Point to Shoulder Point. Mark Shoulder midpoint where slope of shoulder changes. Measure from Neck Width Point to Shoulder Point."
+          },
+  "shoulder_midpoint": {
+          "value":"6.75",
+		  "type":"float",
+		  "gui_text":"6) Shoulder Midpoint: Measure from Neck Width Point to Shoulder Midpoint."
+          },
+     "neck_circumference": {
+          "value":"13.78",
+		  "type":"float",
+		  "gui_text":"2) - Neck Circumference: Mark point at middle of Nape. Use L square to draw horizontal line beyond width of Neck. Square-up Lsquare along line with Neck Width Point. Draw vertical line from Neck Width Point to Nape line, keeping both levels true. Measure around through Neck Width Point to Clavicle Point."
+          },
+  "front_neck_circumference": {
+          "value":"13.78",
+		  "type":"float",
+		  "gui_text":"3) Front Neck Circumference: Measure from Neck Width Point around to Clavicle Point."
+          },
   "bust_circumference": {
           "value":"38.58",
 		  "type":"float",
-		  "gui_text":"Bust Circumference"
+		  "gui_text":"Bust Circumference: Use Duct tape between breasts and between shoulder blades"
           },
   "waist_circumference": {
           "value":"34.25",
 		  "type":"float",
 		  "gui_text":"Waist Circumference"
           },
-  "back_waist": {
+  "front_waist_circumference": {
+          "value":"34.25",
+		  "type":"float",
+		  "gui_text":"Front Width at Waist from Sideseam to Sideseam"
+          },
+  "back_waist_circumference": {
           "value":"34.25",
 		  "type":"float",
 		  "gui_text":"Back Width at Waist from Sideseam to Sideseam"
@@ -29,31 +74,29 @@
 		  "type":"float",
 		  "gui_text":"Hip Circumference"
           },
-  "neck_circumference": {
-          "value":"13.78",
+  "front_hip_circumference": {
+          "value":"44.49",
 		  "type":"float",
-		  "gui_text":"Neck Circumference"
+		  "gui_text":"Front Width at Hip from Sideseam to Sideseam"
           },
-  "neck_width": {
-          "value":"5.5",
+   "back_hip_circumference": {
+          "value":"44.49",
 		  "type":"float",
-		  "gui_text":"Neck Width"
+		  "gui_text":"Back Width at Hip from Sideseam to Sideseam"
           },
+
+
   "back_shoulder_height": {
           "value":"18.31",
 		  "type":"float",
-		  "gui_text":"Back Shoulder Height"
+		  "gui_text":"Back Shoulder Height - from line drawn across Nape straight up to widest point of neck."
           },
   "center_back_length": {
           "value":"15.75",
 		  "type":"float",
-		  "gui_text":"Center Back Length"
+		  "gui_text":"Center Back Length - from Nape to Waist, with Duct Tape between shoulder blades"
           },
-  "shoulder_seam": {
-          "value":"6.75",
-		  "type":"float",
-		  "gui_text":"Shoulder Seam"
-          },
+
  "across_back": {
           "value":"19",
 		  "type":"float",
