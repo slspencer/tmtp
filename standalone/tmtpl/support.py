@@ -35,8 +35,6 @@ from pysvg.style import *
 from pysvg.text import *
 from pysvg.builders import *
 
-#from pattern import Point
-
 def angleOfLine(x1, y1, x2, y2):
     """
     Accepts two sets of coordinates and returns the angle of the
@@ -215,6 +213,7 @@ def boundingBox(path):
     #print 'boundingBox returning: ', xmin, ymin, xmax, ymax
     return xmin, ymin, xmax, ymax
 
+
 def transformPoint(x, y, transform):
     """
     Apply an SVG transformation string to a 2D point and return the resulting x,y pair
@@ -240,7 +239,10 @@ def transformPoint(x, y, transform):
         trtype = trparts[0].strip()
 
         if trtype == 'translate':
-            tx = float(trparts[1].strip())
+            #tx = float(trparts[1].strip()) #-- commented out by susan 26/08/11 -- was returning 'invalid literal for float(): 0 0' error message -- 0,0 because the transform for 1st pattern is 0,0
+            splitx = re.split("( )", trparts[1].strip())  # added by susan 26/08/11 -- to split apart the two values in tx
+            sx = splitx[0].strip() # strip one more time - susan 26/08/11
+            tx = float(sx) # substituted sx for trparts[1].strip() - susan 26/08/11
             x = x + tx
             try:
                 ty = float(trparts[2].strip())
@@ -445,11 +447,11 @@ def OldBoundingBox(element_id, dx, dy):
     y_array = []
     x_array.append(1.2345)  # initialize with dummy float value
     y_array.append(1.2345)  # initialize with dummy float value
-    
+
     my_element        = self.getElementById( element_id )  # returns 'element g at ...' --> a pointer into the document
     my_path             = my_element.get( 'd' )                   # returns the whole path  'M ..... z'
     path_coords_xy   = my_path.split( ' ' )                       # split path into segments, separating at each 'space', assumes each coordinate pair x&y to be separated by comma with no space between x,y.  This is built into DrawPoint() where self.coords=str(x)+','+str(y)
-    
+
     for i in range( len( path_coords_xy ) ) :
         coords_xy = path_coords_xy[i].replace( ' ', '' )       # strip out segments which are only white space, put coordinate pair x,y (or command letter) into 'coords_xy'
         if ( len(coords_xy)  > 0 ) :                                                                                            # if coords_xy not empty, then process
@@ -688,7 +690,7 @@ def svg_svg(width, height, border):
     # add pattern name & number                --> works
     svg_root.set( "pattern-name", pattern_name )
     svg_root.set( "pattern-number", pattern_number )
-    
+
     # set document center --> self.view_center
     xattr = self.document.xpath('//@inkscape:cx', namespaces=inkex.NSS )
     yattr = self.document.xpath('//@inkscape:cy', namespaces=inkex.NSS )
