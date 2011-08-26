@@ -35,6 +35,83 @@ from pysvg.style import *
 from pysvg.text import *
 from pysvg.builders import *
 
+def patternPoint( name,  x,  y,  transform = '' ):
+    """
+    Creates pattern Points on pattern layer
+    """
+    return Point('reference', name,  x,  y,  'point_style',  transform = '')
+
+def referencePoint( name,  x,  y,  transform = '' ):
+    """
+    Creates reference Points on reference layer
+    """
+    return Point('reference', name,  x,  y,  'point_style',  transform = '')
+
+def controlPoint( name,  x,  y,  transform = '' ):
+    """
+    Creates  control Points on reference layer
+    """
+    return Point('reference', name,  x,  y,  'controlpoint_style',  transform = '')
+
+def gridPath( name, label,  pathSVG, transform = '' ):
+    """
+    Creates grid paths on reference layer
+    """
+    return Path( 'reference', name, label, pathSVG,  'gridline_style', transform = '')
+
+def cuttingLinePath( name, label,  pathSVG, transform = '' ):
+    """
+    Creates Cuttingline path on pattern layer
+    """
+    return Path( 'pattern', name, label, pathSVG,  'cuttingline_style', transform = '')
+
+def seamLinePath( name, label,  pathSVG, transform = '' ):
+    """
+    Creates Seamline path on pattern layer
+    """
+    return Path( 'pattern', name, label, pathSVG,  'seamline_path_style', transform = '')
+
+def patternLinePath( name, label,  pathSVG, transform = '' ):
+    """
+    Creates pattern line path on pattern layer, other than cuttingline, seamline, hemline or dartline
+    """
+    return Path( 'pattern', name, label, pathSVG,  'dart_style', transform = '')
+
+def stitchLinePath( name, label,  pathSVG, transform = '' ):
+    """
+    Creates stitch line on pattern layer, other than cuttingline, seamline, hemline or dartline
+    """
+    return Path( 'pattern', name, label, pathSVG,  'dart_style', transform = '')
+
+def grainLinePath( name, label, xstart, ystart,  xend,  yend,  transform = '' ):
+    """
+    Creates grain line on pattern layer
+    """
+    # TODO: add pathSVG to Grainline parameters
+    return Grainline("pattern", name, label, xstart, ystart, xend, yend, "grainline_style",  transform = '')
+
+def Move( pathSVG, point,  transform = '' ):
+    """
+    appendMoveToPath method
+    """
+    if (transform == '') :
+        x, y = point.x,  point.y
+    else:
+        x, y = transformPoint( point.x,  point.y,  transform)
+    return pathSVG.appendMoveToPath( x, y,  relative = False)
+
+def Line( pathSVG, point ):
+    """
+    appendLineToPath method
+    """
+    return pathSVG.appendLineToPath( point.x,  point.y,  relative = False)
+
+def CubicCurve( pathSVG, control1,  control2,  point ):
+    """
+    appendCubicCurveToPath method
+    """
+    return pathSVG.appendCubicCurveToPath( control1.x,  control1.y,  control2.x,  control2.y,  point.x,  point.y,  relative = False)
+
 def angleOfLine(x1, y1, x2, y2):
     """
     Accepts two sets of coordinates and returns the angle of the
