@@ -11,7 +11,6 @@
 from tmtpl.constants import *
 from tmtpl.pattern   import *
 from tmtpl.document  import *
-from tmtpl.support   import *
 from tmtpl.client    import Client
 from tmtpl.curves    import GetCurveControlPoints, FudgeControlPoints
 

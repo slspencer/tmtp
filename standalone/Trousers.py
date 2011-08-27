@@ -17,7 +17,6 @@
 from tmtpl.constants import *
 from tmtpl.pattern   import *
 from tmtpl.document   import *
-from tmtpl.support   import *
 from tmtpl.client   import Client
 from tmtpl.curves    import GetCurveControlPoints
 
@@ -250,8 +249,10 @@ class PatternDesign():
 
         # Points J, K, L, M were added to formula -- J is an inflection point to calculate inseam curve. K, L,& M are extensions of leg length for a hem allowance
         distance = ( math.sqrt( ((tf.p4.x - tf.p6.x)**2) + ((tf.p4.y - tf.p6.y)**2) ) ) * (0.5)   # J is at midpoint on line from p4 to p6, not at midpoint on line between p4 & p2
-        x, y = pointAlongLine( tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, -distance )
-        tf.add(Point('reference', 'J', x,  y, 'point_style'))
+        #old -> x, y = pointAlongLine( tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, -distance )
+        #old -> tf.add(Point('reference', 'J', x,  y, 'point_style'))
+        pntJ = pointAlongLineP(tf.p4, tf.p5, 'J', -distance)
+        tf.add(pntJ)
         #tf.add(Point('reference', 'K',  tf.p5.x, tf.p5.y + HEM_ALLOWANCE, 'point_style'))
         distance =HEM_ALLOWANCE
         x, y = pointAlongLine( tf.p5.x, tf.p5.y, tf.p4.x, tf.p4.y, distance )
@@ -441,7 +442,7 @@ class PatternDesign():
         x2,  y2   = tf.p16.x,  ( tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5) )
 
         # Add the grainline
-        tf.add(Grainline(group="pattern", name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        tf.add(grainLinePath(name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
 
         # set the label location. Somday this should be automatic
         tf.label_x = tf.p16.x + 2*cm_to_px
@@ -719,7 +720,7 @@ class PatternDesign():
         #Trousers Back grainline
         x1,  y1 = tf.p16.x,  tf.C.y
         x2,  y2 = tf.p16.x,  tf.p4.y + ( abs(tf.p14.y - tf.p4.y)*(0.5) )
-        tb.add(Grainline(group="pattern", name="trousersbackgrainlinepath", label="Trousers Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        tb.add(grainLinePath(name="trousersbackgrainlinepath", label="Trousers Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
 
         # set the label location. Somday this should be automatic
         tb.label_x = tf.p16.x + (3*cm_to_px*seatRatio)
@@ -758,7 +759,7 @@ class PatternDesign():
         # waistfront grainline path
         x1,  y1 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.A.y + (1*cm_to_px*riseRatio))
         x2,  y2 = (tf.A.x + (9*cm_to_px*waistRatio)),  (tf.B.y - (1*cm_to_px*riseRatio))
-        wf.add(Grainline(group="pattern", name="waistfrontgrainpath", label="Waist Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        wf.add(grainLinePath(name="waistfrontgrainpath", label="Waist Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
 
         # set the label location. Somday this should be automatic
         wf.label_x = wf.start.x + (1*cm_to_px*waistRatio)
@@ -813,7 +814,7 @@ class PatternDesign():
         b = y1 - m*x1
         y2 = tb.p24.y
         x2 = (y2 - b)/m
-        wb.add(Grainline(group="pattern", name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1+dx, ystart=y1+dy, xend=x2+dx, yend=y2+dy, styledef="grainline_style"))
+        wb.add(grainLinePath(name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1+dx, ystart=y1+dy, xend=x2+dx, yend=y2+dy))
 
         # set the label location. Somday this should be automatic
         wb.label_x = wb.start.x + (7*cm_to_px*waistRatio)
@@ -855,7 +856,7 @@ class PatternDesign():
         #fly grainline
         x1, y1 = (tf.f2.x + 5*cm_to_px + dx,  tf.f2.y - (5*cm_to_px)+ dy)
         x2, y2 = (tf.f2.x + 5*cm_to_px + dx,  tf.f2.y - (20*cm_to_px) + dy)
-        f.add(Grainline(group="pattern", name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        f.add(grainLinePath(name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
 
         # set the label location. Somday this should be automatic
         f.label_x = tf.A.x + (0.5*cm_to_px) + dx
@@ -894,8 +895,7 @@ class PatternDesign():
         #front hemlining grainline
         x1, y1 = ( tf.p15.x + dx,  tf.M.y + (1.5*cm_to_px) + dy)
         x2, y2 = ( tf.p15.x + dx,  tf.p15.y  - (1.5*cm_to_px) +  dy )
-
-        fh.add(Grainline(group="pattern", name="frontHemLiningGrainline", label="Front Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        fh.add(grainLinePath(name="frontHemLiningGrainline", label="Front Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2))
         # set the label location. Somday this should be automatic
         fh.label_x = fh.start.x + (2*cm_to_px)
         fh.label_y = fh.start.y + (2*cm_to_px)
@@ -933,7 +933,7 @@ class PatternDesign():
         x1, y1 = ( tb.O.x + dx,  tb.O.y + (1.5*cm_to_px) + dy)
         x2, y2 = ( tb.O.x + dx,  tb.p29.y  - (1.5*cm_to_px) +  dy )
 
-        bh.add(Grainline(group="pattern", name="backHemLiningGrainline", label="Back Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2, styledef="grainline_style"))
+        bh.add(grainLinePath(name="backHemLiningGrainline", label="Back Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2))
         # set the label location. Somday this should be automatic
         bh.label_x = bh.start.x + (2*cm_to_px)
         bh.label_y = bh.start.y + (2*cm_to_px)

@@ -31,7 +31,6 @@ from pysvg.text import *
 from pysvg.builders import *
 
 from constants import *
-from support import *
 from patternbase import pBase
 
 class docInfo():

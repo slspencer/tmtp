@@ -23,8 +23,7 @@
 #import string
 #import re
 
-from pattern          import Point
-from support          import lineLengthP
+from pattern          import Point, lineLengthP
 
 # Code derived from this C code: http://www.codeproject.com/KB/graphics/BezierSpline.aspx
 # knots - list of Point objects - spline points (must contain at least two points)

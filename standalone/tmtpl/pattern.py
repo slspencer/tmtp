@@ -21,6 +21,8 @@
 import sys
 import math
 import json
+import string
+import re
 
 from pysvg.filter import *
 from pysvg.gradient import *
@@ -33,8 +35,439 @@ from pysvg.text import *
 from pysvg.builders import *
 
 from constants import *
+from utils import debug
 from patternbase import pBase
-from support import boundingBox, transformBoundingBox, extractMarkerId
+
+# ---- Pattern methods ----------------------------------------
+#
+# A lot of these depend on the classes in this file, so we put them here
+
+def patternPoint(name, x, y, transform = ''):
+    """
+    Creates pattern Points on pattern layer
+    """
+    return Point('reference', name, x,  y, 'point_style', transform = '')
+
+def referencePoint(name, x, y, transform = ''):
+    """
+    Creates reference Points on reference layer
+    """
+    return Point('reference', name, x, y, 'point_style', transform = '')
+
+def controlPoint(name, x, y, transform = ''):
+    """
+    Creates  control Points on reference layer
+    """
+    return Point('reference', name,  x,  y,  'controlpoint_style',  transform = '')
+
+def gridPath(name, label, pathSVG, transform = ''):
+    """
+    Creates grid paths on reference layer
+    """
+    return Path('reference', name, label, pathSVG, 'gridline_style', transform = '')
+
+def cuttingLinePath(name, label, pathSVG, transform = ''):
+    """
+    Creates Cuttingline path on pattern layer
+    """
+    return Path('pattern', name, label, pathSVG, 'cuttingline_style', transform = '')
+
+def seamLinePath(name, label, pathSVG, transform = ''):
+    """
+    Creates Seamline path on pattern layer
+    """
+    return Path('pattern', name, label, pathSVG, 'seamline_path_style', transform = '')
+
+def patternLinePath(name, label, pathSVG, transform = ''):
+    """
+    Creates pattern line path on pattern layer, other than cuttingline, seamline, hemline or dartline
+    """
+    return Path('pattern', name, label, pathSVG, 'dart_style', transform = '')
+
+def stitchLinePath( name, label,  pathSVG, transform = '' ):
+    """
+    Creates stitch line on pattern layer, other than cuttingline, seamline, hemline or dartline
+    """
+    return Path('pattern', name, label, pathSVG, 'dart_style', transform = '')
+
+def grainLinePath(name, label, xstart, ystart, xend, yend):
+    """
+    Creates grain line on pattern layer
+    """
+    gline = Line(group="pattern", name=name, label=label, xstart=xstart, ystart=ystart, xend=xend, yend=yend, styledef="grainline_style")
+    gline.setMarker('Arrow1M', start = True, end = True)
+    return gline
+
+def moveP(pathSVG, point, transform = ''):
+    """
+    appendMoveToPath method
+    """
+    if (transform == '') :
+        x, y = point.x,  point.y
+    else:
+        x, y = transformPoint( point.x,  point.y,  transform)
+    return pathSVG.appendMoveToPath( x, y,  relative = False)
+
+def lineP(pathSVG, point):
+    """
+    appendLineToPath method
+    """
+    return pathSVG.appendLineToPath( point.x,  point.y,  relative = False)
+
+def cubicCurveP(pathSVG, control1, control2, point):
+    """
+    appendCubicCurveToPath method
+    """
+    return pathSVG.appendCubicCurveToPath(control1.x, control1.y, control2.x, control2.y, point.x, point.y, relative = False)
+
+def angleOfLine(x1, y1, x2, y2):
+    """
+    Accepts two sets of coordinates and returns the angle of the
+    vector between them
+    """
+    return math.atan2(y2-y1,x2-x1)
+
+def angleOfLineP(p1, p2):
+    """
+    Accepts two point objects and returns the angle of the vector between them
+    """
+    return math.atan2(p2.y-p1.y,p2.x-p1.x)
+
+def slopeOfLine(x1, y1, x2, y2):
+    """
+    Accepts two sets of coordinates and returns the slope
+    """
+    try:
+        m = (y2-y1)/(x2-x1)
+    except ZeroDivisionError:
+        m = None
+    return m
+
+def slopeOfLineP(P1, p2):
+    """
+    Accepts two points and returns the slope
+    """
+    try:
+        m = (p2.y-p1.y)/(p2.x-p1.x)
+    except ZeroDivisionError:
+        m = None
+    return m
+
+def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
+    """
+    Accepts two pairs of coordinates and an optional rotation angle
+    returns a point along the line (can be extended from the line)
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    lineangle = angleOfLine(x1, y1, x2, y2)
+    angle = lineangle + (rotation * (math.pi/180))
+    x = (distance * math.cos(angle)) + x1
+    y = (distance * math.sin(angle)) + y1
+    return x, y
+
+def pointAlongLineP(p1, p2, name, distance, rotation = 0):
+    """
+    Accepts two points and an optional rotation angle
+    returns a point along the line (can be extended from the line)
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    lineangle = angleOfLine(p1.x, p1.y, p2.x, p2.y)
+    angle = lineangle + (rotation * (math.pi/180))
+    pnt = Point('reference', '%s' % name, styledef = 'controlpoint_style')
+    pnt.x = (distance * math.cos(angle)) + p1.x
+    pnt.y = (distance * math.sin(angle)) + p1.y
+    return pnt
+
+def boundingBox(path):
+    xlist = []
+    ylist = []
+    #print '===== Entered boundingBox ====='
+    #print 'path = ', path
+    path_tokens = path.split() # split path into pieces, separating at each 'space'
+
+    tok = iter(path_tokens)
+
+    try:
+        cmd = tok.next()
+        if cmd != 'M':
+            raise ValueError("Unable to handle patches that don't start with an absolute move")
+        currentx = float(tok.next())
+        currenty = float(tok.next())
+        beginx = currentx
+        beginy = currenty
+        xlist.append(currentx)
+        ylist.append(currenty)
+    except:
+        raise ValueError("Can't handle a path string shorter than 3 tokens")
+
+    while True:
+        try:
+            cmd = tok.next()
+            #print 'processing ', cmd
+            if cmd.islower():
+                relative = True
+            else:
+                relative = False
+
+            cmd = cmd.upper()
+
+            if ((cmd == 'M') or (cmd == 'L') or (cmd == 'T')):
+                # Note T is really for a Bezier curve, this is a simplification
+                x = float(tok.next())
+                y = float(tok.next())
+                if relative:
+                    currentx = currentx + x
+                    currenty = currenty + y
+                else:
+                    currentx = x
+                    currenty = y
+                xlist.append(currentx)
+                ylist.append(currenty)
+            elif cmd == 'H':
+                x = float(tok.next())
+                if relative:
+                    currentx = currentx + x
+                else:
+                    currentx = x
+                xlist.append(currentx)
+            elif cmd == 'V':
+                y = float(tok.next())
+                if relative:
+                    currenty = currenty + y
+                else:
+                    currenty = y
+                ylist.append(currenty)
+            elif ((cmd == 'C') or (cmd == 'S') or (cmd == 'Q')):
+                # Curve
+                # TODO This could be innacurate, we are only basing on control points not the actual line
+
+                # 'C' uses two control points, 'S' and 'Q' use one
+                if cmd == 'C':
+                    cpts = 2
+                else:
+                    cpts = 1
+
+                # control points
+                for i in range(0,cpts):
+                    #print '  Control Point ',
+                    x = float(tok.next())
+                    y = float(tok.next())
+                    #print 'xy = ', x, y
+                    if relative:
+                        tmpx = currentx + x
+                        tmpy = currenty + y
+                    else:
+                        tmpx = x
+                        tmpy = y
+                    xlist.append(tmpx)
+                    ylist.append(tmpy)
+
+                # final point is the real curve endpoint
+                x = float(tok.next())
+                y = float(tok.next())
+                if relative:
+                    currentx = currentx + x
+                    currenty = currenty + y
+                else:
+                    currentx = x
+                    currenty = y
+                xlist.append(currentx)
+                ylist.append(currenty)
+            elif cmd == 'A':
+                # TODO implement arcs - punt for now
+                # See http://www.w3.org/TR/SVG/paths.html#PathElement
+                raise ValueError('Arc commands in a path are not currently handled')
+            elif cmd == 'Z':
+                # No argumants to Z, and no new points
+                # but we reset position to the beginning
+                currentx = beginx
+                currenty = beginy
+                continue
+            else:
+                raise ValueError('Expected a command letter in path')
+
+        except StopIteration:
+            #print 'Done'
+            # we're done
+            break
+
+    xmin = min(xlist)
+    ymin = min(ylist)
+    xmax = max(xlist)
+    ymax = max(ylist)
+    #print 'boundingBox returning: ', xmin, ymin, xmax, ymax
+    return xmin, ymin, xmax, ymax
+
+
+def transformPoint(x, y, transform):
+    """
+    Apply an SVG transformation string to a 2D point and return the resulting x,y pair
+    """
+    #
+    # -spc- TODO - use numpy to do a proper handling of all transformations in order
+    # Postponing this until after the LGM workshop in order not to introduce
+    # a new dependency - for now we will only handle a few transformation types
+    #
+
+    if transform == '':
+        return x, y
+
+    # Every transform in the list ends with a close paren
+    transforms = re.split(r'\)', transform)
+    for tr in transforms:
+        # I don't know why we get an empty string at the end
+        if tr == '':
+            continue
+        tr = tr.strip()
+
+        trparts = re.split(r',|\(', tr)
+        trtype = trparts[0].strip()
+
+        if trtype == 'translate':
+            #tx = float(trparts[1].strip()) #-- commented out by susan 26/08/11 -- was returning 'invalid literal for float(): 0 0' error message -- 0,0 because the transform for 1st pattern is 0,0
+            splitx = re.split("( )", trparts[1].strip())  # added by susan 26/08/11 -- to split apart the two values in tx
+            sx = splitx[0].strip() # strip one more time - susan 26/08/11
+            tx = float(sx) # substituted sx for trparts[1].strip() - susan 26/08/11
+            x = x + tx
+            try:
+                ty = float(trparts[2].strip())
+                y = y + ty
+            except IndexError:
+                pass
+
+        elif trtype == 'scale':
+            sx = float(trparts[1].strip())
+            try:
+                sy = float(trparts[2].strip())
+            except IndexError:
+                sy = sx
+            x = x * sx
+            y = y * sy
+
+        elif trtype == 'skewX':
+            sx = float(trparts[1].strip())
+            # now do the thing
+            print 'skewX transform not handled yet'
+            raise NotImplementedError
+
+        elif trtype == 'skewY':
+            sy = float(trparts[1].strip())
+            # now do the thing
+            print 'skewY not handled yet'
+            raise NotImplementedError
+
+        elif trtype == 'rotate':
+            an = float(trparts[1].strip())
+            try:
+                rx = float(trparts[2].strip())
+            except IndexError:
+                rx = 0
+                ry = 0
+            try:
+                ry = float(trparts[3].strip())
+            except IndexError:
+                ry = 0
+            # now do the thing
+            print 'rotate not handled yet'
+            raise NotImplementedError
+
+        elif trtype == 'matrix':
+            ma = float(trparts[1].strip())
+            mb = float(trparts[2].strip())
+            mc = float(trparts[3].strip())
+            md = float(trparts[3].strip())
+            me = float(trparts[3].strip())
+            mf = float(trparts[3].strip())
+            # now do the thing
+            print 'matrix not handled yet'
+            raise NotImplementedError
+        else:
+            print 'Unexpected transformation %s' % trtype
+            raise ValueError
+
+    return x, y
+
+def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
+    """
+    Take a set of points representing a bounding box, and
+    put them through a supplied transform, returning the result
+    """
+    if transform == '':
+        return xmin, ymin, xmax, ymax
+
+    new_xmin, new_ymin = transformPoint(xmin, ymin, transform)
+    new_xmax, new_ymax = transformPoint(xmax, ymax, transform)
+
+    return new_xmin, new_ymin, new_xmax, new_ymax
+
+def lineLength(xstart, ystart, xend, yend):
+    #a^2 + b^2 = c^2
+    return math.sqrt(((xend-xstart)**2)+((yend-ystart)**2))
+
+def lineLengthP(p1, p2):
+    #a^2 + b^2 = c^2
+    length =  math.sqrt(((p2.x-p1.x)**2)+((p2.y-p1.y)**2))
+    return length
+
+def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
+    """
+    Find intersection between two lines.
+    Intersection does not have to be within the supplied line segments
+    """
+    # TODO this can be improved
+
+    # Find point x,y where m1*x+b1=m2*x + b2
+    # m = (ystart1-y2)/(xstart1-xend1) --> find slope for each line
+    # y = mx + b --> b = y - mx  --> find b for each line
+
+    try:
+        m1= slopeOfLine(xstart1, ystart1, xend1, yend1)
+    except ZeroDivisionError:
+        # vertical line
+        x = xstart1
+    b1 = (ystart1 - (m1 * xstart1)) # b=y-mx
+
+    try:
+        m2 = slopeOfLine(xstart2, ystart2, xend2, yend2)
+    except ZeroDivisionError:
+        # vertical line
+        x = xstart2
+    b2 = (ystart2 - (m2 * xstart2))
+
+    # test for parallel
+    if abs(b2 - b1) < 0.01:
+        debug('***** Parallel lines in intersectionOfLines *****')
+        return None, None
+
+    # find x where m1*xstart1 + b1 = m2*xend1 + b2, so that xstart1 = x & xend1 =x
+    # m1*x + b1        = m2*x + b2
+    # m1*x - m2*x      =  b2 - b1
+    # x( m1 - m2 )   = b2 - b1
+    # x = (b2-b1)/(m1-m2)
+    x = (b2 - b1) / (m1 - m2)
+    # find y where y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
+    y = (m1 * x) + b1
+    return x, y
+
+def intersectionOfLinesP(p1, p2, p3, p4, name):
+    """
+    Find intersection between two lines.
+    Intersection does not have to be within the supplied line segments
+    """
+    x, y = intersectionOfLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
+    pnt = Point('reference', '%s' % name, styledef = 'controlpoint_style')
+    pnt.x = x
+    pnt.y = y
+    return pnt
+
+
+def extractMarkerId(markertext):
+    # Regex -
+    # <marker id=\"grainline_mk\"\nviewBox=
+    # one or more WS, followed by 'id' followed by zero or more WS followed by '=' followed by zero or more WS, followed by '"',
+    m = re.search('(\s+id\s*=\s*\"\w+\")', markertext, re.I)
+    mid = m.group(0).split('"')[1]
+    return mid
 
 # ---- Pattern Classes ----------------------------------------
 
