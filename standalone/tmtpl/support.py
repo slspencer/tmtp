@@ -315,11 +315,12 @@ def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
 
 def lineLength(xstart, ystart, xend, yend):
     #a^2 + b^2 = c^2
-    return math.sqrt((xend-xstart)**2)+((yend-ystart)**2)
+    return math.sqrt(((xend-xstart)**2)+((yend-ystart)**2))
 
 def lineLengthP(p1, p2):
     #a^2 + b^2 = c^2
-    return math.sqrt((p2.x-p1.x)**2)+((p2.y-p1.y)**2)
+    length =  math.sqrt(((p2.x-p1.x)**2)+((p2.y-p1.y)**2))
+    return length
 
 def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
     """
