@@ -23,14 +23,15 @@
 #import string
 #import re
 
-from pattern import Point
+from pattern          import Point
+from support          import lineLengthP
 
 # Code derived from this C code: http://www.codeproject.com/KB/graphics/BezierSpline.aspx
 # knots - list of Point objects - spline points (must contain at least two points)
 # firstControlPoints - Output first control points (same length as knots - 1)
 # secondControlPoints - Output second control points (same length as knots - 1)
 
-def GetFirstControlPoints(rhs):
+def __getFirstControlPoints(rhs):
     """
     Solves a tridiagonal system for one of coordinates (x or y)
     of first Bezier control points.
@@ -104,7 +105,7 @@ def GetCurveControlPoints(name, knots):
     rhs[0] = knots[0].x + 2 * knots[1].x
     rhs[np-1] = (8 * knots[np - 1].x + knots[np].x) / 2.0
     # Get first control points X-values
-    xx = GetFirstControlPoints(rhs);
+    xx = __getFirstControlPoints(rhs);
 
     # Set right hand side Y values
     for i in range(1, np-1):
@@ -112,7 +113,7 @@ def GetCurveControlPoints(name, knots):
     rhs[0] = knots[0].y + 2 * knots[1].y
     rhs[np-1] = (8 * knots[np - 1].y + knots[np].y) / 2.0
     # Get first control points Y-values
-    yy = GetFirstControlPoints(rhs);
+    yy = __getFirstControlPoints(rhs);
 
     for i in range(0, np-1):
         # First control point
@@ -140,3 +141,40 @@ def GetCurveControlPoints(name, knots):
     scpnum = scpnum + 1
 
     return (firstControlPoints, secondControlPoints)
+
+def FudgeControlPoints(knots, fcp, scp):
+    if len(knots) < 2:
+        raise ValueError("At least two points required for input")
+    if len(knots) != len(fcp)+1:
+        print 'knotlen = ', len(knots), 'fcplen = ', len(fcp)
+        raise ValueError("knot list must be one longer than fcp list")
+    if len(knots) != len(scp)+1:
+        raise ValueError("knot list must be one longer than scp list")
+
+    if len(knots) == 2:
+        # Adjustment doesn't make a difference in this case
+        return
+
+    ll = []
+    for i in range(len(knots)-1):
+        # get the length between each knot
+        ll.append(lineLengthP(knots[i], knots[i+1]))
+    minll = min(ll)
+    maxll = max(ll)
+    print 'minll = ', minll
+    print 'maxll = ', maxll
+
+    for i in range(len(knots)-1):
+        # get the length between each knot, and save the max and min
+        lll = ll[i]
+        print 'll = ', lll
+        fcpl = lineLengthP(knots[i], fcp[i])
+        scpl = lineLengthP(scp[i], knots[i+1])
+        print ' fcpl = %02.2f pct = %02.2f' % (fcpl, fcpl/lll)
+        print ' scpl = %02.2f pct = %02.2f' % (scpl, scpl/lll)
+        
+        # get the points for the first control vector
+        fcva = knots[i]
+        
+
+    return (fcp, scp)

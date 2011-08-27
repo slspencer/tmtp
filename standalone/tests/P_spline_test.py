@@ -13,7 +13,7 @@ from tmtpl.pattern   import *
 from tmtpl.document  import *
 from tmtpl.support   import *
 from tmtpl.client    import Client
-from tmtpl.curves    import GetCurveControlPoints
+from tmtpl.curves    import GetCurveControlPoints, FudgeControlPoints
 
 # Project specific
 #from math import sin, cos, radians
@@ -136,6 +136,9 @@ class PatternDesign():
                 print '    fcp: %f %f' % (fcp[i].x / in_to_pt, fcp[i].y / in_to_pt)
                 print '    scp: %f %f' % (scp[i].x / in_to_pt, scp[i].y / in_to_pt)
             print '  point: %f %f' % (pointlist[-1].x / in_to_pt, pointlist[-1].y / in_to_pt)
+
+        # EXPERIMENTAL - fudge the control points to adjust the length of the control vectors
+        (fcp, scp) = FudgeControlPoints(pointlist, fcp, scp)
 
         # add them to the pattern piece (optional)
         for pnt in fcp:
