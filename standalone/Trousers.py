@@ -72,8 +72,8 @@ class PatternDesign():
         # TODO also extract these from this file to somewhere else
         printer='36" wide carriage plotter'
         if (printer=='36" wide carriage plotter'):
-            self.cfg['paper_width'] =(36 * in_to_px)
-            self.cfg['border']      =(5*cm_to_px)        # document borders
+            self.cfg['paper_width']=(36 * in_to_px)
+            self.cfg['border']=(5*cm_to_px)        # document borders
         border=self.cfg['border']
 
         # create the document info and fill it in
@@ -84,7 +84,7 @@ class PatternDesign():
                     'patternNumber':'1870-M-T-1'         # mandatory
                     }
         self.cfg['metainfo']=metainfo
-        pattern_pieces   =4
+        pattern_pieces=4
 
         #  attributes for the entire svg document
         docattrs={'currentscale' : "0.05 : 1",
@@ -147,7 +147,7 @@ class PatternDesign():
         trousers.add(testGrid)
         TG=trousers.testGrid
         # TODO - make first pattern start automatically without putting in 12cm y offset
-        start= Point('reference', 'start', 25*cm_to_px,  0*cm_to_px, 'point_style') # start underneath the Title Block, make this automatic someday
+        start=Point('reference', 'start', 25*cm_to_px,  0*cm_to_px, 'point_style') # start underneath the Title Block, make this automatic someday
         TG.add(start)
         TG.attrs['transform']='translate(' + TG.start.coords + ')'
         TG_path_svg=path()
@@ -196,7 +196,7 @@ class PatternDesign():
         trousers.add(front)
         tf=trousers.front
         # TODO - make first pattern start automatically without putting in 12cm y offset
-        start= Point('reference', 'start', 0,  0, 'point_style') # start underneath the Title Block, make this automatic someday
+        start=Point('reference', 'start', 0,  0, 'point_style') # start underneath the Title Block, make this automatic someday
         tf.add(start)
         tf.attrs['transform']='translate(' + tf.start.coords + ')'
 
@@ -439,7 +439,7 @@ class PatternDesign():
 
         # front grainline path
         x1,  y1=(tf.p16.x,  tf.C.y)
-        x2,  y2  =tf.p16.x,  (tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5))
+        x2,  y2=tf.p16.x,  (tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5))
 
         # Add the grainline
         tf.add(grainLinePath(name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
@@ -458,7 +458,7 @@ class PatternDesign():
         back=PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0)
         trousers.add(back)
         tb=trousers.back
-        start= Point('reference', 'start', 0,  0, 'point_style')
+        start=Point('reference', 'start', 0,  0, 'point_style')
         tb.add(start)
         tb.attrs['transform']='translate(' + tb.start.coords + ')'
 
@@ -575,7 +575,7 @@ class PatternDesign():
         # Curve b/w p27 and p12
         # c13=x on line with c12p17, tb.p33.y
         m=(tb.c12.y - tb.p27.y)/(tb.c12.x - tb.p27.x)
-        b= tb.p27.y -  m*tb.p27.x
+        b=tb.p27.y -  m*tb.p27.x
         y=tb.p33.y
         x=(y - b)/m
         tb.add(Point('reference', 'c13', x,  y, 'controlpoint_style')) # lower half of tangent at p27
@@ -732,7 +732,7 @@ class PatternDesign():
         waistfront=PatternPiece('pattern', 'waistfront', letter='C', fabric=2, interfacing=0, lining=0)
         trousers.add(waistfront)
         wf=trousers.waistfront
-        start= Point('reference', 'start', 0,  0, 'point_style')
+        start=Point('reference', 'start', 0,  0, 'point_style')
         wf.add(start)
         transform_coords=str(- tf.A.x) + ', ' + str(- tf.A.y) # doesn't do anything
         wf.attrs['transform']='translate(' +  transform_coords +')'   # doesn't do anything
@@ -769,7 +769,7 @@ class PatternDesign():
         waistback=PatternPiece('pattern', 'waistback', letter='D', fabric=1, interfacing=0, lining=0)
         trousers.add(waistback)
         wb=trousers.waistback
-        start= Point('reference', 'start', 0,  0, 'point_style')
+        start=Point('reference', 'start', 0,  0, 'point_style')
         wb.add(start)
         transform_coords=str(- tb.p20.x) + ', ' + str(- tb.p20.y) # doesn't do anything
         wb.attrs['transform']='translate(' +  transform_coords +')'   # doesn't do anything
@@ -826,7 +826,7 @@ class PatternDesign():
         fly=PatternPiece('pattern', 'fly', letter='E', fabric=2, interfacing=0, lining=3)
         trousers.add(fly)
         f=trousers.fly
-        start= Point('reference', 'start', 0,  0, 'point_style')
+        start=Point('reference', 'start', 0,  0, 'point_style')
         f.add(start)
         transform_coords=str(- tf.A.x) + ', ' + str(- tf.A.y) # doesn't do anything
         f.attrs['transform']='translate(' +  transform_coords +')'   # doesn't do anything
@@ -867,7 +867,7 @@ class PatternDesign():
         front_hemlining=PatternPiece('pattern', 'front_hemlining', letter='F', fabric=2, interfacing=0, lining=0)
         trousers.add(front_hemlining)
         fh=trousers.front_hemlining
-        start= Point('reference', 'start', 0,  0, 'point_style')  # calculate points relative to 0,0
+        start=Point('reference', 'start', 0,  0, 'point_style')  # calculate points relative to 0,0
         fh.add(start)
         transform_coords='0 , 0' # doesn't do anything
         f.attrs['transform']='translate(' +  transform_coords +')'   # doesn't do anything
@@ -904,7 +904,7 @@ class PatternDesign():
         back_hemlining=PatternPiece('pattern', 'back_hemlining', letter='G', fabric=2, interfacing=0, lining=0)
         trousers.add(back_hemlining)
         bh=trousers.back_hemlining
-        start= Point('reference', 'start', 0,  0, 'point_style')  # calculate points relative to 0,0
+        start=Point('reference', 'start', 0,  0, 'point_style')  # calculate points relative to 0,0
         bh.add(start)
         transform_coords='0 , 0' # doesn't do anything
         bh.attrs['transform']='translate(' +  transform_coords +')'   # doesn't do anything
