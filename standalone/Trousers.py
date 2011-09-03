@@ -242,7 +242,6 @@ class PatternDesign():
 		tf.add(Point('reference', 'Knee', tf.p16.x, tf.E.y, 'point_style'))
 		x, y=intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y, tf.Knee.x, tf.Knee.y)#find intersection of lines p13p30 and p11Knee
 		tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee, used to calculate sideseam curve
-
 		#control points for side seam
 		#p9 & p11 are not used as knots in curve.
 		#Side Seam curve is 3 points --> p7 (waist), p10 (seat), p12 (knee).  Control points c2 & c3 create vertical tangent at p10.x
@@ -255,7 +254,6 @@ class PatternDesign():
 		#c4=p32 --> intersection of line p12-p13 and line p11-Knee
 		tf.add(Point('reference', 'c3', tf.p10.x, tf.p32.y, 'controlpoint_style'))
 		tf.add(Point('reference', 'c4', tf.p32.x, tf.p32.y, 'controlpoint_style'))
-
 		#control points for hemallowance
 		pointlist=[]
 		pointlist.append(tf.L)
@@ -266,7 +264,6 @@ class PatternDesign():
 		tf.add(Point('reference', 'c12', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  L & M
 		tf.add(Point('reference', 'c13', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w M & K
 		tf.add(Point('reference', 'c14', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w M & K
-
 		#control points for inseam curve
 		pointlist=[]
 		pointlist.append(tf.p4)
@@ -278,7 +275,6 @@ class PatternDesign():
 		tf.add(Point('reference', 'c17', x, y, 'controlpoint_style')) #b/w p4 & p2
 		x, y=intersectionOfLines(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, tf.p2.x, tf.p2.y, tf.Knee.x, tf.Knee.y)# intersection of p4p5 and p2Knee
 		tf.add(Point('reference', 'c18', x, y, 'controlpoint_style')) #b/w  p4 & p2
-
 		#control points at front fly curve
 		tf.add(Point('reference', 'c21', tf.p2.x + abs(tf.p2.x - tf.D.x)*(0.5), tf.p2.y, 'controlpoint_style')) #c21 --> b/w p2 & C, halfway b/w p2.x & D.x
 		#TODO - improve intersectionOfLines function to accept vertical lines
@@ -287,7 +283,6 @@ class PatternDesign():
 		x=tf.D.x#find control point c22with x=tf.D.x, this will be on vertical line AD
 		y=m*x + b#y of c22
 		tf.add(Point('reference', 'c22', x, y, 'controlpoint_style')) #b/w  p2 & C at intersection of lines AD and p6p7
-
 		#control points for hemline
 		pointlist=[]
 		pointlist.append(tf.p13)
@@ -298,7 +293,6 @@ class PatternDesign():
 		tf.add(Point('reference', 'c26', scp[0].x, scp[0].y, 'controlpoint_style')) #b/w  13 & 15
 		tf.add(Point('reference', 'c27', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w 15 & 5
 		tf.add(Point('reference', 'c28', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w 15 & 5
-
 		#create fly clip path:
 		tf.add(Point('reference', 'f1', tf.p3.x, tf.A.y, 'point_style'))
 		tf.add(Point('reference', 'f2', tf.p3.x, tf.p3.y, 'point_style'))
@@ -307,7 +301,6 @@ class PatternDesign():
 		tf.add(Point('reference', 'f5', tf.f4.x, tf.A.y, 'point_style'))
 		tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'controlpoint_style'))#b/w f2 & f4
 		tf.add(Point('reference', 'c30', tf.f4.x, tf.c22.y, 'controlpoint_style'))#b/w f2 & f4
-
 		#Draw reference lines
 		grid_path_svg=path()
 		gps=grid_path_svg
@@ -346,8 +339,6 @@ class PatternDesign():
 		gps.appendCubicCurveToPath(tf.c29.x, tf.c29.y, tf.c30.x, tf.c30.y, tf.f4.x, tf.f4.y, relative=False)
 		gps.appendLineToPath(tf.f5.x, tf.f5.y, relative=False)
 		gps.appendLineToPath(tf.f1.x, tf.f1.y, relative=False)
-
-
 		#Assemble all paths down here
 		#Paths are a bit differemt - we create the SVG and then create the object to hold it
 		#See the pysvg library docs for the pysvg methods
@@ -371,7 +362,6 @@ class PatternDesign():
 		#front fly curve
 		sps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x, tf.c22.y, tf.C.x, tf.C.y, relative=False)
 		sps.appendLineToPath(tf.A.x, tf.A.y, relative=False)
-
 		#cuttingline path
 		cuttingline_path_svg=path()
 		cps=cuttingline_path_svg
@@ -393,14 +383,12 @@ class PatternDesign():
 		#front fly curve
 		cps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x, tf.c22.y, tf.C.x, tf.C.y, relative=False)
 		cps.appendLineToPath(tf.A.x, tf.A.y, relative=False)
-
 		#waistline path
 		waistline_path_svg=path()
 		wps=waistline_path_svg
 		tf.add(Path('pattern', 'tfwp', 'Trousers Front Waistline Path', wps, 'dart_style'))
 		wps.appendMoveToPath(tf.B.x, tf.B.y, relative=False)
 		wps.appendLineToPath(tf.p7.x, tf.p7.y, relative=False)
-
 		#front fly stitching line path
 		fly_stitch_path_svg=path()
 		fsps=fly_stitch_path_svg
@@ -408,16 +396,13 @@ class PatternDesign():
 		fsps.appendMoveToPath(tf.f2.x, tf.f2.y, relative=False)
 		fsps.appendCubicCurveToPath(tf.c29.x, tf.c29.y, tf.c30.x, tf.c30.y, tf.f4.x, tf.f4.y, relative=False)
 		fsps.appendLineToPath(tf.f4.x, tf.A.y, relative=False)
-
 		#front grainline path
 		x1, y1=(tf.p16.x, tf.C.y)
 		x2, y2=tf.p16.x, (tf.p4.y + abs(tf.p14.y - tf.p4.y)*(0.5))
 		tf.add(grainLinePath(name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
-
 		#set the label location. Someday this should be automatic
 		tf.label_x=tf.p16.x + 2*CM
 		tf.label_y=tf.p16.y
-
 		#end trousers front (tf)
 
 
