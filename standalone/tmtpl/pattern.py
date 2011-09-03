@@ -59,7 +59,12 @@ def referencePoint(name, x, y, transform = ''):
     """
     return Point('reference', name, x, y, 'point_style', transform = '')
 
-def cPoint(name, x, y, transform = ''):
+def cPoint(parent, name, x, y, transform = ''):
+	pnt = controlPoint(name, x, y, transform = '')
+	parent.add(pnt)
+	return pnt
+
+def controlPoint(name, x, y, transform = ''):
     """
     Creates  control Points on reference layer
     """
