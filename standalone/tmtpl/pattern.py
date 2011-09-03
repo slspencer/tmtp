@@ -980,3 +980,50 @@ class TextBlock(pBase):
         md[self.groupname].append(tg)
 
         return md
+
+def TestGrid(self):
+	"""
+	Creates two TestGrids at top of pattern --> 20cm & 8in
+	"""
+	testGrid=PatternPiece('pattern', 'testGrid', letter="", fabric=0, interfacing=0, lining=0)
+	self.add(testGrid)
+	tg=self.testGrid
+	tg_path=path()
+	tgps=path()
+	tg.add(Path('reference','testgrid', 'Trousers Test Grid', tgps, 'cuttingline_style'))
+	#Points
+	start=rPoint('start', 25*cm_to_px, 0*cm_to_px)
+	tg.add(start)
+	tg.attrs['transform']='translate(' + tg.start.coords + ')'
+	i, j=0, 0 #
+	while (i<=20):
+		x=tg.start.x + i*cm_to_px
+		y=tg.start.y + j*cm_to_px
+		tgps.appendMoveToPath(x, y, relative=False)
+		tgps.appendLineToPath(x, y + 20*cm_to_px, relative=False)#draw vertical lines of test grid
+		i=i + 1
+	i, j=0, 0
+	while (j<=20):
+		x=tg.start.x + i*cm_to_px
+		y=tg.start.y + j*cm_to_px
+		tgps.appendMoveToPath(x, y, relative=False)
+		tgps.appendLineToPath(x + 20*cm_to_px, y, relative=False)#draw vertical lines of test grid
+		j=j + 1
+	i, j=0, 0 #
+	while (i<=8):
+		x=tg.start.x + 25*cm_to_px+ i*in_to_px
+		y=tg.start.y + j*in_to_px
+		tgps.appendMoveToPath(x, y, relative=False)
+		tgps.appendLineToPath(x, y + 8*in_to_px, relative=False)#draw vertical lines of test grid
+		i=i + 1
+	i, j=0, 0
+	while (j<=8):
+		x=tg.start.x + 25*cm_to_px  + i*in_to_px
+		y=tg.start.y + j*in_to_px
+		tgps.appendMoveToPath(x, y, relative=False)
+		tgps.appendLineToPath(x + 8*in_to_px, y, relative=False)#draw vertical lines of test grid
+		j=j + 1
+	#set the label location. Someday this should be automatic
+	tg.label_x=tg.start.x + (25*cm_to_px) +(9*in_to_px)
+	tg.label_y=tg.start.y + (2*cm_to_px)
+	return tg
