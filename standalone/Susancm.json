@@ -134,9 +134,9 @@
 		  "type":"float",
 		  "gui_text":"Knee"
 		  },
-  "bottom_width": {
+  "hem_width": {
   		  "value":"43",
 		  "type":"float",
-		  "gui_text":"Bottom Width"
+		  "gui_text":"Hem Width"
 		  }
 }
