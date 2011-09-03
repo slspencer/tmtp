@@ -276,6 +276,3 @@ class TitleBlock(pBase):
 
         md[self.groupname].append(tbg)
         return md
-
-
-
