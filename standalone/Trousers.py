@@ -136,14 +136,14 @@ class PatternDesign():
 		trousers.add(testGrid)
 		tg=trousers.testGrid
 		#TODO - make first pattern start automatically without putting in 12cm y offset
-		start=Point('reference', 'start', 25*CM, 0*CM, 'point_style') #start underneath the Title Block, make this automatic someday
+		start=referencePoint('start', 25*CM, 0*CM) #start underneath the Title Block, make this automatic someday
 		tg.add(start)
 		tg.attrs['transform']='translate(' + tg.start.coords + ')'
 		tg_path=path()
 		tgps=tg_path
 		tg.add(Path('reference','testgrid', 'Trousers Test Grid', tgps, 'cuttingline_style'))
 		#Points
-		tg.add(Point('reference', 'X0', tg.start.x, tg.start.y, 'point_style'))
+		tg.add(referencePoint('X0', tg.start.x, tg.start.y))
 		i, j=0, 0 #
 		while (i<=20):
 			x=tg.start.x + i*CM
@@ -176,72 +176,63 @@ class PatternDesign():
 		tg.label_x=tg.start.x + (25*CM) +(9*IN)
 		tg.label_y=tg.start.y + (2*CM)
 
-		#Create the front pattern piece
+		# Begin Trousers Front pattern piece
 		front=PatternPiece('pattern', 'front', letter='AA', fabric=2, interfacing=0, lining=0)
 		trousers.add(front)
 		tf=trousers.front
-		#TODO - make first pattern start automatically without putting in 12cm y offset
-		start=Point('reference', 'start', 0, 0, 'point_style')#start underneath the Title Block, make this automatic someday
+		start=referencePoint('start', 0, 0)
 		tf.add(start)
 		tf.attrs['transform']='translate(' + tf.start.coords + ')'
-
 		#Points
-		tf.add(Point('reference', 'A', tf.start.x + scale_1_8 + (0.5*CM*seatRatio), tf.start.y, 'point_style'))#A is on start top line, over by distance of 2 to D
-		tf.add(Point('reference', 'B', tf.A.x, tf.A.y + (3.8*CM*riseRatio), 'point_style'))#B is waistline
-		tf.add(Point('reference', 'C', tf.A.x, tf.B.y + (18.5*CM*riseRatio), 'point_style'))#C is seatline
-		tf.add(Point('reference', 'D', tf.A.x, tf.A.y + rise, 'point_style'))#D is riseline
-		tf.add(Point('reference', 'E', tf.A.x, tf.D.y + (cd.inside_leg*0.5) - (5.5*CM*riseRatio), 'point_style'))#E is kneeline
-		tf.add(Point('reference', 'F', tf.A.x, tf.D.y + cd.inside_leg - (1*CM*insideLegRatio), 'point_style'))#F is hemline
-		tf.add(Point('reference', 'I', tf.A.x, tf.B.y + (abs(tf.C.y - tf.B.y)*0.5), 'point_style'))#I is midpoint b/w waist B and seatline (rise) C
-		tf.add(Point('reference', 'p2', tf.D.x - (scale_1_8 + 0.50*CM*seatRatio), tf.D.y, 'point_style'))
+		tf.add(referencePoint('A', tf.start.x + scale_1_8 + (0.5*CM)*seatRatio,  tf.start.y))
+		tf.add(referencePoint('B', tf.A.x, tf.A.y + (3.8*CM*riseRatio)))#B is waistline
+		tf.add(referencePoint('C', tf.A.x, tf.B.y + (18.5*CM*riseRatio)))#C is seatline
+		tf.add(referencePoint('D', tf.A.x, tf.A.y + rise))#D is riseline
+		tf.add(referencePoint('E', tf.A.x, tf.D.y + (cd.inside_leg*0.5) - (5.5*CM*riseRatio)))#E is kneeline
+		tf.add(referencePoint('F', tf.A.x, tf.D.y + cd.inside_leg - (1*CM*insideLegRatio)))#F is hemline
+		tf.add(referencePoint('I', tf.A.x, tf.B.y + (abs(tf.C.y - tf.B.y)*0.5)))#I is midpoint b/w waist B and seatline (rise) C
+		tf.add(referencePoint('p2', tf.D.x - (scale_1_8 + 0.50*CM*seatRatio), tf.D.y))
 		length=(tf.D.x - tf.p2.x)*(.5)
 		x, y=pointAlongLine(tf.D.x, tf.D.y, (tf.D.x - 100), (tf.D.y - 100), length) #100pt is arbitrary distance to create 45degree angle, p3 is 45 degrees NW of D at half the length b/w D & p2
-		tf.add(Point('reference', 'p3', x, y, 'point_style'))
-		tf.add(Point('reference', 'p7', tf.B.x + (cd.waist*0.25), tf.B.y, 'point_style'))
-		tf.add(Point('reference', 'p8', tf.A.x + (cd.waist*0.25)+(0.75*CM*waistRatio), tf.A.y, 'point_style'))
-		tf.add(Point('reference', 'p9', tf.I.x + (cd.seat*0.25) - (1*CM*seatRatio), tf.I.y, 'point_style'))
-		tf.add(Point('reference', 'p10', tf.C.x + (cd.seat*0.25), tf.C.y, 'point_style'))
-		tf.add(Point('reference', 'p11', tf.D.x + (cd.seat*0.25) - (0.5*CM*seatRatio), tf.D.y, 'point_style'))
-		tf.add(Point('reference', 'p16', tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y, 'point_style'))
-		tf.add(Point('reference', 'p4', tf.p16.x - (cd.knee*0.25), tf.E.y, 'point_style'))
-		tf.add(Point('reference', 'p5', tf.p16.x - (cd.bottom_width*0.25), tf.F.y, 'point_style'))
+		tf.add(referencePoint('p3', x, y))
+		tf.add(referencePoint('p7', tf.B.x + (cd.waist*0.25), tf.B.y))
+		tf.add(referencePoint('p8', tf.A.x + (cd.waist*0.25)+(0.75*CM*waistRatio), tf.A.y))
+		tf.add(referencePoint('p9', tf.I.x + (cd.seat*0.25) - (1*CM*seatRatio), tf.I.y))
+		tf.add(referencePoint('p10', tf.C.x + (cd.seat*0.25), tf.C.y))
+		tf.add(referencePoint('p11', tf.D.x + (cd.seat*0.25) - (0.5*CM*seatRatio), tf.D.y))
+		tf.add(referencePoint('p16', tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y))
+		tf.add(referencePoint('p4', tf.p16.x - (cd.knee*0.25), tf.E.y))
+		tf.add(referencePoint('p5', tf.p16.x - (cd.bottom_width*0.25), tf.F.y))
 		m=(tf.p5.y - tf.p4.y)/(tf.p5.x-tf.p4.x)
 		b=tf.p4.y - (m*tf.p4.x)
 		x=(tf.D.y - b)/m
-		tf.add(Point('reference', 'p6', x, tf.D.y, 'point_style'))
+		tf.add(referencePoint('p6', x, tf.D.y))
 		#TODO - set knee & hem width to be proportional to seat
-		tf.add(Point('reference', 'p12', tf.p4.x + (cd.knee*0.5), tf.p4.y, 'point_style'))
-		tf.add(Point('reference', 'p13', tf.p5.x + (cd.bottom_width*0.5), tf.p5.y, 'point_style'))
-		#tf.add(Point('reference', 'p14', tf.p5.x + (cd.bottom_width*0.25) + (0.5*CM*seatRatio), tf.p5.y, 'point_style'))
-		tf.add(Point('reference', 'p14', tf.p16.x, tf.F.y, 'point_style'))
-		tf.add(Point('reference', 'p15', tf.p14.x, tf.p14.y - (2*CM*insideLegRatio), 'point_style'))
+		tf.add(referencePoint('p12', tf.p4.x + (cd.knee*0.5), tf.p4.y))
+		tf.add(referencePoint('p13', tf.p5.x + (cd.bottom_width*0.5), tf.p5.y))
+		tf.add(referencePoint('p14', tf.p16.x, tf.F.y))
+		tf.add(referencePoint('p15', tf.p14.x, tf.p14.y - (2*CM*insideLegRatio)))
 		m=(tf.p13.y - tf.p12.y)/(tf.p13.x-tf.p12.x)
 		b=tf.p13.y - (m*tf.p13.x)
 		x=(tf.D.y - b)/m
-		tf.add(Point('reference', 'p30', x, tf.D.y, 'point_style'))
+		tf.add(referencePoint('p30', x, tf.D.y))
 		length=abs(tf.D.y - tf.A.y)
 		x, y=pointAlongLine(tf.p16.x, tf.p16.y, tf.p15.x, tf.p15.y, -length)
-		tf.add(Point('reference', 'G', x, y, 'point_style'))
+		tf.add(referencePoint('G', x, y))
 		#Points J, K, L, M were added to formula -- J is an inflection point to calculate inseam curve. K, L,& M are extensions of leg length for a hem allowance
 		distance=(math.sqrt(((tf.p4.x - tf.p6.x)**2) + ((tf.p4.y - tf.p6.y)**2))) * (0.5)  #J is at midpoint on line from p4 to p6, not at midpoint on line between p4 & p2
-		#old -> x, y=pointAlongLine(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, -distance)
-		#old -> tf.add(Point('reference', 'J', x, y, 'point_style'))
 		pntJ=pointAlongLineP(tf.p4, tf.p5, 'J', -distance)
 		tf.add(pntJ)
-		#tf.add(Point('reference', 'K', tf.p5.x, tf.p5.y + HEM_ALLOWANCE, 'point_style'))
 		distance=HEM_ALLOWANCE
 		x, y=pointAlongLine(tf.p5.x, tf.p5.y, tf.p4.x, tf.p4.y, distance)
-		tf.add(Point('reference', 'K', x, y, 'point_style'))
-		#tf.add(Point('reference', 'L', tf.p13.x, tf.p13.y + HEM_ALLOWANCE, 'point_style'))
+		tf.add(referencePoint('K', x, y))
 		distance=HEM_ALLOWANCE
 		x, y=pointAlongLine(tf.p13.x, tf.p13.y, tf.p12.x, tf.p12.y, distance)
-		tf.add(Point('reference', 'L', x, y, 'point_style'))
-		tf.add(Point('reference', 'M', tf.p15.x, tf.p15.y - HEM_ALLOWANCE, 'point_style'))
-		#x, y=intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
-		#tf.add(Point('reference', 'Knee', x, y, 'point_style'))
-		tf.add(Point('reference', 'Knee', tf.p16.x, tf.E.y, 'point_style'))
+		tf.add(referencePoint('L', x, y))
+		tf.add(referencePoint('M', tf.p15.x, tf.p15.y - HEM_ALLOWANCE))
+		tf.add(referencePoint('Knee', tf.p16.x, tf.E.y))
 		x, y=intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y, tf.Knee.x, tf.Knee.y)#find intersection of lines p13p30 and p11Knee
-		tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee, used to calculate sideseam curve
+		tf.add(referencePoint('p32', x, y)) #b/w  p11 & Knee, used to calculate sideseam curve
 		#control points for side seam
 		#p9 & p11 are not used as knots in curve.
 		#Side Seam curve is 3 points --> p7 (waist), p10 (seat), p12 (knee).  Control points c2 & c3 create vertical tangent at p10.x
@@ -294,11 +285,10 @@ class PatternDesign():
 		tf.add(Point('reference', 'c27', fcp[1].x, fcp[1].y, 'controlpoint_style')) #b/w 15 & 5
 		tf.add(Point('reference', 'c28', scp[1].x, scp[1].y, 'controlpoint_style')) #b/w 15 & 5
 		#create fly clip path:
-		tf.add(Point('reference', 'f1', tf.p3.x, tf.A.y, 'point_style'))
-		tf.add(Point('reference', 'f2', tf.p3.x, tf.p3.y, 'point_style'))
-		#tf.add(Point('reference', 'f3', tf.p3.x, tf.p3.y, 'point_style')) --> no longer in use
-		tf.add(Point('reference', 'f4', tf.A.x + (5*CM*seatRatio), tf.C.y, 'point_style'))
-		tf.add(Point('reference', 'f5', tf.f4.x, tf.A.y, 'point_style'))
+		tf.add(referencePoint('f1', tf.p3.x, tf.A.y))
+		tf.add(referencePoint('f2', tf.p3.x, tf.p3.y))
+		tf.add(referencePoint('f4', tf.A.x + (5*CM*seatRatio), tf.C.y))
+		tf.add(referencePoint('f5', tf.f4.x, tf.A.y))
 		tf.add(Point('reference', 'c29', tf.c22.x, tf.p3.y, 'controlpoint_style'))#b/w f2 & f4
 		tf.add(Point('reference', 'c30', tf.f4.x, tf.c22.y, 'controlpoint_style'))#b/w f2 & f4
 		#Draw reference lines
