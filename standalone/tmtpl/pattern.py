@@ -48,13 +48,18 @@ def patternPoint(name, x, y, transform = ''):
     """
     return Point('reference', name, x,  y, 'point_style', transform = '')
 
-def rPoint(name, x, y, transform = ''):
+def rPoint(parent, name, x, y, transform = ''):
+	pnt = referencePoint(name, x, y, transform = '')
+	parent.add(pnt)
+	return pnt
+
+def referencePoint(name, x, y, transform = ''):
     """
     Creates reference Points on reference layer
     """
     return Point('reference', name, x, y, 'point_style', transform = '')
 
-def controlPoint(name, x, y, transform = ''):
+def cPoint(name, x, y, transform = ''):
     """
     Creates  control Points on reference layer
     """
@@ -992,38 +997,37 @@ def TestGrid(self):
 	tgps=path()
 	tg.add(Path('reference','testgrid', 'Trousers Test Grid', tgps, 'cuttingline_style'))
 	#Points
-	start=rPoint('start', 25*CM_TO_PX, 0*CM_TO_PX)
-	tg.add(start)
-	tg.attrs['transform']='translate(' + tg.start.coords + ')'
-	i, j=0, 0 #
+	tgstart=rPoint(tg, 'tgstart', 25*CM_TO_PX, 0*CM_TO_PX)
+	tg.attrs['transform']='translate(' + tgstart.coords + ')'
+	i, j=0, 0
 	while (i<=20):
-		x=tg.start.x + i*CM_TO_PX
-		y=tg.start.y + j*CM_TO_PX
+		x=tgstart.x + i*CM_TO_PX
+		y=tgstart.y + j*CM_TO_PX
 		tgps.appendMoveToPath(x, y, relative=False)
 		tgps.appendLineToPath(x, y + 20*CM_TO_PX, relative=False)#draw vertical lines of test grid
 		i=i + 1
 	i, j=0, 0
 	while (j<=20):
-		x=tg.start.x + i*CM_TO_PX
-		y=tg.start.y + j*CM_TO_PX
+		x=tgstart.x + i*CM_TO_PX
+		y=tgstart.y + j*CM_TO_PX
 		tgps.appendMoveToPath(x, y, relative=False)
 		tgps.appendLineToPath(x + 20*CM_TO_PX, y, relative=False)#draw vertical lines of test grid
 		j=j + 1
-	i, j=0, 0 #
+	i, j=0, 0
 	while (i<=8):
-		x=tg.start.x + 25*CM_TO_PX+ i*IN_TO_PX
-		y=tg.start.y + j*IN_TO_PX
+		x=tgstart.x + 25*CM_TO_PX+ i*IN_TO_PX
+		y=tgstart.y + j*IN_TO_PX
 		tgps.appendMoveToPath(x, y, relative=False)
 		tgps.appendLineToPath(x, y + 8*IN_TO_PX, relative=False)#draw vertical lines of test grid
 		i=i + 1
 	i, j=0, 0
 	while (j<=8):
-		x=tg.start.x + 25*CM_TO_PX  + i*IN_TO_PX
-		y=tg.start.y + j*IN_TO_PX
+		x=tgstart.x + 25*CM_TO_PX  + i*IN_TO_PX
+		y=tgstart.y + j*IN_TO_PX
 		tgps.appendMoveToPath(x, y, relative=False)
 		tgps.appendLineToPath(x + 8*IN_TO_PX, y, relative=False)#draw vertical lines of test grid
 		j=j + 1
 	#set the label location. Someday this should be automatic
-	tg.label_x=tg.start.x + (25*CM_TO_PX) +(9*IN_TO_PX)
-	tg.label_y=tg.start.y + (2*CM_TO_PX)
+	tg.label_x=tgstart.x + (25*CM_TO_PX) +(9*IN_TO_PX)
+	tg.label_y=tgstart.y + (2*CM_TO_PX)
 	return tg
