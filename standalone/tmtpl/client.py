@@ -72,10 +72,10 @@ class Client(object):
             units = self.client['measureunit']['value']
             if units == 'cm':
                 #self.__conversion__ = cm_to_pt
-                self.__conversion__ = cm_to_px
+                self.__conversion__ = CM_TO_PX
             elif  units == 'in':
                 #self.__conversion__ = in_to_pt
-                self.__conversion__ = in_to_px
+                self.__conversion__ = IN_TO_PX
         except KeyError:
             print 'Client Data measurement units not defined in client data file'
             raise
