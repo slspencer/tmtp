@@ -19,16 +19,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # measurement constants
-in_to_pt = ( 72.72 / 1    )  #convert inches to printer's points
-cm_to_pt = ( 72.72 / 2.54  ) #convert centimeters to printer's points
-cm_to_in = ( 1 / 2.54 )   #convert centimeters to inches
-in_to_cm = ( 2.54 / 1 )   #convert inches to centimeters
-
-in_to_px = ( 90 / 1 )   	  # convert inches to pixels - Inkscape value
-cm_to_px = ( 90 /  2.54 )  #convert cm to px - Inkscape value
+IN_TO_PT = (72.72/1.) #convert inches to printer's points
+CM_TO_PT = (72.72/2.54) #convert centimeters to printer's points
+IN_TO_CM = (2.54/1.) #convert inches to centimeters
+CM_TO_IN = (1/2.54) #convert centimeters to inches
+IN_TO_PX = (90/1.) #convert inches to pixels - Inkscape value
+CM_TO_PX = (90/2.54) #convert cm to px - Inkscape value
 
 # sewing constants
-QUARTER_SEAM_ALLOWANCE = ( in_to_px * 1 / 4 ) # 1/4" seam allowance
-SEAM_ALLOWANCE         = ( in_to_px * 5 / 8 ) # 5/8" seam allowance
-HEM_ALLOWANCE          = ( in_to_px * 2     ) # 2" seam allowance
-PATTERN_OFFSET         = ( in_to_px * 3     ) # 3" between patterns
+QUARTER_SEAM_ALLOWANCE=(IN_TO_PX*1/4.) #1/4" seam allowance
+SEAM_ALLOWANCE=(IN_TO_PX*5/8.) #5/8" seam allowance
+HEM_ALLOWANCE=(IN_TO_PX*2) #2" seam allowance
+PATTERN_OFFSET=(IN_TO_PX*3) #3" between patterns
