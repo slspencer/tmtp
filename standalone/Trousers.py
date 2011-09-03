@@ -95,6 +95,8 @@ class PatternDesign():
 		#Set up the pattern title block
 		TB=TitleBlock('notes', 'titleblock', self.cfg['border'], self.cfg['border'], stylename='titleblock_text_style')
 		doc.add(TB)
+		#Create the test grids  at top of document
+		TestGrid(doc)
 
 		#Begin the real work here
 
@@ -109,9 +111,9 @@ class PatternDesign():
 
 		#client values
 		rise=abs(cd.outside_leg - cd.inside_leg) - (0.5*CM)
-		scale=cd.seat/2 #scale is 1/2 body circumference of reference measurement
-		scale_1_4=scale/4
-		scale_1_8=scale/8
+		scale=cd.seat/2. #scale is 1/2 body circumference of reference measurement
+		scale_1_4=scale/4.
+		scale_1_8=scale/8.
 
 		#client ratios
 		outsideLegRatio=(cd.outside_leg/patternOutsideLeg)
@@ -122,60 +124,11 @@ class PatternDesign():
 		bottomWidthRatio=(cd.bottom_width/patternBottomWidth)
 		riseRatio=(rise/patternRise)
 
-		#Create trousers object to hold all pattern pieces
+		#Begin Trousers
 		trousers=Pattern('trousers')
 		doc.add(trousers)
-
-		#Set up styles dictionary and marker dictionary in the pattern object
-		#TODO - this should be transparent
 		trousers.styledefs.update(self.styledefs)
 		trousers.markerdefs.update(self.markerdefs)
-
-		#Create the Test Grid
-		#TODO - make Test Grid a function in pattern.py or patternbase.py
-		testGrid=PatternPiece('pattern', 'testGrid', letter='A', fabric=1, interfacing=0, lining=0)
-		trousers.add(testGrid)
-		tg=trousers.testGrid
-		start=rPoint('start', 25*CM, 0*CM)
-		tg.add(start)
-		tg.attrs['transform']='translate(' + tg.start.coords + ')'
-		tg_path=path()
-		tgps=path()
-		tg.add(Path('reference','testgrid', 'Trousers Test Grid', tgps, 'cuttingline_style'))
-		#Points
-		X0=rPoint('X0', start.x, start.y)
-		tg.add(X0)
-		i, j=0, 0 #
-		while (i<=20):
-			x=tg.start.x + i*CM
-			y=tg.start.y + j*CM
-			tgps.appendMoveToPath(x, y, relative=False)
-			tgps.appendLineToPath(x, y + 20*CM, relative=False)#draw vertical lines of test grid
-			i=i + 1
-		i, j=0, 0
-		while (j<=20):
-			x=tg.start.x + i*CM
-			y=tg.start.y + j*CM
-			tgps.appendMoveToPath(x, y, relative=False)
-			tgps.appendLineToPath(x + 20*CM, y, relative=False)#draw vertical lines of test grid
-			j=j + 1
-		i, j=0, 0 #
-		while (i<=8):
-			x=tg.start.x + 25*CM+ i*IN
-			y=tg.start.y + j*IN
-			tgps.appendMoveToPath(x, y, relative=False)
-			tgps.appendLineToPath(x, y + 8*IN, relative=False)#draw vertical lines of test grid
-			i=i + 1
-		i, j=0, 0
-		while (j<=8):
-			x=tg.start.x + 25*CM  + i*IN
-			y=tg.start.y + j*IN
-			tgps.appendMoveToPath(x, y, relative=False)
-			tgps.appendLineToPath(x + 8*IN, y, relative=False)#draw vertical lines of test grid
-			j=j + 1
-		#set the label location. Someday this should be automatic
-		tg.label_x=tg.start.x + (25*CM) +(9*IN)
-		tg.label_y=tg.start.y + (2*CM)
 
 		# Begin Trousers Front pattern piece
 		front=PatternPiece('pattern', 'front', letter='AA', fabric=2, interfacing=0, lining=0)
