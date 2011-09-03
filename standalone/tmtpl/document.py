@@ -53,8 +53,8 @@ class Document(pBase):
         self.id = name
         self.x = 0
         self.y = 0
-        self.width = 8.5 * in_to_pt
-        self.height = 11.0 * in_to_pt
+        self.width = 8.5 * IN_TO_PT
+        self.height = 11.0 * IN_TO_PT
         self.cfg.update(prog_cfg)
         self.filename = self.cfg['args'][0]
         self.attrs = attributes
