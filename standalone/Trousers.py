@@ -83,7 +83,6 @@ class PatternDesign():
 					'patternNumber':'1870-M-T-1'   #mandatory
 					}
 		self.cfg['metainfo']=metainfo
-		pattern_pieces=7
 
 		#attributes for the entire svg document
 		docattrs={'currentscale' : "0.5 : 1",
@@ -101,12 +100,13 @@ class PatternDesign():
 		#Begin the real work here
 
 		#pattern values
+		pattern_pieces=7
 		patternOutsideLeg=112*CM
 		patternInsideLeg=80*CM
 		patternWaist=86*CM
 		patternSeat=102*CM
 		patternKnee=50*CM
-		patternBottomWidth=43*CM
+		patternHemWidth=43*CM
 		patternRise=abs(patternOutsideLeg - patternInsideLeg)
 
 		#client values
@@ -121,7 +121,7 @@ class PatternDesign():
 		waistRatio=(cd.waist/patternWaist)
 		seatRatio=(cd.seat/patternSeat)
 		kneeRatio=(cd.knee/patternKnee)
-		bottomWidthRatio=(cd.bottom_width/patternBottomWidth)
+		hemWidthRatio=(cd.hem_width/patternHemWidth)
 		riseRatio=(rise/patternRise)
 
 		#Begin Trousers
@@ -156,14 +156,14 @@ class PatternDesign():
 		tf.add(rPoint('p11', tf.D.x + (cd.seat*0.25) - (0.5*CM*seatRatio), tf.D.y))
 		tf.add(rPoint('p16', tf.p2.x + (abs(tf.p11.x - tf.p2.x)*0.5), tf.p2.y))
 		tf.add(rPoint('p4', tf.p16.x - (cd.knee*0.25), tf.E.y))
-		tf.add(rPoint('p5', tf.p16.x - (cd.bottom_width*0.25), tf.F.y))
+		tf.add(rPoint('p5', tf.p16.x - (cd.hem_width*0.25), tf.F.y))
 		m=(tf.p5.y - tf.p4.y)/(tf.p5.x-tf.p4.x)
 		b=tf.p4.y - (m*tf.p4.x)
 		x=(tf.D.y - b)/m
 		tf.add(rPoint('p6', x, tf.D.y))
 		#TODO - set knee & hem width to be proportional to seat
 		tf.add(rPoint('p12', tf.p4.x + (cd.knee*0.5), tf.p4.y))
-		tf.add(rPoint('p13', tf.p5.x + (cd.bottom_width*0.5), tf.p5.y))
+		tf.add(rPoint('p13', tf.p5.x + (cd.hem_width*0.5), tf.p5.y))
 		tf.add(rPoint('p14', tf.p16.x, tf.F.y))
 		tf.add(rPoint('p15', tf.p14.x, tf.p14.y - (2*CM*insideLegRatio)))
 		m=(tf.p13.y - tf.p12.y)/(tf.p13.x-tf.p12.x)
