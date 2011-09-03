@@ -44,53 +44,39 @@ class PatternDesign():
 		Method defining a pattern design. This is where the designer places
 		all elements of the design definition
 		"""
-
 		#The following attributes are set before calling this method:
-		#
 		#self.cd - Client Data, which has been loaded from the client data file
-		#
 		#self.styledefs - the style difinition dictionary, loaded from the styles file
 		#self.markerdefs - the marker definition dictionary
-		#
 		#self.cfg - configuration settings from the main app framework
-		#
-		#TODO find a way to get this administrative cruft out of this pattern method
-
+		#TODO - find a way to get this administrative cruft out of this pattern method
 		cd=self.cd	#client data is prefaced with cd.
 		self.cfg['clientdata']=cd
-		# inkscape dpi & pts  are defined per inch
-		CM=CM_TO_PX
-		IN=IN_TO_PX_
-		#TODO also extract these from this file to somewhere else
+		#TODO - also extract these from this file to somewhere else
 		printer='36" wide carriage plotter'
 		if (printer=='36" wide carriage plotter'):
 		    self.cfg['paper_width']=(36 * IN)
 		self.cfg['border']=(5*CM)#document borders
 		border=self.cfg['border']
-
-		#create the document info and fill it in
 		#TODO - abstract these into configuration file(s)
 		metainfo={'companyName':'Swank Patterns',  #mandatory
-		'designerName':'Susan Spencer',#mandatory
+					'designerName':'Susan Spencer',#mandatory
 					'patternName':'Steampunk Trousers',#mandatory
 					'patternNumber':'1870-M-T-1'   #mandatory
 					}
 		self.cfg['metainfo']=metainfo
-
 		#attributes for the entire svg document
 		docattrs={'currentscale' : "0.5 : 1",
 					'fitBoxtoViewport' : "True",
 					'preserveAspectRatio' : "xMidYMid meet",
 					}
 		doc=Document(self.cfg, name='document', attributes=docattrs)
-
-		#Set up the pattern title block
+		#Set up the Title Block and Test Grid for the top of the document
 		TB=TitleBlock('notes', 'titleblock', self.cfg['border'], self.cfg['border'], stylename='titleblock_text_style')
 		doc.add(TB)
-		#Create the test grids  at top of document
 		TestGrid(doc)
 
-		#Begin the real work here
+		#Begin the pattern ...
 
 		#pattern values
 		pattern_pieces=7
