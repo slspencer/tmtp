@@ -48,7 +48,7 @@ def patternPoint(name, x, y, transform = ''):
     """
     return Point('reference', name, x,  y, 'point_style', transform = '')
 
-def referencePoint(name, x, y, transform = ''):
+def rPoint(name, x, y, transform = ''):
     """
     Creates reference Points on reference layer
     """
