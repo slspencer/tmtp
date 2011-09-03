@@ -62,8 +62,8 @@ class Document(pBase):
         # if any print groups specified, aset up the internal list
         if 'print_groups' in self.cfg:
             self.displayed_groups = self.cfg['print_groups'].split(',')
-        pBase.__init__(self) 
-       
+        pBase.__init__(self)
+
     def draw(self):
 
         # the user may have specified on the command line to draw groups that
@@ -110,7 +110,7 @@ class Document(pBase):
                 self.attrs[lbl] = mi[lbl]
 
         self.attrs['client-name'] = self.cfg['clientdata'].customername
-        
+
         # adjust any attributes in the list
         self.attrs['margin-bottom'] = str(self.cfg['border'])
         self.attrs['margin-left'] = str(self.cfg['border'])
@@ -146,10 +146,10 @@ class Document(pBase):
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
+     inkscape:zoom="0.5"
      inkscape:document-units="pt"
      showgrid="false"
-     inkscape:window-maximized="0" />\n""")
+     inkscape:window-maximized="1" />\n""")
 # Original taken from an empty inkscape test file
 #        sz.appendTextContent("""<sodipodi:namedview
 #     id="base"
@@ -210,7 +210,7 @@ class Document(pBase):
                 if self.debug:
                     print 'Group %s is not enabled for display' % dictname
                 continue
-                
+
             wg = g()
             self.groups[dictname] = wg
             # Set the ID to the group name
@@ -233,7 +233,7 @@ class Document(pBase):
         # Write out the svg file
         sz.save(self.filename)
         return
-        
+
 class TitleBlock(pBase):
     def __init__(self, group, name, x, y, stylename = ''):
         self.name = name
