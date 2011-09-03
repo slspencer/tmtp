@@ -122,7 +122,6 @@ class PatternDesign():
 		bottomWidthRatio=(cd.bottom_width/patternBottomWidth)
 		riseRatio=(rise/patternRise)
 
-
 		#Create trousers object to hold all pattern pieces
 		trousers=Pattern('trousers')
 		doc.add(trousers)
@@ -135,51 +134,47 @@ class PatternDesign():
 		#Create the Test Grid
 		testGrid=PatternPiece('pattern', 'testGrid', letter='A', fabric=1, interfacing=0, lining=0)
 		trousers.add(testGrid)
-		TG=trousers.testGrid
+		tg=trousers.testGrid
 		#TODO - make first pattern start automatically without putting in 12cm y offset
 		start=Point('reference', 'start', 25*CM, 0*CM, 'point_style') #start underneath the Title Block, make this automatic someday
-		TG.add(start)
-		TG.attrs['transform']='translate(' + TG.start.coords + ')'
-		TG_path_svg=path()
-		TGps=TG_path_svg
-		TG.add(Path('reference','testgrid', 'Trousers Test Grid', TGps, 'cuttingline_style'))
-
+		tg.add(start)
+		tg.attrs['transform']='translate(' + tg.start.coords + ')'
+		tg_path=path()
+		tgps=tg_path
+		tg.add(Path('reference','testgrid', 'Trousers Test Grid', tgps, 'cuttingline_style'))
 		#Points
-		TG.add(Point('reference', 'X0', TG.start.x, TG.start.y, 'point_style'))
+		tg.add(Point('reference', 'X0', tg.start.x, tg.start.y, 'point_style'))
 		i, j=0, 0 #
 		while (i<=20):
-			x=TG.start.x + i*CM
-			y=TG.start.y + j*CM
-			TGps.appendMoveToPath(x, y, relative=False)
-			TGps.appendLineToPath(x, y + 20*CM, relative=False)#draw vertical lines of test grid
+			x=tg.start.x + i*CM
+			y=tg.start.y + j*CM
+			tgps.appendMoveToPath(x, y, relative=False)
+			tgps.appendLineToPath(x, y + 20*CM, relative=False)#draw vertical lines of test grid
 			i=i + 1
 		i, j=0, 0
 		while (j<=20):
-			x=TG.start.x + i*CM
-			y=TG.start.y + j*CM
-			TGps.appendMoveToPath(x, y, relative=False)
-			TGps.appendLineToPath(x + 20*CM, y, relative=False)#draw vertical lines of test grid
+			x=tg.start.x + i*CM
+			y=tg.start.y + j*CM
+			tgps.appendMoveToPath(x, y, relative=False)
+			tgps.appendLineToPath(x + 20*CM, y, relative=False)#draw vertical lines of test grid
 			j=j + 1
-
 		i, j=0, 0 #
 		while (i<=8):
-			x=TG.start.x + 25*CM+ i*IN
-			y=TG.start.y + j*IN
-			TGps.appendMoveToPath(x, y, relative=False)
-			TGps.appendLineToPath(x, y + 8*IN, relative=False)#draw vertical lines of test grid
+			x=tg.start.x + 25*CM+ i*IN
+			y=tg.start.y + j*IN
+			tgps.appendMoveToPath(x, y, relative=False)
+			tgps.appendLineToPath(x, y + 8*IN, relative=False)#draw vertical lines of test grid
 			i=i + 1
 		i, j=0, 0
 		while (j<=8):
-			x=TG.start.x + 25*CM  + i*IN
-			y=TG.start.y + j*IN
-			TGps.appendMoveToPath(x, y, relative=False)
-			TGps.appendLineToPath(x + 8*IN, y, relative=False)#draw vertical lines of test grid
+			x=tg.start.x + 25*CM  + i*IN
+			y=tg.start.y + j*IN
+			tgps.appendMoveToPath(x, y, relative=False)
+			tgps.appendLineToPath(x + 8*IN, y, relative=False)#draw vertical lines of test grid
 			j=j + 1
-
 		#set the label location. Someday this should be automatic
-		TG.label_x=TG.start.x + (25*CM) +(9*IN)
-		TG.label_y=TG.start.y + (2*CM)
-
+		tg.label_x=tg.start.x + (25*CM) +(9*IN)
+		tg.label_y=tg.start.y + (2*CM)
 
 		#Create the front pattern piece
 		front=PatternPiece('pattern', 'front', letter='AA', fabric=2, interfacing=0, lining=0)
