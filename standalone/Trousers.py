@@ -170,23 +170,23 @@ class PatternDesign():
 		#Side Seam curve is 3 points --> p7 (waist), p10 (seat), p12 (knee).  Control points c2 & c3 create vertical tangent at p10.x
 		#c1=p7
 		#c2=p10.x, p9.y
-		tf.add(cPoint('c1', p7.x, p7.y))
-		tf.add(cPoint('c2', p10.x, p9.y))
+		c1=cPoint(tf, 'c1', p7.x, p7.y)
+		c2=cPoint(tf, 'c2', p10.x, p9.y)
 		#Curve b/w p10 and p12
 		#c3=p10.x, p32.y
 		#c4=p32 --> intersection of line p12-p13 and line p11-Knee
-		tf.add(cPoint('c3', p10.x, p32.y))
-		tf.add(cPoint('c4', p32.x, p32.y))
+		c3=cPoint(tf, 'c3', p10.x, p32.y)
+		c4=cPoint(tf, 'c4', p32.x, p32.y)
 		#control points for hemallowance
 		pointlist=[]
 		pointlist.append(L)
 		pointlist.append(M)
 		pointlist.append(K)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
-		tf.add(cPoint('c11', fcp[0].x, fcp[0].y)) #b/w L & M
-		tf.add(cPoint('c12', scp[0].x, scp[0].y)) #b/w  L & M
-		tf.add(cPoint('c13', fcp[1].x, fcp[1].y)) #b/w M & K
-		tf.add(cPoint('c14', scp[1].x, scp[1].y)) #b/w M & K
+		c11=cPoint(tf, 'c11', fcp[0].x, fcp[0].y) #b/w L & M
+		c12=cPoint(tf, 'c12', scp[0].x, scp[0].y) #b/w  L & M
+		c13=cPoint(tf, 'c13', fcp[1].x, fcp[1].y) #b/w M & K
+		c14=cPoint(tf, 'c14', scp[1].x, scp[1].y) #b/w M & K
 		#control points for inseam curve
 		pointlist=[]
 		pointlist.append(p4)
@@ -195,34 +195,34 @@ class PatternDesign():
 		fcp, scp=GetCurveControlPoints('Inseam', pointlist)
 		distance=(math.sqrt(((p4.x - fcp[1].x)**2) + ((p4.y - fcp[1].y)**2)))#find distance of J's 1st control point from p4 - use this to make 1st control point from p4
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)#point along p4p5 at sufficient length away from p4 to create nice inseam curve
-		tf.add(cPoint('c17', x, y)) #b/w p4 & p2
+		c17=cPoint(tf, 'c17', x, y) #b/w p4 & p2
 		x, y=intersectionOfLines(p4.x, p4.y, p5.x, p5.y, p2.x, p2.y, tf.Knee.x, tf.Knee.y)# intersection of p4p5 and p2Knee
-		tf.add(cPoint('c18', x, y)) #b/w  p4 & p2
+		c18=cPoint(tf, 'c18', x, y)  #b/w  p4 & p2
 		#control points at front fly curve
-		tf.add(cPoint('c21', p2.x + abs(p2.x - D.x)*(0.5), p2.y)) #c21 --> b/w p2 & C, halfway b/w p2.x & D.x
+		c21=cPoint(tf, 'c21', p2.x + abs(p2.x - D.x)*(0.5), p2.y) #c21 --> b/w p2 & C, halfway b/w p2.x & D.x
 		#TODO - improve intersectionOfLines function to accept vertical lines
 		m=(p6.y - p7.y)/(p6.x - p7.x)  #slope of p6p7
 		b=p6.y - m*p6.x#y-intercept of p6p7
 		x=D.x#find control point c22with x=D.x, this will be on vertical line AD
 		y=m*x + b#y of c22
-		tf.add(cPoint('c22', x, y)) #b/w  p2 & C at intersection of lines AD and p6p7
+		c22=cPoint(tf, 'c22', x, y) #b/w  p2 & C at intersection of lines AD and p6p7
 		#control points for hemline
 		pointlist=[]
 		pointlist.append(p13)
 		pointlist.append(p15)
 		pointlist.append(p5)
 		fcp, scp=GetCurveControlPoints('HemLine', pointlist)
-		tf.add(cPoint('c25', fcp[0].x, fcp[0].y)) #b/w 13 & 15
-		tf.add(cPoint('c26', scp[0].x, scp[0].y)) #b/w  13 & 15
-		tf.add(cPoint('c27', fcp[1].x, fcp[1].y)) #b/w 15 & 5
-		tf.add(cPoint('c28', scp[1].x, scp[1].y)) #b/w 15 & 5
+		c25=cPoint(tf, 'c25', fcp[0].x, fcp[0].y) #b/w 13 & 15
+		c26=cPoint(tf, 'c26', scp[0].x, scp[0].y) #b/w  13 & 15
+		c27=cPoint(tf, 'c27', fcp[1].x, fcp[1].y) #b/w 15 & 5
+		c28=cPoint(tf, 'c28', scp[1].x, scp[1].y) #b/w 15 & 5
 		#create fly clip path:
 		f1=rPoint(tf, 'f1', p3.x, A.y)
 		f2=rPoint(tf, 'f2', p3.x, p3.y)
 		f4=rPoint(tf, 'f4', A.x + (5*CM*seatRatio), C.y)
 		f5=rPoint(tf, 'f5', f4.x, A.y)
-		tf.add(cPoint('c29', tf.c22.x, p3.y))#b/w f2 & f4
-		tf.add(cPoint('c30', f4.x, tf.c22.y))#b/w f2 & f4
+		c29=cPoint(tf, 'c29', tf.c22.x, p3.y) #b/w f2 & f4
+		c30=cPoint(tf, 'c30', f4.x, tf.c22.y) #b/w f2 & f4
 		#Draw reference lines
 		grid_path_svg=path()
 		gps=grid_path_svg
@@ -418,59 +418,59 @@ class PatternDesign():
 
 		#control Points
 		#control points for back center curve
-		tb.add(cPoint('c1', tb.p17.x, tb.p17.y))#b/w  p17 & C --> c1=p17, 1st control point=1st knot of curve
+		c1=cPoint(tb, 'c1', tb.p17.x, tb.p17.y)#b/w  p17 & C --> c1=p17, 1st control point=1st knot of curve
 		x, y=intersectionOfLines(C.x, C.y, tb.p19.x, tb.p19.y, tb.p17.x, tb.p17.y, tb.p28.x, tb.p28.y)
-		tb.add(cPoint('c2', x, y))#c2 is b/w p17 & C, so this curve is a Quadratic curve
+		c2=cPoint(tb, 'c2', x, y)#c2 is b/w p17 & C, so this curve is a Quadratic curve
 		#control points waistband
-		tb.add(cPoint('c3', tb.p25.x, tb.p25.y))#c3=p25 --> 1st control point for top waist band curve=1st knot point
-		tb.add(cPoint('c4', tb.H.x, tb.H.y))#c4=H  --> 2nd control point for top waist band curve=midpoint of dart on waistline
+		c3=cPoint(tb, 'c3', tb.p25.x, tb.p25.y)#c3=p25 --> 1st control point for top waist band curve=1st knot point
+		c4=cPoint(tb, 'c4', tb.H.x, tb.H.y)#c4=H  --> 2nd control point for top waist band curve=midpoint of dart on waistline
 		#control points for back side seam
 		#p26 & p28 are not used as knots in curve.
 		#Back Side Seam curve is 3 points --> p21 (waist), p27 (seat), p12 (knee).
 		#Curve b/w p21 & p27
 		#c11=p21
 		#c12=x on line with p27 & parallel to center back line, p26.y
-		tb.add(cPoint('c11', tb.p21.x, tb.p21.y))
+		c11=cPoint(tb, 'c11', tb.p21.x, tb.p21.y)
 		m=(tb.p20.y - tb.bC.y)/(tb.p20.x - tb.bC.x)#slope of center back seam
 		b=tb.p27.y - m*tb.p27.x#intercept for line of slope m through p27
 		y=tb.p26.y
 		x1=((y - b)/m)
 		x=tb.p26.x + abs(x1 - tb.p26.x)*(0.5)#find x at midpoint b/w x1 and tb.p26.x
-		tb.add(cPoint('c12', x, y))#upper half of tangent at p27
+		c12=cPoint(tb, 'c12', x, y)#upper half of tangent at p27
 		#Curve b/w p27 and p12
 		#c13=x on line with c12p17, tb.p33.y
 		m=(tb.c12.y - tb.p27.y)/(tb.c12.x - tb.p27.x)
 		b=tb.p27.y -  m*tb.p27.x
 		y=tb.p33.y
 		x=(y - b)/m
-		tb.add(cPoint('c13', x, y))#lower half of tangent at p27
-		tb.add(cPoint('c14', tb.p33.x, tb.p33.y))
+		c13=cPoint(tb, 'c13', x, y)#lower half of tangent at p27
+		c14=cPoint(tb, 'c14', tb.p33.x, tb.p33.y)
 		#control points hem line
 		pointlist=[]
 		pointlist.append(tf.p13)
 		pointlist.append(tb.p29)
 		pointlist.append(tf.p5)
 		fcp, scp=GetCurveControlPoints('HemLine', pointlist)
-		tb.add(cPoint('c21', fcp[0].x, fcp[0].y))#b/w 13 & 29
-		tb.add(cPoint('c22', scp[0].x, scp[0].y))#b/w 13 & 29
-		tb.add(cPoint('c23', fcp[1].x, fcp[1].y))#b/w 29 & 5
-		tb.add(cPoint('c24', scp[1].x, scp[1].y))#b/w 29 & 5
+		c21=cPoint(tb, 'c21', fcp[0].x, fcp[0].y)#b/w 13 & 29
+		c22=cPoint(tb, 'c22', scp[0].x, scp[0].y)#b/w 13 & 29
+		c23=cPoint(tb, 'c23', fcp[1].x, fcp[1].y)#b/w 29 & 5
+		c24=cPoint(tb, 'c24', scp[1].x, scp[1].y)#b/w 29 & 5
 		#control points hem allowance
 		pointlist=[]
 		pointlist.append(tf.L)
 		pointlist.append(tb.O)
 		pointlist.append(tf.K)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
-		tb.add(cPoint('c25', fcp[0].x, fcp[0].y))#b/w L & O
-		tb.add(cPoint('c26', scp[0].x, scp[0].y))#b/w L & O
-		tb.add(cPoint('c27', fcp[1].x, fcp[1].y))#b/w O & K
-		tb.add(cPoint('c28', scp[1].x, scp[1].y))#b/w O & K
+		c25=cPoint(tb, 'c25', fcp[0].x, fcp[0].y)#b/w L & O
+		c26=cPoint(tb, 'c26', scp[0].x, scp[0].y)#b/w L & O
+		c27=cPoint(tb, 'c27', fcp[1].x, fcp[1].y)#b/w O & K
+		c28=cPoint(tb, 'c28', scp[1].x, scp[1].y)#b/w O & K
 		#control points inseam
 		distance=(math.sqrt(((p4.x - tf.J.x)**2) + ((p4.y - tf.J.y)**2)))#c31 is same distance from p4 as J
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
-		tb.add(cPoint('c31', x, y))  #c31 is on slope of line p5p4 at J distance from p4
+		c31=cPoint(tb, 'c31', x, y) #c31 is on slope of line p5p4 at J distance from p4
 		x, y=intersectionOfLines(tb.p17.x, tb.p17.y, tf.Knee.x, tf.Knee.y, p4.x, p4.y, p5.x, p5.y) #c32 is intersection of line p17 to Knee and p4p5
-		tb.add(cPoint('c32', x, y))
+		c32=cPoint(tb, 'c32', x, y)
 
 		#Assemble all paths down here
 		#Paths are a bit differemt - we create the SVG and then create the object to hold
