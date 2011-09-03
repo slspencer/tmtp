@@ -59,15 +59,8 @@ class PatternDesign():
 		cd=self.cd	#client data is prefaced with cd.
 		self.cfg['clientdata']=cd
 		# inkscape dpi & pts  are defined per inch
-		inch=1
-		in_to_px=90	#inkscape will change ppi in future
-		in_to_pt=72.72	#inkscape prints in pixels, so convert all units to pixels with CM and in_to_px for now
-		in_to_cm=2.54
-		cm_to_in=inch/in_to_cm
-		cm_to_pt=in_to_pt/in_to_cm
-		cm_to_px=in_to_px/in_to_cm	#all pattern absolute values are in metric, so CM is the primary conversion for no
-		CM=cm_to_px
-		IN=in_to_px
+		CM=CM_TO_PX
+		IN=IN_TO_PX_
 		#TODO also extract these from this file to somewhere else
 		printer='36" wide carriage plotter'
 		if (printer=='36" wide carriage plotter'):
