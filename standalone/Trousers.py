@@ -44,6 +44,8 @@ class PatternDesign():
 		Method defining a pattern design. This is where the designer places
 		all elements of the design definition
 		"""
+		CM=CM_TO_PX
+		IN=IN_TO_PX
 		#The following attributes are set before calling this method:
 		#self.cd - Client Data, which has been loaded from the client data file
 		#self.styledefs - the style difinition dictionary, loaded from the styles file
