@@ -163,7 +163,7 @@ class PatternDesign():
 		L=rPoint(tf, 'L', x, y)
 		M=rPoint(tf, 'M', p15.x, p15.y - HEM_ALLOWANCE)
 		Knee=rPoint(tf, 'Knee', p16.x, E.y)
-		x, y=intersectionOfLines(p13.x, p13.y, p30.x, p30.y, p11.x, p11.y, tf.Knee.x, tf.Knee.y)#find intersection of lines p13p30 and p11Knee
+		x, y=intersectionOfLines(p13.x, p13.y, p30.x, p30.y, p11.x, p11.y, Knee.x, Knee.y)#find intersection of lines p13p30 and p11Knee
 		p32=rPoint(tf, 'p32', x, y)#b/w  p11 & Knee, used to calculate sideseam curve
 		#control points for side seam
 		#p9 & p11 are not used as knots in curve.
@@ -196,7 +196,7 @@ class PatternDesign():
 		distance=(math.sqrt(((p4.x - fcp[1].x)**2) + ((p4.y - fcp[1].y)**2)))#find distance of J's 1st control point from p4 - use this to make 1st control point from p4
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)#point along p4p5 at sufficient length away from p4 to create nice inseam curve
 		c17=cPoint(tf, 'c17', x, y) #b/w p4 & p2
-		x, y=intersectionOfLines(p4.x, p4.y, p5.x, p5.y, p2.x, p2.y, tf.Knee.x, tf.Knee.y)# intersection of p4p5 and p2Knee
+		x, y=intersectionOfLines(p4.x, p4.y, p5.x, p5.y, p2.x, p2.y, Knee.x, Knee.y)# intersection of p4p5 and p2Knee
 		c18=cPoint(tf, 'c18', x, y)  #b/w  p4 & p2
 		#control points at front fly curve
 		c21=cPoint(tf, 'c21', p2.x + abs(p2.x - D.x)*(0.5), p2.y) #c21 --> b/w p2 & C, halfway b/w p2.x & D.x
@@ -221,8 +221,8 @@ class PatternDesign():
 		f2=rPoint(tf, 'f2', p3.x, p3.y)
 		f4=rPoint(tf, 'f4', A.x + (5*CM*seatRatio), C.y)
 		f5=rPoint(tf, 'f5', f4.x, A.y)
-		c29=cPoint(tf, 'c29', tf.c22.x, p3.y) #b/w f2 & f4
-		c30=cPoint(tf, 'c30', f4.x, tf.c22.y) #b/w f2 & f4
+		c29=cPoint(tf, 'c29', c22.x, p3.y) #b/w f2 & f4
+		c30=cPoint(tf, 'c30', f4.x, c22.y) #b/w f2 & f4
 		#Draw reference lines
 		grid_path_svg=path()
 		gps=grid_path_svg
@@ -253,12 +253,12 @@ class PatternDesign():
 		gps.appendMoveToPath(D.x, D.y, relative=False)
 		gps.appendLineToPath(p3.x, p3.y, relative=False)
 		gps.appendMoveToPath(p2.x, p2.y, relative=False)
-		gps.appendLineToPath(tf.Knee.x, tf.Knee.y, relative=False)
+		gps.appendLineToPath(Knee.x, Knee.y, relative=False)
 		gps.appendLineToPath(p11.x, p11.y, relative=False)
 		#fly clip-path
 		gps.appendMoveToPath(f1.x, f1.y, relative=False)
 		gps.appendLineToPath(f2.x, f2.y, relative=False)
-		gps.appendCubicCurveToPath(tf.c29.x, tf.c29.y, tf.c30.x, tf.c30.y, f4.x, f4.y, relative=False)
+		gps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, f4.x, f4.y, relative=False)
 		gps.appendLineToPath(f5.x, f5.y, relative=False)
 		gps.appendLineToPath(f1.x, f1.y, relative=False)
 		#Assemble all paths down here
@@ -272,17 +272,17 @@ class PatternDesign():
 		sps.appendLineToPath(p8.x, p8.y, relative=False)
 		sps.appendLineToPath(p7.x, p7.y, relative=False)
 		#sideseam
-		sps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x, tf.c2.y, p10.x, p10.y, relative=False)
-		sps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x, tf.c4.y, p12.x, p12.y, relative=False)
+		sps.appendCubicCurveToPath(c1.x, c1.y, c2.x, c2.y, p10.x, p10.y, relative=False)
+		sps.appendCubicCurveToPath(c3.x, c3.y, c4.x, c4.y, p12.x, p12.y, relative=False)
 		sps.appendLineToPath(p13.x, p13.y, relative=False)
 		#hemline
-		sps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x, tf.c26.y, p15.x, p15.y, relative=False)
-		sps.appendCubicCurveToPath(tf.c27.x, tf.c27.y, tf.c28.x, tf.c28.y, p5.x, p5.y, relative=False)
+		sps.appendCubicCurveToPath(c25.x, c25.y, c26.x, c26.y, p15.x, p15.y, relative=False)
+		sps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p5.x, p5.y, relative=False)
 		#inseam
 		sps.appendLineToPath(p4.x, p4.y, relative=False)
-		sps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x, tf.c18.y, p2.x, p2.y, relative=False)
+		sps.appendCubicCurveToPath(c17.x, c17.y, c18.x, c18.y, p2.x, p2.y, relative=False)
 		#front fly curve
-		sps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x, tf.c22.y, C.x, C.y, relative=False)
+		sps.appendCubicCurveToPath(c21.x, c21.y, c22.x, c22.y, C.x, C.y, relative=False)
 		sps.appendLineToPath(A.x, A.y, relative=False)
 		#cuttingline path
 		cuttingline_path_svg=path()
@@ -293,17 +293,17 @@ class PatternDesign():
 		cps.appendLineToPath(p8.x, p8.y, relative=False)
 		cps.appendLineToPath(p7.x, p7.y, relative=False)
 		#sideseam
-		cps.appendCubicCurveToPath(tf.c1.x, tf.c1.y, tf.c2.x, tf.c2.y, p10.x, p10.y, relative=False)
-		cps.appendCubicCurveToPath(tf.c3.x, tf.c3.y, tf.c4.x, tf.c4.y, p12.x, p12.y, relative=False)
+		cps.appendCubicCurveToPath(c1.x, c1.y, c2.x, c2.y, p10.x, p10.y, relative=False)
+		cps.appendCubicCurveToPath(c3.x, c3.y, c4.x, c4.y, p12.x, p12.y, relative=False)
 		cps.appendLineToPath(p13.x, p13.y, relative=False)
 		#hemline
-		cps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x, tf.c26.y, p15.x, p15.y, relative=False)
-		cps.appendCubicCurveToPath(tf.c27.x, tf.c27.y, tf.c28.x, tf.c28.y, p5.x, p5.y, relative=False)
+		cps.appendCubicCurveToPath(c25.x, c25.y, c26.x, c26.y, p15.x, p15.y, relative=False)
+		cps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p5.x, p5.y, relative=False)
 		#inseam
 		cps.appendLineToPath(p4.x, p4.y, relative=False)
-		cps.appendCubicCurveToPath(tf.c17.x, tf.c17.y, tf.c18.x, tf.c18.y, p2.x, p2.y, relative=False)
+		cps.appendCubicCurveToPath(c17.x, c17.y, c18.x, c18.y, p2.x, p2.y, relative=False)
 		#front fly curve
-		cps.appendCubicCurveToPath(tf.c21.x, tf.c21.y, tf.c22.x, tf.c22.y, C.x, C.y, relative=False)
+		cps.appendCubicCurveToPath(c21.x, c21.y, c22.x, c22.y, C.x, C.y, relative=False)
 		cps.appendLineToPath(A.x, A.y, relative=False)
 		#waistline path
 		waistline_path_svg=path()
@@ -316,7 +316,7 @@ class PatternDesign():
 		fsps=fly_stitch_path_svg
 		tf.add(Path('pattern', 'ffsp', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
 		fsps.appendMoveToPath(f2.x, f2.y, relative=False)
-		fsps.appendCubicCurveToPath(tf.c29.x, tf.c29.y, tf.c30.x, tf.c30.y, f4.x, f4.y, relative=False)
+		fsps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, f4.x, f4.y, relative=False)
 		fsps.appendLineToPath(f4.x, A.y, relative=False)
 		#front grainline path
 		x1, y1=(p16.x, C.y)
@@ -356,7 +356,7 @@ class PatternDesign():
 		tb.add(referencePoint('bp14', p14.x, p14.y))
 		tb.add(referencePoint('bp16', p16.x, p16.y))
 		tb.add(referencePoint('bp30', p16.x, p16.y))
-		tb.add(referencePoint('bKnee', tf.Knee.x, tf.Knee.y))
+		tb.add(referencePoint('bKnee', Knee.x, Knee.y))
 		#back center points
 		tb.add(referencePoint('p17', p2.x - (3*CM)*seatRatio, p2.y))#p17 --> extends back crotch measurement by 3cm
 		tb.add(referencePoint('p19', A.x +(5*CM)*waistRatio, A.y))#p19
@@ -410,7 +410,7 @@ class PatternDesign():
 		tb.add(referencePoint('p26', p9.x + (4.5*CM*seatRatio), p9.y))#26 is upper hip at side seam
 		tb.add(referencePoint('p27', p10.x + (3*CM*seatRatio), p10.y))#27 is seat at side seam
 		tb.add(referencePoint('p28', p11.x + (1.75*CM*seatRatio), p11.y))#28 is rise at side seam
-		x, y=intersectionOfLines(p12.x, p12.y, p13.x, p13.y, tb.p28.x, tb.p28.y, tf.Knee.x, tf.Knee.y)#find intersection of lines p12p13 and p28Knee
+		x, y=intersectionOfLines(p12.x, p12.y, p13.x, p13.y, tb.p28.x, tb.p28.y, Knee.x, Knee.y)#find intersection of lines p12p13 and p28Knee
 		tb.add(referencePoint('p33', x, y)) #b/w  p28 & Knee, used to calculate sideseam curve
 		#back hem allowance
 		tb.add(referencePoint('p29', p14.x, p14.y + (1.3*CM*insideLegRatio)))#29 is lowered back trouser hem
@@ -469,7 +469,7 @@ class PatternDesign():
 		distance=(math.sqrt(((p4.x - tf.J.x)**2) + ((p4.y - tf.J.y)**2)))#c31 is same distance from p4 as J
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
 		c31=cPoint(tb, 'c31', x, y) #c31 is on slope of line p5p4 at J distance from p4
-		x, y=intersectionOfLines(tb.p17.x, tb.p17.y, tf.Knee.x, tf.Knee.y, p4.x, p4.y, p5.x, p5.y) #c32 is intersection of line p17 to Knee and p4p5
+		x, y=intersectionOfLines(tb.p17.x, tb.p17.y, Knee.x, Knee.y, p4.x, p4.y, p5.x, p5.y) #c32 is intersection of line p17 to Knee and p4p5
 		c32=cPoint(tb, 'c32', x, y)
 
 		#Assemble all paths down here
@@ -507,7 +507,7 @@ class PatternDesign():
 		gbps.appendMoveToPath(tb.W.x, tb.W.y, relative=False)
 		gbps.appendLineToPath(tb.p22.x, tb.p22.y, relative=False)
 		gbps.appendMoveToPath(tb.p17.x, tb.p17.y, relative=False)
-		gbps.appendLineToPath(tf.Knee.x, tf.Knee.y, relative=False)
+		gbps.appendLineToPath(Knee.x, Knee.y, relative=False)
 		gbps.appendLineToPath(tb.p28.x, tb.p28.y, relative=False)
 		gbps.appendMoveToPath(tb.p20.x, tb.p20.y, relative=False)
 		gbps.appendLineToPath(tb.c2.x, tb.c2.y, relative=False)
@@ -683,21 +683,21 @@ class PatternDesign():
 		fsp=fly_seam_path_svg
 		f.add(Path('pattern', 'tfsl', 'Trousers Fly Seam Line Path', fsp, 'seamline_path_style'))
 		fsp.appendMoveToPath(p3.x + dx, p3.y + dy, relative=False)
-		fsp.appendCubicCurveToPath(tf.c29.x + dx, tf.c29.y + dy, tf.c30.x + dx, tf.c30.y + dy, f4.x + dx, f4.y + dy, relative=False)
+		fsp.appendCubicCurveToPath(c29.x + dx, c29.y + dy, c30.x + dx, c30.y + dy, f4.x + dx, f4.y + dy, relative=False)
 		fsp.appendLineToPath(f5.x + dx, f5.y + dy, relative=False)
 		fsp.appendLineToPath(A.x + dx, A.y + dy, relative=False)
 		fsp.appendLineToPath(C.x + dx, C.y + dy, relative=False)
-		fsp.appendCubicCurveToPath(tf.c22.x + dx, tf.c22.y + dy, tf.c21.x + dx, tf.c21.y + dy, p2.x + dx, p2.y + dy, relative=False)
+		fsp.appendCubicCurveToPath(c22.x + dx, c22.y + dy, c21.x + dx, c21.y + dy, p2.x + dx, p2.y + dy, relative=False)
 		#fly cutting line path
 		fly_cutting_path_svg=path()
 		fcp=fly_cutting_path_svg
 		f.add(Path('pattern', 'tfcl', 'Trousers Fly Cutting Line Path', fcp, 'cuttingline_style'))
 		fcp.appendMoveToPath(p3.x + dx, p3.y + dy, relative=False)
-		fcp.appendCubicCurveToPath(tf.c29.x + dx, tf.c29.y + dy, tf.c30.x + dx, tf.c30.y + dy, f4.x + dx, f4.y + dy, relative=False)
+		fcp.appendCubicCurveToPath(c29.x + dx, c29.y + dy, c30.x + dx, c30.y + dy, f4.x + dx, f4.y + dy, relative=False)
 		fcp.appendLineToPath(f5.x + dx, f5.y + dy, relative=False)
 		fcp.appendLineToPath(A.x + dx, A.y + dy, relative=False)
 		fcp.appendLineToPath(C.x + dx, C.y + dy, relative=False)
-		fcp.appendCubicCurveToPath(tf.c22.x + dx, tf.c22.y + dy, tf.c21.x + dx, tf.c21.y + dy, p2.x + dx, p2.y + dy, relative=False)
+		fcp.appendCubicCurveToPath(c22.x + dx, c22.y + dy, c21.x + dx, c21.y + dy, p2.x + dx, p2.y + dy, relative=False)
 		#fly grainline
 		x1, y1=(f2.x + 5*CM + dx, f2.y - (5*CM)+ dy)
 		x2, y2=(f2.x + 5*CM + dx, f2.y - (20*CM) + dy)
@@ -723,22 +723,22 @@ class PatternDesign():
 		fh.add(Path('pattern', 'fhsp', 'front_hemlining_seam_path', fhsp, 'seamline_path_style'))
 		fhsp.appendMoveToPath(p5.x + dx, p5.y + dy, relative=False)
 		fhsp.appendLineToPath(tf.K.x + dx, tf.K.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(tf.c14.x + dx, tf.c14.y + dy, tf.c13.x + dx, tf.c13.y + dy, tf.M.x + dx, tf.M.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(tf.c12.x + dx, tf.c12.y + dy, tf.c11.x + dx, tf.c11.y + dy, tf.L.x + dx, tf.L.y + dy, relative=False)
+		fhsp.appendCubicCurveToPath(c14.x + dx, c14.y + dy, c13.x + dx, c13.y + dy, tf.M.x + dx, tf.M.y + dy, relative=False)
+		fhsp.appendCubicCurveToPath(c12.x + dx, c12.y + dy, c11.x + dx, c11.y + dy, tf.L.x + dx, tf.L.y + dy, relative=False)
 		fhsp.appendLineToPath(p13.x + dx, p13.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(tf.c25.x + dx, tf.c25.y + dy, tf.c26.x + dx, tf.c26.y + dy, p15.x + dx, p15.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(tf.c27.x + dx, tf.c27.y + dy, tf.c28.x + dx, tf.c28.y + dy, p5.x + dx, p5.y + dy, relative=False)
+		fhsp.appendCubicCurveToPath(c25.x + dx, c25.y + dy, c26.x + dx, c26.y + dy, p15.x + dx, p15.y + dy, relative=False)
+		fhsp.appendCubicCurveToPath(c27.x + dx, c27.y + dy, c28.x + dx, c28.y + dy, p5.x + dx, p5.y + dy, relative=False)
 		#hemlining cuttingline path
 		front_hemlining_cutting_path=path()
 		fhcp=front_hemlining_cutting_path
 		fh.add(Path('pattern', 'fhcp', 'front_hemlining_cutting_path', fhcp, 'cuttingline_style'))
 		fhcp.appendMoveToPath(p5.x + dx, p5.y + dy, relative=False)
 		fhcp.appendLineToPath(tf.K.x + dx, tf.K.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(tf.c14.x + dx, tf.c14.y + dy, tf.c13.x + dx, tf.c13.y + dy, tf.M.x + dx, tf.M.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(tf.c12.x + dx, tf.c12.y + dy, tf.c11.x + dx, tf.c11.y + dy, tf.L.x + dx, tf.L.y + dy, relative=False)
+		fhcp.appendCubicCurveToPath(c14.x + dx, c14.y + dy, c13.x + dx, c13.y + dy, tf.M.x + dx, tf.M.y + dy, relative=False)
+		fhcp.appendCubicCurveToPath(c12.x + dx, c12.y + dy, c11.x + dx, c11.y + dy, tf.L.x + dx, tf.L.y + dy, relative=False)
 		fhcp.appendLineToPath(p13.x + dx, p13.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(tf.c25.x + dx, tf.c25.y + dy, tf.c26.x + dx, tf.c26.y + dy, p15.x + dx, p15.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(tf.c27.x + dx, tf.c27.y + dy, tf.c28.x + dx, tf.c28.y + dy, p5.x + dx, p5.y + dy, relative=False)
+		fhcp.appendCubicCurveToPath(c25.x + dx, c25.y + dy, c26.x + dx, c26.y + dy, p15.x + dx, p15.y + dy, relative=False)
+		fhcp.appendCubicCurveToPath(c27.x + dx, c27.y + dy, c28.x + dx, c28.y + dy, p5.x + dx, p5.y + dy, relative=False)
 		#hemlining grainline path
 		x1, y1=(p15.x + dx, tf.M.y + (1.5*CM) + dy)
 		x2, y2=(p15.x + dx, p15.y  - (1.5*CM) +  dy)
