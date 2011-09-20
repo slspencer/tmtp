@@ -23,7 +23,7 @@
 #import string
 #import re
 
-from pattern          import Point, lineLengthP
+from pattern          import Point, lineLengthP, pointAlongLine
 
 # Code derived from this C code: http://www.codeproject.com/KB/graphics/BezierSpline.aspx
 # knots - list of Point objects - spline points (must contain at least two points)
@@ -141,7 +141,13 @@ def GetCurveControlPoints(name, knots):
 
     return (firstControlPoints, secondControlPoints)
 
-def FudgeControlPoints(knots, fcp, scp):
+def FudgeControlPoints(knots, fcp, scp, percentage):
+    """
+    Adjust the control point locations so that they lie along the same lines
+    as before (tangent to the curve at the knot) but are moved to a
+    distance from the knot which is a percentage of the length of the
+    line between the knots
+    """
     if len(knots) < 2:
         raise ValueError("At least two points required for input")
     if len(knots) != len(fcp)+1:
@@ -171,9 +177,22 @@ def FudgeControlPoints(knots, fcp, scp):
         scpl = lineLengthP(scp[i], knots[i+1])
         print ' fcpl = %02.2f pct = %02.2f' % (fcpl, fcpl/lll)
         print ' scpl = %02.2f pct = %02.2f' % (scpl, scpl/lll)
-        
-        # get the points for the first control vector
-        fcva = knots[i]
-        
+        print 'After adjusting to %f line length:' % percentage
+
+        # Now calculate the desired length and change the control point locations
+        dll = lll * percentage
+        x, y = pointAlongLine(knots[i].x, knots[i].y, knots[i+1].x, knots[i+1].y, dll, rotation = 0)
+        fcp[i].x = x
+        fcp[i].y = y
+
+        dll = lll * (1.0-percentage)
+        x, y = pointAlongLine(knots[i].x, knots[i].y, knots[i+1].x, knots[i+1].y, dll, rotation = 0)
+        scp[i].x = x
+        scp[i].y = y
+
+        fcpl = lineLengthP(knots[i], fcp[i])
+        scpl = lineLengthP(scp[i], knots[i+1])
+        print ' fcpl = %02.2f pct = %02.2f' % (fcpl, fcpl/lll)
+        print ' scpl = %02.2f pct = %02.2f' % (scpl, scpl/lll)
 
     return (fcp, scp)

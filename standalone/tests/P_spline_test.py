@@ -52,8 +52,8 @@ class PatternDesign():
         cd = self.cd
         self.cfg['clientdata'] = cd
 
-        self.cfg['paper_width']  = ( 36 * in_to_pt )
-        self.cfg['border']       = ( 5*cm_to_pt )        # document borders
+        self.cfg['paper_width']  = ( 36 * IN_TO_PT )
+        self.cfg['border']       = ( 5 * CM_TO_PT )        # document borders
 
         border = self.cfg['border']
 
@@ -88,8 +88,8 @@ class PatternDesign():
         # Begin pattern piece
         part = PatternPiece('pattern', 'parta', letter = 'A', fabric = 1, interfacing = 0, lining = 0)
         tp.add(part)
-        part.label_x = 1 * in_to_pt
-        part.label_y = 10 * in_to_pt
+        part.label_x = 1 * IN_TO_PT
+        part.label_y = 10 * IN_TO_PT
 
         #
         # Create a spline through a number of points
@@ -97,31 +97,31 @@ class PatternDesign():
 
         # create a list of points through which the line will pass
         pointlist = []
-        pnt = Point('reference', 'pointa', 1.0 * in_to_pt, 6.0 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointa', 1.0 * IN_TO_PT, 6.0 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
-        pnt = Point('reference', 'pointb', 0.5 * in_to_pt, 7.0 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointb', 0.5 * IN_TO_PT, 7.0 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
-        pnt = Point('reference', 'pointc', 1.5 * in_to_pt, 7.5 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointc', 1.5 * IN_TO_PT, 7.5 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
-        pnt = Point('reference', 'pointd', 3.0 * in_to_pt, 7.5 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointd', 3.0 * IN_TO_PT, 7.5 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
-        pnt = Point('reference', 'pointe', 4.0 * in_to_pt, 10.0 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointe', 4.0 * IN_TO_PT, 10.0 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
-        pnt = Point('reference', 'pointf', 4.0 * in_to_pt, 12.0 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointf', 4.0 * IN_TO_PT, 12.0 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
-        pnt = Point('reference', 'pointg', 5.0 * in_to_pt, 12.0 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointg', 5.0 * IN_TO_PT, 12.0 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
@@ -131,13 +131,13 @@ class PatternDesign():
         # dump them out if needed (Change False to True)
         if False:
             for i in range(0, len(fcp)):
-                print '  point: %f %f' % (pointlist[i].x / in_to_pt, pointlist[i].y / in_to_pt)
-                print '    fcp: %f %f' % (fcp[i].x / in_to_pt, fcp[i].y / in_to_pt)
-                print '    scp: %f %f' % (scp[i].x / in_to_pt, scp[i].y / in_to_pt)
-            print '  point: %f %f' % (pointlist[-1].x / in_to_pt, pointlist[-1].y / in_to_pt)
+                print '  point: %f %f' % (pointlist[i].x / IN_TO_PT, pointlist[i].y / IN_TO_PT)
+                print '    fcp: %f %f' % (fcp[i].x / IN_TO_PT, fcp[i].y / IN_TO_PT)
+                print '    scp: %f %f' % (scp[i].x / IN_TO_PT, scp[i].y / IN_TO_PT)
+            print '  point: %f %f' % (pointlist[-1].x / IN_TO_PT, pointlist[-1].y / IN_TO_PT)
 
         # EXPERIMENTAL - fudge the control points to adjust the length of the control vectors
-        (fcp, scp) = FudgeControlPoints(pointlist, fcp, scp)
+        (fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 
         # add them to the pattern piece (optional)
         for pnt in fcp:
@@ -166,11 +166,11 @@ class PatternDesign():
 
         # create a list of points through which the line will pass
         pointlist = []
-        pnt = Point('reference', 'pointx', 4.0 * in_to_pt, 6.0 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointx', 4.0 * IN_TO_PT, 6.0 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
-        pnt = Point('reference', 'pointy', 7.0 * in_to_pt, 7.0 * in_to_pt, 'point_style')
+        pnt = Point('reference', 'pointy', 7.0 * IN_TO_PT, 7.0 * IN_TO_PT, 'point_style')
         part.add(pnt)
         pointlist.append(pnt)
 
@@ -180,10 +180,10 @@ class PatternDesign():
         # dump them out if needed (Change False to True)
         if False:
             for i in range(0, len(fcp)):
-                print '  point: %f %f' % (pointlist[i].x / in_to_pt, pointlist[i].y / in_to_pt)
-                print '    fcp: %f %f' % (fcp[i].x / in_to_pt, fcp[i].y / in_to_pt)
-                print '    scp: %f %f' % (scp[i].x / in_to_pt, scp[i].y / in_to_pt)
-            print '  point: %f %f' % (pointlist[-1].x / in_to_pt, pointlist[-1].y / in_to_pt)
+                print '  point: %f %f' % (pointlist[i].x / IN_TO_PT, pointlist[i].y / IN_TO_PT)
+                print '    fcp: %f %f' % (fcp[i].x / IN_TO_PT, fcp[i].y / IN_TO_PT)
+                print '    scp: %f %f' % (scp[i].x / IN_TO_PT, scp[i].y / IN_TO_PT)
+            print '  point: %f %f' % (pointlist[-1].x / IN_TO_PT, pointlist[-1].y / IN_TO_PT)
 
         # add them to the pattern piece (optional)
         for pnt in fcp:
