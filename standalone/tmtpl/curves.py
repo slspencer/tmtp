@@ -181,12 +181,12 @@ def FudgeControlPoints(knots, fcp, scp, percentage):
 
         # Now calculate the desired length and change the control point locations
         dll = lll * percentage
-        x, y = pointAlongLine(knots[i].x, knots[i].y, knots[i+1].x, knots[i+1].y, dll, rotation = 0)
+        x, y = pointAlongLine(knots[i].x, knots[i].y, fcp[i].x, fcp[i].y, dll, rotation = 0)
         fcp[i].x = x
         fcp[i].y = y
 
-        dll = lll * (1.0-percentage)
-        x, y = pointAlongLine(knots[i].x, knots[i].y, knots[i+1].x, knots[i+1].y, dll, rotation = 0)
+        dll = lll * percentage
+        x, y = pointAlongLine(knots[i+1].x, knots[i+1].y, scp[i].x, scp[i].y, dll, rotation = 0)
         scp[i].x = x
         scp[i].y = y
 
