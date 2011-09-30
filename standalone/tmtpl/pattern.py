@@ -995,6 +995,11 @@ def TestGrid(self):
 	"""
 	Creates two TestGrids at top of pattern --> 20cm & 8in
 	"""
+	#TODO - Create Header object with TitleBlock and TestGrid and PageNumber
+	centimeters = 10
+	inches = 4
+	CMW = centimeters*CM_TO_PX
+	INW = inches*IN_TO_PX
 	testGrid=PatternPiece('pattern', 'testGrid', letter="", fabric=0, interfacing=0, lining=0)
 	self.add(testGrid)
 	tg=self.testGrid
@@ -1003,36 +1008,38 @@ def TestGrid(self):
 	tg.add(Path('reference','testgrid', 'Trousers Test Grid', tgps, 'cuttingline_style'))
 	#Points
 	tgstart=rPoint(tg, 'tgstart', 25*CM_TO_PX, 0*CM_TO_PX)
+	tg_cmstart = rPoint(tg, 'tg_cmstart',  tgstart.x,  tgstart.y)
+	tg_instart   = rPoint(tg, 'tg_instart',  tgstart.x + CMW + 5*CM_TO_PX,  tgstart.y)
 	tg.attrs['transform']='translate(' + tgstart.coords + ')'
-	i, j=0, 0
-	while (i<=20):
-		x=tgstart.x + i*CM_TO_PX
-		y=tgstart.y + j*CM_TO_PX
-		tgps.appendMoveToPath(x, y, relative=False)
-		tgps.appendLineToPath(x, y + 20*CM_TO_PX, relative=False)#draw vertical lines of test grid
+	# centimeter grid
+	i=0
+	while (i<=centimeters): # vertical lines
+		x=tg_cmstart.x + i*CM_TO_PX
+		tgps.appendMoveToPath(x, tg_cmstart.y, relative=False)
+		tgps.appendLineToPath(x, tg_cmstart.y + CMW, relative=False)
 		i=i + 1
-	i, j=0, 0
-	while (j<=20):
-		x=tgstart.x + i*CM_TO_PX
-		y=tgstart.y + j*CM_TO_PX
-		tgps.appendMoveToPath(x, y, relative=False)
-		tgps.appendLineToPath(x + 20*CM_TO_PX, y, relative=False)#draw vertical lines of test grid
-		j=j + 1
-	i, j=0, 0
-	while (i<=8):
-		x=tgstart.x + 25*CM_TO_PX+ i*IN_TO_PX
-		y=tgstart.y + j*IN_TO_PX
-		tgps.appendMoveToPath(x, y, relative=False)
-		tgps.appendLineToPath(x, y + 8*IN_TO_PX, relative=False)#draw vertical lines of test grid
+	i=0
+	while (i<=centimeters): # horizontal lines
+		y=tg_cmstart.y + i*CM_TO_PX
+		tgps.appendMoveToPath(tg_cmstart.x, y, relative=False)
+		tgps.appendLineToPath(tg_cmstart.x + CMW, y, relative=False)
 		i=i + 1
-	i, j=0, 0
-	while (j<=8):
-		x=tgstart.x + 25*CM_TO_PX  + i*IN_TO_PX
-		y=tgstart.y + j*IN_TO_PX
-		tgps.appendMoveToPath(x, y, relative=False)
-		tgps.appendLineToPath(x + 8*IN_TO_PX, y, relative=False)#draw vertical lines of test grid
-		j=j + 1
+
+	# inch grid
+	i=0
+	while (i<=inches): #vertical
+		x=tg_instart.x + i*IN_TO_PX
+		tgps.appendMoveToPath(x, tg_instart.y, relative=False)
+		tgps.appendLineToPath(x, tg_instart.y + INW, relative=False)
+		i=i + 1
+	i=0
+	while (i<=inches): #horizontal
+		y=tgstart.y + i*IN_TO_PX
+		tgps.appendMoveToPath(tg_instart.x, y, relative=False)
+		tgps.appendLineToPath(tg_instart.x + INW, y, relative=False)#draw vertical lines of test grid
+		i=i + 1
 	#set the label location. Someday this should be automatic
+	#TODO - remove label from TestGrid
 	tg.label_x=tgstart.x + (25*CM_TO_PX) +(9*IN_TO_PX)
 	tg.label_y=tgstart.y + (2*CM_TO_PX)
 	return tg
