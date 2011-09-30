@@ -16,7 +16,7 @@ from tmtpl.constants import *
 from tmtpl.pattern import *
 from tmtpl.document import *
 from tmtpl.client import Client
-from tmtpl.curves import GetCurveControlPoints
+from tmtpl.curves import GetCurveControlPoints,  FudgeControlPoints
 
 #Project specific
 #from math import sin, cos, radians
@@ -163,41 +163,52 @@ class PatternDesign():
 		L=rPoint(tf, 'L', x, y)
 		M=rPoint(tf, 'M', p15.x, p15.y - HEM_ALLOWANCE)
 		Knee=rPoint(tf, 'Knee', p16.x, E.y)
-		x, y=intersectionOfLines(p13.x, p13.y, p30.x, p30.y, p11.x, p11.y, Knee.x, Knee.y)#find intersection of lines p13p30 and p11Knee
-		p32=rPoint(tf, 'p32', x, y)#b/w  p11 & Knee, used to calculate sideseam curve
 		#control points for side seam
-		#p9 & p11 are not used as knots in curve.
-		#Side Seam curve is 3 points --> p7 (waist), p10 (seat), p12 (knee).  Control points c2 & c3 create vertical tangent at p10.x
-		#c1=p7
-		#c2=p10.x, p9.y
-		c1=cPoint(tf, 'c1', p7.x, p7.y)
-		c2=cPoint(tf, 'c2', p10.x, p9.y)
-		#Curve b/w p10 and p12
-		#c3=p10.x, p32.y
-		#c4=p32 --> intersection of line p12-p13 and line p11-Knee
-		c3=cPoint(tf, 'c3', p10.x, p32.y)
-		c4=cPoint(tf, 'c4', p32.x, p32.y)
+		pointlist=[]
+		pointlist.append(p7)
+		pointlist.append(p9)
+		pointlist.append(p10)
+		pointlist.append(p11)
+		pointlist.append(p12)
+		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
+		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
+		c1a=cPoint(tf, 'c1a', fcp[0].x, fcp[0].y) #b/w p7 & p9
+		c1b=cPoint(tf, 'c1b', scp[0].x, scp[0].y) #b/w  p7 & p9
+		c2a=cPoint(tf, 'c2a', fcp[1].x, fcp[1].y) #b/w p9 & p10
+		c2b=cPoint(tf, 'c2b', scp[1].x, scp[1].y) #b/w p9 & p10
+		c3a=cPoint(tf, 'c3a', fcp[2].x, fcp[2].y) #b/w p10 & p11
+		c3b=cPoint(tf, 'c3b', scp[2].x, scp[2].y) #b/w p10 & p11
+		c4a=cPoint(tf, 'c4a', fcp[3].x, fcp[3].y) #b/w p11 & p12
+		distance = (math.sqrt(((p12.x - scp[3].x)**2) + ((p12.y - scp[3].y)**2)))
+		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
+		c4b=cPoint(tf, 'c4b', x, y) #b/w p4 & p2
 		#control points for hemallowance
 		pointlist=[]
 		pointlist.append(L)
 		pointlist.append(M)
 		pointlist.append(K)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
+		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c5=cPoint(tf, 'c5', fcp[0].x, fcp[0].y) #b/w L & M
 		c6=cPoint(tf, 'c6', scp[0].x, scp[0].y) #b/w  L & M
 		c7=cPoint(tf, 'c7', fcp[1].x, fcp[1].y) #b/w M & K
 		c8=cPoint(tf, 'c8', scp[1].x, scp[1].y) #b/w M & K
 		#control points for inseam curve
 		pointlist=[]
+		pointlist.append(p5)
 		pointlist.append(p4)
-		pointlist.append(J)
 		pointlist.append(p2)
 		fcp, scp=GetCurveControlPoints('Inseam', pointlist)
-		distance=(math.sqrt(((p4.x - fcp[1].x)**2) + ((p4.y - fcp[1].y)**2)))#find distance of J's 1st control point from p4 - use this to make 1st control point from p4
-		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)#point along p4p5 at sufficient length away from p4 to create nice inseam curve
-		c9=cPoint(tf, 'c9', x, y) #b/w p4 & p2
-		x, y=intersectionOfLines(p4.x, p4.y, p5.x, p5.y, p2.x, p2.y, Knee.x, Knee.y)# intersection of p4p5 and p2Knee
-		c10=cPoint(tf, 'c10', x, y)  #b/w  p4 & p2
+		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
+		debug('1st point between p5 & p4 '+str(fcp[0].x )+', '+str(fcp[0].y))
+		debug('2nd point between p5 & p4 '+str(scp[0].x )+', '+str(scp[0].y))
+		debug('1st point between p4 & p2 '+str(fcp[1].x )+', '+str(fcp[1].y))
+		debug('2nd point between p4 & p2 '+str(scp[1].x )+', '+str(scp[1].y))
+		distance=(math.sqrt(((p4.x - fcp[1].x)**2) + ((p4.y - fcp[1].y)**2)))
+		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
+		c9=cPoint(tf, 'c9', x, y) # 1st point b/w p4 & p2
+		debug('derived 1st point between p4 & p2 '+str(c9.x )+', '+str(c9.y))
+		c10=cPoint(tf, 'c10', scp[1].x,  scp[1].y) # 2nd point b/w p4 & p2
 		#control points at front fly curve
 		c11=cPoint(tf, 'c11', p2.x + (abs(p2.x - D.x)/2.), p2.y) #c11 --> b/w p2 & C, halfway b/w p2.x & D.x
 		#TODO - improve intersectionOfLines function to accept vertical lines
@@ -212,6 +223,7 @@ class PatternDesign():
 		pointlist.append(p15)
 		pointlist.append(p5)
 		fcp, scp=GetCurveControlPoints('HemLine', pointlist)
+		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c13=cPoint(tf, 'c13', fcp[0].x, fcp[0].y) #b/w 13 & 15
 		c14=cPoint(tf, 'c14', scp[0].x, scp[0].y) #b/w  13 & 15
 		c15=cPoint(tf, 'c15', fcp[1].x, fcp[1].y) #b/w 15 & 5
@@ -272,8 +284,10 @@ class PatternDesign():
 		sps.appendLineToPath(p8.x, p8.y, relative=False)
 		sps.appendLineToPath(p7.x, p7.y, relative=False)
 		#sideseam
-		sps.appendCubicCurveToPath(c1.x, c1.y, c2.x, c2.y, p10.x, p10.y, relative=False)
-		sps.appendCubicCurveToPath(c3.x, c3.y, c4.x, c4.y, p12.x, p12.y, relative=False)
+		sps.appendCubicCurveToPath(c1a.x, c1a.y, c1b.x, c1b.y, p9.x, p9.y, relative=False)
+		sps.appendCubicCurveToPath(c2a.x, c2a.y, c2b.x, c2b.y, p10.x, p10.y, relative=False)
+		sps.appendCubicCurveToPath(c3a.x, c3a.y, c3b.x, c3b.y, p11.x, p11.y, relative=False)
+		sps.appendCubicCurveToPath(c4a.x, c4a.y, c4b.x, c4b.y, p12.x, p12.y, relative=False)
 		sps.appendLineToPath(p13.x, p13.y, relative=False)
 		#hemline
 		sps.appendCubicCurveToPath(c13.x, c13.y, c14.x, c14.y, p15.x, p15.y, relative=False)
@@ -293,8 +307,10 @@ class PatternDesign():
 		cps.appendLineToPath(p8.x, p8.y, relative=False)
 		cps.appendLineToPath(p7.x, p7.y, relative=False)
 		#sideseam
-		cps.appendCubicCurveToPath(c1.x, c1.y, c2.x, c2.y, p10.x, p10.y, relative=False)
-		cps.appendCubicCurveToPath(c3.x, c3.y, c4.x, c4.y, p12.x, p12.y, relative=False)
+		cps.appendCubicCurveToPath(c1a.x, c1a.y, c1b.x, c1b.y, p9.x, p9.y, relative=False)
+		cps.appendCubicCurveToPath(c2a.x, c2a.y, c2b.x, c2b.y, p10.x, p10.y, relative=False)
+		cps.appendCubicCurveToPath(c3a.x, c3a.y, c3b.x, c3b.y, p11.x, p11.y, relative=False)
+		cps.appendCubicCurveToPath(c4a.x, c4a.y, c4b.x, c4b.y, p12.x, p12.y, relative=False)
 		cps.appendLineToPath(p13.x, p13.y, relative=False)
 		#hemline
 		cps.appendCubicCurveToPath(c13.x, c13.y, c14.x, c14.y, p15.x, p15.y, relative=False)
@@ -519,32 +535,31 @@ class PatternDesign():
 		c21=cPoint(tb, 'c21', p25.x, p25.y)#c21=p25 --> 1st control point for top waist band curve=1st knot point
 		c22=cPoint(tb, 'c22', tb.H.x, tb.H.y)#c22=H  --> 2nd control point for top waist band curve=midpoint of dart on waistline
 		#control points for back side seam
-		#p26 & p28 are not used as knots in curve.
-		#Back Side Seam curve is 3 points --> p21 (waist), p27 (seat), p12 (knee).
-		#Curve b/w p21 & p27
-		#c23=p21
-		#c34=x on line with p27 & parallel to center back line, p26.y
-		c23=cPoint(tb, 'c23', p21.x, p21.y)
-		m=(p20.y - C.y)/(p20.x - C.x)#slope of center back seam
-		b=p27.y - m*p27.x#intercept for line of slope m through p27
-		y=p26.y
-		x1=((y - b)/m)
-		x=p26.x + abs(x1 - p26.x)*(0.5)#find x at midpoint b/w x1 and p26.x
-		c24=cPoint(tb, 'c24', x, y)#upper half of tangent at p27
-		#Curve b/w p27 and p12
-		#c35=x on line with c24p17, p33.y
-		m=(c24.y - p27.y)/(c24.x - p27.x)
-		b=p27.y -  m*p27.x
-		y=p33.y
-		x=(y - b)/m
-		c25=cPoint(tb, 'c25', x, y)#lower half of tangent at p27
-		c26=cPoint(tb, 'c26', p33.x, p33.y)
+		pointlist=[]
+		pointlist.append(p21)
+		pointlist.append(p26)
+		pointlist.append(p27)
+		pointlist.append(p28)
+		pointlist.append(p12)
+		fcp, scp=GetCurveControlPoints('BackSideSeam', pointlist)
+		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
+		c23a=cPoint(tf, 'c23a', fcp[0].x, fcp[0].y) #b/w p21 & p26
+		c23b=cPoint(tf, 'c23b', scp[0].x, scp[0].y) #b/w  p21 & p26
+		c24a=cPoint(tf, 'c24a', fcp[1].x, fcp[1].y) #b/w p26 & p27
+		c24b=cPoint(tf, 'c24b', scp[1].x, scp[1].y) #b/w p26 & p27
+		c25a=cPoint(tf, 'c25a', fcp[2].x, fcp[2].y) #b/w p27 & p28
+		c25b=cPoint(tf, 'c25b', scp[2].x, scp[2].y) #b/w  p27 & p28
+		c26a=cPoint(tf, 'c26a', fcp[3].x, fcp[3].y) #b/w p28 & p12
+		distance = (math.sqrt(((p12.x - scp[3].x)**2) + ((p12.y - scp[3].y)**2)))
+		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
+		c26b=cPoint(tf, 'c26b', x, y) #b/w p28 & p12 --> on line from p13 to p12
 		#control points hem line
 		pointlist=[]
 		pointlist.append(tf.p13)
 		pointlist.append(p29)
 		pointlist.append(tf.p5)
 		fcp, scp=GetCurveControlPoints('HemLine', pointlist)
+		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c27=cPoint(tb, 'c27', fcp[0].x, fcp[0].y)#b/w 13 & 29
 		c28=cPoint(tb, 'c28', scp[0].x, scp[0].y)#b/w 13 & 29
 		c29=cPoint(tb, 'c29', fcp[1].x, fcp[1].y)#b/w 29 & 5
@@ -555,6 +570,7 @@ class PatternDesign():
 		pointlist.append(tb.O)
 		pointlist.append(tf.K)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
+		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c31=cPoint(tb, 'c31', fcp[0].x, fcp[0].y)#b/w L & O
 		c32=cPoint(tb, 'c32', scp[0].x, scp[0].y)#b/w L & O
 		c33=cPoint(tb, 'c33', fcp[1].x, fcp[1].y)#b/w O & K
@@ -611,7 +627,7 @@ class PatternDesign():
 		gbps.appendLineToPath(p22.x, p22.y, relative=False)
 		gbps.appendMoveToPath(p25.x, p25.y, relative=False)#back waistband button path
 		gbps.appendLineToPath(p24.x, p24.y, relative=False)#back waistband button path
-		#seamline back path
+		#back seamline path
 		seamline_back_path_svg=path()
 		sbps=seamline_back_path_svg
 		tb.add(Path('pattern', 'tbsp', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
@@ -621,9 +637,10 @@ class PatternDesign():
 		sbps.appendLineToPath(p25.x, p25.y, relative=False)
 		sbps.appendCubicCurveToPath(c21.x, c21.y, c22.x, c22.y, p22.x, p22.y, relative=False)
 		sbps.appendLineToPath(p21.x, p21.y, relative=False)
-		sbps.appendCubicCurveToPath(c23.x, c23.y, c24.x, c24.y, p27.x, p27.y, relative=False)
-		sbps.appendCubicCurveToPath(c25.x, c25.y, c26.x, c26.y, p12.x, p12.y, relative=False)
-		sbps.appendLineToPath(p12.x, p12.y, relative=False)
+		sbps.appendCubicCurveToPath(c23a.x, c23a.y, c23b.x, c23b.y, p26.x, p26.y, relative=False)
+		sbps.appendCubicCurveToPath(c24a.x, c24a.y, c24b.x, c24b.y, p27.x, p27.y, relative=False)
+		sbps.appendCubicCurveToPath(c25a.x, c25a.y, c25b.x, c25b.y, p28.x, p28.y, relative=False)
+		sbps.appendCubicCurveToPath(c26a.x, c26a.y, c26b.x, c26b.y, p12.x, p12.y, relative=False)
 		sbps.appendLineToPath(p13.x, p13.y, relative=False)
 		sbps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p29.x, p29.y, relative=False)
 		sbps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, p5.x, p5.y, relative=False)
@@ -639,9 +656,10 @@ class PatternDesign():
 		cbps.appendLineToPath(p25.x, p25.y, relative=False)
 		cbps.appendCubicCurveToPath(c21.x, c21.y, c22.x, c22.y, p22.x, p22.y, relative=False)
 		cbps.appendLineToPath(p21.x, p21.y, relative=False)
-		cbps.appendCubicCurveToPath(c23.x, c23.y, c24.x, c24.y, p27.x, p27.y, relative=False)
-		cbps.appendCubicCurveToPath(c25.x, c25.y, c26.x, c26.y, p12.x, p12.y, relative=False)
-		cbps.appendLineToPath(p12.x, p12.y, relative=False)
+		cbps.appendCubicCurveToPath(c23a.x, c23a.y, c23b.x, c23b.y, p26.x, p26.y, relative=False)
+		cbps.appendCubicCurveToPath(c24a.x, c24a.y, c24b.x, c24b.y, p27.x, p27.y, relative=False)
+		cbps.appendCubicCurveToPath(c25a.x, c25a.y, c25b.x, c25b.y, p28.x, p28.y, relative=False)
+		cbps.appendCubicCurveToPath(c26a.x, c26a.y, c26b.x, c26b.y, p12.x, p12.y, relative=False)
 		cbps.appendLineToPath(p13.x, p13.y, relative=False)
 		cbps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p29.x, p29.y, relative=False)
 		cbps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, p5.x, p5.y, relative=False)
