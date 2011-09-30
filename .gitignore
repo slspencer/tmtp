@@ -6,6 +6,7 @@ standalone/extrafiles/
 standalone/foo.*
 standalone/json/
 standalone/Math/
+standalone/jj_catmull/
 *~
 *.pyc
 
