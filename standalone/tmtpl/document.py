@@ -276,3 +276,83 @@ class TitleBlock(pBase):
 
         md[self.groupname].append(tbg)
         return md
+
+class TestGrid(pBase):
+    def __init__(self, group, name, x, y, centimeters=10, inches=4, stylename = ''):
+	self.centimeters = 10
+	self.inches = 4
+        self.name = name
+        self.groupname = group
+        self.stylename = stylename
+        self.x = x
+        self.y = y
+        pBase.__init__(self)
+        return
+
+    def add(self, obj):
+        # Test Grids don't have children. If this changes, change the svg method also.
+        raise RuntimeError('The TestGrid class can not have children')
+
+    def svg(self):
+        if self.debug:
+            print 'svg() called for TestGrid ID ', self.id
+
+        # an empty dict to hold our svg elements
+        md = self.mkgroupdict()
+
+        # TODO make the text parts configurable
+        tbg = g()
+        tbg.set_id(self.id)
+
+	"""
+	Creates two TestGrids at top of pattern --> 20cm & 8in
+	"""
+
+	CMW = self.centimeters*CM_TO_PX
+	INW = self.inches*IN_TO_PX
+	tgps=path()
+
+        gstyle = StyleBuilder(self.styledefs[self.stylename])
+        tgps.set_style(gstyle.getStyle())
+        tgps.set_id(self.name)
+        #t.setAttribute('transform', trans)
+
+
+	tbg.addElement(tgps)
+
+	#Points
+	start_x, start_y = self.x, self.y
+	startcm_x, startcm_y = start_x,  start_y
+	startin_x, startin_y = start_x + CMW + 5*CM_TO_PX,  start_y
+	#self.attrs['transform']='translate(' + str(-x)+', '+ str(-y) + ')'
+
+	# centimeter grid
+	i=0
+	while (i<=self.centimeters): # vertical lines
+		x=startcm_x + i*CM_TO_PX
+		tgps.appendMoveToPath(x, startcm_y, relative=False)
+		tgps.appendLineToPath(x, startcm_y + CMW, relative=False)
+		i=i + 1
+	i=0
+	while (i<=self.centimeters): # horizontal lines
+		y=startcm_y + i*CM_TO_PX
+		tgps.appendMoveToPath(startcm_x, y, relative=False)
+		tgps.appendLineToPath(startcm_x + CMW, y, relative=False)
+		i=i + 1
+
+	# inch grid
+	i=0
+	while (i<=self.inches): #vertical
+		x=startin_x + i*IN_TO_PX
+		tgps.appendMoveToPath(x, startin_y, relative=False)
+		tgps.appendLineToPath(x, startin_y + INW, relative=False)
+		i=i + 1
+	i=0
+	while (i<=self.inches): #horizontal
+		y=startin_y + i*IN_TO_PX
+		tgps.appendMoveToPath(startin_x, y, relative=False)
+		tgps.appendLineToPath(startin_x + INW, y, relative=False)
+		i=i + 1
+
+        md[self.groupname].append(tbg)
+        return md
