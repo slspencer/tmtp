@@ -74,9 +74,9 @@ class PatternDesign():
 					}
 		doc=Document(self.cfg, name='document', attributes=docattrs)
 		#Set up the Title Block and Test Grid for the top of the document
-		TB=TitleBlock('notes', 'titleblock', self.cfg['border'], self.cfg['border'], stylename='titleblock_text_style')
+		TB=TitleBlock('notes', 'titleblock', 0, 0, stylename='titleblock_text_style')
 		doc.add(TB)
-		TG=TestGrid('notes', 'testgrid', self.cfg['paper_width']/2.0, self.cfg['border'], stylename='cuttingline_style')
+		TG=TestGrid('notes', 'testgrid', self.cfg['paper_width']/2.0, 0, stylename='cuttingline_style')
 		doc.add(TG)
 
 		#Begin the pattern ...
