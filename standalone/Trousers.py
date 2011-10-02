@@ -16,7 +16,7 @@ from tmtpl.constants import *
 from tmtpl.pattern import *
 from tmtpl.document import *
 from tmtpl.client import Client
-from tmtpl.curves import GetCurveControlPoints,  FudgeControlPoints
+from tmtpl.curves import GetCurveControlPoints
 
 #Project specific
 #from math import sin, cos, radians
@@ -109,6 +109,7 @@ class PatternDesign():
 		#Begin Trousers
 		trousers=Pattern('trousers')
 		doc.add(trousers)
+		#TODO - move next two lines into Pattern class?
 		trousers.styledefs.update(self.styledefs)
 		trousers.markerdefs.update(self.markerdefs)
 
@@ -172,7 +173,6 @@ class PatternDesign():
 		pointlist.append(p11)
 		pointlist.append(p12)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
-		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c1a=cPoint(tf, 'c1a', fcp[0].x, fcp[0].y) #b/w p7 & p9
 		c1b=cPoint(tf, 'c1b', scp[0].x, scp[0].y) #b/w  p7 & p9
 		c2a=cPoint(tf, 'c2a', fcp[1].x, fcp[1].y) #b/w p9 & p10
@@ -189,7 +189,6 @@ class PatternDesign():
 		pointlist.append(M)
 		pointlist.append(K)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
-		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c5=cPoint(tf, 'c5', fcp[0].x, fcp[0].y) #b/w L & M
 		c6=cPoint(tf, 'c6', scp[0].x, scp[0].y) #b/w  L & M
 		c7=cPoint(tf, 'c7', fcp[1].x, fcp[1].y) #b/w M & K
@@ -200,7 +199,6 @@ class PatternDesign():
 		pointlist.append(p4)
 		pointlist.append(p2)
 		fcp, scp=GetCurveControlPoints('Inseam', pointlist)
-		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		debug('1st point between p5 & p4 '+str(fcp[0].x )+', '+str(fcp[0].y))
 		debug('2nd point between p5 & p4 '+str(scp[0].x )+', '+str(scp[0].y))
 		debug('1st point between p4 & p2 '+str(fcp[1].x )+', '+str(fcp[1].y))
@@ -224,7 +222,6 @@ class PatternDesign():
 		pointlist.append(p15)
 		pointlist.append(p5)
 		fcp, scp=GetCurveControlPoints('HemLine', pointlist)
-		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c13=cPoint(tf, 'c13', fcp[0].x, fcp[0].y) #b/w 13 & 15
 		c14=cPoint(tf, 'c14', scp[0].x, scp[0].y) #b/w  13 & 15
 		c15=cPoint(tf, 'c15', fcp[1].x, fcp[1].y) #b/w 15 & 5
@@ -543,7 +540,6 @@ class PatternDesign():
 		pointlist.append(p28)
 		pointlist.append(p12)
 		fcp, scp=GetCurveControlPoints('BackSideSeam', pointlist)
-		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c23a=cPoint(tf, 'c23a', fcp[0].x, fcp[0].y) #b/w p21 & p26
 		c23b=cPoint(tf, 'c23b', scp[0].x, scp[0].y) #b/w  p21 & p26
 		c24a=cPoint(tf, 'c24a', fcp[1].x, fcp[1].y) #b/w p26 & p27
@@ -560,7 +556,6 @@ class PatternDesign():
 		pointlist.append(p29)
 		pointlist.append(tf.p5)
 		fcp, scp=GetCurveControlPoints('HemLine', pointlist)
-		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c27=cPoint(tb, 'c27', fcp[0].x, fcp[0].y)#b/w 13 & 29
 		c28=cPoint(tb, 'c28', scp[0].x, scp[0].y)#b/w 13 & 29
 		c29=cPoint(tb, 'c29', fcp[1].x, fcp[1].y)#b/w 29 & 5
@@ -571,7 +566,6 @@ class PatternDesign():
 		pointlist.append(tb.O)
 		pointlist.append(tf.K)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
-		(fcp, scp) = FudgeControlPoints(pointlist, fcp, scp, .3333)
 		c31=cPoint(tb, 'c31', fcp[0].x, fcp[0].y)#b/w L & O
 		c32=cPoint(tb, 'c32', scp[0].x, scp[0].y)#b/w L & O
 		c33=cPoint(tb, 'c33', fcp[1].x, fcp[1].y)#b/w O & K

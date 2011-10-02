@@ -139,7 +139,9 @@ def GetCurveControlPoints(name, knots):
     secondControlPoints[i] = pnt
     scpnum = scpnum + 1
 
-    return (firstControlPoints, secondControlPoints)
+    (fcp, scp) = FudgeControlPoints(knots, firstControlPoints, secondControlPoints, .3333)
+
+    return (fcp, scp)
 
 def FudgeControlPoints(knots, fcp, scp, percentage):
     """
