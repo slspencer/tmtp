@@ -49,26 +49,14 @@ def patternPoint(name, x, y, transform = ''):
     return Point('reference', name, x,  y, 'point_style', transform = '')
 
 def rPoint(parent, name, x, y, transform = ''):
-	pnt = referencePoint(name, x, y, transform = '')
+	pnt = Point('reference', name, x, y, 'point_style', transform = '')
 	parent.add(pnt)
 	return pnt
-
-def referencePoint(name, x, y, transform = ''):
-    """
-    Creates reference Points on reference layer
-    """
-    return Point('reference', name, x, y, 'point_style', transform = '')
 
 def cPoint(parent, name, x, y, transform = ''):
-	pnt = controlPoint(name, x, y, transform = '')
+	pnt = Point('reference', name,  x,  y,  'controlpoint_style',  transform = '')
 	parent.add(pnt)
 	return pnt
-
-def controlPoint(name, x, y, transform = ''):
-    """
-    Creates  control Points on reference layer
-    """
-    return Point('reference', name,  x,  y,  'controlpoint_style',  transform = '')
 
 def gridPath(name, label, pathSVG, transform = ''):
     """
