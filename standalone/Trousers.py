@@ -166,12 +166,16 @@ class PatternDesign():
 		M=rPoint(tf, 'M', p15.x, p15.y - HEM_ALLOWANCE)
 		Knee=rPoint(tf, 'Knee', p16.x, E.y)
 		#control points for side seam
+		distance = ((math.sqrt(((p12.x - p11.x)**2) + ((p12.y - p11.y)**2))) / 3.0)
+		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
+		c4b=cPoint(tf, 'c4b', x, y) #b/w p11 & p12
 		pointlist=[]
 		pointlist.append(p7)
 		pointlist.append(p9)
 		pointlist.append(p10)
 		pointlist.append(p11)
-		pointlist.append(p12)
+		pointlist.append(c4b)
+		#pointlist.append(p12)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
 		c1a=cPoint(tf, 'c1a', fcp[0].x, fcp[0].y) #b/w p7 & p9
 		c1b=cPoint(tf, 'c1b', scp[0].x, scp[0].y) #b/w  p7 & p9
@@ -179,10 +183,10 @@ class PatternDesign():
 		c2b=cPoint(tf, 'c2b', scp[1].x, scp[1].y) #b/w p9 & p10
 		c3a=cPoint(tf, 'c3a', fcp[2].x, fcp[2].y) #b/w p10 & p11
 		c3b=cPoint(tf, 'c3b', scp[2].x, scp[2].y) #b/w p10 & p11
-		c4a=cPoint(tf, 'c4a', fcp[3].x, fcp[3].y) #b/w p11 & p12
-		distance = (math.sqrt(((p12.x - scp[3].x)**2) + ((p12.y - scp[3].y)**2)))
-		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
-		c4b=cPoint(tf, 'c4b', x, y) #b/w p4 & p2
+		c4a=cPoint(tf, 'c4a', fcp[3].x, fcp[3].y) #b/w p11 & c4b
+		#x, y=pointAlongLine(p11.x, p11.y, p12.x, p12.y, distance)
+		#c4a=cPoint(tf, 'c4a', x, y) #b/w p11 & p12
+
 		#control points for hemallowance
 		pointlist=[]
 		pointlist.append(L)
@@ -194,20 +198,15 @@ class PatternDesign():
 		c7=cPoint(tf, 'c7', fcp[1].x, fcp[1].y) #b/w M & K
 		c8=cPoint(tf, 'c8', scp[1].x, scp[1].y) #b/w M & K
 		#control points for inseam curve
+		distance= ((math.sqrt(((p4.x - p2.x)**2) + ((p4.y - p2.y)**2))) / 3)
+		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
+		c9=cPoint(tf, 'c9', x, y) # b/w p4 & p2
 		pointlist=[]
-		pointlist.append(p5)
 		pointlist.append(p4)
+		pointlist.append(c9)
 		pointlist.append(p2)
 		fcp, scp=GetCurveControlPoints('Inseam', pointlist)
-		debug('1st point between p5 & p4 '+str(fcp[0].x )+', '+str(fcp[0].y))
-		debug('2nd point between p5 & p4 '+str(scp[0].x )+', '+str(scp[0].y))
-		debug('1st point between p4 & p2 '+str(fcp[1].x )+', '+str(fcp[1].y))
-		debug('2nd point between p4 & p2 '+str(scp[1].x )+', '+str(scp[1].y))
-		distance=(math.sqrt(((p4.x - fcp[1].x)**2) + ((p4.y - fcp[1].y)**2)))
-		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
-		c9=cPoint(tf, 'c9', x, y) # 1st point b/w p4 & p2
-		debug('derived 1st point between p4 & p2 '+str(c9.x )+', '+str(c9.y))
-		c10=cPoint(tf, 'c10', scp[1].x,  scp[1].y) # 2nd point b/w p4 & p2
+		c10=cPoint(tf, 'c10', scp[1].x,  scp[1].y) # b/w p4 & p2
 		#control points at front fly curve
 		c11=cPoint(tf, 'c11', p2.x + (abs(p2.x - D.x)/2.), p2.y) #c11 --> b/w p2 & C, halfway b/w p2.x & D.x
 		#TODO - improve intersectionOfLines function to accept vertical lines
