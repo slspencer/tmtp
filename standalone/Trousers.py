@@ -128,7 +128,7 @@ class PatternDesign():
 		F=rPoint(tf,'F', A.x, D.y + cd.inside_leg - (1*CM)*insideLegRatio)#hemline
 		I=rPoint(tf, 'I', A.x, B.y + abs(C.y - B.y)/2.)#midpoint b/w waist B and seatline (rise) C
 		p2=rPoint(tf, 'p2', D.x - scale_1_8 + (0.5*CM)*seatRatio, D.y)
-		length=(D.x - p2.x)/2.
+		length=(D.x - p2.x)/2.0
 		x, y=pointAlongLine(D.x, D.y, (D.x - 100), (D.y - 100), length) #100pt is arbitrary distance to create 45degree angle
 		p3=rPoint(tf, 'p3', x, y)
 		p7=rPoint(tf, 'p7', B.x + (cd.waist/4.), B.y)
@@ -184,9 +184,6 @@ class PatternDesign():
 		c3a=cPoint(tf, 'c3a', fcp[2].x, fcp[2].y) #b/w p10 & p11
 		c3b=cPoint(tf, 'c3b', scp[2].x, scp[2].y) #b/w p10 & p11
 		c4a=cPoint(tf, 'c4a', fcp[3].x, fcp[3].y) #b/w p11 & c4b
-		#x, y=pointAlongLine(p11.x, p11.y, p12.x, p12.y, distance)
-		#c4a=cPoint(tf, 'c4a', x, y) #b/w p11 & p12
-
 		#control points for hemallowance
 		pointlist=[]
 		pointlist.append(L)
@@ -198,7 +195,7 @@ class PatternDesign():
 		c7=cPoint(tf, 'c7', fcp[1].x, fcp[1].y) #b/w M & K
 		c8=cPoint(tf, 'c8', scp[1].x, scp[1].y) #b/w M & K
 		#control points for inseam curve
-		distance= ((math.sqrt(((p4.x - p2.x)**2) + ((p4.y - p2.y)**2))) / 3)
+		distance= ((math.sqrt(((p4.x - p2.x)**2) + ((p4.y - p2.y)**2))) / 3.3)
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
 		c9=cPoint(tf, 'c9', x, y) # b/w p4 & p2
 		pointlist=[]
@@ -208,7 +205,24 @@ class PatternDesign():
 		fcp, scp=GetCurveControlPoints('Inseam', pointlist)
 		c10=cPoint(tf, 'c10', scp[1].x,  scp[1].y) # b/w p4 & p2
 		#control points at front fly curve
-		c11=cPoint(tf, 'c11', p2.x + (abs(p2.x - D.x)/2.), p2.y) #c11 --> b/w p2 & C, halfway b/w p2.x & D.x
+		#distance = ((math.sqrt(((p2.x - p3.x)**2) + ((p2.y - p3.y)**2))) / 3.0)
+		dx = abs(p2.x - p3.x)
+		dy = abs(p2.y - p3.y)
+		p2a = cPoint(tf, 'p2a', p2.x - dx, p2.y - dy)
+		dx = abs(C.x - p3.x)
+		dy = abs(C.y - p3.y)
+		Ca = cPoint(tf, 'Ca', C.x - dx, C.y - dy)
+		pointlist=[]
+		#pointlist.append(p2a)
+		pointlist.append(p2)
+		pointlist.append(p3)
+		pointlist.append(C)
+		pointlist.append(Ca)
+		fcp, scp=GetCurveControlPoints('Inseam', pointlist)
+		c11a=cPoint(tf, 'c11a', fcp[0].x,  fcp[0].y) # b/w p2 & p3
+		c11b=cPoint(tf, 'c11b', scp[0].x,  scp[0].y) # b/w p2 & p3
+		c11c=cPoint(tf, 'c11c', fcp[1].x,  fcp[1].y) # b/w p3 & C
+		c11d=cPoint(tf, 'c11d', scp[1].x, scp[1].y) #b/w p3 & C
 		#TODO - improve intersectionOfLines function to accept vertical lines
 		m=(p6.y - p7.y)/(p6.x - p7.x)  #slope of p6p7
 		b=p6.y - m*p6.x#y-intercept of p6p7
@@ -293,7 +307,8 @@ class PatternDesign():
 		sps.appendLineToPath(p4.x, p4.y, relative=False)
 		sps.appendCubicCurveToPath(c9.x, c9.y, c10.x, c10.y, p2.x, p2.y, relative=False)
 		#front fly curve
-		sps.appendCubicCurveToPath(c11.x, c11.y, c12.x, c12.y, C.x, C.y, relative=False)
+		sps.appendCubicCurveToPath(c11a.x, c11a.y, c11b.x, c11b.y, p3.x, p3.y, relative=False)
+		sps.appendCubicCurveToPath(c11c.x, c11c.y, c11d.x, c11d.y, C.x, C.y, relative=False)
 		sps.appendLineToPath(A.x, A.y, relative=False)
 		#cuttingline path
 		cuttingline_path_svg=path()
@@ -316,7 +331,8 @@ class PatternDesign():
 		cps.appendLineToPath(p4.x, p4.y, relative=False)
 		cps.appendCubicCurveToPath(c9.x, c9.y, c10.x, c10.y, p2.x, p2.y, relative=False)
 		#front fly curve
-		cps.appendCubicCurveToPath(c11.x, c11.y, c12.x, c12.y, C.x, C.y, relative=False)
+		cps.appendCubicCurveToPath(c11a.x, c11a.y, c11b.x, c11b.y, p3.x, p3.y, relative=False)
+		cps.appendCubicCurveToPath(c11c.x, c11c.y, c11d.x, c11d.y, C.x, C.y, relative=False)
 		cps.appendLineToPath(A.x, A.y, relative=False)
 		#waistline path
 		waistline_path_svg=path()
@@ -395,7 +411,7 @@ class PatternDesign():
 		fsp.appendLineToPath(f5.x + dx, f5.y + dy, relative=False)
 		fsp.appendLineToPath(A.x + dx, A.y + dy, relative=False)
 		fsp.appendLineToPath(C.x + dx, C.y + dy, relative=False)
-		fsp.appendCubicCurveToPath(c12.x + dx, c12.y + dy, c11.x + dx, c11.y + dy, p2.x + dx, p2.y + dy, relative=False)
+		fsp.appendCubicCurveToPath(c11d.x + dx, c11d.y + dy, c11c.x + dx, c11c.y + dy, p3.x + dx, p3.y + dy, relative=False)
 		#fly cutting line path
 		fly_cutting_path_svg=path()
 		fcp=fly_cutting_path_svg
@@ -405,7 +421,7 @@ class PatternDesign():
 		fcp.appendLineToPath(f5.x + dx, f5.y + dy, relative=False)
 		fcp.appendLineToPath(A.x + dx, A.y + dy, relative=False)
 		fcp.appendLineToPath(C.x + dx, C.y + dy, relative=False)
-		fcp.appendCubicCurveToPath(c12.x + dx, c12.y + dy, c11.x + dx, c11.y + dy, p2.x + dx, p2.y + dy, relative=False)
+		fcp.appendCubicCurveToPath(c11d.x + dx, c11d.y + dy, c11c.x + dx, c11c.y + dy, p3.x + dx, p3.y + dy, relative=False)
 		#fly grainline
 		x1, y1=(f2.x + 5*CM + dx, f2.y - (5*CM)+ dy)
 		x2, y2=(f2.x + 5*CM + dx, f2.y - (20*CM) + dy)
@@ -532,12 +548,15 @@ class PatternDesign():
 		c21=cPoint(tb, 'c21', p25.x, p25.y)#c21=p25 --> 1st control point for top waist band curve=1st knot point
 		c22=cPoint(tb, 'c22', tb.H.x, tb.H.y)#c22=H  --> 2nd control point for top waist band curve=midpoint of dart on waistline
 		#control points for back side seam
+		distance = (math.sqrt(((p12.x -p28.x)**2) + ((p12.y - p28.y)**2)) / 3.0)
+		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
+		c26b=cPoint(tf, 'c26b', x, y) #b/w p28 & p12 --> on line from p13 to p12
 		pointlist=[]
 		pointlist.append(p21)
 		pointlist.append(p26)
 		pointlist.append(p27)
 		pointlist.append(p28)
-		pointlist.append(p12)
+		pointlist.append(c26b)
 		fcp, scp=GetCurveControlPoints('BackSideSeam', pointlist)
 		c23a=cPoint(tf, 'c23a', fcp[0].x, fcp[0].y) #b/w p21 & p26
 		c23b=cPoint(tf, 'c23b', scp[0].x, scp[0].y) #b/w  p21 & p26
@@ -546,9 +565,6 @@ class PatternDesign():
 		c25a=cPoint(tf, 'c25a', fcp[2].x, fcp[2].y) #b/w p27 & p28
 		c25b=cPoint(tf, 'c25b', scp[2].x, scp[2].y) #b/w  p27 & p28
 		c26a=cPoint(tf, 'c26a', fcp[3].x, fcp[3].y) #b/w p28 & p12
-		distance = (math.sqrt(((p12.x - scp[3].x)**2) + ((p12.y - scp[3].y)**2)))
-		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
-		c26b=cPoint(tf, 'c26b', x, y) #b/w p28 & p12 --> on line from p13 to p12
 		#control points hem line
 		pointlist=[]
 		pointlist.append(tf.p13)
@@ -570,11 +586,15 @@ class PatternDesign():
 		c33=cPoint(tb, 'c33', fcp[1].x, fcp[1].y)#b/w O & K
 		c34=cPoint(tb, 'c34', scp[1].x, scp[1].y)#b/w O & K
 		#control points inseam
-		distance=(math.sqrt(((p4.x - tf.J.x)**2) + ((p4.y - tf.J.y)**2)))#c46 is same distance from p4 as J
+		distance=(math.sqrt(((p4.x - p17.x)**2) + ((p4.y - p17.y)**2)) / 3.0)
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
-		c35=cPoint(tb, 'c35', x, y) #c35 is on slope of line p5p4 at J distance from p4
-		x, y=intersectionOfLines(p17.x, p17.y, Knee.x, Knee.y, p4.x, p4.y, p5.x, p5.y) #c35 is intersection of line p17 to Knee and p4p5
-		c36=cPoint(tb, 'c36', x, y)
+		c35a=cPoint(tb, 'c35a', x, y) #b/w p4 & p2
+		pointlist=[]
+		pointlist.append(p4)
+		pointlist.append(c35a)
+		pointlist.append(p17)
+		fcp, scp=GetCurveControlPoints('BackInseam', pointlist)
+		c35b=cPoint(tb, 'c35b', scp[1].x, scp[1].y)#b/w p4 & p2
 
 		#Assemble all paths down here
 		#Paths are a bit differemt - we create the SVG and then create the object to hold
@@ -614,7 +634,7 @@ class PatternDesign():
 		gbps.appendLineToPath(Knee.x, Knee.y, relative=False)
 		gbps.appendLineToPath(p28.x, p28.y, relative=False)
 		gbps.appendMoveToPath(p20.x, p20.y, relative=False)
-		gbps.appendLineToPath(c35.x, c35.y, relative=False)
+		gbps.appendLineToPath(c35a.x, c35a.y, relative=False)
 		gbps.appendMoveToPath(p21.x, p21.y, relative=False)
 		gbps.appendLineToPath(p2.x, p2.y, relative=False)
 		gbps.appendMoveToPath(p23.x, p23.y, relative=False)
@@ -639,7 +659,7 @@ class PatternDesign():
 		sbps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p29.x, p29.y, relative=False)
 		sbps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, p5.x, p5.y, relative=False)
 		sbps.appendLineToPath(p4.x, p4.y, relative=False)
-		sbps.appendCubicCurveToPath(c35.x, c35.y, c36.x, c36.y, p17.x, p17.y, relative=False)
+		sbps.appendCubicCurveToPath(c35a.x, c35a.y, c35b.x, c35b.y, p17.x, p17.y, relative=False)
 		# cuttingline back path
 		cuttingline_back_path_svg=path()
 		cbps=cuttingline_back_path_svg
@@ -658,7 +678,7 @@ class PatternDesign():
 		cbps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p29.x, p29.y, relative=False)
 		cbps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, p5.x, p5.y, relative=False)
 		cbps.appendLineToPath(p4.x, p4.y, relative=False)
-		cbps.appendCubicCurveToPath(c35.x, c35.y, c36.x, c36.y, p17.x, p17.y, relative=False)
+		cbps.appendCubicCurveToPath(c35a.x, c35a.y, c35b.x, c35b.y, p17.x, p17.y, relative=False)
 		#waistline back marking path
 		waistline_back_path_svg=path()
 		wbps=waistline_back_path_svg
