@@ -719,41 +719,27 @@ class PatternDesign():
 		#end trousers waistback lining pattern(tf)
 
 		#Begin trouser back hem lining pattern
-		#Create trouser back hem lining pattern
 		back_hemlining=PatternPiece('pattern', 'back_hemlining', letter='G', fabric=2, interfacing=0, lining=0)
 		trousers.add(back_hemlining)
-		bh=trousers.back_hemlining
-		bhstart=rPoint(bh,'bhstart', 0, 0) #calculate points relative to 0,0
-		transform_coords='0 0'#doesn't do anything
-		bh.attrs['transform']='translate(' +  transform_coords +')'  #doesn't do anything
-		dx, dy=- K.x, - K.y #slide pattern piece to where A is defined on trouser front
-		back_hemlining_seam_path=path()
-		bhsp=back_hemlining_seam_path
-		bh.add(Path('pattern', 'bhsp', 'back_hemlining_seam_path', bhsp, 'seamline_path_style'))
-		moveP(bhsp, p5)
-		bhsp.appendLineToPath(K.x + dx, K.y + dy, relative=False)
-		bhsp.appendCubicCurveToPath(c34.x + dx, c34.y + dy, c33.x + dx, c33.y + dy, O.x + dx, O.y + dy, relative=False)
-		bhsp.appendCubicCurveToPath(c32.x + dx, c32.y + dy, c31.x + dx, c31.y + dy, L.x + dx, L.y + dy, relative=False)
-		bhsp.appendLineToPath(p13.x + dx, p13.y + dy, relative=False)
-		bhsp.appendCubicCurveToPath(c27.x + dx, c27.y + dy, c28.x + dx, c28.y + dy, p29.x + dx, p29.y + dy, relative=False)
-		bhsp.appendCubicCurveToPath(c29.x + dx, c29.y + dy, c30.x + dx, c30.y + dy, p5.x + dx, p5.y + dy, relative=False)
-		back_hemlining_cutting_path=path()
-		bhcp=back_hemlining_cutting_path
-		bh.add(Path('pattern', 'bhcp', 'back_hemlining_cutting_path', bhcp, 'cuttingline_style'))
-		moveP(bhcp, p5)
-		bhcp.appendLineToPath(K.x + dx, K.y + dy, relative=False)
-		bhcp.appendCubicCurveToPath(c34.x + dx, c34.y + dy, c33.x + dx, c33.y + dy, O.x + dx, O.y + dy, relative=False)
-		bhcp.appendCubicCurveToPath(c32.x + dx, c32.y + dy, c31.x + dx, c31.y + dy, L.x + dx, L.y + dy, relative=False)
-		bhcp.appendLineToPath(p13.x + dx, p13.y + dy, relative=False)
-		bhcp.appendCubicCurveToPath(c27.x + dx, c27.y + dy, c28.x + dx, c28.y + dy, p29.x + dx, p29.y + dy, relative=False)
-		bhcp.appendCubicCurveToPath(c29.x + dx, c29.y + dy, c30.x + dx, c30.y + dy, p5.x + dx, p5.y + dy, relative=False)
-		#back hemlining grainline
-		x1, y1=(tb.O.x + dx, tb.O.y + (1.5*CM) + dy)
-		x2, y2=(tb.O.x + dx, p29.y  - (1.5*CM) +  dy)
-		bh.add(grainLinePath(name="backHemLiningGrainline", label="Back Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2))
-		#set the label location. Someday this should be automatic
-		bh.label_x=bhstart.x + (2*CM)
-		bh.label_y=bhstart.y + (2*CM)
+		tbh=trousers.back_hemlining
+		bhstart=rPoint(tbh,'bhstart', 0, 0) #calculate points relative to 0,0
+		transform_coords= str(-K.x) +', '+str(- K.y)
+		transform='translate(' +  transform_coords +')'
+		tbh.attrs['transform']=transform
+		p=path()
+		moveP(p, p5)
+		lineP(p, K)
+		cubicCurveP(p, c34, c33, O)
+		cubicCurveP(p, c32, c31, L)
+		lineP(p, p13)
+		cubicCurveP(p, c27, c28, p29)
+		cubicCurveP(p, c29, c30, p5)
+		tbh.add(Path('pattern', 'tbhs', 'back_hemlining_seamline', p, 'seamline_path_style', transform))
+		tbh.add(Path('pattern', 'tbhc', 'back_hemlining_cuttingline', p, 'cuttingline_style', transform))
+		(x1, y1)=(O.x, O.y + (1.5*CM))
+		(x2, y2)=(O.x, p29.y  - (1.5*CM))
+		tbh.add(grainLinePath("back_hemlininggrainline", "Trousers Back Hemlining Grainline", x1, y1, x2, y2, transform))
+		(tbh.label_x,  tbh.label_y)=transformPoint(K.x + (2*CM), K.y + (2*CM), transform)
 		#end trousers back hem lining pattern
 		#end trousers
 
