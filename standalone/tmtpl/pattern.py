@@ -88,11 +88,17 @@ def stitchLinePath( name, label,  pathSVG, transform = '' ):
     """
     return Path('pattern', name, label, pathSVG, 'dart_style', transform = '')
 
-def grainLinePath(name, label, xstart, ystart, xend, yend):
+def grainLinePath(name, label, xstart, ystart, xend, yend,  transform=''):
     """
     Creates grain line on pattern layer
     """
-    gline = Line(group="pattern", name=name, label=label, xstart=xstart, ystart=ystart, xend=xend, yend=yend, styledef="grainline_style")
+    if (transform == '') :
+        x1, y1 = xstart,  ystart
+        x2, y2 = xend,  yend
+    else:
+        x1, y1 = transformPoint(xstart, ystart, transform)
+        x2, y2 = transformPoint(xend, yend, transform)
+    gline = Line("pattern", name, label, x1, y1, x2, y2, "grainline_style")
     gline.setMarker('Arrow1M', start = True, end = True)
     return gline
 
@@ -103,14 +109,18 @@ def moveP(pathSVG, point, transform = ''):
     if (transform == '') :
         x, y = point.x,  point.y
     else:
-        x, y = transformPoint( point.x,  point.y,  transform)
-    return pathSVG.appendMoveToPath( x, y,  relative = False)
+        x, y = transformPoint(point.x, point.y, transform)
+    return pathSVG.appendMoveToPath( x, y, relative = False)
 
-def lineP(pathSVG, point):
+def lineP(pathSVG, point,  transform = ''):
     """
     appendLineToPath method
     """
-    return pathSVG.appendLineToPath( point.x,  point.y,  relative = False)
+    if (transform == '') :
+        x, y = point.x,  point.y
+    else:
+        x, y = transformPoint(point.x, point.y, transform)
+    return pathSVG.appendLineToPath( x, y,  relative = False)
 
 def cubicCurveP(pathSVG, control1, control2, point):
     """
