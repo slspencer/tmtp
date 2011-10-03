@@ -404,47 +404,33 @@ class PatternDesign():
 		(x2, y2)=(f2.x + (5*CM)*waistRatio, f2.y - (20*CM)*riseRatio)
 		tff.add(grainLinePath("flygrainpath", "Trousers Front Fly Grainline", x1, y1, x2, y2, transform))
 		(tff.label_x,  tff.label_y)=transformPoint(A.x + (0.5*CM)*waistRatio, A.y + (2*CM)*riseRatio, transform)
-		#end trousers front fly extension pattern(tf)
+		#end trousers front fly
 
-		#Begin trousers front hem lining pattern(tb)
-		#Create the trousers front hemlining
+		#Begin trousers front hem lining
 		front_hemlining=PatternPiece('pattern', 'front_hemlining', letter='D', fabric=2, interfacing=0, lining=0)
 		trousers.add(front_hemlining)
-		fh=trousers.front_hemlining
-		start=Point('reference', 'start', 0, 0) #calculate points relative to 0,0
-		fh.add(start)
-		transform_coords='0, 0'#doesn't do anything
-		fh.attrs['transform']='translate(' +  transform_coords +')'  #doesn't do anything
-		dx, dy=-fh.start.x - p5.x, fh.start.y - tf.M.y #slide pattern piece to where A is defined on trouser front
-		#hemlining seamline path
-		front_hemlining_seam_path=path()
-		fhsp=front_hemlining_seam_path
-		fh.add(Path('pattern', 'fhsp', 'front_hemlining_seam_path', fhsp, 'seamline_path_style'))
-		moveP(fhsp, p5)
-		fhsp.appendLineToPath(tf.K.x + dx, tf.K.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(c8.x + dx, c8.y + dy, c7.x + dx, c7.y + dy, tf.M.x + dx, tf.M.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(c6.x + dx, c6.y + dy, c5.x + dx, c5.y + dy, tf.L.x + dx, tf.L.y + dy, relative=False)
-		fhsp.appendLineToPath(p13.x + dx, p13.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(c13.x + dx, c13.y + dy, c14.x + dx, c14.y + dy, p15.x + dx, p15.y + dy, relative=False)
-		fhsp.appendCubicCurveToPath(c15.x + dx, c15.y + dy, c16.x + dx, c16.y + dy, p5.x + dx, p5.y + dy, relative=False)
-		#hemlining cuttingline path
-		front_hemlining_cutting_path=path()
-		fhcp=front_hemlining_cutting_path
-		fh.add(Path('pattern', 'fhcp', 'front_hemlining_cutting_path', fhcp, 'cuttingline_style'))
-		moveP(fhcp, p5)
-		fhcp.appendLineToPath(tf.K.x + dx, tf.K.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(c8.x + dx, c8.y + dy, c7.x + dx, c7.y + dy, tf.M.x + dx, tf.M.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(c6.x + dx, c6.y + dy, c5.x + dx, c5.y + dy, tf.L.x + dx, tf.L.y + dy, relative=False)
-		fhcp.appendLineToPath(p13.x + dx, p13.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(c13.x + dx, c13.y + dy, c14.x + dx, c14.y + dy, p15.x + dx, p15.y + dy, relative=False)
-		fhcp.appendCubicCurveToPath(c15.x + dx, c15.y + dy, c16.x + dx, c16.y + dy, p5.x + dx, p5.y + dy, relative=False)
-		#hemlining grainline path
-		x1, y1=(p15.x + dx, tf.M.y + (1.5*CM) + dy)
-		x2, y2=(p15.x + dx, p15.y  - (1.5*CM) +  dy)
-		fh.add(grainLinePath(name="frontHemLiningGrainline", label="Front Hemlining Grainline", xstart=x1, ystart=y1, xend=x2, yend=y2))
-		#set the label location. Someday this should be automatic
-		fh.label_x=fh.start.x + (2*CM)
-		fh.label_y=fh.start.y + (2*CM)
+		tfh=trousers.front_hemlining
+		start=Point('reference', 'start', 0, 0)
+		tfh.add(start)
+		transform_coords=str(- K.x) +', '+str(-K.y)
+		transform='translate(' +  transform_coords +')'
+		tfh.attrs['transform']=transform
+		p=path()
+		moveP(p, p5)
+		lineP(p, K)
+		cubicCurveP(p, c8, c7, M)
+		cubicCurveP(p, c6, c5, L)
+		lineP(p, p13)
+		cubicCurveP(p, c13, c14, p15)
+		cubicCurveP(p, c15, c16, p5)
+		#front hem lining seamline & cuttingline
+		tfh.add(Path('pattern', 'tfhs', 'front_hemlining_seam_path', p, 'seamline_path_style', transform))
+		tfh.add(Path('pattern', 'tfhc', 'front_hemlining_seam_path', p, 'cuttingline_style', transform))
+		#front hem lining grainline path & label
+		(x1, y1)=(p15.x, M.y + (1.5*CM))
+		(x2, y2)=(p15.x, p15.y  - (1.5*CM))
+		tfh.add(grainLinePath("front_hemlininggrainline", "Trousers Front Hemlining Grainline", x1, y1, x2, y2, transform))
+		(tfh.label_x,  tfh.label_y)=transformPoint(K.x + (2*CM), K.y + (2*CM), transform)
 		#end trousers front hem lining pattern
 
 
