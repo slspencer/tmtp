@@ -122,11 +122,17 @@ def lineP(pathSVG, point,  transform = ''):
         x, y = transformPoint(point.x, point.y, transform)
     return pathSVG.appendLineToPath( x, y,  relative = False)
 
-def cubicCurveP(pathSVG, control1, control2, point):
+def cubicCurveP(pathSVG, control1, control2, point, transform=''):
     """
     appendCubicCurveToPath method
     """
-    return pathSVG.appendCubicCurveToPath(control1.x, control1.y, control2.x, control2.y, point.x, point.y, relative = False)
+    if (transform == '') :
+        c1x, c1y, c2x, c2y, px, py = control1.x, control1.y, control2.x,  control2.y, point.x, point.y
+    else:
+        c1x, c1y = transformPoint(control1.x, control1.y, transform)
+        c2x, c2y = transformPoint(control2.x, control2.y, transform)
+        px,  py = transformPoint(point.x, point.y, transform)
+    return pathSVG.appendCubicCurveToPath(c1x, c1y, c2x, c2y, px, py, relative = False)
 
 def angleOfLine(x1, y1, x2, y2):
     """

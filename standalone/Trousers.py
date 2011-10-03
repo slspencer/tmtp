@@ -371,53 +371,39 @@ class PatternDesign():
 		lineP(p, p7)
 		lineP(p, B)
 		lineP(p, A)
-		#front waistband seamline, cuttingline, grainline
+		#front waistband seamline & cuttingline
 		tfw.add(Path('pattern', 'tfws', 'Trousers Front Waistband Seamline', p, 'seamline_path_style', transform))
 		tfw.add(Path('pattern', 'tfwc', 'Trousers Front Waistband Cuttingline', p, 'cuttingline_style', transform))
-		#front waistband grainline
+		#front waistband grainline & label
 		(x1, y1)=(A.x + (9*CM)*waistRatio, A.y + (1*CM)*riseRatio)
 		(x2, y2)=(A.x + (9*CM)*waistRatio, B.y - (1*CM)*riseRatio)
 		tfw.add(grainLinePath("trousersfrontwaistbandgrainline", "Trousers Front Waistband Grainline", x1, y1, x2, y2, transform))
 		(tfw.label_x,  tfw.label_y)=transformPoint(A.x + (1*CM)*waistRatio, A.y + (1*CM)*riseRatio, transform)
 		#end front waistband lining pattern
 
-		#Begin trousers front fly extension pattern(tb)
-		#Create the fly extension
+		#Begin trousers front fly
 		fly=PatternPiece('pattern', 'fly', letter='C', fabric=2, interfacing=0, lining=3)
 		trousers.add(fly)
-		f=trousers.fly
+		tff=trousers.fly
 		start=Point('reference', 'start', 0, 0)
-		f.add(start)
-		transform_coords=str(-A.x) + ', ' + str(-A.y)#doesn't do anything
-		f.attrs['transform']='translate(' +  transform_coords +')'  #doesn't do anything
-		dx, dy=-f.start.x -A.x, -f.start.y -A.y
-		#create clip path as a test:
-		fly_seam_path_svg=path()
-		fsp=fly_seam_path_svg
-		f.add(Path('pattern', 'tfsl', 'Trousers Fly Seam Line Path', fsp, 'seamline_path_style'))
-		moveP(fsp, p3)
-		fsp.appendCubicCurveToPath(c17.x + dx, c17.y + dy, c18.x + dx, c18.y + dy, f4.x + dx, f4.y + dy, relative=False)
-		fsp.appendLineToPath(f5.x + dx, f5.y + dy, relative=False)
-		fsp.appendLineToPath(A.x + dx, A.y + dy, relative=False)
-		fsp.appendLineToPath(C.x + dx, C.y + dy, relative=False)
-		fsp.appendCubicCurveToPath(c11d.x + dx, c11d.y + dy, c11c.x + dx, c11c.y + dy, p3.x + dx, p3.y + dy, relative=False)
-		#fly cutting line path
-		fly_cutting_path_svg=path()
-		fcp=fly_cutting_path_svg
-		f.add(Path('pattern', 'tfcl', 'Trousers Fly Cutting Line Path', fcp, 'cuttingline_style'))
-		moveP(fcp, p3)
-		fcp.appendCubicCurveToPath(c17.x + dx, c17.y + dy, c18.x + dx, c18.y + dy, f4.x + dx, f4.y + dy, relative=False)
-		fcp.appendLineToPath(f5.x + dx, f5.y + dy, relative=False)
-		fcp.appendLineToPath(A.x + dx, A.y + dy, relative=False)
-		fcp.appendLineToPath(C.x + dx, C.y + dy, relative=False)
-		fcp.appendCubicCurveToPath(c11d.x + dx, c11d.y + dy, c11c.x + dx, c11c.y + dy, p3.x + dx, p3.y + dy, relative=False)
-		#fly grainline
-		x1, y1=(f2.x + 5*CM + dx, f2.y - (5*CM)+ dy)
-		x2, y2=(f2.x + 5*CM + dx, f2.y - (20*CM) + dy)
-		f.add(grainLinePath(name="flygrainpath", label="Fly Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
-		#set the label location. Somday this should be automatic
-		f.label_x=A.x + (0.5*CM) + dx
-		f.label_y=A.y + (2*CM) + dy
+		tff.add(start)
+		transform_coords=str(-A.x) + ', ' + str(-A.y)
+		transform='translate(' +  transform_coords +')'
+		tff.attrs['transform']=transform
+		p=path()
+		moveP(p, p3)
+		cubicCurveP(p, c17, c18, f4)
+		lineP(p, f5)
+		lineP(p, A)
+		lineP(p, C)
+		cubicCurveP(p, c11d, c11c, p3)
+		tff.add(Path('pattern', 'tffs', 'Trousers Front Fly Seamline', p, 'seamline_path_style', transform))
+		tff.add(Path('pattern', 'tffc', 'Trousers Front Fly Cuttingline', p, 'cuttingline_style', transform))
+		#front fly grainline & label
+		(x1, y1)=(f2.x + (5*CM)*waistRatio, f2.y - (5*CM)*riseRatio)
+		(x2, y2)=(f2.x + (5*CM)*waistRatio, f2.y - (20*CM)*riseRatio)
+		tff.add(grainLinePath("flygrainpath", "Trousers Front Fly Grainline", x1, y1, x2, y2, transform))
+		(tff.label_x,  tff.label_y)=transformPoint(A.x + (0.5*CM)*waistRatio, A.y + (2*CM)*riseRatio, transform)
 		#end trousers front fly extension pattern(tf)
 
 		#Begin trousers front hem lining pattern(tb)
@@ -428,7 +414,7 @@ class PatternDesign():
 		start=Point('reference', 'start', 0, 0) #calculate points relative to 0,0
 		fh.add(start)
 		transform_coords='0, 0'#doesn't do anything
-		f.attrs['transform']='translate(' +  transform_coords +')'  #doesn't do anything
+		fh.attrs['transform']='translate(' +  transform_coords +')'  #doesn't do anything
 		dx, dy=-fh.start.x - p5.x, fh.start.y - tf.M.y #slide pattern piece to where A is defined on trouser front
 		#hemlining seamline path
 		front_hemlining_seam_path=path()
