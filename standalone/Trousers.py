@@ -114,7 +114,7 @@ class PatternDesign():
 		trousers.markerdefs.update(self.markerdefs)
 
 		# Begin Trousers Front pattern piece
-		front=PatternPiece('pattern', 'front', letter='AA', fabric=2, interfacing=0, lining=0)
+		front=PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0)
 		trousers.add(front)
 		tf=trousers.front
 		tfstart=rPoint(tf,'tfstart', 0, 0)
@@ -155,9 +155,6 @@ class PatternDesign():
 		length=abs(D.y -A.y)
 		x, y=pointAlongLine(p16.x, p16.y, p15.x, p15.y, -length)
 		G=rPoint(tf, 'G', x, y)
-		distance=((math.sqrt(((p4.x - p6.x)**2) + ((p4.y - p6.y)**2)))/2.) #J is at midpoint on line from p4 to p6, not at midpoint on line between p4 & p2
-		J=pointAlongLineP(p4, p5, 'J', -distance)
-		tf.add(J)
 		distance=HEM_ALLOWANCE
 		x, y=pointAlongLine(p5.x, p5.y, p4.x, p4.y, distance)
 		K=rPoint(tf, 'K', x, y)
@@ -224,11 +221,6 @@ class PatternDesign():
 		c11c=cPoint(tf, 'c11c', fcp[1].x,  fcp[1].y) # b/w p3 & C
 		c11d=cPoint(tf, 'c11d', scp[1].x, scp[1].y) #b/w p3 & C
 		#TODO - improve intersectionOfLines function to accept vertical lines
-		m=(p6.y - p7.y)/(p6.x - p7.x)  #slope of p6p7
-		b=p6.y - m*p6.x#y-intercept of p6p7
-		x=D.x#find control point c12with x=D.x, this will be on vertical line AD
-		y=m*x + b#y of c12
-		c12=cPoint(tf, 'c12', x, y) #b/w  p2 & C at intersection of lines AD and p6p7
 		#control points for hemline
 		pointlist=[]
 		pointlist.append(p13)
@@ -245,37 +237,31 @@ class PatternDesign():
 		c17=cPoint(tf, 'c17', p3.x+ (abs(f1.x-p3.x) / 2.0), p3.y) #b/w p3 & f1
 		c18=cPoint(tf, 'c18', f1.x, f1.y + (abs(f1.y-p3.y) / 2.0))#b/w p3 & f1
 		#Draw reference lines
-		grid_path_svg=path()
-		gps=grid_path_svg
-		tf.add(Path('reference','tfgrid', 'Trousers Front Gridline Path', gps, 'gridline_style'))
+		p=path()
 		#vertical grid
-		moveP(gps, A)
-		gps.appendLineToPath(F.x, F.y, relative=False)
-		moveP(gps, p6)
-		gps.appendLineToPath(p5.x, p5.y, relative=False)
-		moveP(gps, p30)
-		gps.appendLineToPath(p13.x, p13.y, relative=False)
-		moveP(gps, G)
-		gps.appendLineToPath(p14.x, p14.y, relative=False)
+		moveP(p, A)
+		lineP(p, F)
+		moveP(p, p6)
+		lineP(p, p5)
+		moveP(p, p30)
+		lineP(p, p13)
+		moveP(p, G)
+		lineP(p, p14)
 		#horizontal grid
-		moveP(gps, I)
-		gps.appendLineToPath(p9.x, p9.y, relative=False)
-		moveP(gps, C)
-		gps.appendLineToPath(p10.x, p10.y, relative=False)
-		moveP(gps, p2)
-		gps.appendLineToPath(p11.x, p11.y, relative=False)
-		moveP(gps, p4)
-		gps.appendLineToPath(p12.x, p12.y, relative=False)
-		moveP(gps, p5)
-		gps.appendLineToPath(p13.x, p13.y, relative=False)
+		moveP(p, I)
+		lineP(p, p9)
+		moveP(p, C)
+		lineP(p, p10)
+		moveP(p, p2)
+		lineP(p, p11)
+		moveP(p, p4)
+		lineP(p, p12)
+		moveP(p, p5)
+		lineP(p, p13)
 		#diagonal grid
-		moveP(gps, p6)
-		gps.appendLineToPath(p7.x, p7.y, relative=False)
-		moveP(gps, D)
-		gps.appendLineToPath(p3.x, p3.y, relative=False)
-		moveP(gps, p2)
-		gps.appendLineToPath(Knee.x, Knee.y, relative=False)
-		gps.appendLineToPath(p11.x, p11.y, relative=False)
+		moveP(p, D)
+		lineP(p, p3)
+		tf.add(Path('reference','tfg', 'Trousers Front Gridline', p, 'gridline_style', transform))
 		#Assemble all paths down here
 		#Paths are a bit differemt - we create the SVG and then create the object to hold it
 		#See the pysvg library docs for the pysvg methods
