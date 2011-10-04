@@ -118,7 +118,8 @@ class PatternDesign():
 		trousers.add(front)
 		tf=trousers.front
 		tfstart=rPoint(tf,'tfstart', 0, 0)
-		tf.attrs['transform']='translate(' + tfstart.coords + ')'
+		transform='translate(' + tfstart.coords + ')'
+		tf.attrs['transform']=transform
 		#Points
 		A=rPoint(tf, 'A', tfstart.x + scale_1_8 + (0.5*CM)*seatRatio, tfstart.y)
 		B=rPoint(tf, 'B', A.x, A.y + (3.8*CM)*riseRatio)#waistline
@@ -160,7 +161,6 @@ class PatternDesign():
 		distance=HEM_ALLOWANCE
 		x, y=pointAlongLine(p5.x, p5.y, p4.x, p4.y, distance)
 		K=rPoint(tf, 'K', x, y)
-		distance=HEM_ALLOWANCE
 		x, y=pointAlongLine(p13.x, p13.y, p12.x, p12.y, distance)
 		L=rPoint(tf, 'L', x, y)
 		M=rPoint(tf, 'M', p15.x, p15.y - HEM_ALLOWANCE)
@@ -239,13 +239,11 @@ class PatternDesign():
 		c14=cPoint(tf, 'c14', scp[0].x, scp[0].y) #b/w  13 & 15
 		c15=cPoint(tf, 'c15', fcp[1].x, fcp[1].y) #b/w 15 & 5
 		c16=cPoint(tf, 'c16', scp[1].x, scp[1].y) #b/w 15 & 5
-		#create fly clip path:
-		f1=rPoint(tf, 'f1', p3.x, A.y)
-		f2=rPoint(tf, 'f2', p3.x, p3.y)
-		f4=rPoint(tf, 'f4', A.x + (5*CM*seatRatio), C.y)
-		f5=rPoint(tf, 'f5', f4.x, A.y)
-		c17=cPoint(tf, 'c17', c12.x, p3.y) #b/w f2 & f4
-		c18=cPoint(tf, 'c18', f4.x, c12.y) #b/w f2 & f4
+		#fly stitch line
+		f1=rPoint(tf, 'f1', C.x + (5*CM*seatRatio), C.y)
+		f2=rPoint(tf, 'f2', f1.x, A.y)
+		c17=cPoint(tf, 'c17', p3.x+ (abs(f1.x-p3.x) / 2.0), p3.y) #b/w p3 & f1
+		c18=cPoint(tf, 'c18', f1.x, f1.y + (abs(f1.y-p3.y) / 2.0))#b/w p3 & f1
 		#Draw reference lines
 		grid_path_svg=path()
 		gps=grid_path_svg
@@ -278,12 +276,6 @@ class PatternDesign():
 		moveP(gps, p2)
 		gps.appendLineToPath(Knee.x, Knee.y, relative=False)
 		gps.appendLineToPath(p11.x, p11.y, relative=False)
-		#fly clip-path
-		moveP(gps, f1)
-		gps.appendLineToPath(f2.x, f2.y, relative=False)
-		gps.appendCubicCurveToPath(c17.x, c17.y, c18.x, c18.y, f4.x, f4.y, relative=False)
-		gps.appendLineToPath(f5.x, f5.y, relative=False)
-		gps.appendLineToPath(f1.x, f1.y, relative=False)
 		#Assemble all paths down here
 		#Paths are a bit differemt - we create the SVG and then create the object to hold it
 		#See the pysvg library docs for the pysvg methods
@@ -340,13 +332,13 @@ class PatternDesign():
 		tf.add(Path('pattern', 'tfwp', 'Trousers Front Waistline Path', wps, 'dart_style'))
 		moveP(wps, B)
 		wps.appendLineToPath(p7.x, p7.y, relative=False)
-		#front fly stitching line path
-		fly_stitch_path_svg=path()
-		fsps=fly_stitch_path_svg
-		tf.add(Path('pattern', 'ffsp', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
-		moveP(fsps, f2)
-		fsps.appendCubicCurveToPath(c17.x, c17.y, c18.x, c18.y, f4.x, f4.y, relative=False)
-		fsps.appendLineToPath(f4.x, A.y, relative=False)
+		#front fly stitching line
+		p=path()
+		moveP(p, p3)
+		cubicCurveP(p, c17,  c18, f1)
+		lineP(p, f2)
+		tf.add(Path('pattern', 'tffs', 'Trousers Front Fly Stitchline', p, 'dart_style'))
+
 		#front grainline path
 		x1, y1=(p16.x, C.y)
 		x2, y2=p16.x, (p4.y + abs(p14.y - p4.y)/2.)
@@ -391,17 +383,17 @@ class PatternDesign():
 		transform='translate(' +  transform_coords +')'
 		tff.attrs['transform']=transform
 		p=path()
-		moveP(p, p3)
-		cubicCurveP(p, c17, c18, f4)
-		lineP(p, f5)
-		lineP(p, A)
+		moveP(p, A)
 		lineP(p, C)
 		cubicCurveP(p, c11d, c11c, p3)
+		cubicCurveP(p, c17, c18, f1)
+		lineP(p, f2)
+		lineP(p, A)
 		tff.add(Path('pattern', 'tffs', 'Trousers Front Fly Seamline', p, 'seamline_path_style', transform))
 		tff.add(Path('pattern', 'tffc', 'Trousers Front Fly Cuttingline', p, 'cuttingline_style', transform))
 		#front fly grainline & label
-		(x1, y1)=(f2.x + (5*CM)*waistRatio, f2.y - (5*CM)*riseRatio)
-		(x2, y2)=(f2.x + (5*CM)*waistRatio, f2.y - (20*CM)*riseRatio)
+		(x1, y1)=(A.x + (3*CM)*waistRatio, A.y + (5*CM)*riseRatio)
+		(x2, y2)=(A.x + (3*CM)*waistRatio, f1.y - (2*CM)*riseRatio)
 		tff.add(grainLinePath("flygrainpath", "Trousers Front Fly Grainline", x1, y1, x2, y2, transform))
 		(tff.label_x,  tff.label_y)=transformPoint(A.x + (0.5*CM)*waistRatio, A.y + (2*CM)*riseRatio, transform)
 		#end trousers front fly
