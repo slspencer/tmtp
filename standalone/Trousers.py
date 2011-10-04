@@ -367,8 +367,8 @@ class PatternDesign():
 		tfw.add(Path('pattern', 'tfws', 'Trousers Front Waistband Seamline', p, 'seamline_path_style', transform))
 		tfw.add(Path('pattern', 'tfwc', 'Trousers Front Waistband Cuttingline', p, 'cuttingline_style', transform))
 		#front waistband grainline & label
-		(x1, y1)=(A.x + (9*CM)*waistRatio, A.y + (1*CM)*riseRatio)
-		(x2, y2)=(A.x + (9*CM)*waistRatio, B.y - (1*CM)*riseRatio)
+		(x1, y1)=(A.x + (9*CM)*waistRatio, A.y + (.5*CM)*riseRatio)
+		(x2, y2)=(A.x + (9*CM)*waistRatio, B.y - (.5*CM)*riseRatio)
 		tfw.add(grainLinePath("trousersfrontwaistbandgrainline", "Trousers Front Waistband Grainline", x1, y1, x2, y2, transform))
 		(tfw.label_x,  tfw.label_y)=transformPoint(A.x + (1*CM)*waistRatio, A.y + (1*CM)*riseRatio, transform)
 		#end front waistband lining pattern
@@ -382,6 +382,7 @@ class PatternDesign():
 		transform_coords=str(-A.x) + ', ' + str(-A.y)
 		transform='translate(' +  transform_coords +')'
 		tff.attrs['transform']=transform
+		#front fly seamline & cuttingline
 		p=path()
 		moveP(p, A)
 		lineP(p, C)
@@ -419,10 +420,10 @@ class PatternDesign():
 		tfh.add(Path('pattern', 'tfhs', 'front_hemlining_seam_path', p, 'seamline_path_style', transform))
 		tfh.add(Path('pattern', 'tfhc', 'front_hemlining_seam_path', p, 'cuttingline_style', transform))
 		#front hem lining grainline path & label
-		(x1, y1)=(p15.x, M.y + (1.5*CM))
-		(x2, y2)=(p15.x, p15.y  - (1.5*CM))
+		(x1, y1)=(p15.x, M.y + (1*CM))
+		(x2, y2)=(p15.x, p15.y  - (1*CM))
 		tfh.add(grainLinePath("front_hemlininggrainline", "Trousers Front Hemlining Grainline", x1, y1, x2, y2, transform))
-		(tfh.label_x,  tfh.label_y)=transformPoint(K.x + (2*CM), K.y + (2*CM), transform)
+		(tfh.label_x,  tfh.label_y)=transformPoint(K.x + (2*CM), K.y + (1*CM), transform)
 		#end trousers front hem lining pattern
 
 
