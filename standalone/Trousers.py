@@ -114,7 +114,7 @@ class PatternDesign():
 		trousers.markerdefs.update(self.markerdefs)
 
 		# Begin Trousers Front pattern piece
-		front=PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0)
+		front=PatternPiece('pattern', 'front', 'A', fabric=2, interfacing=0, lining=0)
 		trousers.add(front)
 		tf=trousers.front
 		tfstart=rPoint(tf,'tfstart', 0, 0)
@@ -261,77 +261,51 @@ class PatternDesign():
 		#diagonal grid
 		moveP(p, D)
 		lineP(p, p3)
-		tf.add(Path('reference','tfg', 'Trousers Front Gridline', p, 'gridline_style', transform))
+		tf.add(Path('reference','tfgrid', 'Trousers Front Gridline', p, 'gridline_style', transform))
 		#Assemble all paths down here
 		#Paths are a bit differemt - we create the SVG and then create the object to hold it
 		#See the pysvg library docs for the pysvg methods
-		seamline_path_svg=path()
-		sps=seamline_path_svg
-		tf.add(Path('pattern', 'tfsp', 'Trousers Front Seamline Path', sps, 'seamline_path_style'))
-		#waistband
-		moveP(sps, A)
-		sps.appendLineToPath(p8.x, p8.y, relative=False)
-		sps.appendLineToPath(p7.x, p7.y, relative=False)
-		#sideseam
-		sps.appendCubicCurveToPath(c1a.x, c1a.y, c1b.x, c1b.y, p9.x, p9.y, relative=False)
-		sps.appendCubicCurveToPath(c2a.x, c2a.y, c2b.x, c2b.y, p10.x, p10.y, relative=False)
-		sps.appendCubicCurveToPath(c3a.x, c3a.y, c3b.x, c3b.y, p11.x, p11.y, relative=False)
-		sps.appendCubicCurveToPath(c4a.x, c4a.y, c4b.x, c4b.y, p12.x, p12.y, relative=False)
-		sps.appendLineToPath(p13.x, p13.y, relative=False)
-		#hemline
-		sps.appendCubicCurveToPath(c13.x, c13.y, c14.x, c14.y, p15.x, p15.y, relative=False)
-		sps.appendCubicCurveToPath(c15.x, c15.y, c16.x, c16.y, p5.x, p5.y, relative=False)
-		#inseam
-		sps.appendLineToPath(p4.x, p4.y, relative=False)
-		sps.appendCubicCurveToPath(c9.x, c9.y, c10.x, c10.y, p2.x, p2.y, relative=False)
-		#front fly curve
-		sps.appendCubicCurveToPath(c11a.x, c11a.y, c11b.x, c11b.y, p3.x, p3.y, relative=False)
-		sps.appendCubicCurveToPath(c11c.x, c11c.y, c11d.x, c11d.y, C.x, C.y, relative=False)
-		sps.appendLineToPath(A.x, A.y, relative=False)
-		#cuttingline path
-		cuttingline_path_svg=path()
-		cps=cuttingline_path_svg
-		tf.add(Path('pattern', 'tfcp', 'Trousers Front Cuttingline Path', cps, 'cuttingline_style'))
-		#waist
-		moveP(cps, A)
-		cps.appendLineToPath(p8.x, p8.y, relative=False)
-		cps.appendLineToPath(p7.x, p7.y, relative=False)
-		#sideseam
-		cps.appendCubicCurveToPath(c1a.x, c1a.y, c1b.x, c1b.y, p9.x, p9.y, relative=False)
-		cps.appendCubicCurveToPath(c2a.x, c2a.y, c2b.x, c2b.y, p10.x, p10.y, relative=False)
-		cps.appendCubicCurveToPath(c3a.x, c3a.y, c3b.x, c3b.y, p11.x, p11.y, relative=False)
-		cps.appendCubicCurveToPath(c4a.x, c4a.y, c4b.x, c4b.y, p12.x, p12.y, relative=False)
-		cps.appendLineToPath(p13.x, p13.y, relative=False)
-		#hemline
-		cps.appendCubicCurveToPath(c13.x, c13.y, c14.x, c14.y, p15.x, p15.y, relative=False)
-		cps.appendCubicCurveToPath(c15.x, c15.y, c16.x, c16.y, p5.x, p5.y, relative=False)
-		#inseam
-		cps.appendLineToPath(p4.x, p4.y, relative=False)
-		cps.appendCubicCurveToPath(c9.x, c9.y, c10.x, c10.y, p2.x, p2.y, relative=False)
-		#front fly curve
-		cps.appendCubicCurveToPath(c11a.x, c11a.y, c11b.x, c11b.y, p3.x, p3.y, relative=False)
-		cps.appendCubicCurveToPath(c11c.x, c11c.y, c11d.x, c11d.y, C.x, C.y, relative=False)
-		cps.appendLineToPath(A.x, A.y, relative=False)
-		#waistline path
-		waistline_path_svg=path()
-		wps=waistline_path_svg
-		tf.add(Path('pattern', 'tfwp', 'Trousers Front Waistline Path', wps, 'dart_style'))
-		moveP(wps, B)
-		wps.appendLineToPath(p7.x, p7.y, relative=False)
-		#front fly stitching line
-		p=path()
-		moveP(p, p3)
-		cubicCurveP(p, c17,  c18, f1)
-		lineP(p, f2)
-		tf.add(Path('pattern', 'tffs', 'Trousers Front Fly Stitchline', p, 'dart_style'))
-
-		#front grainline path
+		d=path()
+		#add waistband
+		moveP(d, A)
+		lineP(d, p8)
+		lineP(d, p7)
+		#add sideseam
+		cubicCurveP(d, c1a, c1b, p9)
+		cubicCurveP(d, c2a, c2b, p10)
+		cubicCurveP(d, c3a, c3b, p11)
+		cubicCurveP(d, c4a, c4b, p12)
+		lineP(d, p13)
+		#add hemline
+		cubicCurveP(d, c13, c14, p15)
+		cubicCurveP(d, c15, c16, p5)
+		#add inseam
+		lineP(d, p4)
+		cubicCurveP(d, c9, c10, p2)
+		#add front fly curve
+		cubicCurveP(d, c11a, c11b, p3)
+		cubicCurveP(d, c11c, c11d, C)
+		lineP(d, A)
+		# trousers front seamline & cuttingline
+		tf.add(Path('pattern', 'tfs', 'Trousers Front Seamline', d, 'seamline_path_style', transform))
+		tf.add(Path('pattern', 'tfc', 'Trousers Front Cuttingline', d, 'cuttingline_style', transform))
+		#trousers front waistline
+		d=path()
+		moveP(d, B)
+		lineP(d, p7)
+		tf.add(Path('pattern', 'tfw', 'Trousers Front Waistline', d, 'dart_style', transform))
+		#trousers front fly stitching line
+		d=path()
+		moveP(d, p3)
+		cubicCurveP(d, c17,  c18, f1)
+		lineP(d, f2)
+		tf.add(Path('pattern', 'tffs', 'Trousers Front Fly Stitchline', d, 'dart_style', transform))
+		#trousers front grainline path
 		x1, y1=(p16.x, C.y)
-		x2, y2=p16.x, (p4.y + abs(p14.y - p4.y)/2.)
-		tf.add(grainLinePath(name="frontgrainpath", label="Trousers Front Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
+		x2, y2=p16.x, (p4.y + (abs(p14.y - p4.y) / 2.0))
+		tf.add(grainLinePath("tfg", "Trousers Front Grainline", x1, y1, x2, y2, transform))
 		#set the label location. Someday this should be automatic
-		tf.label_x=p16.x + (2*CM)
-		tf.label_y=p16.y
+		tf.label_x, tf.label_y=transformPoint(p16.x + (2*CM), p16.y, transform)
 		#end trousers front (tf)
 
 		#Begin front waistband lining pattern
