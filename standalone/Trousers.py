@@ -235,56 +235,54 @@ class PatternDesign():
 		c17=cPoint(tf, 'c17', p3.x+ (abs(f1.x-p3.x) / 2.0), p3.y) #b/w p3 & f1
 		c18=cPoint(tf, 'c18', f1.x, f1.y + (abs(f1.y-p3.y) / 2.0))#b/w p3 & f1
 		# Reference grid lines
-		p=path()
-		#vertical grid
-		moveP(p, A)
-		lineP(p, F)
-		moveP(p, p6)
-		lineP(p, p5)
-		moveP(p, p30)
-		lineP(p, p13)
-		moveP(p, G)
-		lineP(p, p14)
-		#horizontal grid
-		moveP(p, I)
-		lineP(p, p9)
-		moveP(p, C)
-		lineP(p, p10)
-		moveP(p, p2)
-		lineP(p, p11)
-		moveP(p, p4)
-		lineP(p, p12)
-		moveP(p, p5)
-		lineP(p, p13)
-		#diagonal grid
-		moveP(p, D)
-		lineP(p, p3)
-		tf.add(Path('reference','tfgrid', 'Trousers Front Gridline', p, 'gridline_style', transform))
-		#Assemble all paths down here
-		#Paths are a bit differemt - we create the SVG and then create the object to hold it
-		#See the pysvg library docs for the pysvg methods
 		d=path()
-		#add waistband
+		#vertical grid
+		moveP(d, A)
+		lineP(d, F)
+		moveP(d, p6)
+		lineP(d, p5)
+		moveP(d, p30)
+		lineP(d, p13)
+		moveP(d, G)
+		lineP(d, p14)
+		#horizontal grid
+		moveP(d, I)
+		lineP(d, p9)
+		moveP(d, C)
+		lineP(d, p10)
+		moveP(d, p2)
+		lineP(d, p11)
+		moveP(d, p4)
+		lineP(d, p12)
+		moveP(d, p5)
+		lineP(d, p13)
+		#diagonal grid
+		moveP(d, D)
+		lineP(d, p3)
+		# Trousrs Front Reference Grid path
+		tf.add(Path('reference','tfgrid', 'Trousers Front Gridline', d, 'gridline_style', transform))
+		# Trousers Front waistband line
+		d=path()
 		moveP(d, A)
 		lineP(d, p8)
 		lineP(d, p7)
-		#add sideseam
+		# Trousers Front sideseam
 		cubicCurveP(d, c1a, c1b, p9)
 		cubicCurveP(d, c2a, c2b, p10)
 		cubicCurveP(d, c3a, c3b, p11)
 		cubicCurveP(d, c4a, c4b, p12)
 		lineP(d, p13)
-		#add hemline
+		#Trousers Front hemline
 		cubicCurveP(d, c13, c14, p15)
 		cubicCurveP(d, c15, c16, p5)
-		#add inseam
+		#Trousers Front inseam
 		lineP(d, p4)
 		cubicCurveP(d, c9, c10, p2)
-		#add front fly curve
+		#Trousers Front centerseam
 		cubicCurveP(d, c11a, c11b, p3)
 		cubicCurveP(d, c11c, c11d, C)
 		lineP(d, A)
-		# trousers front seamline & cuttingline
+		# Trousers Front seamline & cuttingline paths
 		tf.add(Path('pattern', 'tfs', 'Trousers Front Seamline', d, 'seamline_path_style', transform))
 		tf.add(Path('pattern', 'tfc', 'Trousers Front Cuttingline', d, 'cuttingline_style', transform))
 		#trousers front waistline
@@ -312,8 +310,8 @@ class PatternDesign():
 		tfw=trousers.frontwaistband
 		start=Point('reference', 'start', 0, 0)
 		tfw.add(start)
-		transform_coords=str(-A.x) + ' ' + str(-A.y)#doesn't do anything
-		transform ='translate(' +  transform_coords +')'  #doesn't do anything
+		transform_coords=str(-A.x) + ' ' + str(-A.y)
+		transform ='translate(' +  transform_coords +')'
 		tfw.attrs['transform'] = transform
 		d=path()
 		moveP(d, A)
@@ -390,7 +388,9 @@ class PatternDesign():
 		trousers.add(back)
 		tb=trousers.back
 		tbstart=rPoint(tb, 'tbstart', 0, 0)
-		tb.attrs['transform']='translate(' + tbstart.coords + ')'
+		transform_coords=str( tbstart.x ) + ' '+str( tbstart.y )
+		transform='translate(' + transform_coords +')'
+		tb.attrs['transform']=transform
 		#Points
 		#back center points
 		p17=rPoint(tb, 'p17', p2.x - (3*CM)*seatRatio, p2.y)# extends back crotch measurement by 3cm
@@ -399,69 +399,67 @@ class PatternDesign():
 		distance=-(2*CM)*waistRatio
 		x, y=pointAlongLine(p19.x, p19.y, C.x, C.y, distance)
 		p20=rPoint(tb, 'p20', x,y)# waistline at back center seam
-		r=(cd.waist/4.) + (2*CM)*waistRatio
+		r=(cd.waist/4.0) + (2*CM)*waistRatio
 		a, b, y=p20.x, p20.y, B.y
 		x=abs(math.sqrt(r**2 - (y - b)**2) + a)
-		p21=rPoint(tb, 'p21', x, y)#21 --> waistline at side seamside seam --> waist/4 + 2cm) away from p20
+		p21=rPoint(tb, 'p21', x, y)# waistline at side seamside seam --> waist/4 + 2cm) away from p20
 		distance=-(3.8*CM)*riseRatio
 		x, y=pointAlongLine(p20.x, p20.y, p19.x, p19.y, distance) #
 		W=rPoint(tb, 'W', x, y)#W --> (4cm) up from waistline, same as waistband height at side seam.
-		distance=(cd.waist/4.) + (2*CM)*waistRatio+ (0.75*CM)*waistRatio
+		distance=(cd.waist/4.0) + (2*CM)*waistRatio+ (0.75*CM)*waistRatio
 		x1=tb.W.x + (p21.x - p20.x)#find x of a point through W at same slope as waistline p20p21
 		y1=tb.W.y + (p21.y - p20.y) #find y of point through W at same slope as waistline p20p21
 		x, y=pointAlongLine(tb.W.x, tb.W.y, x1, y1, distance)#adds line from W parallel to p20p21 to find p22
-		p22=rPoint(tb, 'p22', x, y)#p22 --> top of waistband at side seam (4cm from waistline)
+		p22=rPoint(tb, 'p22', x, y)# top of waistband at side seam (4cm from waistline)
 		distance=-(5*CM*riseRatio)
 		x, y=pointAlongLine(p20.x, p20.y, p19.x, p19.y, distance)#adds 5cm distance to top of line at p20 to find top to waistband at center back
-		p23=rPoint(tb, 'p23', x, y)#p23 --> top of waistband at center back seam (5cm from waistline)
+		p23=rPoint(tb, 'p23', x, y)# top of waistband at center back seam (5cm from waistline)
 		#button
 		distance=(4.5*CM*waistRatio)
 		x, y=pointAlongLine(p23.x, p23.y, p22.x, p22.y, distance)#negative distance to end of line at 23, determines placement of back suspender button
-		p24=rPoint(tb, 'p24', x, y)#p24 is back button placement
+		p24=rPoint(tb, 'p24', x, y)# back button placement
 		#back waistband highpoint
 		distance=(2.5*CM)*riseRatio
 		x, y=pointAlongLine(p24.x, p24.y, p23.x, p23.y, distance, 90)#(x,y)  is 2.5cm (90 degrees from p24 on line p24p23
-		p25=rPoint(tb, 'p25', x, y)#p25 is highpoint on back waistband, directly above p24 back button
+		p25=rPoint(tb, 'p25', x, y)# highpoint on back waistband, directly above p24 back button
 		#back waist dart
 		distance=(9.5*CM*waistRatio)#dart center from side seam
 		x, y=pointAlongLine(p22.x, p22.y, p23.x, p23.y, distance)#-distance places center of back dart on line from 22 to 23
-		H=rPoint(tb, 'H', x, y)#H is center of back dart near top of waistband
-		distance=(11.5*CM*riseRatio)#length of dart
+		H=rPoint(tb, 'H', x, y)# center of back dart near top of waistband
+		distance=(11.5*CM*riseRatio)# length of dart
 		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, distance, 90)#draw dart center line at 90degrees from point H on line Hp22
-		P=rPoint(tb, 'P', x, y)#P is endpoint of back dart
-		distance=(1.3*CM*waistRatio)*(0.5)  #1.3cm is width at top line of back dart
+		P=rPoint(tb, 'P', x, y)# endpoint of back dart
+		distance=(1.3*CM)*waistRatio*(0.5)  #half-width at top line of back dart
 		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, distance)
-		Q=rPoint(tb, 'Q', x, y)#Q marks the inside dart point at top of waistband
+		Q=rPoint(tb, 'Q', x, y)# inside dart point at top of waistband
 		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, -distance)
-		R=rPoint(tb, 'R', x, y)#R marks the outside dart point at top of waistband
+		R=rPoint(tb, 'R', x, y)#outside dart point at top of waistband
 		x, y=intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, p20.x, p20.y, p21.x, p21.y)
-		S=rPoint(tb, 'S', x, y)#S is center of back dart at waistline
-		distance=(2*CM*waistRatio)*(0.5)   #2cm is the width of dart at waistline
+		S=rPoint(tb, 'S', x, y)# center of back dart at waistline
+		distance=(2*CM)*waistRatio*(0.5)   # half-width of dart at waistline
 		x, y=pointAlongLine(tb.S.x, tb.S.y, p21.x, p21.y, distance)
-		T=rPoint(tb, 'T', x, y)#T marks the inside dart point at waistband
+		T=rPoint(tb, 'T', x, y)# inside dart point at waistline
 		x, y=pointAlongLine(tb.S.x, tb.S.y, p21.x, p21.y, -distance)
-		U=rPoint(tb, 'U', x, y)#U marks the outside dart point at waistband
+		U=rPoint(tb, 'U', x, y)# outside dart point at waistline
 		#side seam points
-		p26=rPoint(tb, 'p26', p9.x + (4.5*CM*seatRatio), p9.y)#26 is upper hip at side seam
-		p27=rPoint(tb, 'p27', p10.x + (3*CM*seatRatio), p10.y)#27 is seat at side seam
-		p28=rPoint(tb, 'p28', p11.x + (1.75*CM*seatRatio), p11.y)#28 is rise at side seam
-		x, y=intersectionOfLines(p12.x, p12.y, p13.x, p13.y, p28.x, p28.y, Knee.x, Knee.y)#find intersection of lines p12p13 and p28Knee
-		p33=rPoint(tb, 'p33', x, y) #b/w  p28 & Knee, used to calculate sideseam curve
+		p26=rPoint(tb, 'p26', p9.x + (4.5*CM*seatRatio), p9.y)# upper hip at side seam
+		p27=rPoint(tb, 'p27', p10.x + (3*CM*seatRatio), p10.y)# seat at side seam
+		p28=rPoint(tb, 'p28', p11.x + (1.75*CM*seatRatio), p11.y)# rise at side seam
+		x, y=intersectionOfLines(p12.x, p12.y, p13.x, p13.y, p28.x, p28.y, Knee.x, Knee.y)#f intersection of lines p12p13 and p28Knee
 		#back hem allowance
-		p29=rPoint(tb, 'p29', p14.x, p14.y + (1.3*CM*insideLegRatio))#29 is lowered back trouser hem
-		O=rPoint(tb, 'O', p29.x, p29.y - HEM_ALLOWANCE)#O is lowered back trouser hemallowance
-		#control Points
+		p29=rPoint(tb, 'p29', p14.x, p14.y + (1.3*CM)*insideLegRatio)# lowered back trouser hem
+		O=rPoint(tb, 'O', p29.x, p29.y - HEM_ALLOWANCE)# lowered back trouser hemallowance
 		#control points for back center curve
 		c19=cPoint(tb, 'c19', p17.x + (abs(D.x-p17.x)/2.), p17.y)#b/w  p17 & C
 		x, y=intersectionOfLines(C.x, C.y, p23.x, p23.y, p17.x + (abs(D.x-p17.x)/2.), p17.y, p21.x, p21.y)
 		c20=cPoint(tb, 'c20', x, y)#b/w p17 & C
 		#control points waistband
-		c21=cPoint(tb, 'c21', p25.x, p25.y)#c21=p25 --> 1st control point for top waist band curve=1st knot point
-		c22=cPoint(tb, 'c22', tb.H.x, tb.H.y)#c22=H  --> 2nd control point for top waist band curve=midpoint of dart on waistline
+		c21=cPoint(tb, 'c21', p25.x, p25.y)# b/w p25 & p8
+		c22=cPoint(tb, 'c22', tb.H.x, tb.H.y)# b/w p25 & p8
 		#control points for back side seam
 		distance = (math.sqrt(((p12.x -p28.x)**2) + ((p12.y - p28.y)**2)) / 3.0)
 		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
-		c26b=cPoint(tf, 'c26b', x, y) #b/w p28 & p12 --> on line from p13 to p12
+		c26b=cPoint(tb, 'c26b', x, y) #b/w p28 & p12
 		pointlist=[]
 		pointlist.append(p21)
 		pointlist.append(p26)
@@ -469,28 +467,28 @@ class PatternDesign():
 		pointlist.append(p28)
 		pointlist.append(c26b)
 		fcp, scp=GetCurveControlPoints('BackSideSeam', pointlist)
-		c23a=cPoint(tf, 'c23a', fcp[0].x, fcp[0].y) #b/w p21 & p26
-		c23b=cPoint(tf, 'c23b', scp[0].x, scp[0].y) #b/w  p21 & p26
-		c24a=cPoint(tf, 'c24a', fcp[1].x, fcp[1].y) #b/w p26 & p27
-		c24b=cPoint(tf, 'c24b', scp[1].x, scp[1].y) #b/w p26 & p27
-		c25a=cPoint(tf, 'c25a', fcp[2].x, fcp[2].y) #b/w p27 & p28
-		c25b=cPoint(tf, 'c25b', scp[2].x, scp[2].y) #b/w  p27 & p28
-		c26a=cPoint(tf, 'c26a', fcp[3].x, fcp[3].y) #b/w p28 & p12
+		c23a=cPoint(tb, 'c23a', fcp[0].x, fcp[0].y) #b/w p21 & p26
+		c23b=cPoint(tb, 'c23b', scp[0].x, scp[0].y) #b/w  p21 & p26
+		c24a=cPoint(tb, 'c24a', fcp[1].x, fcp[1].y) #b/w p26 & p27
+		c24b=cPoint(tb,  'c24b', scp[1].x, scp[1].y) #b/w p26 & p27
+		c25a=cPoint(tb, 'c25a', fcp[2].x, fcp[2].y) #b/w p27 & p28
+		c25b=cPoint(tb, 'c25b', scp[2].x, scp[2].y) #b/w  p27 & p28
+		c26a=cPoint(tb, 'c26a', fcp[3].x, fcp[3].y) #b/w p28 & p12
 		#control points hem line
 		pointlist=[]
-		pointlist.append(tf.p13)
+		pointlist.append(p13)
 		pointlist.append(p29)
-		pointlist.append(tf.p5)
+		pointlist.append(p5)
 		fcp, scp=GetCurveControlPoints('HemLine', pointlist)
-		c27=cPoint(tb, 'c27', fcp[0].x, fcp[0].y)#b/w 13 & 29
-		c28=cPoint(tb, 'c28', scp[0].x, scp[0].y)#b/w 13 & 29
-		c29=cPoint(tb, 'c29', fcp[1].x, fcp[1].y)#b/w 29 & 5
-		c30=cPoint(tb, 'c30', scp[1].x, scp[1].y)#b/w 13 & 29
+		c27=cPoint(tb, 'c27', fcp[0].x, fcp[0].y)#b/w p13 & p29
+		c28=cPoint(tb, 'c28', scp[0].x, scp[0].y)#b/w p13 & p29
+		c29=cPoint(tb, 'c29', fcp[1].x, fcp[1].y)#b/w p29 & p5
+		c30=cPoint(tb, 'c30', scp[1].x, scp[1].y)#b/w p29 & p5
 		#control points hem allowance
 		pointlist=[]
-		pointlist.append(tf.L)
-		pointlist.append(tb.O)
-		pointlist.append(tf.K)
+		pointlist.append(L)
+		pointlist.append(O)
+		pointlist.append(K)
 		fcp, scp=GetCurveControlPoints('HemAllowance', pointlist)
 		c31=cPoint(tb, 'c31', fcp[0].x, fcp[0].y)#b/w L & O
 		c32=cPoint(tb, 'c32', scp[0].x, scp[0].y)#b/w L & O
@@ -499,59 +497,50 @@ class PatternDesign():
 		#control points inseam
 		distance=(math.sqrt(((p4.x - p17.x)**2) + ((p4.y - p17.y)**2)) / 3.0)
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
-		c35a=cPoint(tb, 'c35a', x, y) #b/w p4 & p2
+		c35a=cPoint(tb, 'c35a', x, y) #b/w p4 & p17
 		pointlist=[]
 		pointlist.append(p4)
 		pointlist.append(c35a)
 		pointlist.append(p17)
 		fcp, scp=GetCurveControlPoints('BackInseam', pointlist)
-		c35b=cPoint(tb, 'c35b', scp[1].x, scp[1].y)#b/w p4 & p2
-
-		#Assemble all paths down here
-		#Paths are a bit differemt - we create the SVG and then create the object to hold
-		#See the pysvg library docs for the pysvg methods
-		#Draw reference grid
-		grid_back_path_svg=path()
-		gbps=grid_back_path_svg
-		tb.add(Path('reference','tbgp', 'Trousers Back Gridline Path', gbps, 'gridline_style'))
+		c35b=cPoint(tb, 'c35b', scp[1].x, scp[1].y)#b/w p4 & p17
+		#Trousers Back reference grid
+		d=path()
 		#vertical grid
-		moveP(gbps, C)
-		gbps.appendLineToPath(A.x, A.y, relative=False)
-		moveP(gbps, p5)
-		gbps.appendLineToPath(p6.x, p6.y, relative=False)
-		moveP(gbps, p30)
-		gbps.appendLineToPath(p13.x, p13.y, relative=False)
-		moveP(gbps, p14)
-		gbps.appendLineToPath(G.x, G.y, relative=False)
+		moveP(d, C)
+		lineP(d, A)
+		moveP(d, p5)
+		lineP(d, p6)
+		moveP(d, p30)
+		lineP(d, p13)
+		moveP(d, p14)
+		lineP(d, G)
 		#horizontal grid
-		moveP(gbps, A)
-		gbps.appendLineToPath(p22.x, p22.y, relative=False)
-		moveP(gbps, B)
-		gbps.appendLineToPath(p21.x, p21.y, relative=False)
-		moveP(gbps, I)
-		gbps.appendLineToPath(p26.x, p26.y, relative=False)
-		moveP(gbps, C)
-		gbps.appendLineToPath(p27.x, p27.y, relative=False)
-		moveP(gbps, p17)
-		gbps.appendLineToPath(p28.x, p28.y, relative=False)
-		moveP(gbps, p4)
-		gbps.appendLineToPath(p12.x, p12.y, relative=False)
-		moveP(gbps, p5)
-		gbps.appendLineToPath(p13.x, p13.y, relative=False)
+		moveP(d, A)
+		lineP(d, p22)
+		moveP(d, B)
+		lineP(d, p21)
+		moveP(d, I)
+		lineP(d, p26)
+		moveP(d, C)
+		lineP(d, p27)
+		moveP(d, p17)
+		lineP(d, p28)
+		moveP(d, p4)
+		lineP(d, p12)
+		moveP(d, p5)
+		lineP(d, p13)
 		#diagonal grid
-		moveP(gbps, W)
-		gbps.appendLineToPath(p22.x, p22.y, relative=False)
-		moveP(gbps, p17)
-		gbps.appendLineToPath(Knee.x, Knee.y, relative=False)
-		gbps.appendLineToPath(p28.x, p28.y, relative=False)
-		moveP(gbps, p20)
-		gbps.appendLineToPath(c35a.x, c35a.y, relative=False)
-		moveP(gbps, p21)
-		gbps.appendLineToPath(p2.x, p2.y, relative=False)
-		moveP(gbps, p23)
-		gbps.appendLineToPath(p22.x, p22.y, relative=False)
-		moveP(gbps, p25)#back waistband button path
-		gbps.appendLineToPath(p24.x, p24.y, relative=False)#back waistband button path
+		moveP(d, W)
+		lineP(d, p22)
+		moveP(d, p17)
+		lineP(d, Knee)
+		lineP(d, p28)
+		moveP(d, p23)
+		lineP(d, p22)
+		moveP(d, p25)
+		lineP(d, p24)
+		tb.add(Path('reference','tbgrid', 'Trousers Back Gridline Path', d, 'gridline_style', transform))
 		#back seamline path
 		seamline_back_path_svg=path()
 		sbps=seamline_back_path_svg
@@ -626,32 +615,32 @@ class PatternDesign():
 		transform='translate(' +  transform_coords +')'
 		tbw.attrs['transform']=transform
 		#waistback dart path
-		p=path()
-		moveP(p, H)
-		lineP(p, S)
-		moveP(p, Q)
-		lineP(p, T)
-		moveP(p, R)
-		lineP(p, U)
-		tbw.add(Path('pattern', 'tbwd', 'Trousers Back Waistband Dart', p, 'dart_style', transform))
-		#waistback seamline path
-		p=path()
-		moveP(p, p23)
-		lineP(p, p25)
-		cubicCurveP(p, c21, c22, p22)
-		lineP(p, p21)
-		lineP(p, p20)
-		lineP(p, p23)
-		tbw.add(Path('pattern', 'tbws', 'Trousers Back Waistband Seamline', p, 'seamline_path_style', transform))
-		tbw.add(Path('pattern', 'tbwc', 'Trousers Back Waistband Cuttingline', p, 'cuttingline_style', transform))
-		#waistback grainline path --> make 3cm parallel to line p20p23
+		d=path()
+		moveP(d, H)
+		lineP(d, S)
+		moveP(d, Q)
+		lineP(d, T)
+		moveP(d, R)
+		lineP(d, U)
+		tbw.add(Path('pattern', 'tbwd', 'Trousers Back Waistband Dart', d, 'dart_style', transform))
+		#waistback seamline
+		d=path()
+		moveP(d, p23)
+		lineP(d, p25)
+		cubicCurveP(d, c21, c22, p22)
+		lineP(d, p21)
+		lineP(d, p20)
+		lineP(d, p23)
+		tbw.add(Path('pattern', 'tbws', 'Trousers Back Waistband Seamline', d, 'seamline_path_style', transform))
+		tbw.add(Path('pattern', 'tbwc', 'Trousers Back Waistband Cuttingline', d, 'cuttingline_style', transform))
+		#waistback grainline & label
 		m=(p23.y - p20.y) / (p23.x - p20.x)
-		x1=p20.x + (3*CM)
-		y1=p20.y - (.5*CM)
+		x1=p20.x + (3.0*CM)
+		y1=p20.y - (0.5*CM)
 		b=y1 - m*x1
 		y2=p24.y
 		x2=(y2 - b)/m
-		tbw.add(grainLinePath("backwaistgrainline", "Trousers Back Waistband Grainline", x1, y1, x2, y2, transform))
+		tbw.add(grainLinePath("tbwg", "Trousers Back Waistband Grainline", x1, y1, x2, y2, transform))
 		(tbw.label_x,  tbw.label_y)=transformPoint(p25.x, p25.y + (3*CM), transform)
 		#end trousers waistback lining pattern(tf)
 
@@ -663,20 +652,20 @@ class PatternDesign():
 		transform_coords= str(-K.x) +', '+str(- K.y)
 		transform='translate(' +  transform_coords +')'
 		tbh.attrs['transform']=transform
-		p=path()
-		moveP(p, p5)
-		lineP(p, K)
-		cubicCurveP(p, c34, c33, O)
-		cubicCurveP(p, c32, c31, L)
-		lineP(p, p13)
-		cubicCurveP(p, c27, c28, p29)
-		cubicCurveP(p, c29, c30, p5)
-		tbh.add(Path('pattern', 'tbhs', 'back_hemlining_seamline', p, 'seamline_path_style', transform))
-		tbh.add(Path('pattern', 'tbhc', 'back_hemlining_cuttingline', p, 'cuttingline_style', transform))
+		d=path()
+		moveP(d, p5)
+		lineP(d, K)
+		cubicCurveP(d, c34, c33, O)
+		cubicCurveP(d, c32, c31, L)
+		lineP(d, p13)
+		cubicCurveP(d, c27, c28, p29)
+		cubicCurveP(d, c29, c30, p5)
+		tbh.add(Path('pattern', 'tbhs', 'back_hemlining_seamline', d, 'seamline_path_style', transform))
+		tbh.add(Path('pattern', 'tbhc', 'back_hemlining_cuttingline', d, 'cuttingline_style', transform))
 		(x1, y1)=(O.x, O.y + (1.5*CM))
 		(x2, y2)=(O.x, p29.y  - (1.5*CM))
-		tbh.add(grainLinePath("back_hemlininggrainline", "Trousers Back Hemlining Grainline", x1, y1, x2, y2, transform))
-		(tbh.label_x,  tbh.label_y)=transformPoint(K.x + (2*CM), K.y + (2*CM), transform)
+		tbh.add(grainLinePath("tbhg", "Trousers Back Hemlining Grainline", x1, y1, x2, y2, transform))
+		(tbh.label_x,  tbh.label_y)=transformPoint(K.x + (2.0*CM), K.y + (2.0*CM), transform)
 		#end trousers back hem lining pattern
 		#end trousers
 
