@@ -667,44 +667,33 @@ class PatternDesign():
 		#end trousers back(tf)
 
 		#Begin trousers back  waist lining pattern(tb)
-		waistback=PatternPiece('pattern', 'waistback', letter='F', fabric=1, interfacing=0, lining=0)
-		trousers.add(waistback)
-		wb=trousers.waistback
+		backwaist=PatternPiece('pattern', 'backwaist', letter='F', fabric=0, interfacing=1, lining=1)
+		trousers.add(backwaist)
+		tbw=trousers.backwaist
 		start=Point('reference', 'start', 0, 0)
-		wb.add(start)
-		transform_coords=str(- p20.x) + ', ' + str(- p20.y)#doesn't do anything
-		wb.attrs['transform']='translate(' +  transform_coords +')'  #doesn't do anything
-		dx, dy=-tbstart.x - p20.x, -tbstart.y - p25.y
+		tbw.add(start)
+		transform_coords=str(- p20.x) + ', ' + str(- p20.y)
+		transform='translate(' +  transform_coords +')'
+		tbw.attrs['transform']=transform
 		#waistback dart path
-		waistback_dart_path_svg=path()
-		wbdp=waistback_dart_path_svg
-		wb.add(Path('pattern', 'twdp', 'Trousers Waistband Dart Line Path', wbdp, 'dart_style'))
-		moveP(wbdp, H)
-		wbdp.appendLineToPath(tb.S.x + dx, tb.S.y + dy, relative=False)
-		moveP(wbdp, Q)
-		wbdp.appendLineToPath(tb.T.x + dx, tb.T.y + dy, relative=False)
-		moveP(wbdp, R)
-		wbdp.appendLineToPath(tb.U.x + dx, tb.U.y + dy, relative=False)
+		p=path()
+		moveP(p, H)
+		lineP(p, S)
+		moveP(p, Q)
+		lineP(p, T)
+		moveP(p, R)
+		lineP(p, U)
+		tbw.add(Path('pattern', 'tbwd', 'Trousers Back Waistband Dart', p, 'dart_style', transform))
 		#waistback seamline path
-		waistback_seam_path_svg=path()
-		wbsp=waistback_seam_path_svg
-		wb.add(Path('pattern', 'twbsl', 'Trousers Waistband Back Seam Line Path', wbsp, 'seamline_path_style'))
-		moveP(wbsp, p23)
-		wbsp.appendLineToPath(p25.x+ dx, p25.y + dy, relative=False)
-		wbsp.appendCubicCurveToPath(c21.x+ dx, c21.y + dy, c22.x+ dx, c22.y + dy, p22.x+ dx, p22.y + dy, relative=False)
-		wbsp.appendLineToPath(p21.x+ dx, p21.y + dy, relative=False)
-		wbsp.appendLineToPath(p20.x+ dx, p20.y + dy, relative=False)
-		wbsp.appendLineToPath(p23.x+ dx, p23.y + dy, relative=False)
-		#waistback cuttingline path
-		waistback_cuttingline_path_svg=path()
-		wbcp=waistback_cuttingline_path_svg
-		wb.add(Path('pattern', 'twbcl', 'Trousers Waistband Back Cuttingline Path', wbcp, 'cuttingline_style'))
-		moveP(wbcp, p23)
-		wbcp.appendLineToPath(p25.x+ dx, p25.y + dy, relative=False)
-		wbcp.appendCubicCurveToPath(c21.x+ dx, c21.y + dy, c22.x+ dx, c22.y + dy, p22.x+ dx, p22.y + dy, relative=False)
-		wbcp.appendLineToPath(p21.x+ dx, p21.y + dy, relative=False)
-		wbcp.appendLineToPath(p20.x+ dx, p20.y + dy, relative=False)
-		wbcp.appendLineToPath(p23.x+ dx, p23.y + dy, relative=False)
+		p=path()
+		moveP(p, p23)
+		lineP(p, p25)
+		cubicCurveP(p, c21, c22, p22)
+		lineP(p, p21)
+		lineP(p, p20)
+		lineP(p, p23)
+		tbw.add(Path('pattern', 'tbws', 'Trousers Back Waistband Seamline', p, 'seamline_path_style', transform))
+		tbw.add(Path('pattern', 'tbwc', 'Trousers Back Waistband Cuttingline', p, 'cuttingline_style', transform))
 		#waistback grainline path --> make 3cm parallel to line p20p23
 		m=(p23.y - p20.y) / (p23.x - p20.x)
 		x1=p20.x + (3*CM)
@@ -712,10 +701,8 @@ class PatternDesign():
 		b=y1 - m*x1
 		y2=p24.y
 		x2=(y2 - b)/m
-		wb.add(grainLinePath(name="waistbackgrainpath", label="Waist Back Grainline Path", xstart=x1+dx, ystart=y1+dy, xend=x2+dx, yend=y2+dy))
-		#set the label location. Somday this should be automatic
-		wb.label_x=wb.start.x + (7*CM*waistRatio)
-		wb.label_y=wb.start.y + (4*CM*riseRatio)
+		tbw.add(grainLinePath("backwaistgrainline", "Trousers Back Waistband Grainline", x1, y1, x2, y2, transform))
+		(tbw.label_x,  tbw.label_y)=transformPoint(p25.x, p25.y + (3*CM), transform)
 		#end trousers waistback lining pattern(tf)
 
 		#Begin trouser back hem lining pattern
