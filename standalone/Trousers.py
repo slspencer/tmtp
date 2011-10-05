@@ -117,11 +117,12 @@ class PatternDesign():
 		front=PatternPiece('pattern', 'front', 'A', fabric=2, interfacing=0, lining=0)
 		trousers.add(front)
 		tf=trousers.front
-		tfstart=rPoint(tf,'tfstart', 0, 0)
-		transform='translate(' + tfstart.coords + ')'
+		start=rPoint(tf,'tfstart', 0, 0)
+		transform_coords = str(start.x) + ', '+str(start.y)
+		transform='translate(' + transform_coords + ')'
 		tf.attrs['transform']=transform
 		#Points
-		A=rPoint(tf, 'A', tfstart.x + scale_1_8 + (0.5*CM)*seatRatio, tfstart.y)
+		A=rPoint(tf, 'A', start.x + scale_1_8 + (0.5*CM)*seatRatio, start.y)
 		B=rPoint(tf, 'B', A.x, A.y + (3.8*CM)*riseRatio)#waistline
 		C=rPoint(tf, 'C', A.x, B.y + (18.5*CM)*riseRatio)#seatline
 		D=rPoint(tf, 'D', A.x, A.y + rise)#riseline
@@ -308,8 +309,7 @@ class PatternDesign():
 		frontwaistband=PatternPiece('pattern', 'frontwaistband', letter='B', fabric=0, interfacing=1, lining=1)
 		trousers.add(frontwaistband)
 		tfw=trousers.frontwaistband
-		start=Point('reference', 'start', 0, 0)
-		tfw.add(start)
+		start=rPoint(tfw, 'tfwstart', 0, 0)
 		transform_coords=str(-A.x) + ' ' + str(-A.y)
 		transform ='translate(' +  transform_coords +')'
 		tfw.attrs['transform'] = transform
@@ -387,10 +387,7 @@ class PatternDesign():
 		back=PatternPiece('pattern', 'back', letter='E', fabric=2, interfacing=0, lining=0)
 		trousers.add(back)
 		tb=trousers.back
-		tbstart=rPoint(tb, 'tbstart', 0, 0)
-		transform_coords=str( tbstart.x ) + ' '+str( tbstart.y )
-		transform='translate(' + transform_coords +')'
-		tb.attrs['transform']=transform
+		start=rPoint(tb, 'start', 0, 0)
 		#Points
 		#back center points
 		p17=rPoint(tb, 'p17', p2.x - (3*CM)*seatRatio, p2.y)# extends back crotch measurement by 3cm
@@ -412,31 +409,29 @@ class PatternDesign():
 		x, y=pointAlongLine(tb.W.x, tb.W.y, x1, y1, distance)#adds line from W parallel to p20p21 to find p22
 		p22=rPoint(tb, 'p22', x, y)# top of waistband at side seam (4cm from waistline)
 		distance=-(5*CM*riseRatio)
-		x, y=pointAlongLine(p20.x, p20.y, p19.x, p19.y, distance)#adds 5cm distance to top of line at p20 to find top to waistband at center back
+		x, y=pointAlongLine(p20.x, p20.y, p19.x, p19.y, distance)
 		p23=rPoint(tb, 'p23', x, y)# top of waistband at center back seam (5cm from waistline)
-		#button
 		distance=(4.5*CM*waistRatio)
-		x, y=pointAlongLine(p23.x, p23.y, p22.x, p22.y, distance)#negative distance to end of line at 23, determines placement of back suspender button
-		p24=rPoint(tb, 'p24', x, y)# back button placement
-		#back waistband highpoint
+		x, y=pointAlongLine(p23.x, p23.y, p22.x, p22.y, distance)
+		p24=rPoint(tb, 'p24', x, y)# back button
 		distance=(2.5*CM)*riseRatio
-		x, y=pointAlongLine(p24.x, p24.y, p23.x, p23.y, distance, 90)#(x,y)  is 2.5cm (90 degrees from p24 on line p24p23
-		p25=rPoint(tb, 'p25', x, y)# highpoint on back waistband, directly above p24 back button
+		x, y=pointAlongLine(p24.x, p24.y, p23.x, p23.y, distance, 90)
+		p25=rPoint(tb, 'p25', x, y) #back waistband highpoint
 		#back waist dart
-		distance=(9.5*CM*waistRatio)#dart center from side seam
-		x, y=pointAlongLine(p22.x, p22.y, p23.x, p23.y, distance)#-distance places center of back dart on line from 22 to 23
-		H=rPoint(tb, 'H', x, y)# center of back dart near top of waistband
-		distance=(11.5*CM*riseRatio)# length of dart
-		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, distance, 90)#draw dart center line at 90degrees from point H on line Hp22
-		P=rPoint(tb, 'P', x, y)# endpoint of back dart
-		distance=(1.3*CM)*waistRatio*(0.5)  #half-width at top line of back dart
+		distance=(9.5*CM*waistRatio)
+		x, y=pointAlongLine(p22.x, p22.y, p23.x, p23.y, distance)
+		H=rPoint(tb, 'H', x, y)# back dart center near top of waistband
+		distance=(11.5*CM*riseRatio)
+		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, distance, 90)
+		P=rPoint(tb, 'P', x, y)# back dart point
+		distance=(1.3*CM)*waistRatio*(0.5)
 		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, distance)
-		Q=rPoint(tb, 'Q', x, y)# inside dart point at top of waistband
+		Q=rPoint(tb, 'Q', x, y)# inside dart point near top of waistband
 		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, -distance)
-		R=rPoint(tb, 'R', x, y)#outside dart point at top of waistband
+		R=rPoint(tb, 'R', x, y)#outside dart point near top of waistband
 		x, y=intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, p20.x, p20.y, p21.x, p21.y)
-		S=rPoint(tb, 'S', x, y)# center of back dart at waistline
-		distance=(2*CM)*waistRatio*(0.5)   # half-width of dart at waistline
+		S=rPoint(tb, 'S', x, y)# back dart center at waistline
+		distance=(2*CM)*waistRatio*(0.5)
 		x, y=pointAlongLine(tb.S.x, tb.S.y, p21.x, p21.y, distance)
 		T=rPoint(tb, 'T', x, y)# inside dart point at waistline
 		x, y=pointAlongLine(tb.S.x, tb.S.y, p21.x, p21.y, -distance)
@@ -505,111 +500,94 @@ class PatternDesign():
 		fcp, scp=GetCurveControlPoints('BackInseam', pointlist)
 		c35b=cPoint(tb, 'c35b', scp[1].x, scp[1].y)#b/w p4 & p17
 		#Trousers Back reference grid
-		d=path()
+		gr=path()
 		#vertical grid
-		moveP(d, C)
-		lineP(d, A)
-		moveP(d, p5)
-		lineP(d, p6)
-		moveP(d, p30)
-		lineP(d, p13)
-		moveP(d, p14)
-		lineP(d, G)
+		moveP(gr, C)
+		lineP(gr, A)
+		moveP(gr, p5)
+		lineP(gr, p6)
+		moveP(gr, p30)
+		lineP(gr, p13)
+		moveP(gr, p14)
+		lineP(gr, G)
 		#horizontal grid
-		moveP(d, A)
-		lineP(d, p22)
-		moveP(d, B)
-		lineP(d, p21)
-		moveP(d, I)
-		lineP(d, p26)
-		moveP(d, C)
-		lineP(d, p27)
-		moveP(d, p17)
-		lineP(d, p28)
-		moveP(d, p4)
-		lineP(d, p12)
-		moveP(d, p5)
-		lineP(d, p13)
+		moveP(gr, A)
+		lineP(gr, p22)
+		moveP(gr, B)
+		lineP(gr, p21)
+		moveP(gr, I)
+		lineP(gr, p26)
+		moveP(gr, C)
+		lineP(gr, p27)
+		moveP(gr, p17)
+		lineP(gr, p28)
+		moveP(gr, p4)
+		lineP(gr, p12)
+		moveP(gr, p5)
+		lineP(gr, p13)
 		#diagonal grid
-		moveP(d, W)
-		lineP(d, p22)
-		moveP(d, p17)
-		lineP(d, Knee)
-		lineP(d, p28)
-		moveP(d, p23)
-		lineP(d, p22)
-		moveP(d, p25)
-		lineP(d, p24)
-		tb.add(Path('reference','tbgrid', 'Trousers Back Gridline Path', d, 'gridline_style', transform))
+		moveP(gr, W)
+		lineP(gr, p22)
+		moveP(gr, p17)
+		lineP(gr, Knee)
+		lineP(gr, p28)
+		moveP(gr, p23)
+		lineP(gr, p22)
+		moveP(gr, p25)
+		lineP(gr, p24)
 		#back seamline path
-		seamline_back_path_svg=path()
-		sbps=seamline_back_path_svg
-		tb.add(Path('pattern', 'tbsp', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
-		moveP(sbps, p17)
-		sbps.appendCubicCurveToPath(c19.x, c19.y, c20.x, c20.y, C.x, C.y, relative=False)
-		sbps.appendLineToPath(p23.x, p23.y, relative=False)
-		sbps.appendLineToPath(p25.x, p25.y, relative=False)
-		sbps.appendCubicCurveToPath(c21.x, c21.y, c22.x, c22.y, p22.x, p22.y, relative=False)
-		sbps.appendLineToPath(p21.x, p21.y, relative=False)
-		sbps.appendCubicCurveToPath(c23a.x, c23a.y, c23b.x, c23b.y, p26.x, p26.y, relative=False)
-		sbps.appendCubicCurveToPath(c24a.x, c24a.y, c24b.x, c24b.y, p27.x, p27.y, relative=False)
-		sbps.appendCubicCurveToPath(c25a.x, c25a.y, c25b.x, c25b.y, p28.x, p28.y, relative=False)
-		sbps.appendCubicCurveToPath(c26a.x, c26a.y, c26b.x, c26b.y, p12.x, p12.y, relative=False)
-		sbps.appendLineToPath(p13.x, p13.y, relative=False)
-		sbps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p29.x, p29.y, relative=False)
-		sbps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, p5.x, p5.y, relative=False)
-		sbps.appendLineToPath(p4.x, p4.y, relative=False)
-		sbps.appendCubicCurveToPath(c35a.x, c35a.y, c35b.x, c35b.y, p17.x, p17.y, relative=False)
-		# cuttingline back path
-		cuttingline_back_path_svg=path()
-		cbps=cuttingline_back_path_svg
-		tb.add(Path('pattern', 'tbcp', 'Trousers Back Cuttingline Path', cbps, 'cuttingline_style'))
-		moveP(cbps, p17)
-		cbps.appendCubicCurveToPath(c19.x, c19.y, c20.x, c20.y, C.x, C.y, relative=False)
-		cbps.appendLineToPath(p23.x, p23.y, relative=False)
-		cbps.appendLineToPath(p25.x, p25.y, relative=False)
-		cbps.appendCubicCurveToPath(c21.x, c21.y, c22.x, c22.y, p22.x, p22.y, relative=False)
-		cbps.appendLineToPath(p21.x, p21.y, relative=False)
-		cbps.appendCubicCurveToPath(c23a.x, c23a.y, c23b.x, c23b.y, p26.x, p26.y, relative=False)
-		cbps.appendCubicCurveToPath(c24a.x, c24a.y, c24b.x, c24b.y, p27.x, p27.y, relative=False)
-		cbps.appendCubicCurveToPath(c25a.x, c25a.y, c25b.x, c25b.y, p28.x, p28.y, relative=False)
-		cbps.appendCubicCurveToPath(c26a.x, c26a.y, c26b.x, c26b.y, p12.x, p12.y, relative=False)
-		cbps.appendLineToPath(p13.x, p13.y, relative=False)
-		cbps.appendCubicCurveToPath(c27.x, c27.y, c28.x, c28.y, p29.x, p29.y, relative=False)
-		cbps.appendCubicCurveToPath(c29.x, c29.y, c30.x, c30.y, p5.x, p5.y, relative=False)
-		cbps.appendLineToPath(p4.x, p4.y, relative=False)
-		cbps.appendCubicCurveToPath(c35a.x, c35a.y, c35b.x, c35b.y, p17.x, p17.y, relative=False)
+		s=path()
+		moveP(s, p17)
+		cubicCurveP(s, c19, c20, C)
+		lineP(s, p23)
+		lineP(s, p25)
+		cubicCurveP(s, c21, c22, p22)
+		lineP(s, p21)
+		cubicCurveP(s, c23a, c23b, p26)
+		cubicCurveP(s, c24a, c24b, p27)
+		cubicCurveP(s, c25a, c25b, p28)
+		cubicCurveP(s, c26a, c26b, p12)
+		lineP(s, p13)
+		cubicCurveP(s, c27, c28, p29)
+		cubicCurveP(s, c29, c30, p5)
+		lineP(s, p4)
+		cubicCurveP(s, c35a, c35b, p17)
 		#waistline back marking path
-		waistline_back_path_svg=path()
-		wbps=waistline_back_path_svg
-		tb.add(Path('pattern', 'tbwp', 'Trousers Back Waistline Path', wbps, 'dart_style'))
-		moveP(wbps, p20)
-		wbps.appendLineToPath(p21.x, p21.y, relative=False)
+		w=path()
+		moveP(w, p20)
+		lineP(w, p21)
 		#dart back marking path
-		dart_back_path_svg=path()
-		tb.add(Path('pattern', 'tbdp', 'Trousers Back Dart Path', dart_back_path_svg, 'dart_style'))
-		moveP(dart_back_path_svg, H)
-		dart_back_path_svg.appendLineToPath(tb.P.x, tb.P.y, relative=False)
-		moveP(dart_back_path_svg, Q)
-		dart_back_path_svg.appendLineToPath(tb.T.x, tb.T.y, relative=False)
-		dart_back_path_svg.appendLineToPath(tb.P.x, tb.P.y, relative=False)
-		moveP(dart_back_path_svg, R)
-		dart_back_path_svg.appendLineToPath(tb.U.x, tb.U.y, relative=False)
-		dart_back_path_svg.appendLineToPath(tb.P.x, tb.P.y, relative=False)
-		#Trousers Back grainline path
+		d=path()
+		moveP(d, H)
+		lineP(d, P)
+		moveP(d, Q)
+		lineP(d, T)
+		lineP(d, P)
+		moveP(d, R)
+		lineP(d, U)
+		lineP(d, P)
+		#define transform
+		transform_coords=str( tb.start.x ) + ' '+str( tb.start.y )
+		transform='translate(' + transform_coords +')'
+		tb.attrs['transform']=transform
+		#create pattern paths
+		tb.add(Path('reference','tbgrid', 'Trousers Back Gridline Path', gr, 'gridline_style', transform))
+		tb.add(Path('pattern', 'tbd', 'Trousers Back Dart', d, 'dart_style', transform))
+		tb.add(Path('pattern', 'tbw', 'Trousers Back Waistline', w, 'dart_style', transform))
+		tb.add(Path('pattern', 'tbs', 'Trousers Back Seamline', s, 'seamline_path_style', transform))
+		tb.add(Path('pattern', 'tbc', 'Trousers Back Cuttingline', s, 'cuttingline_style', transform))
+		#create grainline path & label position
 		x1, y1=p16.x, C.y
 		x2, y2=p16.x, p4.y + (abs(p14.y - p4.y)*(0.5))
-		tb.add(grainLinePath(name="trousersbackgrainlinepath", label="Trousers Back Grainline Path", xstart=x1, ystart=y1, xend=x2, yend=y2))
-		#set the label location. Someday this should be automatic
-		tb.label_x=p16.x + (3*CM*seatRatio)
-		tb.label_y=p16.y
-		#end trousers back(tf)
+		tb.add(grainLinePath("tbg", "Trousers Back Grainline", x1, y1, x2, y2, transform))
+		tb.label_x, tb.label_y=transformPoint(p16.x + (3*CM*seatRatio), p16.y, transform)
+		#end Trousers Back
 
 		#Begin trousers back  waist lining pattern(tb)
 		backwaist=PatternPiece('pattern', 'backwaist', letter='F', fabric=0, interfacing=1, lining=1)
 		trousers.add(backwaist)
 		tbw=trousers.backwaist
-		start=Point('reference', 'start', 0, 0)
+		start=Point('reference', 'tbwstart', 0, 0)
 		tbw.add(start)
 		transform_coords=str(- p20.x) + ', ' + str(- p20.y)
 		transform='translate(' +  transform_coords +')'
@@ -648,7 +626,7 @@ class PatternDesign():
 		back_hemlining=PatternPiece('pattern', 'back_hemlining', letter='G', fabric=2, interfacing=0, lining=0)
 		trousers.add(back_hemlining)
 		tbh=trousers.back_hemlining
-		bhstart=rPoint(tbh,'bhstart', 0, 0) #calculate points relative to 0,0
+		start=rPoint(tbh,'start', 0, 0) #calculate points relative to 0,0
 		transform_coords= str(-K.x) +', '+str(- K.y)
 		transform='translate(' +  transform_coords +')'
 		tbh.attrs['transform']=transform
