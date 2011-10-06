@@ -51,9 +51,9 @@ class pBase(object):
         if newid in self.ids:
             raise ValueError("The name %s is used in more than one pattern object" % newid)
         self.ids.append(newid)
-            
+
         obj.id =newid
-        
+
         setattr(self, obj.name, obj)
         self.children.append(obj)
         try:
@@ -119,6 +119,7 @@ class pBase(object):
         # where svg elements are pySVG objects
         #
         #
+        print 'begin ',self.name,'patternbase.svg'
         md = {}
         if self.debug:
             print "svg() called in ", self.name
@@ -128,10 +129,13 @@ class pBase(object):
         for child in self.children:
             if self.debug:
                 print 'Processing child ', child.name
+            print 'Processing', self.name, child.name,'patternbase.svg'
             if child.svg:
                 cd = child.svg()
                 for grpnm, glist in cd.items():
+                    print ' Processing ',self.name,child.name,grpnm, 'in patternbase.svg'
                     for svgitem in glist:
+                        print '  Appending ',self.name,child.name,grpnm,'svgitems in patternbase.svg'
                         md[grpnm].append(svgitem)
         return md
 
@@ -145,10 +149,12 @@ class pBase(object):
         # We recurse through children to get a bounding box. Only include elements
         # which are in the groups which appear in the grouplist
         #
+        print '   begin patternbase.pBase.boundingBox(self=',self.name,') - reset xlow, ylow,xhigh,yhigh to 0'
         xlow = 0
         ylow = 0
         xhigh = 0
         yhigh = 0
+        first = 1
 
         md = {}
 
@@ -158,13 +164,25 @@ class pBase(object):
         for child in self.children:
             if self.debug:
                 print 'BB for child ', child.name
+            print '      begin patternbase.pBase.boundingBox(self=', self.name,'child=', child.name,')'
             if child.boundingBox:
                 # if grouplist is None, use all groups
                 if grouplist is None:
                     if self.debug:
-                        print 'calculating bounding box for all groups'
+                        print ' calculating bounding box for all groups'
+                    print '      patternbase.pBase.boundingBox(', self.name,child.name,')-->',child.name,'.boundingBox has no grouplist --> creating grouplist from self.groups.keys()'
                     grouplist = self.groups.keys()
+                print '      calling ',self.name, child.name,'.boundingBox for all groups in grouplist'
                 cxlow, cylow, cxhigh, cyhigh = child.boundingBox(grouplist)
+                print '      returned cxlow,cylow,cxhigh,cyhigh from', self.name, child.name, '.boundingBox for all groups in grouplist'
+                print '      patternbase.pBase.boundingBox(', self.name,child.name,') before min/max:(xlow:', xlow, ',ylow:',ylow,')  (xhigh:', xhigh, ' yhigh:', yhigh, ')'
+                print '      patternbase.pBase.boundingBox(', self.name,child.name,') before min/max:(cxlow:', cxlow, ',cylow:',cylow,')  (cxhigh:', cxhigh, ' cyhigh:', cyhigh, ')'
+                if first == 1:
+                    xlow = cxlow
+                    ylow = cylow
+                    xhigh = cxhigh
+                    yhigh = cyhigh
+                    first = 0
                 if cxlow != None:
                     if xlow != None:
                         xlow = min(xlow, cxlow)
@@ -172,10 +190,18 @@ class pBase(object):
                         xhigh = max(xhigh, cxhigh)
                         yhigh = max(yhigh, cyhigh)
                     else:
+                        print '      xlow = None'
                         xlow = cxlow
                         ylow = cylow
                         xhigh = cxhigh
                         yhigh = cyhigh
+                else:
+                    print '      cxlow = None'
+                print '      patternbase.pBase.boundingBox(', self.name,child.name, ') after min/max: (xlow:', xlow, ',ylow:',ylow,')  (xhigh:', xhigh, ' yhigh:', yhigh, ')'
+            else:
+                print '      patternbase.pBase.boundingBox(', self.name,child.name,') has no boundingBox'
+            print '      end patternbase.pBase.boundingBox(', self.name,child.name,')'
+        print '   end patternbase.pBase.boundingBox(self=',self.name,', returning (xlow:',xlow,'ylow:',ylow,') (xhigh:', xhigh, 'yhigh:', yhigh, ')'
 
         return (xlow, ylow, xhigh, yhigh)
 

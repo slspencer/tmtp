@@ -168,18 +168,12 @@ def FudgeControlPoints(knots, fcp, scp, percentage):
         ll.append(lineLengthP(knots[i], knots[i+1]))
     minll = min(ll)
     maxll = max(ll)
-    print 'minll = ', minll
-    print 'maxll = ', maxll
 
     for i in range(len(knots)-1):
         # get the length between each knot, and save the max and min
         lll = ll[i]
-        print 'll = ', lll
         fcpl = lineLengthP(knots[i], fcp[i])
         scpl = lineLengthP(scp[i], knots[i+1])
-        print ' fcpl = %02.2f pct = %02.2f' % (fcpl, fcpl/lll)
-        print ' scpl = %02.2f pct = %02.2f' % (scpl, scpl/lll)
-        print 'After adjusting to %f line length:' % percentage
 
         # Now calculate the desired length and change the control point locations
         dll = lll * percentage
@@ -194,7 +188,5 @@ def FudgeControlPoints(knots, fcp, scp, percentage):
 
         fcpl = lineLengthP(knots[i], fcp[i])
         scpl = lineLengthP(scp[i], knots[i+1])
-        print ' fcpl = %02.2f pct = %02.2f' % (fcpl, fcpl/lll)
-        print ' scpl = %02.2f pct = %02.2f' % (scpl, scpl/lll)
 
     return (fcp, scp)
