@@ -42,19 +42,19 @@ from patternbase import pBase
 #
 # A lot of these depend on the classes in this file, so we put them here
 
-def patternPoint(name, x, y, transform = ''):
+def patternPoint(name, x, y, transform=''):
     """
     Creates pattern Points on pattern layer
     """
-    return Point('reference', name, x,  y, 'point_style', transform = '')
+    return Point('reference', name, x,  y, 'point_style', transform)
 
-def rPoint(parent, name, x, y, transform = ''):
-	pnt = Point('reference', name, x, y, 'point_style', transform = '')
+def rPoint(parent, name, x, y, transform=''):
+	pnt = Point('reference', name, x, y, 'point_style', transform)
 	parent.add(pnt)
 	return pnt
 
-def cPoint(parent, name, x, y, transform = ''):
-	pnt = Point('reference', name,  x,  y,  'controlpoint_style',  transform = '')
+def cPoint(parent, name, x, y, transform=''):
+	pnt = Point('reference', name,  x,  y,  'controlpoint_style', transform)
 	parent.add(pnt)
 	return pnt
 
@@ -62,31 +62,31 @@ def gridPath(name, label, pathSVG, transform = ''):
     """
     Creates grid paths on reference layer
     """
-    return Path('reference', name, label, pathSVG, 'gridline_style', transform = '')
+    return Path('reference', name, label, pathSVG, 'gridline_style', transform)
 
 def cuttingLinePath(name, label, pathSVG, transform = ''):
     """
     Creates Cuttingline path on pattern layer
     """
-    return Path('pattern', name, label, pathSVG, 'cuttingline_style', transform = '')
+    return Path('pattern', name, label, pathSVG, 'cuttingline_style', transform)
 
 def seamLinePath(name, label, pathSVG, transform = ''):
     """
     Creates Seamline path on pattern layer
     """
-    return Path('pattern', name, label, pathSVG, 'seamline_path_style', transform = '')
+    return Path('pattern', name, label, pathSVG, 'seamline_path_style', transform)
 
 def patternLinePath(name, label, pathSVG, transform = ''):
     """
     Creates pattern line path on pattern layer, other than cuttingline, seamline, hemline or dartline
     """
-    return Path('pattern', name, label, pathSVG, 'dart_style', transform = '')
+    return Path('pattern', name, label, pathSVG, 'dart_style', transform)
 
 def stitchLinePath( name, label,  pathSVG, transform = '' ):
     """
     Creates stitch line on pattern layer, other than cuttingline, seamline, hemline or dartline
     """
-    return Path('pattern', name, label, pathSVG, 'dart_style', transform = '')
+    return Path('pattern', name, label, pathSVG, 'dart_style',transform)
 
 def grainLinePath(name, label, xstart, ystart, xend, yend,  transform=''):
     """
@@ -193,6 +193,7 @@ def pointAlongLineP(p1, p2, name, distance, rotation = 0):
     return pnt
 
 def boundingBox(path):
+    print '            begin pattern.boundingBox(path)'
     xlist = []
     ylist = []
     #print '===== Entered boundingBox ====='
@@ -309,11 +310,11 @@ def boundingBox(path):
     ymin = min(ylist)
     xmax = max(xlist)
     ymax = max(ylist)
-    #print 'boundingBox returning: ', xmin, ymin, xmax, ymax
+    print '            end pattern.boundingBox(path) - returning (xmin:', xmin, 'ymin:', ymin, ') (xmax:', xmax, 'ymax:', ymax, ')'
     return xmin, ymin, xmax, ymax
 
 
-def transformPoint(x, y, transform):
+def transformPoint(x, y, transform=''):
     """
     Apply an SVG transformation string to a 2D point and return the resulting x,y pair
     """
@@ -322,7 +323,6 @@ def transformPoint(x, y, transform):
     # Postponing this until after the LGM workshop in order not to introduce
     # a new dependency - for now we will only handle a few transformation types
     #
-
     if transform == '':
         return x, y
 
@@ -406,12 +406,14 @@ def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
     Take a set of points representing a bounding box, and
     put them through a supplied transform, returning the result
     """
+    print '      begin pattern.transformBoundingBox(',xmin, ymin, xmax, ymax, transform, ')'
     if transform == '':
+        print '      end pattern.transformBoundingBox - returning (old_xmin:', xmin, 'old_ymin:', ymin, ') (old_xmax:', xmax, 'old_ymax:', ymax, ')'
         return xmin, ymin, xmax, ymax
 
     new_xmin, new_ymin = transformPoint(xmin, ymin, transform)
     new_xmax, new_ymax = transformPoint(xmax, ymax, transform)
-
+    print '      end pattern.transformBoundingBox - returning (new_xmin:', new_xmin, 'new_ymin:', new_ymin, ') (new_xmax:', new_xmax, 'new_ymax:', new_ymax, ')'
     return new_xmin, new_ymin, new_xmax, new_ymax
 
 def lineLength(xstart, ystart, xend, yend):
@@ -504,7 +506,9 @@ class Pattern(pBase):
         parts = {}
         for chld in self.children:
             if isinstance(chld, PatternPiece):
+                'Pattern.py calling ', chld.name, '.boundingBox()'
                 xlo, ylo, xhi, yhi = chld.boundingBox()
+                'Pattern.py -', chld.name, '.boundingBox() returned info[xlo]:', xlo, 'info[ylo]:', ylo, 'info[xhi]:', xhi, 'info[yhi]:', yhi
                 parts[chld] = {}
                 parts[chld]['xlo'] = xlo
                 parts[chld]['ylo'] = ylo
@@ -522,7 +526,7 @@ class Pattern(pBase):
 
         next_x = 0
         # -spc- FIX Leave room for the title block!
-        next_y = 6.0 * IN_TO_PT # this should be zero
+        next_y = 8.0 * IN_TO_PT # this should be zero
         #next_y = 0 # this should be zero
         max_height_this_row = 0
         # a very simple algorithm
@@ -548,10 +552,10 @@ class Pattern(pBase):
 
             if 'verbose' in self.cfg:
                 print '      Part letter: ', thisletter
-                print '        part width = ', pp_width
-                print '        part height = ', pp_height
-                print '        next_x = ', next_x
-                print '        next_y = ', next_y
+                print '        part width = pp_width:', pp_width, ' <-- info[xhi]:', info['xhi'],  ' - info[xlo]:', info['xlo']
+                print '        part height = pp_height:', pp_height,' <-- info[yhi]:', info['yhi'],  ' - info[ylo]:', info['ylo']
+                print '        current x = next_x:', next_x
+                print '        current y = next_y:', next_y
 
             if pp_width > pg_width:
                 print 'Error: Pattern piece <%s> is too wide to print on page width' % pp.name
@@ -563,8 +567,11 @@ class Pattern(pBase):
                 real_next_y = next_y + max_height_this_row + PATTERN_OFFSET
                 if 'verbose' in self.cfg:
                     print '        Starting new row, right side of piece would have been = ', next_x + pp_width
-                    print '        Previous y was', next_y
-                    print '        New y is', real_next_y
+                    print '        New x = 0'
+                    print '        Previous y = next_y:', next_y
+                    print '        New y = real_next_y:', real_next_y, ' <-- (next_y:', next_y, ' + max_height_this_row:', max_height_this_row, ' + PATTERN_OFFSET:', PATTERN_OFFSET, ')'
+                    print '        New max_height_this_row = pp_height:',pp_height
+
                 next_y = real_next_y
                 max_height_this_row = pp_height
                 next_x = 0
@@ -572,13 +579,17 @@ class Pattern(pBase):
                 if pp_height > max_height_this_row:
                     max_height_this_row = pp_height
                     if 'verbose' in self.cfg:
-                        print '        Setting new max_height for this row = ', max_height_this_row
+                        print'         Previous y = next_y:', next_y
+                        print'         New y = Previous y'
+                        print'         New max_height_this_row = pp_height:', pp_height
 
             # now set up a transform to move this part to next_x, next_y
             xtrans = (next_x - info['xlo'])
             ytrans = (next_y - info['ylo'])
             pp.attrs['transform'] = pp.attrs['transform'] + (' translate(%f,%f)' % (xtrans, ytrans))
-
+            if 'verbose' in self.cfg:
+                print '        Transform = translate(xtrans:',xtrans,', ytrans:',ytrans,')<-- (next_x:',next_x,'- info[xlo]:',info['xlo'], '),next_y:',next_y,'- info[ylo]:',info['ylo'], ')'
+                print '        New x is next_x:', next_x + pp_width + PATTERN_OFFSET, '<--(next_x:', next_x, '+ppwidth:', pp_width, '+PATTERN_OFFSET:', PATTERN_OFFSET, ')'
             next_x = next_x + pp_width + PATTERN_OFFSET
         if 'verbose' in self.cfg:
             print 'Autolayout END'
@@ -676,10 +687,14 @@ class PatternPiece(pBase):
         Return two points which define a bounding box around the object
         """
         # get all the children
+        print 'begin pattern.PatternPiece.boundingBox(self=', self.name, ')'
         xmin, ymin, xmax, ymax =  pBase.boundingBox(self, grouplist)
-        #print "Pattern BoundingBox before = ", xmin, ymin, xmax, ymax
+
+        print 'pattern.PatternPiece.boundingBox(', self.name, ') pattern height before pattern.transformBoundingBox:', ymax-ymin
         xmin, ymin, xmax, ymax =  transformBoundingBox(xmin, ymin, xmax, ymax, self.attrs['transform'])
-        #print "Pattern BoundingBox after = ", xmin, ymin, xmax, ymax
+        print 'pattern.PatternPiece.boundingBox(', self.name, ') pattern height after pattern.transformBoundingBox:', ymax - ymin
+        print 'end pattern.PatternPiece.boundingBox(', self.name, ') - returning (xmin:', xmin, 'ymin:', ymin, ')(xmax:', xmax, 'ymax:', ymax, ')'
+        print '************'
         return xmin, ymin, xmax, ymax
 
 class Node(pBase):
@@ -746,11 +761,16 @@ class Point(pBase):
         """
         Return two points which define a bounding box around the object
         """
+        print '         begin pattern.Point.boundingBox(', self.name, ')'
         if grouplist is None:
             grouplist = self.groups.keys()
         if self.groupname in grouplist:
-            return (self.x - (self.size/2), self.y - (self.size/2), self.x + (self.size/2), self.y + (self.size/2))
+            (x1, y1)=(self.x - (self.size/2.0), self.y - (self.size/2.0))
+            (x2, y2)=(self.x + (self.size/2.0), self.y + (self.size/2.0))
+            print '         end pattern.Point.boundingBox(',self.name,') - returning (', x1, y1, ') (', x2, y2, ')'
+            return x1, y1, x2, y2
         else:
+            print '         end pattern.Point.boundingBox(', self.name, ') - returning (None,None,None,None)'
             return None, None, None, None
 
 class Line(pBase):
@@ -832,11 +852,22 @@ class Line(pBase):
         """
         Return two points which define a bounding box around the object
         """
+        print '         begin pattern.Line.boundingBox(', self.name, ')'
         if grouplist is None:
             grouplist = self.groups.keys()
+        #if self.groupname in grouplist:
+            #print '         end pattern.Line.boundingBox(', self.name,') - returning (xmin:', min(self.xstart, self.xend), ' ymin:', min(self.ystart, self.yend) , ') ( xmax:', max(self.xstart, self.xend), ' ymax:', max(self.ystart, self.yend), ')'
+            #return (min(self.xstart, self.xend), min(self.ystart, self.yend), max(self.xstart, self.xend), max(self.ystart, self.yend))
+        #else:
+            #print '         end pattern.Line.boundingBox(',self.name,') - returning (None,None,None,None)'
+            #return None, None, None, None
         if self.groupname in grouplist:
-            return (min(self.xstart, self.xend), min(self.ystart, self.yend), max(self.xstart, self.xend), max(self.ystart, self.yend))
+            dd = 'M '+str(self.xstart)+' '+str(self.ystart)+' L '+str(self.xend)+' '+str(self.yend)
+            xmin, ymin, xmax, ymax =  boundingBox(dd)
+            print "         end pattern.Line.boundingBox(",self.name,") - returning (xmin:", xmin, 'ymin:', ymin, ') (xmax:', xmax, 'ymax:', ymax, ')'
+            return xmin, ymin, xmax, ymax
         else:
+            print '         end pattern.Line.boundingBox - returning (None, None) (None, None)'
             return None, None, None, None
 
 class Path(pBase):
@@ -929,15 +960,17 @@ class Path(pBase):
         """
         Return two points which define a bounding box around the object
         """
+        print '         begin pattern.Path.boundingBox(', self.name, ')'
         # This is not elegant, should perhaps be redone
         if grouplist is None:
             grouplist = self.groups.keys()
         if self.groupname in grouplist:
             dd = self.pathSVG.get_d()
             xmin, ymin, xmax, ymax =  boundingBox(dd)
-            #print "BoundingBox = ", xmin, ymin, xmax, ymax
+            print "         end pattern.Path.boundingBox(",self.name,") - returning (xmin:", xmin, 'ymin:', ymin, ') (xmax:', xmax, 'ymax:', ymax, ')'
             return xmin, ymin, xmax, ymax
         else:
+            print '         end pattern.Path.boundingBox - returning (None, None) (None, None)'
             return None, None, None, None
 
 class TextBlock(pBase):
