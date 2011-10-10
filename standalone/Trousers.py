@@ -94,7 +94,7 @@ class PatternDesign():
 		patternRise=abs(patternOutsideLeg - patternInsideLeg)
 
 		#client values
-		rise=abs(cd.outside_leg - cd.inside_leg) - (0.5*CM)
+		#rise=abs(cd.outside_leg - cd.inside_leg) - (0.5*CM)
 		scale=cd.seat/2.0 #scale is 1/2 body circumference of reference measurement
 		scale_1_4=scale/4.0
 		scale_1_8=scale/8.0
@@ -104,9 +104,9 @@ class PatternDesign():
 		insideLegRatio=(cd.inside_leg/patternInsideLeg)
 		waistRatio=(cd.waist/patternWaist)
 		seatRatio=(cd.seat/patternSeat)
-		kneeRatio=(cd.knee/patternKnee)
-		hemWidthRatio=(cd.hem_width/patternHemWidth)
-		riseRatio=(rise/patternRise)
+		kneeRatio=seatRatio
+		hemWidthRatio=seatRatio
+		riseRatio=(cd.rise/patternRise)
 
 		#Begin Trousers
 		trousers=Pattern('trousers')
@@ -122,10 +122,10 @@ class PatternDesign():
 		A=rPoint(tf, 'A', scale_1_8 + (0.5*CM)*seatRatio, 8*CM) # waistband
 		B=rPoint(tf, 'B', A.x, A.y + (3.8*CM)*riseRatio) # waistline
 		C=rPoint(tf, 'C', A.x, B.y + (18.5*CM)*riseRatio) # seatline
-		D=rPoint(tf, 'D', A.x, A.y + rise) # riseline
+		D=rPoint(tf, 'D', A.x, A.y + cd.rise) # riseline
 		E=rPoint(tf, 'E', A.x, D.y + (cd.inside_leg/2.) - (5.5*CM)*riseRatio) # kneeline
-		F=rPoint(tf,'F', A.x, D.y + cd.inside_leg - (1*CM)*insideLegRatio) # hemline
-		I=rPoint(tf, 'I', A.x, B.y + abs(C.y - B.y)/2.) # midpoint b/w waistline and seatline
+		F=rPoint(tf,'F', A.x, D.y + cd.inside_leg - (1.0*CM)*insideLegRatio) # hemline
+		I=rPoint(tf, 'I', A.x, B.y + abs(C.y - B.y)/2.0) # midpoint b/w waistline and seatline
 		p2=rPoint(tf, 'p2', D.x - scale_1_8 + (0.5*CM)*seatRatio, D.y)
 		length=(D.x - p2.x)/2.0
 		x, y=pointAlongLine(D.x, D.y, (D.x - 100), (D.y - 100), length) # 100pt is arbitrary distance to create 45degree angle
@@ -316,10 +316,10 @@ class PatternDesign():
 		tfw.add(Path('pattern', 'tfws', 'Trousers Front Waistband Seamline', d, 'seamline_path_style'))
 		tfw.add(Path('pattern', 'tfwc', 'Trousers Front Waistband Cuttingline', d, 'cuttingline_style'))
 		#front waistband grainline & label
-		(x1, y1)=(A.x + (9*CM)*waistRatio, A.y + (.5*CM)*riseRatio)
-		(x2, y2)=(A.x + (9*CM)*waistRatio, B.y - (.5*CM)*riseRatio)
+		(x1, y1)=(A.x + (9*CM)*waistRatio, A.y + (0.5*CM)*riseRatio)
+		(x2, y2)=(A.x + (9*CM)*waistRatio, B.y - (0.5*CM)*riseRatio)
 		tfw.add(grainLinePath("tfwg", "Trousers Front Waistband Grainline", x1, y1, x2, y2))
-		(tfw.label_x,  tfw.label_y)=(A.x + (1*CM)*waistRatio, A.y + (1*CM)*riseRatio)
+		(tfw.label_x,  tfw.label_y)=(A.x + (1.0*CM)*waistRatio, A.y + (1.0*CM)*riseRatio)
 		#end front waistband lining pattern
 
 		#Begin trousers front fly
@@ -336,10 +336,10 @@ class PatternDesign():
 		tff.add(Path('pattern', 'tffs', 'Trousers Front Fly Seamline', d, 'seamline_path_style'))
 		tff.add(Path('pattern', 'tffc', 'Trousers Front Fly Cuttingline', d, 'cuttingline_style'))
 		#front fly grainline & label
-		(x1, y1)=(A.x + (3*CM)*waistRatio, A.y + (5*CM)*riseRatio)
-		(x2, y2)=(A.x + (3*CM)*waistRatio, f1.y - (2*CM)*riseRatio)
+		(x1, y1)=(A.x + (3.0*CM)*waistRatio, A.y + (5.0*CM)*riseRatio)
+		(x2, y2)=(A.x + (3.0*CM)*waistRatio, f1.y - (2.0*CM)*riseRatio)
 		tff.add(grainLinePath("tffg", "Trousers Front Fly Grainline", x1, y1, x2, y2))
-		(tff.label_x,  tff.label_y)=(A.x + (0.5*CM)*waistRatio, A.y + (2*CM)*riseRatio)
+		(tff.label_x,  tff.label_y)=(A.x + (0.5*CM)*waistRatio, A.y + (2.0*CM)*riseRatio)
 		#end trousers front fly
 
 		#Begin trousers front hem lining
@@ -374,22 +374,22 @@ class PatternDesign():
 		p17=rPoint(tb, 'p17', p2.x - (3*CM)*seatRatio, p2.y)# extends back crotch measurement by 3cm
 		p19=rPoint(tb, 'p19', A.x +(5*CM)*waistRatio, A.y)
 		#back waist points
-		distance=-(2*CM)*waistRatio
+		distance=-(2.0*CM)*waistRatio
 		x, y=pointAlongLine(p19.x, p19.y, C.x, C.y, distance)
 		p20=rPoint(tb, 'p20', x,y)# waistline at back center seam
-		r=(cd.waist/4.0) + (2*CM)*waistRatio
+		r=(cd.waist/4.0) + (2.0*CM)*waistRatio
 		a, b, y=p20.x, p20.y, B.y
 		x=abs(math.sqrt(r**2 - (y - b)**2) + a)
 		p21=rPoint(tb, 'p21', x, y)# waistline at side seamside seam --> waist/4 + 2cm) away from p20
 		distance=-(3.8*CM)*riseRatio
 		x, y=pointAlongLine(p20.x, p20.y, p19.x, p19.y, distance) #
 		W=rPoint(tb, 'W', x, y)#W --> (4cm) up from waistline, same as waistband height at side seam.
-		distance=(cd.waist/4.0) + (2*CM)*waistRatio+ (0.75*CM)*waistRatio
+		distance=(cd.waist/4.0) + (2.0*CM)*waistRatio+ (0.75*CM)*waistRatio
 		x1=tb.W.x + (p21.x - p20.x)#find x of a point through W at same slope as waistline p20p21
 		y1=tb.W.y + (p21.y - p20.y) #find y of point through W at same slope as waistline p20p21
 		x, y=pointAlongLine(tb.W.x, tb.W.y, x1, y1, distance)#adds line from W parallel to p20p21 to find p22
 		p22=rPoint(tb, 'p22', x, y)# top of waistband at side seam (4cm from waistline)
-		distance=-(5*CM*riseRatio)
+		distance=-(5.0*CM*riseRatio)
 		x, y=pointAlongLine(p20.x, p20.y, p19.x, p19.y, distance)
 		p23=rPoint(tb, 'p23', x, y)# top of waistband at center back seam (5cm from waistline)
 		distance=(4.5*CM*waistRatio)
