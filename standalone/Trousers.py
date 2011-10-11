@@ -63,7 +63,7 @@ class PatternDesign():
 		self.cfg['verbose']=('1')#document borders
 		BORDER=self.cfg['border']
 		#TODO - abstract these into configuration file(s)
-		metainfo={'companyName':'Swank Patterns',  #mandatory
+		metainfo={'companyName':'Seamly Patterns',  #mandatory
 					'designerName':'Susan Spencer',#mandatory
 					'patternName':'Steampunk Trousers',#mandatory
 					'patternNumber':'1870-M-T-1'   #mandatory
@@ -265,14 +265,14 @@ class PatternDesign():
 		moveP(g, D)
 		lineP(g, p3)
 		# Trousers Front Gridline path
-		tf.add(Path('reference','tfgrid', 'Trousers Front Gridline', g, 'gridline_style'))
+		tf.add(Path('reference','grid', 'Trousers Front Gridline', g, 'gridline_style'))
 
 		#trousers front waist line
 		wl=path()
 		moveP(wl, B)
 		lineP(wl, p7)
 		#trousers front waist line path
-		tf.add(Path('pattern', 'tfwl', 'Trousers Front Waist line', wl, 'dart_style'))
+		tf.add(Path('pattern', 'waistLine', 'Trousers Front Waist line', wl, 'dart_style'))
 
 		#trousers front fly line
 		fl=path()
@@ -280,24 +280,20 @@ class PatternDesign():
 		cubicCurveP(fl, c17,  c18, f1)
 		lineP(fl, f2)
 		#trousers front fly line path
-		tf.add(Path('pattern', 'tffl', 'Trousers Front Fly line', fl, 'dart_style'))
+		tf.add(Path('pattern', 'flyLine', 'Trousers Front Fly line', fl, 'dart_style'))
 
 		#Trousers Front Grainline & Label Location
 		g1=rPoint(tf, 'g1', p16.x, C.y)
 		g2=rPoint(tf, 'g2', p16.x, (p4.y + (abs(p14.y - p4.y) / 2.0)))
-		tf.add(grainLinePath("tfg", "Trousers Front Grainline", g1.x, g1.y, g2.x, g2.y))
-		(tf.label_x, tf.label_y)=( p16.x + (2.0*CM), p16.y)
 
 		# Trousers Front Cuttingline & Seamline
-		c=''
-		s=''
 		c=path()
 		s=path()
 		paths=[]
 		paths.append(c)
 		paths.append(s)
 		for p in paths:
-			print p.get_d
+			#print p.get_d
 			# Trousers Front Waistband
 			moveP(p, A)
 			lineP(p, p8)
@@ -321,17 +317,17 @@ class PatternDesign():
 			print p.get_d()
 			#p = s
 		# Trousers Front Seamline & Cuttingline paths
-		tf.add(Path('pattern', 'tfs', 'Trousers Front Seamline', s,  'seamline_path_style'))
-		tf.add(Path('pattern', 'tfc', 'Trousers Front Cuttingline', c, 'cuttingline_style'))
+		(tf.label_x, tf.label_y)=( p16.x + (2.0*CM), p16.y)
+		tf.add(grainLinePath("grainLine", "Trousers Front Grainline", g1, g2))
+		tf.add(Path('pattern', 'seamLine', 'Trousers Front Seamline', s,  'seamline_path_style'))
+		tf.add(Path('pattern', 'cuttingLine', 'Trousers Front Cuttingline', c, 'cuttingline_style'))
 
 		#Trousers Front Waistband Pattern
-		trousers.add(PatternPiece('pattern', 'frontwaistband', 'B', fabric=1, interfacing=1, lining=0))  # trousers.frontwaistband
-		tfwb=trousers.frontwaistband
+		trousers.add(PatternPiece('pattern', 'FrontWaistBand', 'B', fabric=1, interfacing=1, lining=0))  # trousers.frontwaistband
+		tfwb=trousers.FrontWaistBand
 		#Trousers Front Waistband Grainline & Label
-		(x1, y1)=(A.x + (9*CM)*waistRatio, A.y + (0.5*CM)*riseRatio)
-		(x2, y2)=(A.x + (9*CM)*waistRatio, B.y - (0.5*CM)*riseRatio)
-		tfwb.add(grainLinePath('pattern','tfwbg' "Trousers Front Waistband Grainline", x1, y1, x2, y2))
-		(tfwb.label_x,  tfwb.label_y)=(A.x + (1.0*CM)*waistRatio, A.y + (1.0*CM)*riseRatio)
+		g1=rPoint(tfwb, 'g1', A.x + (9*CM)*waistRatio, A.y + (0.5*CM)*riseRatio)
+		g2=rPoint(tfwb, 'g2', A.x + (9*CM)*waistRatio, B.y - (0.5*CM)*riseRatio)
 		# Front Waistband Seamline & Cuttingline
 		c=path()
 		s=path()
@@ -346,17 +342,19 @@ class PatternDesign():
 			lineP(p, B)
 			lineP(p, A)
 			print p.get_d
-		tfwb.add(Path('pattern', 'tfwbs', 'Trousers Front Waistband Seamline', s, 'seamline_path_style'))
-		tfwb.add(Path('pattern', 'tfwbc', 'Trousers Front Waistband Cuttingline', c, 'cuttingline_style'))
+		# create paths & label location
+		(tfwb.label_x,  tfwb.label_y)=(A.x + (1.0*CM)*waistRatio, A.y + (1.0*CM)*riseRatio)
+		tfwb.add(grainLinePath('grainLine',  "Trousers Front Waistband Grainline", g1, g2))
+		tfwb.add(Path('pattern', 'seamLine', 'Trousers Front Waistband Seamline', s, 'seamline_path_style'))
+		tfwb.add(Path('pattern', 'cuttingLine', 'Trousers Front Waistband Cuttingline', c, 'cuttingline_style'))
+
 
 		#Trousers Front Fly Pattern
-		trousers.add(PatternPiece('pattern', 'fly', letter='C', fabric=3, interfacing=2, lining=0))
-		tff=trousers.fly
+		trousers.add(PatternPiece('pattern', 'frontFly', letter='C', fabric=3, interfacing=2, lining=0))
+		tff=trousers.frontFly
 		#Trousers Front Fly Grainline & Label Location
 		g1=rPoint(tff, 'g1', A.x + (3.0*CM)*waistRatio, A.y + (5.0*CM)*riseRatio)
 		g2=rPoint(tff, 'g2', A.x + (3.0*CM)*waistRatio, f1.y - (2.0*CM)*riseRatio)
-		tff.add(grainLinePath("tffg", "Trousers Front Fly Grainline", g1.x, g1.y, g2.x, g2.y))
-		(tff.label_x,  tff.label_y)=(A.x + (0.5*CM)*waistRatio, A.y + (2.0*CM)*riseRatio)
 		# Trousers Front Fly Seamline & Cuttingline
 		s = path()
 		c = path()
@@ -370,17 +368,18 @@ class PatternDesign():
 			cubicCurveP(p, c17, c18, f1)
 			lineP(p, f2)
 			lineP(p, A)
-		tff.add(Path('pattern', 'tffs', 'Trousers Front Fly Seamline', s, 'seamline_path_style'))
-		tff.add(Path('pattern', 'tffc', 'Trousers Front Fly Cuttingline', c, 'cuttingline_style'))
+		# create paths & label location
+		(tff.label_x,  tff.label_y)=(A.x + (0.5*CM)*waistRatio, A.y + (2.0*CM)*riseRatio)
+		tff.add(grainLinePath("grainLine", "Trousers Front Fly Grainline", g1, g2))
+		tff.add(Path('pattern', 'seamLine', 'Trousers Front Fly Seamline', s, 'seamline_path_style'))
+		tff.add(Path('pattern', 'cuttingLine', 'Trousers Front Fly Cuttingline', c, 'cuttingline_style'))
 
 		#Trousers Front Hemlining Pattern
-		trousers.add(PatternPiece('pattern', 'front_hemlining', letter='D', fabric=2, interfacing=0, lining=0))
-		tfh = trousers.front_hemlining
+		trousers.add(PatternPiece('pattern', 'frontHemLining', letter='D', fabric=2, interfacing=0, lining=0))
+		tfh = trousers.frontHemLining
 		#Trousers Front Hemlining Grainline & Label Location
 		g1=rPoint(tfh, 'g1', p15.x, M.y + (1.0*CM))
 		g2=rPoint(tfh, 'g2', p15.x, p15.y  - (1.0*CM))
-		tfh.add(grainLinePath("tfhg", "Trousers Front Hemlining Grainline", g1.x, g1.y, g2.x, g2.y))
-		(tfh.label_x,  tfh.label_y)=(K.x + (2.0*CM), K.y + (1.0*CM))
 		#Trousers Front Hemlining Seamline & Grainline
 		s=path()
 		c=path()
@@ -395,8 +394,11 @@ class PatternDesign():
 			lineP(p, p13)
 			cubicCurveP(p, c13, c14, p15)
 			cubicCurveP(p, c15, c16, p5)
-		tfh.add(Path('pattern', 'tfhs', 'Trousers Front Hemlining Seamline', s, 'seamline_path_style'))
-		tfh.add(Path('pattern', 'tfhc', 'fTrousers Front Hemlining Cuttingline', c, 'cuttingline_style'))
+		# create paths & label location
+		(tfh.label_x,  tfh.label_y)=(K.x + (2.0*CM), K.y + (1.0*CM))
+		tfh.add(grainLinePath("grainLine", "Trousers Front Hemlining Grainline", g1, g2))
+		tfh.add(Path('pattern', 'seamLine', 'Trousers Front Hemlining Seamline', s, 'seamline_path_style'))
+		tfh.add(Path('pattern', 'cuttingLine', 'Trousers Front Hemlining Cuttingline', c, 'cuttingline_style'))
 
 
 		#Trousers Back Pattern
@@ -550,13 +552,13 @@ class PatternDesign():
 		lineP(gr, p22)
 		moveP(gr, p25)
 		lineP(gr, p24)
-		tb.add(Path('reference','tbgrid', 'Trousers Back Gridline', gr, 'gridline_style'))
+		tb.add(Path('reference','grid', 'Trousers Back Gridline', gr, 'gridline_style'))
 
 		#Trousers Back Waistline marking line
 		wl=path()
 		moveP(wl, p20)
 		lineP(wl, p21)
-		tb.add(Path('pattern', 'tbwl', 'Trousers Back Waistline', wl, 'dart_style'))
+		tb.add(Path('pattern', 'waistLine', 'Trousers Back Waistline', wl, 'dart_style'))
 
 		#Trousers Back Dart marking lines
 		d=path()
@@ -568,13 +570,10 @@ class PatternDesign():
 		moveP(d, R)
 		lineP(d, U)
 		lineP(d, P)
-		tb.add(Path('pattern', 'tbd', 'Trousers Back Dart', d, 'dart_style'))
-
+		tb.add(Path('pattern', 'dart', 'Trousers Back Dart', d, 'dart_style'))
 		#Trousers Back Grainline & Label Location
 		g1=rPoint(tb, 'g1',  p16.x, C.y)
 		g2=rPoint(tb, 'g2', p16.x, p4.y + (abs(p14.y - p4.y)*(0.5)))
-		tb.add(grainLinePath("tbg", "Trousers Back Grainline", g1.x, g1.y, g2.x, g2.y))
-		tb.label_x, tb.label_y=p16.x + (3*CM*seatRatio), p16.y
 
 		#Trousers Back Seamline & Cuttingline
 		s=path()
@@ -598,13 +597,15 @@ class PatternDesign():
 			cubicCurveP(p, c29, c30, p5)
 			lineP(p, p4)
 			cubicCurveP(p, c35a, c35b, p17)
-		tb.add(Path('pattern', 'tbs', 'Trousers Back Seamline', s, 'seamline_path_style'))
-		tb.add(Path('pattern', 'tbc', 'Trousers Back Cuttingline', c, 'cuttingline_style'))
+		# create paths & label location
+		tb.label_x, tb.label_y=p16.x + (3*CM*seatRatio), p16.y
+		tb.add(grainLinePath("grainLine", "Trousers Back Grainline", g1, g2))
+		tb.add(Path('pattern', 'seamLine', 'Trousers Back Seamline', s, 'seamline_path_style'))
+		tb.add(Path('pattern', 'cuttingLine', 'Trousers Back Cuttingline', c, 'cuttingline_style'))
 
 		#Trousers Back  Waistlining Pattern
-		trousers.add(PatternPiece('pattern', 'trousersBackWaistlining', letter='F', fabric=1, interfacing=1, lining=0))
-		tbw=trousers.trousersBackWaistlining
-
+		trousers.add(PatternPiece('pattern', 'backWaistLining', letter='F', fabric=1, interfacing=1, lining=0))
+		tbwl = trousers.backWaistLining
 		#Trousers Back Waistlining Dart
 		d=path()
 		moveP(d, H)
@@ -613,16 +614,14 @@ class PatternDesign():
 		lineP(d, T)
 		moveP(d, R)
 		lineP(d, U)
-		tbw.add(Path('pattern', 'tbwd', 'Trousers Back Waistlining Dart', d, 'dart_style'))
+		tbwl.add(Path('pattern', 'dart', 'Trousers Back Waistlining Dart', d, 'dart_style'))
 
 		#Trousers Back Waistlining Grainline & Label location
 		m=(p23.y - p20.y) / (p23.x - p20.x)
-		g1=rPoint(tbw, 'g1', p20.x + (3.0*CM), p20.y - (0.5*CM))
+		g1=rPoint(tbwl, 'g1', p20.x + (3.0*CM), p20.y - (0.5*CM))
 		b=g1.y - m*g1.x
 		y=p24.y
-		g2=rPoint(tbw, 'g2', ((y - b)/m), y)
-		tbw.add(grainLinePath("tbwg", "Trousers Back Waistband Grainline", g1.x, g1.y, g2.x, g2.y))
-		(tbw.label_x,  tbw.label_y)=(p25.x, p25.y + (3.0*CM))
+		g2=rPoint(tbwl, 'g2', ((y - b)/m), y)
 
 		#Trousers Back Waistlining Seamline & Cuttingline
 		s=path()
@@ -637,18 +636,18 @@ class PatternDesign():
 			lineP(p, p21)
 			lineP(p, p20)
 			lineP(p, p23)
-		tbw.add(Path('pattern', 'tbws', 'Trousers Back Waistlining Seamline', s, 'seamline_path_style'))
-		tbw.add(Path('pattern', 'tbwc', 'Trousers Back Waistlining Cuttingline', c, 'cuttingline_style'))
+		# create paths & label location
+		(tbwl.label_x,  tbwl.label_y)=(p25.x, p25.y + (3.0*CM))
+		tbwl.add(grainLinePath("grainLine", "Trousers Back Waistband Grainline", g1, g2))
+		tbwl.add(Path('pattern', 'seamLine', 'Trousers Back Waistlining Seamline', s, 'seamline_path_style'))
+		tbwl.add(Path('pattern', 'cuttinLine', 'Trousers Back Waistlining Cuttingline', c, 'cuttingline_style'))
 
 		#Trouser Back Hemlining Pattern
-		trousers.add(PatternPiece('pattern', 'backHemlining', letter='G', fabric=2, interfacing=0, lining=0))
-		tbh=trousers.backHemlining
-
+		trousers.add(PatternPiece('pattern', 'backHemLining', letter='G', fabric=2, interfacing=0, lining=0))
+		tbhl = trousers.backHemLining
 		# Trouser Back Hem Lining Grainline & Label Location
-		g1=rPoint(tbh, 'g1', O.x, O.y + (1.5*CM))
-		g2=rPoint(tbh, 'g2', O.x, p29.y  - (1.5*CM))
-		tbh.add(grainLinePath("tbhg", "Trousers Back Hemlining Grainline", g1.x, g1.y, g2.x, g2.y))
-		(tbh.label_x,  tbh.label_y)=(K.x + (2.0*CM), K.y + (2.0*CM))
+		g1=rPoint(tbhl, 'g1', O.x, O.y + (1.5*CM))
+		g2=rPoint(tbhl, 'g2', O.x, p29.y  - (1.5*CM))
 
 		# Trouser Back Hem Lining Seamline & CuttingLine
 		s=path()
@@ -664,8 +663,11 @@ class PatternDesign():
 			cubicCurveP(p, c27, c28, p29)
 			cubicCurveP(p, c29, c30, p5)
 			lineP(p, K)
-		tbh.add(Path('pattern', 'tbhs', 'Back Hemlining Seamlin', s, 'seamline_path_style'))
-		tbh.add(Path('pattern', 'tbhc', 'Back Hemlining Cuttingline', c, 'cuttingline_style'))
+		# create paths & label location
+		(tbhl.label_x,  tbhl.label_y)=(K.x + (2.0*CM), K.y + (2.0*CM))
+		tbhl.add(grainLinePath("grainLine", "Trousers Back Hemlining Grainline", g1, g2))
+		tbhl.add(Path('pattern', 'seamLine', 'seamLine', s, 'seamline_path_style'))
+		tbhl.add(Path('pattern', 'cuttingLine', 'cuttingline', c, 'cuttingline_style'))
 
 		#call draw once for the entire pattern
 		doc.draw()
