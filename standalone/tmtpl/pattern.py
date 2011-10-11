@@ -88,16 +88,16 @@ def stitchLinePath( name, label,  pathSVG, transform = '' ):
     """
     return Path('pattern', name, label, pathSVG, 'dart_style',transform)
 
-def grainLinePath(name, label, xstart, ystart, xend, yend,  transform=''):
+def grainLinePath(name, label, pnt1, pnt2,  transform=''):
     """
     Creates grain line on pattern layer
     """
     if (transform == '') :
-        x1, y1 = xstart,  ystart
-        x2, y2 = xend,  yend
+        x1, y1 = pnt1.x,  pnt1.y
+        x2, y2 = pnt2.x,  pnt2.y
     else:
-        x1, y1 = transformPoint(xstart, ystart, transform)
-        x2, y2 = transformPoint(xend, yend, transform)
+        x1, y1 = transformPoint(pnt1.x, pnt1.y, transform)
+        x2, y2 = transformPoint(pnt2.x, pnt2.y, transform)
     gline = Line("pattern", name, label, x1, y1, x2, y2, "grainline_style")
     gline.setMarker('Arrow1M', start = True, end = True)
     return gline
