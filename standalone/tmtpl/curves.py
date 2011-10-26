@@ -23,7 +23,10 @@
 #import string
 #import re
 
-from pattern          import Point, lineLengthP, pointAlongLine
+import math
+from pattern import Point, lineLengthP, pointAlongLine, pointFromDistanceAndAngle, angleFromSlope
+from tmtpl.constants import *
+
 
 # Code derived from this C code: http://www.codeproject.com/KB/graphics/BezierSpline.aspx
 # knots - list of Point objects - spline points (must contain at least two points)
@@ -139,9 +142,9 @@ def GetCurveControlPoints(name, knots):
     secondControlPoints[i] = pnt
     scpnum = scpnum + 1
 
-    (fcp, scp) = FudgeControlPoints(knots, firstControlPoints, secondControlPoints, .3333)
+    #(fcp, scp) = FudgeControlPoints(knots, firstControlPoints, secondControlPoints, .3333)
 
-    return (fcp, scp)
+    return (firstControlPoints, secondControlPoints)
 
 def FudgeControlPoints(knots, fcp, scp, percentage):
     """
@@ -190,3 +193,71 @@ def FudgeControlPoints(knots, fcp, scp, percentage):
         scpl = lineLengthP(scp[i], knots[i+1])
 
     return (fcp, scp)
+
+def myGetControlPoints(name, knots):
+	k_num=len(knots)-1 # last iterator for n knots in knots[0..(n-1)]
+	c_num=k_num-1 # last iterator for n-1 curve segments.
+	c1=[] # first control point c1[0..c_num]
+	c2=[] # second control point c2[0..c_num]
+
+	i=1
+	while (i <= c_num):
+		# each loop produces c2[previous] and c1[current]
+		# special cases: get c1[0] in 1st loop & c2[c_num] in last loop
+		previous=(i-1)
+		current=i
+		next=(i+1)
+		print 'previous,current,next=', previous, current, next
+
+		# c2[previous]
+		# on angle of knot[next] to knot[previous] --> backwards relative to direction of curve
+		rise=(knots[next].y-knots[previous].y)
+		run=(knots[previous].x-knots[next].x)
+		angle=angleFromSlope(rise, run) # angle from knots[previous] to knots[next]
+		length=math.sqrt(((knots[current].y-knots[previous].y)**2)+((knots[current].x-knots[previous].x)**2))/3.0 # 1/3 distance between knots[previous] & knots[current]
+		x, y=pointFromDistanceAndAngle(knots[current].x, knots[current].y, length, angle)
+		pnt=Point('reference', '%s-c2%d' % (name, previous), styledef = 'controlpoint_style')
+		pnt.x, pnt.y=x, y
+		c2.append(pnt) # c2[previous]
+		print '   c2[',previous, '] =', c2[previous].x,  c2[previous].y
+
+		if (current==1):
+			# c1[0]
+			# on angle of knot[0] to c2[0] --> forwards
+			rise=(knots[0].y-c2[0].y)
+			run=(c2[0].x-knots[0].x)
+			angle=angleFromSlope(rise, run)
+			x, y=pointFromDistanceAndAngle(knots[0].x, knots[0].y, length, angle)
+			pnt=Point('reference', '%s-c1%d' % (name, previous), styledef = 'controlpoint_style')
+			pnt.x, pnt.y=x, y
+			c1.append(pnt)
+			print '      c1[',previous,'] =', c1[previous].x,  c1[previous].y
+
+		# c1[current]
+		# on angle from knots[previous] to knots[next] --> forwards --> opposite angle from c2[previous]
+		rise=(knots[previous].y-knots[next].y)
+		run=(knots[next].x-knots[previous].x)
+		angle=angleFromSlope(rise, run)
+		length=math.sqrt(((knots[current].y-knots[next].y)**2)+((knots[current].x-knots[next].x)**2))/3.0
+		x, y=pointFromDistanceAndAngle(knots[current].x, knots[current].y, length, angle)
+		pnt=Point('reference', '%s-c1%d' % (name, current), styledef = 'controlpoint_style')
+		pnt.x, pnt.y=x, y
+		c1.append(pnt)
+		print '   c1[',current,'] =', c1[current].x,  c1[current].y
+
+		if (current==c_num):
+			# c2[c_num]
+			# on angle from knot[k_num] to c1[c_num]
+			rise=(knots[k_num].y-c1[c_num].y)
+			run=(c1[c_num].x-knots[k_num].x)
+			angle=angleFromSlope(rise, run) # angle from knots[k_num] to c1[c_num]
+			x, y=pointFromDistanceAndAngle(knots[k_num].x, knots[k_num].y, length, angle) # use length from current segment c1
+			pnt=Point('reference', '%s-c2%d' % (name, current), styledef = 'controlpoint_style')
+			pnt.x, pnt.y=x, y
+			c2.append(pnt)
+			print '      c2[',current,'] =', c2[current].x,  c2[current].y
+
+		i=(i+1)
+
+	return c1,  c2
+
