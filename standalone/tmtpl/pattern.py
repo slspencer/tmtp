@@ -134,6 +134,19 @@ def cubicCurveP(pathSVG, control1, control2, point, transform=''):
         px,  py = transformPoint(point.x, point.y, transform)
     return pathSVG.appendCubicCurveToPath(c1x, c1y, c2x, c2y, px, py, relative = False)
 
+def angleFromSlope(rise, run):
+    """
+    works with both positive and negative values of rise and run
+    returns angle in radians
+    """
+    return math.atan2( rise, run )
+
+def pointFromDistanceAndAngle(x1, y1, distance, angle):
+    # http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
+    x2 = x1 + (distance * math.cos(angle))
+    y2 = y1 - (distance * math.sin(angle))
+    return (x2, y2)
+
 def angleOfLine(x1, y1, x2, y2):
     """
     Accepts two sets of coordinates and returns the angle of the
