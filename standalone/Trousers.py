@@ -199,10 +199,7 @@ class PatternDesign():
 		c10b=cPoint(tf, 'c10b', scp[1].x, scp[1].y) #b/w p9 & p10
 		c12a=cPoint(tf, 'c12a', fcp[2].x, fcp[2].y) #b/w p10 & p12
 		#control points for hemallowance
-		pointlist=[]
-		pointlist.append(L)
-		pointlist.append(M)
-		pointlist.append(K)
+		pointlist=pointList(L, M, K)
 		fcp, scp=myGetControlPoints('HemAllowance', pointlist)
 		c5=cPoint(tf, 'c5', fcp[0].x, fcp[0].y) #b/w L & M
 		c6=cPoint(tf, 'c6', scp[0].x, scp[0].y) #b/w  L & M
@@ -212,10 +209,7 @@ class PatternDesign():
 		distance= ((math.sqrt(((p4.x - p2.x)**2) + ((p4.y - p2.y)**2))) / 2.0)
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
 		c9=cPoint(tf, 'c9', x, y) # b/w p4 & p2
-		pointlist=[]
-		pointlist.append(p4)
-		pointlist.append(c9)
-		pointlist.append(p2)
+		pointlist=pointList(p4, c9, p2)
 		fcp, scp=myGetControlPoints('Inseam', pointlist)
 		c10=cPoint(tf, 'c10', scp[1].x,  scp[1].y) # b/w p4 & p2
 		#control points at front fly curve
@@ -223,11 +217,7 @@ class PatternDesign():
 		dx = abs(Ca.x - p3.x)
 		dy = abs(Ca.y - p3.y)
 		Cb = cPoint(tf, 'Cb', C.x - dx, C.y - dy)
-		pointlist=[]
-		pointlist.append(p2)
-		pointlist.append(p3)
-		pointlist.append(Ca)
-		pointlist.append(Cb)
+		pointlist=pointList(p2, p3, Ca, Cb)
 		fcp, scp=myGetControlPoints('Inseam', pointlist)
 		c11a=cPoint(tf, 'c11a', fcp[0].x,  fcp[0].y) # b/w p2 & p3
 		c11b=cPoint(tf, 'c11b', scp[0].x,  scp[0].y) # b/w p2 & p3
@@ -235,10 +225,7 @@ class PatternDesign():
 		c11d=cPoint(tf, 'c11d', scp[1].x, scp[1].y) #b/w p3 & Ca
 		#TODO - improve intersectionOfLines function to accept vertical lines
 		#control points for hemline
-		pointlist=[]
-		pointlist.append(p13)
-		pointlist.append(p15)
-		pointlist.append(p5)
+		pointlist=pointList(p13, p15, p5)
 		fcp, scp=myGetControlPoints('HemLine', pointlist)
 		fcp, scp=myGetControlPoints('HemLine', pointlist)
 		c13=cPoint(tf, 'c13', fcp[0].x, fcp[0].y) #b/w 13 & 15
@@ -301,9 +288,7 @@ class PatternDesign():
 		# Trousers Front Cuttingline & Seamline
 		c=path()
 		s=path()
-		paths=[]
-		paths.append(c)
-		paths.append(s)
+		paths=pointList(c, s)
 		for p in paths:
 			#print p.get_d
 			# Trousers Front Waistband
@@ -342,9 +327,7 @@ class PatternDesign():
 		# Front Waistband Seamline & Cuttingline
 		c=path()
 		s=path()
-		paths=[]
-		paths.append(c)
-		paths.append(s)
+		paths=pointList(c, s)
 		for p in paths:
 			print p
 			moveP(p, A)
@@ -369,9 +352,7 @@ class PatternDesign():
 		# Trousers Front Fly Seamline & Cuttingline
 		s = path()
 		c = path()
-		paths=[]
-		paths.append(s)
-		paths.append(c)
+		paths=pointList(s, c)
 		for p in paths:
 			moveP(p, A)
 			lineP(p, Ca)
@@ -394,9 +375,7 @@ class PatternDesign():
 		#Trousers Front Hemlining Seamline & Grainline
 		s=path()
 		c=path()
-		paths=[]
-		paths.append(s)
-		paths.append(c)
+		paths=pointList(s, c)
 		for p in paths:
 			moveP(p, p5)
 			lineP(p, K)
@@ -478,10 +457,7 @@ class PatternDesign():
 		distance=math.sqrt((abs(C.x-p18.x)**2)+(abs(C.y-p18.y)**2))/2
 		x, y=pointAlongLine(C.x, C.y, p19.x, p19.y, -distance)
 		cCb=cPoint(tb, 'cCb', x, y)#b/w p18 & C
-		pointlist=[]
-		pointlist.append(p17)
-		pointlist.append(p18)
-		pointlist.append(cCb)
+		pointlist=pointList(p17, p18, cCb)
 		fcp, scp=myGetControlPoints('BackCenterSeam', pointlist)
 		c18a=cPoint(tb, 'c18a', fcp[0].x, fcp[0].y) #b/w p17 & p18
 		c18b=cPoint(tb, 'c18b', scp[0].x, scp[0].y) #b/w p17 & p18
@@ -496,11 +472,7 @@ class PatternDesign():
 		distance = (math.sqrt(((p12.x -p27.x)**2) + ((p12.y - p27.y)**2)) / 2.5)
 		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
 		c25b=cPoint(tb, 'c25b', x, y) #b/w p27 & p12
-		pointlist=[]
-		pointlist.append(p21)
-		pointlist.append(p26)
-		pointlist.append(p27)
-		pointlist.append(p12)
+		pointlist=pointList(p21, p26, p27, p12)
 		fcp, scp=myGetControlPoints('BackSideSeam', pointlist)
 		c23a=cPoint(tb, 'c23a', fcp[0].x, fcp[0].y) #b/w p21 & p26
 		c23b=cPoint(tb, 'c23b', scp[0].x, scp[0].y) #b/w  p21 & p26
@@ -508,20 +480,14 @@ class PatternDesign():
 		c24b=cPoint(tb, 'c24b', scp[1].x, scp[1].y) #b/w p26 & p27
 		c25a=cPoint(tb, 'c25a', fcp[2].x, fcp[2].y) #b/w p27 & p12
 		#control points hem line
-		pointlist=[]
-		pointlist.append(p13)
-		pointlist.append(p29)
-		pointlist.append(p5)
+		pointlist=pointList(p13, p29, p5)
 		fcp, scp=myGetControlPoints('HemLine', pointlist)
 		c27=cPoint(tb, 'c27', fcp[0].x, fcp[0].y)#b/w p13 & p29
 		c28=cPoint(tb, 'c28', scp[0].x, scp[0].y)#b/w p13 & p29
 		c29=cPoint(tb, 'c29', fcp[1].x, fcp[1].y)#b/w p29 & p5
 		c30=cPoint(tb, 'c30', scp[1].x, scp[1].y)#b/w p29 & p5
 		#control points hem allowance
-		pointlist=[]
-		pointlist.append(L)
-		pointlist.append(O)
-		pointlist.append(K)
+		pointlist=pointList(L, O, K)
 		fcp, scp=myGetControlPoints('HemAllowance', pointlist)
 		c31=cPoint(tb, 'c31', fcp[0].x, fcp[0].y)#b/w L & O
 		c32=cPoint(tb, 'c32', scp[0].x, scp[0].y)#b/w L & O
@@ -531,10 +497,7 @@ class PatternDesign():
 		distance=(math.sqrt(((p4.x - p17.x)**2) + ((p4.y - p17.y)**2)) / 2.0)
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
 		c35a=cPoint(tb, 'c35a', x, y) #b/w p4 & p17
-		pointlist=[]
-		pointlist.append(p4)
-		pointlist.append(c35a)
-		pointlist.append(p17)
+		pointlist=pointList(p4, c35a, p17)
 		fcp, scp=myGetControlPoints('BackInseam', pointlist)
 		c35b=cPoint(tb, 'c35b', scp[1].x, scp[1].y)#b/w p4 & p17
 
@@ -600,9 +563,7 @@ class PatternDesign():
 		#Trousers Back Seamline & Cuttingline
 		s=path()
 		c=path()
-		paths=[]
-		paths.append(s)
-		paths.append(c)
+		paths=pointList(s, c)
 		for p in paths:
 			moveP(p, p17)
 			cubicCurveP(p, c18a, c18b, p18)
@@ -648,9 +609,7 @@ class PatternDesign():
 		#Trousers Back Waistlining Seamline & Cuttingline
 		s=path()
 		c=path()
-		paths=[]
-		paths.append(s)
-		paths.append(c)
+		paths=pointList(s, c)
 		for p in paths:
 			moveP(p, p23)
 			lineP(p, p25)
@@ -674,9 +633,7 @@ class PatternDesign():
 		# Trouser Back Hem Lining Seamline & CuttingLine
 		s=path()
 		c=path()
-		paths=[]
-		paths.append(s)
-		paths.append(c)
+		paths=pointList(s, c)
 		for p in paths:
 			moveP(p, K)
 			cubicCurveP(p, c34, c33, O)
