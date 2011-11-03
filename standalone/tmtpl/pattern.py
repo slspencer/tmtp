@@ -1046,14 +1046,14 @@ def pointList(*args):
 		points.append(arg)
 	return points
 
-def findXOnLineAtY(y, p1, p2):
+def getXOnLineAtY(y, p1, p2):
 	#on line p1-p2, find x given y
 	m=(p1.y - p2.y)/(p1.x-p2.x)
 	b=p2.y - (m*p2.x)
 	x=(y - b)/m
 	return (x, y)
 
-def findYOnLineAtX(x, p1, p2):
+def getYOnLineAtX(x, p1, p2):
 	#on line p1-p2, find x given y
 	m=(p1.y - p2.y)/(p1.x-p2.x)
 	b=p2.y - (m*p2.x)
