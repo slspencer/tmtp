@@ -153,7 +153,7 @@ class PatternDesign():
 		x, y=pointAlongLine(D.x, D.y, (D.x - 100), (D.y - 100), length) # 100pt is arbitrary distance to create 45degree angle
 		p3=rPoint(tf, 'p3', x, y)
 		p7=rPoint(tf, 'p7', B.x + frontWaistWidth, B.y) # sideseam waist
-		p8=rPoint(tf, 'p8', p7.x + (0.75*CM*waistRatio), A.y) #sideseam top waistband
+		p8=rPoint(tf, 'p8', p7.x, A.y) #sideseam top waistband
 		p9=rPoint(tf, 'p9', I.x + frontHipWidth-(0.5*CM*hipRatio), I.y) #sideseam midpoint b/w hipline & riseline, hipwidth-0.5cm
 		p10=rPoint(tf, 'p10', C.x + frontHipWidth, C.y)
 		m=((p9.y-p7.y)/(p9.x-p7.x))/3.0
@@ -191,15 +191,7 @@ class PatternDesign():
 		distance = ((math.sqrt(((p12.x - p10.x)**2) + ((p12.y - p10.y)**2))) / 2.0)
 		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
 		c12b=cPoint(tf, 'c12b', x, y) #b/w p10 & p12
-		pointlist=[]
-		#pointlist.append(p7a)
-		pointlist.append(p7)
-		pointlist.append(p9)
-		pointlist.append(p10)
-		#pointlist.append(p11)
-		#pointlist.append(c4b)
-		pointlist.append(p12)
-		pointlist.append(p13)
+		pointlist=pointList(p7, p9, p10, p12, p13)
 		fcp, scp=myGetControlPoints('SideSeam', pointlist)
 		c9a=cPoint(tf, 'c9a', fcp[0].x, fcp[0].y) #b/w p7 & p9
 		c9b=cPoint(tf, 'c9b', scp[0].x, scp[0].y) #b/w  p7 & p9
