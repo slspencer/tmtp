@@ -165,10 +165,8 @@ class PatternDesign():
 		p16=rPoint(tf, 'p16', p2.x + (abs(p11.x - p2.x)/2.0), p2.y) # midpoint of horizontal riseline marks vertical creaseline
 		p4=rPoint(tf, 'p4', p16.x - (kneeWidth/2.0), E.y)
 		p5=rPoint(tf, 'p5', p16.x - (hemWidth/2.0), F.y)
-		m=(p5.y - p4.y)/(p5.x-p4.x)
-		b=p4.y - (m*p4.x)
-		x=(D.y - b)/m
-		p6=rPoint(tf, 'p6', x, D.y)
+		x, y=findXOnLineAtY(D.y, p4, p5)
+		p6=rPoint(tf, 'p6', x, y)
 		p12=rPoint(tf, 'p12', p4.x + kneeWidth, p4.y)
 		p13=rPoint(tf, 'p13', p5.x + hemWidth, p5.y)
 		p14=rPoint(tf, 'p14', p16.x, F.y)
