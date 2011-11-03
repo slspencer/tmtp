@@ -1039,3 +1039,9 @@ class TextBlock(pBase):
         md[self.groupname].append(tg)
 
         return md
+
+def pointList(*args):
+	points=[]
+	for arg in args:
+		points.append(arg)
+	return points
