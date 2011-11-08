@@ -141,20 +141,20 @@ class PatternDesign():
 		tf=trousers.front
 		#Points
 		A=rPoint(tf, 'A', scale_1_8 + (0.5*CM*hipRatio), 8.0*CM) # start pattern 8cm down from y=0
-		B=rPoint(tf, 'B', A.x, A.y + (3.8*CM*riseRatio))# waistband width, waistline
-		C=rPoint(tf, 'C', A.x, B.y + frontHipHeight) # hipline
-		D=rPoint(tf, 'D', A.x, B.y + rise) # riseline
+		A1=rPoint(tf, 'A1', A.x, A.y + (2.0*CM*riseRatio) )# start front center line 10cm down from y=0
+		B=rPoint(tf, 'B', A.x, A1.y + (3.8*CM*riseRatio) )# waistband width, waistline
+		C=rPoint(tf, 'C', A.x, B.y + frontHipHeight-(2.0*CM*riseRatio)) # hipline
+		D=rPoint(tf, 'D', A.x, B.y + rise-(2.0*CM*riseRatio)) # riseline
 		E=rPoint(tf, 'E', A.x, D.y + (insideLeg/2.0)-(5.5*CM*insideLegRatio))# thigh curve ends at 5.5cm above kneeline.--> Knee
 		F=rPoint(tf,'F', A.x, D.y + insideLeg - (1.0*CM*insideLegRatio))# hemline is 1cm above floor
 		I=rPoint(tf, 'I', A.x, B.y + abs(C.y - B.y)/2.0) # midpoint b/w waistline and hipline
-		J=rPoint(tf, 'J', A.x, B.y + (1*CM*riseRatio)) #point to create curve at top of sideseam
 		p2=rPoint(tf, 'p2', D.x - scale_1_8 - (0.5*CM*hipRatio), D.y)
 		length=(D.x - p2.x)/2.25
 		x, y=pointAlongLine(D.x, D.y, (D.x - 100), (D.y - 100), length) # 100pt is arbitrary distance to create 45degree angle
 		p3=rPoint(tf, 'p3', x, y)
-		p7=rPoint(tf, 'p7', B.x + frontWaistWidth, B.y) # sideseam waist
+		p7=rPoint(tf, 'p7', B.x + frontWaistWidth, B.y-(2.0*CM*riseRatio)) # sideseam waist
 		p8=rPoint(tf, 'p8', p7.x, A.y) #sideseam top waistband
-		p9=rPoint(tf, 'p9', I.x + frontHipWidth-(0.5*CM*hipRatio), I.y) #sideseam midpoint b/w hipline & riseline, hipwidth-0.5cm
+		p9=rPoint(tf, 'p9', I.x + frontHipWidth-(0.5*CM*(min(1, hipRatio))), I.y) #sideseam midpoint b/w hipline & riseline, hipwidth-0.5cm
 		p10=rPoint(tf, 'p10', C.x + frontHipWidth, C.y)
 		m=((p9.y-p7.y)/(p9.x-p7.x))/3.0
 		b=p7.y - (m*p7.x)
@@ -182,6 +182,19 @@ class PatternDesign():
 		L=rPoint(tf, 'L', x, y)
 		M=rPoint(tf, 'M', p15.x, p15.y - HEM_ALLOWANCE)
 		Knee=rPoint(tf, 'Knee', p16.x, E.y)
+		#control points for waistband top
+		distance=(abs(p8.x - A1.x)/3.0)
+		x, y=pointAlongLine(A1.x, A1.y, p8.x, A1.y, distance)
+		cA1a=cPoint(tf, 'cA1a', x, y) #b/w A1 & p8
+		distance=(abs(p8.y - A1.y)/3.0)
+		x, y=pointAlongLine(p8.x, p8.y, p8.x, A1.y, distance)
+		cA1b=cPoint(tf, 'cA1b', x, y) #b/w A1 & p8
+		distance=(abs(p7.x - B.x)/3.0)
+		x, y=pointAlongLine(B.x, B.y, p7.x, B.y, distance)
+		cBa=cPoint(tf, 'cBa', x, y) #b/w B & p7
+		distance=(abs(p7.y - B.y)/3.0)
+		x, y=pointAlongLine(p7.x, p7.y, p7.x, B.y, distance)
+		cBb=cPoint(tf, 'cBb', x, y) #b/w B & p7
 		#control points for side seam
 		distance = ((math.sqrt(((p12.x - p10.x)**2) + ((p12.y - p10.y)**2))) / 2.0)
 		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
@@ -229,7 +242,7 @@ class PatternDesign():
 		c16=cPoint(tf, 'c16', scp[1].x, scp[1].y) #b/w 15 & 5
 		#fly stitch line
 		f1=rPoint(tf, 'f1', C.x + (5.0*CM*hipRatio), C.y-(2.54*CM*riseRatio))
-		f2=rPoint(tf, 'f2', f1.x, A.y)
+		f2=rPoint(tf, 'f2', f1.x, A1.y)
 		c17=cPoint(tf, 'c17', p3.x+ (abs(f1.x-p3.x) / 2.0), p3.y) #b/w p3 & f1
 		c18=cPoint(tf, 'c18', f1.x, f1.y + (abs(f1.y-p3.y) / 2.0))#b/w p3 & f1
 
@@ -245,6 +258,8 @@ class PatternDesign():
 		moveP(g, G)
 		lineP(g, p14)
 		#horizontal grid
+		moveP(g, A)
+		lineP(g, p8)
 		moveP(g, I)
 		lineP(g, p9)
 		moveP(g, C)
@@ -263,8 +278,8 @@ class PatternDesign():
 
 		#trousers front waist line
 		wl=path()
-		moveP(wl, B)
-		lineP(wl, p7)
+		moveP(wl, p7)
+		cubicCurveP(wl, cBb, cBa, B)
 		#trousers front waist line path
 		tf.add(Path('pattern', 'waistLine', 'Trousers Front Waist line', wl, 'dart_style'))
 
@@ -287,8 +302,8 @@ class PatternDesign():
 		for p in paths:
 			#print p.get_d
 			# Trousers Front Waistband
-			moveP(p, A)
-			lineP(p, p8)
+			moveP(p, A1)
+			cubicCurveP(p, cA1a, cA1b, p8)
 			lineP(p, p7)
 			#Trousers Front Sideseam
 			cubicCurveP(p, c9a, c9b, p9)
@@ -304,7 +319,7 @@ class PatternDesign():
 			#Trousers Front Centerseam
 			cubicCurveP(p, c11a, c11b, p3)
 			cubicCurveP(p, c11c, c11d, Ca)
-			lineP(p, A)
+			lineP(p, A1)
 			print p.get_d()
 			#p = s
 		# Trousers Front Seamline & Cuttingline paths
@@ -325,11 +340,11 @@ class PatternDesign():
 		paths=pointList(c, s)
 		for p in paths:
 			print p
-			moveP(p, A)
-			lineP(p, p8)
+			moveP(p, A1)
+			cubicCurveP(p, cA1a, cA1b, p8)
 			lineP(p, p7)
-			lineP(p, B)
-			lineP(p, A)
+			cubicCurveP(p, cBa, cBb, B)
+			lineP(p, A1)
 			print p.get_d
 		# create paths & label location
 		(tfwb.label_x,  tfwb.label_y)=(A.x + (1.0*CM*waistRatio), A.y + (1.0*CM*riseRatio))
@@ -400,7 +415,7 @@ class PatternDesign():
 		x, y=pointAlongLine(p19.x, p19.y, C.x, C.y, -distance) # extend center back seam up by 2cm to find waistline
 		p20=rPoint(tb, 'p20', x, y)# waistline at back center seam
 		r=(backWaistWidth) + (2.0*CM*waistRatio)
-		x1, y1, y=p20.x, p20.y, B.y
+		x1, y1, y=p20.x, p20.y, B.y-(2.0*CM*riseRatio)
 		x=abs(math.sqrt(r**2 - (y - y1)**2) + x1)
 		p21=rPoint(tb, 'p21', x, y)# waistline at side seamside seam -->backwaistwidth + 2cm away from p20
 		distance=-(3.8*CM*riseRatio)
