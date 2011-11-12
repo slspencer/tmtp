@@ -192,19 +192,6 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     y = (distance * math.sin(angle)) + y1
     return x, y
 
-def pointAlongLineP(p1, p2, name, distance, rotation = 0):
-    """
-    Accepts two points and an optional rotation angle
-    returns a point along the line (can be extended from the line)
-    the point is optionally rotated about the first point by the rotation angle in degrees
-    """
-    lineangle = angleOfLine(p1.x, p1.y, p2.x, p2.y)
-    angle = lineangle + (rotation * (math.pi/180))
-    pnt = Point('reference', '%s' % name, styledef = 'controlpoint_style')
-    pnt.x = (distance * math.cos(angle)) + p1.x
-    pnt.y = (distance * math.sin(angle)) + p1.y
-    return pnt
-
 def boundingBox(path):
     print '            begin pattern.boundingBox(path)'
     xlist = []
