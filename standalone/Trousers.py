@@ -456,7 +456,6 @@ class PatternDesign():
 		x, y=pointAlongLine(S.x, S.y, p21.x, p21.y, -distance)
 		U=rPoint(tb, 'U', x, y)# outside dart point at waistline
 		#side seam points
-		p26a=rPoint(tb, 'p26a', p21.x + (0.3*CM*waistRatio), B.y + (1.0*CM*riseRatio))# point to start curve at waistline
 		p26=rPoint(tb, 'p26', p9.x + (4.5*CM*hipRatio), p9.y)# add to abdomenline at side seam
 		p27=rPoint(tb, 'p27', p10.x + (3.0*CM*hipRatio), p10.y)# add to hipline at side seam
 		p28=rPoint(tb, 'p28', p11.x + (2.0*CM*hipRatio), p11.y)# add to riseline at side seam
@@ -472,12 +471,21 @@ class PatternDesign():
 		fcp, scp=myGetControlPoints('BackCenterSeam', pointlist)
 		c18a=cPoint(tb, 'c18a', fcp[0].x, fcp[0].y) #b/w p17 & p18
 		c18b=cPoint(tb, 'c18b', scp[0].x, scp[0].y) #b/w p17 & p18
-		distance=math.sqrt((abs(C.x-p18.x)**2)+(abs(C.y-p18.y)**2))/3
+		distance=math.sqrt((abs(C.x-p18.x)**2)+(abs(C.y-p18.y)**2))/3.0
 		x, y=pointAlongLine(fcp[1].x, fcp[1].y, p18.x, p18.y,  distance)
 		cCa=cPoint(tb, 'cCa', fcp[1].x, fcp[1].y) #b/w p18 & C
 		#control points waistband
-		c21=cPoint(tb, 'c21', p25.x, p25.y)# b/w p25 & p8
-		c22=cPoint(tb, 'c22', H.x, H.y)# b/w p25 & p8
+		distance=lineLengthP(p25, p22)/3.0
+		x, y=pointAlongLine( p22.x, p22.y, W.x, W.y, distance)
+		c22b=cPoint(tb, 'c22b', x, y)# b/w p25 & p22
+		x, y=pointAlongLine( p25.x, p25.y, c22b.x, c22b.y, distance)
+		c22a=cPoint(tb, 'c22a', x, y)# b/w p25 & p22
+		#control points waistline
+		distance=lineLengthP(p20, p21)/3.0
+		x, y=pointAlongLine( p21.x, p21.y, p19.x, p19.y, distance)
+		c21b=cPoint(tb, 'c21b', x, y) # b/w p20 & p21
+		x, y=pointAlongLine( p20.x, p20.y, c21b.x, c21b.y, distance)
+		c21a=cPoint(tb, 'c21a', x, y) # b/w p20 & p21
 		#control points for back side seam
 		#distance = (math.sqrt(((p12.x -p28.x)**2) + ((p12.y - p28.y)**2)) / 2.5)
 		distance = (math.sqrt(((p12.x -p27.x)**2) + ((p12.y - p27.y)**2)) / 2.5)
@@ -553,7 +561,7 @@ class PatternDesign():
 		#Trousers Back Waistline marking line
 		wl=path()
 		moveP(wl, p20)
-		lineP(wl, p21)
+		cubicCurveP(wl, c21a, c21b, p21)
 		tb.add(Path('pattern', 'waistLine', 'Trousers Back Waistline', wl, 'dart_style'))
 
 		#Trousers Back Dart marking lines
@@ -581,7 +589,7 @@ class PatternDesign():
 			cubicCurveP(p, cCa, cCb, C)
 			lineP(p, p23)
 			lineP(p, p25)
-			cubicCurveP(p, c21, c22, p22)
+			cubicCurveP(p, c22a, c22b, p22)
 			lineP(p, p21)
 			cubicCurveP(p, c23a, c23b, p26)
 			cubicCurveP(p, c24a, c24b, p27)
@@ -626,9 +634,9 @@ class PatternDesign():
 		for p in paths:
 			moveP(p, p23)
 			lineP(p, p25)
-			cubicCurveP(p, c21, c22, p22)
+			cubicCurveP(p, c22a, c22b, p22)
 			lineP(p, p21)
-			lineP(p, p20)
+			lineP(p, p19)
 			lineP(p, p23)
 		# create paths & label location
 		(tbwl.label_x,  tbwl.label_y)=(p25.x, p25.y + (3.0*CM*riseRatio))
