@@ -207,7 +207,6 @@ def myGetControlPoints(name, knots):
 		previous=(i-1)
 		current=i
 		next=(i+1)
-		print 'previous,current,next=', previous, current, next
 
 		# c2[previous]
 		# on angle of knot[next] to knot[previous] --> backwards relative to direction of curve
@@ -219,7 +218,6 @@ def myGetControlPoints(name, knots):
 		pnt=Point('reference', '%s-c2%d' % (name, previous), styledef = 'controlpoint_style')
 		pnt.x, pnt.y=x, y
 		c2.append(pnt) # c2[previous]
-		print '   c2[',previous, '] =', c2[previous].x,  c2[previous].y
 
 		if (current==1):
 			# c1[0]
@@ -231,7 +229,6 @@ def myGetControlPoints(name, knots):
 			pnt=Point('reference', '%s-c1%d' % (name, previous), styledef = 'controlpoint_style')
 			pnt.x, pnt.y=x, y
 			c1.append(pnt)
-			print '      c1[',previous,'] =', c1[previous].x,  c1[previous].y
 
 		# c1[current]
 		# on angle from knots[previous] to knots[next] --> forwards --> opposite angle from c2[previous]
@@ -243,7 +240,6 @@ def myGetControlPoints(name, knots):
 		pnt=Point('reference', '%s-c1%d' % (name, current), styledef = 'controlpoint_style')
 		pnt.x, pnt.y=x, y
 		c1.append(pnt)
-		print '   c1[',current,'] =', c1[current].x,  c1[current].y
 
 		if (current==c_num):
 			# c2[c_num]
@@ -255,7 +251,6 @@ def myGetControlPoints(name, knots):
 			pnt=Point('reference', '%s-c2%d' % (name, current), styledef = 'controlpoint_style')
 			pnt.x, pnt.y=x, y
 			c2.append(pnt)
-			print '      c2[',current,'] =', c2[current].x,  c2[current].y
 
 		i=(i+1)
 
