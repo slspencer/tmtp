@@ -23,6 +23,7 @@ import math
 import json
 import string
 import re
+from math import sin, cos
 
 from pysvg.filter import *
 from pysvg.gradient import *
@@ -143,9 +144,11 @@ def angleFromSlope(rise, run):
 
 def pointFromDistanceAndAngle(x1, y1, distance, angle):
     # http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
-    x2 = x1 + (distance * math.cos(angle))
-    y2 = y1 - (distance * math.sin(angle))
-    return (x2, y2)
+    r=distance
+    x = x1 + (r * cos(angle))
+    y = y1 - (r * sin(angle))
+    #return (x, y)
+    return (x1+(r*math.cos(angle)), y1-(r*math.sin(angle)))
 
 def angleOfLine(x1, y1, x2, y2):
     """
@@ -193,7 +196,6 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     return x, y
 
 def boundingBox(path):
-    print '            begin pattern.boundingBox(path)'
     xlist = []
     ylist = []
     #print '===== Entered boundingBox ====='
@@ -310,7 +312,7 @@ def boundingBox(path):
     ymin = min(ylist)
     xmax = max(xlist)
     ymax = max(ylist)
-    print '            end pattern.boundingBox(path) - returning (xmin:', xmin, 'ymin:', ymin, ') (xmax:', xmax, 'ymax:', ymax, ')'
+
     return xmin, ymin, xmax, ymax
 
 
@@ -406,14 +408,11 @@ def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
     Take a set of points representing a bounding box, and
     put them through a supplied transform, returning the result
     """
-    print '      begin pattern.transformBoundingBox(',xmin, ymin, xmax, ymax, transform, ')'
     if transform == '':
-        print '      end pattern.transformBoundingBox - returning (old_xmin:', xmin, 'old_ymin:', ymin, ') (old_xmax:', xmax, 'old_ymax:', ymax, ')'
         return xmin, ymin, xmax, ymax
 
     new_xmin, new_ymin = transformPoint(xmin, ymin, transform)
     new_xmax, new_ymax = transformPoint(xmax, ymax, transform)
-    print '      end pattern.transformBoundingBox - returning (new_xmin:', new_xmin, 'new_ymin:', new_ymin, ') (new_xmax:', new_xmax, 'new_ymax:', new_ymax, ')'
     return new_xmin, new_ymin, new_xmax, new_ymax
 
 def lineLength(xstart, ystart, xend, yend):
@@ -687,14 +686,9 @@ class PatternPiece(pBase):
         Return two points which define a bounding box around the object
         """
         # get all the children
-        print 'begin pattern.PatternPiece.boundingBox(self=', self.name, ')'
         xmin, ymin, xmax, ymax =  pBase.boundingBox(self, grouplist)
-
-        print 'pattern.PatternPiece.boundingBox(', self.name, ') pattern height before pattern.transformBoundingBox:', ymax-ymin
         xmin, ymin, xmax, ymax =  transformBoundingBox(xmin, ymin, xmax, ymax, self.attrs['transform'])
-        print 'pattern.PatternPiece.boundingBox(', self.name, ') pattern height after pattern.transformBoundingBox:', ymax - ymin
-        print 'end pattern.PatternPiece.boundingBox(', self.name, ') - returning (xmin:', xmin, 'ymin:', ymin, ')(xmax:', xmax, 'ymax:', ymax, ')'
-        print '************'
+
         return xmin, ymin, xmax, ymax
 
 class Node(pBase):
@@ -761,16 +755,13 @@ class Point(pBase):
         """
         Return two points which define a bounding box around the object
         """
-        print '         begin pattern.Point.boundingBox(', self.name, ')'
         if grouplist is None:
             grouplist = self.groups.keys()
         if self.groupname in grouplist:
             (x1, y1)=(self.x - (self.size/2.0), self.y - (self.size/2.0))
             (x2, y2)=(self.x + (self.size/2.0), self.y + (self.size/2.0))
-            print '         end pattern.Point.boundingBox(',self.name,') - returning (', x1, y1, ') (', x2, y2, ')'
             return x1, y1, x2, y2
         else:
-            print '         end pattern.Point.boundingBox(', self.name, ') - returning (None,None,None,None)'
             return None, None, None, None
 
 class Line(pBase):
@@ -852,7 +843,6 @@ class Line(pBase):
         """
         Return two points which define a bounding box around the object
         """
-        print '         begin pattern.Line.boundingBox(', self.name, ')'
         if grouplist is None:
             grouplist = self.groups.keys()
         #if self.groupname in grouplist:
@@ -864,10 +854,8 @@ class Line(pBase):
         if self.groupname in grouplist:
             dd = 'M '+str(self.xstart)+' '+str(self.ystart)+' L '+str(self.xend)+' '+str(self.yend)
             xmin, ymin, xmax, ymax =  boundingBox(dd)
-            print "         end pattern.Line.boundingBox(",self.name,") - returning (xmin:", xmin, 'ymin:', ymin, ') (xmax:', xmax, 'ymax:', ymax, ')'
             return xmin, ymin, xmax, ymax
         else:
-            print '         end pattern.Line.boundingBox - returning (None, None) (None, None)'
             return None, None, None, None
 
 class Path(pBase):
@@ -960,17 +948,14 @@ class Path(pBase):
         """
         Return two points which define a bounding box around the object
         """
-        print '         begin pattern.Path.boundingBox(', self.name, ')'
         # This is not elegant, should perhaps be redone
         if grouplist is None:
             grouplist = self.groups.keys()
         if self.groupname in grouplist:
             dd = self.pathSVG.get_d()
             xmin, ymin, xmax, ymax =  boundingBox(dd)
-            print "         end pattern.Path.boundingBox(",self.name,") - returning (xmin:", xmin, 'ymin:', ymin, ') (xmax:', xmax, 'ymax:', ymax, ')'
             return xmin, ymin, xmax, ymax
         else:
-            print '         end pattern.Path.boundingBox - returning (None, None) (None, None)'
             return None, None, None, None
 
 class TextBlock(pBase):
