@@ -57,11 +57,19 @@ class PatternDesign():
 		BORDER=self.cfg['border']
 		#self.cfg['verbose']=('')#debug statements
 		BORDER=self.cfg['border']
+		# 1:  womens=W, mens=M, teensgirls=TG, teenboys=TB, girls=G, boys=B, toddlers=T, babies=B, crafts=C
+		# 2:  streetwearable=S, period=P, fantasy=F
+		# 3:  3digit year: 1870:870, 880, 890,900,910,920,930,940,950,960,970,980,990,000,010
+		# 4:    none=x, Gaming=g, Futuristic=f, Cosplay=c, GothLolita=g, Military=m, BasicCostumes=c
+		# 5: dress=d, pants=p, jeans=j, shirt/blouse=s, tshirt=t, jacket=j, coat=c, vest=v, hat=h, pjs=p, lingerie=l, swimsuits=s,
+		#  ....maternity=m, accessories=a
+		# 6: casual=1, elegant=2, day&evening=3, grunge&skate=4, sports=5
+		# 7: followed by Absolute Number of patterns generated
 		#TODO - abstract these into configuration file(s)
 		metainfo={'companyName':'Seamly Patterns',  #mandatory
 					'designerName':'Susan Spencer',#mandatory
-					'patternName':'Steampunk Trousers',#mandatory
-					'patternNumber':'1870-M-T-1'   #mandatory
+					'patternName':'Jeans Foundation',#mandatory
+					'patternNumber':'WS010-xj1-1' #mandatory
 					}
 		self.cfg['metainfo']=metainfo
 		#attributes for the entire svg document
@@ -140,23 +148,51 @@ class PatternDesign():
 
 		# front waist
 		AW1=rPoint(jf,'AW1', Ap3.x,  Ap3.y)
+
 		x, y=intersectionOfLines(Ap3.x, Ap3.y, Ap4.x, Ap4.y, Ap8.x, Ap8.y, Ap7.x, Ap7.y)
 		AW2=rPoint(jf, 'AW2', x, y)
-		AW3=rPoint(jf, 'AW3', Ap8.x, Ap8.y)
-		x, y=pointAlongLine(Ap8.x, Ap8.y, Ap6.x, Ap6.y, lineLengthP(AW3, AW2))
+		x, y=pointAlongLine(Ap8.x, Ap8.y, Ap6.x, Ap6.y, lineLengthP(Ap8, AW2))
 		AW4=rPoint(jf, 'AW4', x, y)
+
+		rise=-(Ap7.y-Ap8.y)
+		run=(Ap7.x-Ap8.x)
+		angle1=angleFromSlope(rise, run) # actual angle of right-leg line of dart
+		rise=-(Ap6.y-Ap8.y)
+		run=(Ap6.x-Ap8.x)
+		angle2=angleFromSlope(rise, run) # actual angle of left-leg line of dart
+		angle3=angle2 - angle1 # absolute angle of entire dart
+		angle=angle1 - angle3 # actual angle of back fold of dart after bringing left-leg of dart to meet right-leg & folding to the right
+		distance=lineLengthP(Ap8, Ap7)
+		(x1, y1)=pointFromDistanceAndAngle(Ap8.x, Ap8.y, distance, angle)
+		(x2, y2)=intersectionOfLines(Ap8.x, Ap8.y, x1, y1, AW1.x, AW1.y, AW2.x, AW2.y)
+		x, y=pointAlongLine(Ap8.x, Ap8.y, Ap5.x, Ap5.y, lineLength(Ap8.x, Ap8.y, x2, y2))
+		AW3=rPoint(jf, 'AW3', x, y )
+
+
 		AW5=rPoint(jf, 'AW5', Ap4.x, Ap4.y)
 		#front waist control points
 		distance=(lineLengthP(AW4, AW5)/3.0)
 		cAW5b=cPoint(jf, 'cAW5b', AW5.x+distance, AW5.y)
 		x, y=pointAlongLine(AW4.x, AW4.y, cAW5b.x, cAW5b.y, distance)
 		cAW5a=cPoint(jf, 'cAW5a', x, y)
+
+		# front dart point
+		AD1=rPoint(jf, 'AD1', Ap8.x, Ap8.y)
+
+		AD2=rPoint(jf, 'AD2', AW3.x, AW3.y - (5/8.0)*IN)
+
+		x, y=intersectionOfLines(AW4.x, AW4.y-(5/8.0)*IN, AW5.x, AW5.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW4.x, AW4.y)
+		AD3=rPoint(jf, 'AD3', x, y)
+
+		x, y=intersectionOfLines(AW1.x, AW1.y-(5/8.0)*IN, AW2.x, AW2.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW2.x, AW2.y)
+		AD4=rPoint(jf, 'AD4', x, y)
+
 		# front side seam
 		AS1=rPoint(jf, 'AS1', Ap10.x, Ap10.y)
 		AS2=rPoint(jf, 'AS2', Ap12.x, Ap12.y)
 		AS3=rPoint(jf, 'AS3', Ap18.x, Ap18.y)
 		AS4=rPoint(jf, 'AS4', Ap21.x, Ap21.y)
-		if (FRONTWAISTARC<(FRONTHIPARC-(2.0*IN))):
+		if ((FRONTHIPARC-FRONTWAISTARC)>=(2.0*IN)):
 			# front side seam control points
 			distance=(lineLengthP(AS3, AS1)/2.0)
 			x, y=pointAlongLine(AS3.x, AS3.y, AS4.x, AS4.y, -distance)
@@ -168,14 +204,22 @@ class PatternDesign():
 			cAS3a=cPoint(jf, 'cAS3a', AS1.x, c1[1].y) #b/w AS1 & AW5
 		else:
 			# front side seam control points
-			distance=(lineLengthP(AS3, AS2)/2.0)
+			# larger waist size
+			distance=(lineLengthP(AW5, AS2)/3.0)
+			if (AW5.x>AS2.x):
+				cAS2a=cPoint(jf, 'cAS2a', AS2.x, AW5.y+distance) # waistline is slightly less than hipline
+			else:
+				cAS2a=cPoint(jf, 'cAS2a', AW5.x, AW5.y+distance) # waistline is equal to or larger than hipline
+
+			distance=(lineLengthP(AS2, AS3)/3.0)
 			x, y=pointAlongLine(AS3.x, AS3.y, AS4.x, AS4.y, -distance)
 			cAS3b=cPoint(jf, 'cAS3b', x, y) # b/w AS2 & AS3
-			pnts=pointList(AW5, AS2, AS3)
-			c1, c2=myGetControlPoints('FrontSideSeam', pnts)
-			cAS2a=cPoint(jf, 'cAS2a', c1[0].x, c1[0].y) #b/w AW5 & AS2
-			cAS2b=cPoint(jf, 'cAS2b', c2[0].x, c2[0].y) #b/w AW5 & AS2
-			cAS3a=cPoint(jf, 'cAS3a', c1[1].x, c1[1].y) #b/w AS2 & AW5
+
+			pnts=pointList(cAS2a, AS2, cAS3b)
+			fcp, scp=myGetControlPoints('BackSideSeam', pnts)
+			cAS2b=cPoint(jf, 'cAS2b', scp[0].x, scp[0].y) #b/w AW5 & AS2
+			cAS3a=cPoint(jf, 'cAS3a', fcp[1].x, fcp[1].y) #b/w AS2 & AS3
+
 		# front inseam
 		AI1=rPoint(jf, 'AI1', Ap22.x, Ap22.y)
 		AI2=rPoint(jf, 'AI2', Ap19.x, Ap19.y)
@@ -189,13 +233,10 @@ class PatternDesign():
 		cAI3b=cPoint(jf, 'cAI3b',x, y) #b/w AI2 & AI3
 		#front center seam
 		AC1=rPoint(jf, 'AC1', Ap14.x, Ap14.y)
-		AC2=rPoint(jf, 'AC2', Ap9.x, Ap9.y)
-		#AX2=rPoint(jf, 'AX2', Apa2.x, Apa2.y)
-		#front center seam control points
-		if (FRONTWAISTARC<(FRONTHIPARC-(1.0*IN))):
-			# hip-waist>2.0"
-			# straight line for upper back center seam, control points for AC1 & AC2 only, with calculated control point for control point leading into straight line
-			distance=lineLengthP(AC1, AC2)/3.0
+		if ((FRONTHIPARC-FRONTWAISTARC)>=(2.0*IN)):
+			AC2=rPoint(jf, 'AC2', Ap9.x, Ap9.y)
+			# straight line for upper front center seam, control points for AC1 & AC2 only, with calculated control point for control point leading into straight line
+			distance=lineLengthP(AC1, AC2)/2.0
 			x, y=pointAlongLine(AC2.x, AC2.y, AW1.x, AW1.y, -distance)
 			cAC2b=cPoint(jf, 'cAC2b', x, y)
 			pnts=pointList(AI3, AC1, cAC2b)
@@ -204,18 +245,12 @@ class PatternDesign():
 			cAC1b=cPoint(jf, 'cAC1b', scp[0].x, scp[0].y) #b/w AI3 & AC1
 			cAC2a=cPoint(jf, 'cAC2a', fcp[1].x, fcp[1].y) #b/w AC1 & AC2
 		else:
-			# waist close to or greater than hip
-			# cubic curves for entire center back seam
-			distance=lineLengthP(AC1, AC2)/3.0
-			cAC2b=cPoint(jf, 'cAC2b', AC2.x, AC2.y+distance)
-			distance=lineLengthP(AC2, AW1)/3.0
-			cAW1a=cPoint(jf, 'cAW1a', AC2.x, AC2.y-distance)
-			cAW1b=cPoint(jf, 'cAW1b', cAW1a.x, cAW1a.y)
-			pnts=pointList(AI3, AC1, cAC2b, AW1)
-			fcp, scp=myGetControlPoints('FrontCenterSeam', pnts)
-			cAC1a=cPoint(jf, 'cAC1a', fcp[0].x, fcp[0].y) #b/w AI3 & AC1
-			cAC1b=cPoint(jf, 'cAC1b', scp[0].x, scp[0].y) #b/w AI3 & AC1
-			cAC2a=cPoint(jf, 'cAC2a', fcp[1].x, fcp[1].y) #b/w AC1 & AC2
+			AC2=rPoint(jf, 'AC2', Ap9.x + (abs(FRONTHIPARC-FRONTWAISTARC)/4.0), Ap9.y)
+			x, y=pointAlongLine(AC1.x, AC1.y, Ap13.x, Ap13.y, (lineLengthP(AI3, Ap13)/4.0))
+			cAC2a=cPoint(jf, 'cAC2a', x, y) #b/w AI3 & AC2
+			x, y=pointAlongLine(AC2.x, AC2.y, AW1.x, AW1.y, -(lineLengthP(AC2, AW1)/3.0))
+			cAC2b=cPoint(jf, 'cAC2b', x, y) #b/w AI3 & AC2
+
 		#front grainline
 		Ag1=rPoint(jf, 'Ag1', Ap16.x, HIPLINE)
 		Ag2=rPoint(jf, 'Ag2', Ap16.x, Ap18.y+abs(Ap21.y-Ap18.y)/2.0)
@@ -263,7 +298,6 @@ class PatternDesign():
 			lineP(p, AW3)
 			lineP(p, AW4)
 			cubicCurveP(p, cAW5a, cAW5b, AW5)
-			#cubicCurveP(p, cAX1a, cAX1b, AX1)
 			if (FRONTWAISTARC<(FRONTHIPARC-(2.0*IN))):
 				cubicCurveP(p, cAS1a, cAS1b, AS1)
 			else:
@@ -273,15 +307,22 @@ class PatternDesign():
 			lineP(p, AI1)
 			lineP(p, AI2)
 			cubicCurveP(p, cAI3a, cAI3b, AI3)
-			cubicCurveP(p, cAC1a, cAC1b, AC1)
+			if ((FRONTHIPARC-FRONTWAISTARC)>=(2.0*IN)):
+				#normal waist
+				cubicCurveP(p, cAC1a, cAC1b, AC1)
 			cubicCurveP(p, cAC2a, cAC2b, AC2)
-			if (FRONTWAISTARC<(FRONTHIPARC-(1.0*IN))):
-				lineP(p, AW1)
-			else:
-				cubicCurveP(p, cAW1a, cAW1b, AW1)
-		# create label location, grainline, seamline & cuttingline paths
+			lineP(p, AW1)
+		# create front dart line
+		d=path()
+		moveP(d, AD1)
+		lineP(d, AD2)
+		moveP(d, AD3)
+		lineP(d, AD1)
+		lineP(d, AD4)
+		# create label location, grainline, dart, seamline & cuttingline paths
 		(jf.label_x, jf.label_y)=(Ag2.x, Ag2.y-(2.0*IN))
 		jf.add(grainLinePath("grainLine", "Jeans Front Grainline", Ag1, Ag2))
+		jf.add(Path('pattern', 'dartline', 'Jeans Front Dartline', d, 'dart_style'))
 		jf.add(Path('pattern', 'seamLine', 'Jeans Front Seamline', s, 'seamline_path_style'))
 		jf.add(Path('pattern', 'cuttingLine', 'Jeans Front Cuttingline', c, 'cuttingline_style'))
 
@@ -304,8 +345,13 @@ class PatternDesign():
 		p7=rPoint(jb, 'p7', p5.x + ((3/8.0)*IN), WAISTLINE)
 		p8=rPoint(jb, 'p8', p5.x, (p5.y + (3.5*IN) ) )
 
-		p3=rPoint(jb, 'p3', p5.x-(BACKWAISTARC/2.0)-(0.5*IN), WAISTLINE)
-		p4=rPoint(jb, 'p4', p5.x+(BACKWAISTARC/2.0)+(0.5*IN), WAISTLINE)
+		if ((BACKHIPARC-BACKWAISTARC)>=(2.0*IN)):
+			p3=rPoint(jb, 'p3', p1.x+(1.75*IN), WAISTLINE)
+			p4=rPoint(jb, 'p4', p1.x+(BACKWAISTARC)+(1.0*IN), WAISTLINE)
+
+		else:
+			p3=rPoint(jb, 'p3', p6.x-(BACKWAISTARC/2.0)-((1/8)*IN), WAISTLINE)
+			p4=rPoint(jb, 'p4', p7.x+(BACKWAISTARC/2.0)+((1/8)*IN), WAISTLINE)
 
 		p9=rPoint(jb, 'p9', p1.x, HIPLINE-(abs(RISELINE-HIPLINE)/2.0))
 		p10=rPoint(jb, 'p10', p1.x, HIPLINE)
@@ -330,55 +376,98 @@ class PatternDesign():
 
 		# back waist
 		W1=rPoint(jb,'W1', p3.x, BStart.y)
-		W5=rPoint(jb, 'W5', p4.x, p4.y )
-		W3=rPoint(jb, 'W3', p8.x, p8.y)
-		x, y=intersectionOfLines(W1.x, W1.y, W5.x, W5.y, p8.x, p8.y, p6.x, p6.y)
+		x, y=intersectionOfLines(W1.x, W1.y, p4.x, p4.y, p8.x, p8.y, p6.x, p6.y)
 		W2=rPoint(jb, 'W2', x, y)
-		x, y=pointAlongLine(p8.x, p8.y, p7.x, p7.y, lineLengthP(W3, W2))
+		rise=-(p6.y-p8.y)
+		run=(p6.x-p8.x)
+		angle1=angleFromSlope(rise, run) # actual angle of left-leg line of dart
+		rise=-(p7.y-p8.y)
+		run=(p7.x-p8.x)
+		angle2=angleFromSlope(rise, run) # actual angle of right-leg line of dart
+		angle3=(angle1 - angle2) # absolute angle of entire dart -->  left leg - right leg
+		angle=angle1 + angle3 # actual angle of back fold of dart after bringing right-leg of dart to meet left-leg & folding to the left (towards center seam)
+		distance=lineLengthP(p8, p6)
+		(x1, y1)=pointFromDistanceAndAngle(p8.x, p8.y, distance, angle)
+		(x2, y2)=intersectionOfLines(p8.x, p8.y, x1, y1, W1.x, W1.y, W2.x, W2.y)
+		x, y=pointAlongLine(p8.x, p8.y, p5.x, p5.y, lineLength(p8.x, p8.y, x2, y2))
+		W3=rPoint(jf, 'W3', x, y )
+		x, y=pointAlongLine(p8.x, p8.y, p7.x, p7.y, lineLengthP(p8, W2))
 		W4=rPoint(jb, 'W4', x, y)
+		W5=rPoint(jb, 'W5', p4.x, p4.y )
 		# back waist control points
 		distance=(lineLengthP(W4, W5)/3.0)
 		cW5b=cPoint(jb, 'cW5b', W5.x-distance, W5.y)
 		x, y=pointAlongLine(W4.x, W4.y, cW5b.x, cW5b.y, distance)
 		cW5a=cPoint(jb, 'cW5a', x, y)
+
+		#back dart
+		D1=rPoint(jb, 'D1', p8.x, p8.y)
+		D2=rPoint(jb, 'D2', W3.x, W3.y - (5/8.0)*IN)
+		x, y=intersectionOfLines(W4.x, W4.y-(5/8.0)*IN, W5.x, W5.y-(5/8.0)*IN, p8.x, p8.y, W4.x, W4.y)
+		D3=rPoint(jb, 'D3', x, y)
+		x, y=intersectionOfLines(W1.x, W1.y-(5/8.0)*IN, W2.x, W2.y-(5/8.0)*IN, p8.x, p8.y, W2.x, W2.y)
+		D4=rPoint(jb, 'D4', x, y)
+
+
 		#back side seam
 		S1=rPoint(jb, 'S1', p11.x, p11.y)
-		S2=rPoint(jb, 'S2', p16.x, p16.y)
+		S2=rPoint(jb, 'S2', p15.x, p15.y)
 		S3=rPoint(jb, 'S3', p20.x, p20.y)
 		S4=rPoint(jb, 'S4', p23.x, p23.y)
-		#back side seam control points
-		distance=(lineLengthP(S2, S3)/2.5)
-		x, y=pointAlongLine(S3.x, S3.y, S4.x, S4.y, -distance)
-		cS3b=cPoint(jb, 'cS3b', x, y)
-		pnts=pointList(W5, S1, S2, cS3b)
-		fcp, scp=myGetControlPoints('BackSideSeam', pnts)
-		cS1a=cPoint(jb, 'cS1a', fcp[0].x, fcp[0].y) #b/w W5 & S1
-		cS1b=cPoint(jb, 'cS1b', scp[0].x, scp[0].y) #b/w W5 & S1
-		cS2a=cPoint(jb, 'cS2a', fcp[1].x, fcp[1].y) #b/w S1 & S2
-		cS2b=cPoint(jb, 'cS2b', scp[1].x, scp[1].y) #b/w S1 & S2
-		cS3a=cPoint(jb, 'cS3a', fcp[2].x, fcp[2].y) #b/w S2 & S3
+		if ((BACKHIPARC-BACKWAISTARC)>=(2.0*IN)):
+			# normal waist size
+			distance=(lineLengthP(S3, S1)/2.0)
+			x, y=pointAlongLine(S3.x, S3.y, S4.x, S4.y, -distance)
+			cS3b=cPoint(jb, 'cS3b', x, y) # b/w S1 & S3
+			pnts=pointList(W5, S1, S3)
+			c1, c2=myGetControlPoints('BackSideSeam', pnts)
+			cS1a=cPoint(jb, 'cS1a', c1[0].x, c1[0].y) #b/w W5 & S2
+			cS1b=cPoint(jb, 'cS1b', S1.x, c2[0].y) #b/w W5 & S1
+			cS3a=cPoint(jb, 'cS3a', S1.x, c1[1].y) #b/w S1 & W5
+		else:
+			# larger waist size
+			distance=(lineLengthP(W5, S2)/3.0)
+			cS2a=cPoint(jb, 'cS2a', W5.x, W5.y+distance)
+
+			distance=(lineLengthP(S2, S3)/3.0)
+			x, y=pointAlongLine(S3.x, S3.y, S4.x, S4.y, -distance)
+			cS3b=cPoint(jb, 'cS3b', x, y) # b/w S2 & S3
+
+			pnts=pointList(cS2a, S2, cS3b)
+			fcp, scp=myGetControlPoints('BackSideSeam', pnts)
+			cS2b=cPoint(jb, 'cS2b', scp[0].x, scp[0].y) #b/w W5 & S2
+			cS3a=cPoint(jb, 'cS3a', fcp[1].x, fcp[1].y) #b/w S2 & S3
+
 		# back inseam
 		I1=rPoint(jb, 'I1', p22.x, p22.y)
 		I2=rPoint(jb, 'I2', p19.x, p19.y)
 		I3=rPoint(jb, 'I3', p12.x, p12.y)
 		distance=(lineLengthP(I2, I3)/3.0)
 		x, y=pointAlongLine(I2.x, I2.y, I1.x, I1.y, -distance)
-		#back inseam control points
 		cI3a=cPoint(jb, 'cI3a', x, y) #b/w I2 & I3
 		x, y=pointAlongLine(I3.x, I3.y, cI3a.x, cI3a.y, distance)
 		cI3b=cPoint(jb, 'cI3b',x, y) #b/w I2 & I3
+
 		#back center seam
 		C1=rPoint(jb, 'C1', p14.x, p14.y)
-		C2=rPoint(jb, 'C2', p9.x, p9.y)
 		#back center seam control points
-		pnts=pointList(I3, C1, C2)
-		fcp, scp=myGetControlPoints('BackCenterSeam', pnts)
-		cC1a=cPoint(jb, 'cC1a', fcp[0].x, fcp[0].y) #b/w I3 & C1
-		cC1b=cPoint(jb, 'cC1b', scp[0].x, scp[0].y) #b/w I3 & C1
-		cC2a=cPoint(jb, 'cC2a', fcp[1].x, fcp[1].y) #b/w C1 & C2
-		distance=lineLengthP(C2, C1)/3.
-		x, y=pointAlongLine(C2.x, C2.y, W1.x, W1.y, -distance)
-		cC2b=cPoint(jb, 'cC2b', x, y) #b/w C1 & C2
+		if ((BACKHIPARC-BACKWAISTARC)>=(2.0*IN)):
+			C2=rPoint(jb, 'C2', p9.x, p9.y)
+			# straight line for upper back center seam, control points for C1 & C2 only, with calculated control point for control point leading into straight line
+			x, y=pointAlongLine(C2.x, C2.y, W1.x, W1.y, -(lineLengthP(C1, C2)/3.0))
+			cC2b=cPoint(jb, 'cC2b', x, y)
+			pnts=pointList(I3, C1, cC2b)
+			fcp, scp=myGetControlPoints('BackCenterSeam', pnts)
+			cC1a=cPoint(jb, 'cC1a', fcp[0].x, fcp[0].y) #b/w I3 & C1
+			cC1b=cPoint(jb, 'cC1b', scp[0].x, scp[0].y) #b/w I3 & C1
+			cC2a=cPoint(jb, 'cC2a', fcp[1].x, fcp[1].y) #b/w C1 & C2
+		else:
+			C2=rPoint(jb, 'C2', p9.x-(abs(BACKHIPARC-BACKWAISTARC)/4.0), p9.y)
+			x, y=pointAlongLine(C1.x, C1.y, p13.x, p13.y, (lineLengthP(I3, p13)/4.0))
+			cC2a=cPoint(jb, 'cC2a', x, y) #b/w I3 & C2
+			x, y=pointAlongLine(C2.x, C2.y, W1.x, W1.y, -(lineLengthP(C2, W1)/3.0))
+			cC2b=cPoint(jb, 'cC2b', x, y) #b/w I3 & C2
+
 		#back grainline
 		g1=rPoint(jb, 'g1', p17.x, HIPLINE)
 		g2=rPoint(jb, 'g2', g1.x, p18.y+(p21.y-p18.y)/2.0)
@@ -424,19 +513,32 @@ class PatternDesign():
 			lineP(p, W3)
 			lineP(p, W4)
 			cubicCurveP(p, cW5a, cW5b, W5)
-			cubicCurveP(p, cS1a, cS1b, S1)
-			cubicCurveP(p, cS2a, cS2b, S2)
+			if ((BACKHIPARC-BACKWAISTARC)>=(2.0*IN)):
+				#normal waistline
+				cubicCurveP(p, cS1a, cS1b, S1)
+			else:
+				cubicCurveP(p, cS2a, cS2b, S2)
 			cubicCurveP(p, cS3a, cS3b, S3)
 			lineP(p, S4)
 			lineP(p, I1)
 			lineP(p, I2)
 			cubicCurveP(p, cI3a, cI3b, I3)
-			cubicCurveP(p, cC1a, cC1b, C1)
+			if ((BACKHIPARC-BACKWAISTARC)>=(2.0*IN)):
+				#normal waistline
+				cubicCurveP(p, cC1a, cC1b, C1)
 			cubicCurveP(p, cC2a, cC2b, C2)
 			lineP(p, W1)
+		# create front dart line
+		d=path()
+		moveP(d, D1)
+		lineP(d, D2)
+		moveP(d, D3)
+		lineP(d, D1)
+		lineP(d, D4)
 		# create label location, grainline, seamline & cuttingline paths
-		(jb.label_x, jb.label_y)=(g2.x, g2.y-(2.*IN))
+		(jb.label_x, jb.label_y)=(g2.x, g2.y-(2.0*IN))
 		jb.add(grainLinePath("grainLine", "Jeans Back Grainline", g1, g2))
+		jb.add(Path('pattern', 'dartline', 'Jeans Back Dartline', d, 'dart_style'))
 		jb.add(Path('pattern', 'seamLine', 'Jeans Back Seamline', s, 'seamline_path_style'))
 		jb.add(Path('pattern', 'cuttingLine', 'Jeans Back Cuttingline', c, 'cuttingline_style'))
 
