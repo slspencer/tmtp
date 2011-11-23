@@ -79,13 +79,13 @@ def seamLinePath(name, label, pathSVG, transform = ''):
 
 def patternLinePath(name, label, pathSVG, transform = ''):
     """
-    Creates pattern line path on pattern layer, other than cuttingline, seamline, hemline or dartline
+    Creates pattern line path on pattern layer, other than cuttingline, seamline, or hemline - used for darts, etc.
     """
     return Path('pattern', name, label, pathSVG, 'dart_style', transform)
 
 def stitchLinePath( name, label,  pathSVG, transform = '' ):
     """
-    Creates stitch line on pattern layer, other than cuttingline, seamline, hemline or dartline
+    Creates stitch line on pattern layer, other than cuttingline, seamline, or hemline
     """
     return Path('pattern', name, label, pathSVG, 'dart_style',transform)
 
