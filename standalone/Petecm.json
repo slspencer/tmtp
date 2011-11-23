@@ -35,7 +35,7 @@
 		  "gui_text":"Waist Circumference"
           },
   "back_waist_width": {
-          "value":"38.10",
+          "value":"55.10",
 		  "type":"float",
 		  "gui_text":"Bust Waist Width"
           },
@@ -45,7 +45,7 @@
 		  "gui_text":"Center Back Length"
           },
   "front_waist_width": {
-          "value":"48.26",
+          "value":"53.26",
 		  "type":"float",
 		  "gui_text":"Front Waist Width"
           },
