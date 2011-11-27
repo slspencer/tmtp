@@ -409,54 +409,45 @@ class PatternDesign():
 		# Jeans Waistband 'C'
 		jeans.add(PatternPiece('pattern', 'LeftWaistband', letter='C', fabric=2, interfacing=1, lining=0))
 		C=jeans.LeftWaistband
-		CSTART=0.0
-		CEND=(FRONTWAISTARC+BACKWAISTARC)
-		CStart=rPoint(C, 'CStart', BSTART, BSTART)
-		CEnd=rPoint(C, 'CEnd', BEND, BSTART)
+		#CSTART=0.0
+		#CEND=(FRONTWAISTARC+BACKWAISTARC)
+		#CStart=rPoint(C, 'CStart', BSTART, BSTART)
+		#CEnd=rPoint(C, 'CEnd', BEND, BSTART)
 		#frontwaist points
-		Cp1=rPointP(C, 'Cp1', pntOnLineP(AW1, AC2, 1.0*IN))
+		(dx, dy)=()
+		CD1=rPointP(C, 'CD1', AD1) # dart point
+
+		Cp1=rPointP(C, 'Cp1', AW2)
+		Cp2=rPointP(C, 'Cp2', AW1)
+		Cp3=rPointP(C, 'Cp3', pntOnLineP(AW1, AC2, 1.0*IN))
+
+		Cp5=rPointP(C, 'Cp5', AW4)
+		Cp6=rPointP(C, 'Cp6', AW5)
 		if FRONTNORMALWAIST:
 			pnt=pntOnLineP(AW5, cAS1a, (1.0*IN))
 		else:
 			pnt=pntOnLineP(AW5, cAS2a, (1.0*IN))
-		Cp2=rPointP(C, 'Cp2', pnt)
-		Cp3=rPointP(C, 'Cp3', pntIntersectLinesP(Cp1, Cp2, AD1, AD3))
-		Cp4=rPointP(C, 'Cp4', pntIntersectLinesP(Cp1, Cp2, AD1, AD4))
-		Cp5=rPointP(C, 'Cp5', AW1)
-		Cp6=rPointP(C, 'Cp6', AW5)
-		Cp7=rPointP(C, 'Cp7', AW2)
-		Cp8=rPointP(C, 'Cp8', AW4)
-		#backwaist points
-		Cp9=rPointP(C, 'Cp9', pntOnLineP(BW1, BC2, 1.0*IN))
-		if BACKNORMALWAIST:
-			pnt=pntOnLineP(BW5, cBS1a, (1.0*IN))
-		else:
-			pnt=pntOnLineP(BW5, cBS2a, (1.0*IN))
-		Cp10=rPointP(C, 'Cp10', pnt)
-		Cp11=rPointP(C, 'Cp11', pntIntersectLinesP(Cp9, Cp10, BD1, BD3))
-		Cp12=rPointP(C, 'Cp12', pntIntersectLinesP(Cp9, Cp10, BD1, BD4))
+		Cp7=rPointP(C, 'Cp7', pnt)
+
+		Cp4=rPointP(C, 'Cp4', pntIntersectLinesP(Cp3, Cp7, CD1, Cp1))
+		Cp8=rPointP(C, 'Cp8', pntIntersectLinesP(Cp3, Cp7, CD1, Cp5))
+
 		#grainline points & label location
-		CG1=rPoint(C, 'CG1', Cp4.x, Cp4.y - (0.5*IN))
-		CG2=rPoint(C, 'CG2', Cp4.x + (3.0*IN), CG1.y)
+		CG1=rPoint(C, 'CG1', Cp3.x+(1.0*IN), Cp3.y - (0.5*IN))
+		CG2=rPoint(C, 'CG2', CG1.x + (2.0*IN), CG1.y)
 		(C.label_x, C.label_y)=(CG2.x, CG2.y)
 
 		#grid 'Cgrid' path
 		Cgrid=path()
-		addToPath(Cgrid, 'M', Cp1, 'L', Cp4, 'M', Cp3, 'L', Cp2)
-		addToPath(Cgrid, 'M', Cp5, 'L', Cp7, 'M', Cp8, 'L', Cp6)
-		addToPath(Cgrid, 'M', Cp1, 'L', Cp5)
-		addToPath(Cgrid, 'M', Cp3, 'L', Cp8)
-		addToPath(Cgrid, 'M', Cp4, 'L', Cp7)
-		addToPath(Cgrid, 'M', Cp9, 'L', Cp12, 'M', Cp11, 'L', Cp10)
+		addToPath(Cgrid, 'M', Cp1, 'L', Cp2, 'L', Cp3, 'L', Cp4, 'L', Cp1)
+		addToPath(Cgrid, 'M', Cp5, 'L', Cp6, 'L', Cp7, 'L', Cp8, 'L', Cp5)
 		# seamline 's' & cuttingline 'c' paths
 		s=path()
 		c=path()
 		paths=pointList(s, c)
 		for p in paths:
-			addToPath(p, 'M', Cp1, 'L', Cp4, 'M', Cp3, 'L', Cp2)
-			addToPath(p, 'M', Cp5, 'L', Cp7, 'M', Cp8, 'L', Cp6)
-			addToPath(p, 'M', Cp1, 'L', Cp5)
-			addToPath(p, 'M', Cp9, 'L', Cp12, 'M', Cp11, 'L', Cp10)
+			addToPath(p, 'M', Cp1, 'L', Cp2, 'L', Cp3, 'L', Cp4)
+			addToPath(p, 'M', Cp5, 'L', Cp6, 'L', Cp7, 'L', Cp8)
 		# add grainline, seamline & cuttingline paths to pattern
 		C.add(grainLinePath("grainLine", "Left Waistband Grainline", CG1, CG2))
 		C.add(Path('reference','grid', 'Left Waistband Reference Grid', Cgrid, 'gridline_style'))
