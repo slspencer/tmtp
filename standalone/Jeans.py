@@ -119,125 +119,126 @@ class PatternDesign():
 
 		# Jeans Front A
 		jeans.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
-		jf=jeans.front
+		A=jeans.front
 		ASTART=0.0
 		AEND=(FRONTHIPARC+((1/8.0)*IN))
-		AStart=rPoint(jf, 'AStart', ASTART, ASTART)
-		AEnd=rPoint(jf, 'AEnd', AEND, ASTART)
-		AWaist=rPoint(jf, 'AWaist', ASTART, WAISTLINE)
-		AAbdomen=rPoint(jf, 'AAbdomen', ASTART, ABDOMENLINE)
-		AHip=rPoint(jf, 'AHip', ASTART, HIPLINE)
-		ARise=rPoint(jf, 'ARise', ASTART, RISELINE)
+		AStart=rPoint(A, 'AStart', ASTART, ASTART)
+		AEnd=rPoint(A, 'AEnd', AEND, ASTART)
+		AWaist=rPoint(A, 'AWaist', ASTART, WAISTLINE)
+		AAbdomen=rPoint(A, 'AAbdomen', ASTART, ABDOMENLINE)
+		AHip=rPoint(A, 'AHip', ASTART, HIPLINE)
+		ARise=rPoint(A, 'ARise', ASTART, RISELINE)
 
-		Ap1=rPoint(jf, 'Ap1', AEND, WAISTLINE)
-		Ap5=rPoint(jf, 'Ap5', AEND/2.0, WAISTLINE)
-		Ap6=rPoint(jf, 'Ap6', Ap5.x-(.25*IN), WAISTLINE)
-		Ap7=rPoint(jf, 'Ap7', Ap5.x+(.25*IN), WAISTLINE)
-		Ap8=rPoint(jf, 'Ap8', Ap5.x, Ap5.y+(2.5*IN))
-		Ap2=rPoint(jf, 'Ap2', Ap7.x+(FRONTWAISTARC/2.0), WAISTLINE)
-		ABp3=rPoint(jf, 'ABp3', Ap2.x, WAISTLINE-(0.25)*IN)
-		ABp4=rPoint(jf, 'ABp4', Ap6.x-(FRONTWAISTARC/2.0), WAISTLINE)
-		ABp9=rPoint(jf, 'ABp9', AEND, WAISTLINE+(abs(RISELINE-WAISTLINE)/2.0))
-		Ap10=rPoint(jf, 'Ap10', ASTART, HIPLINE)
-		Ap11=rPoint(jf, 'Ap11', AEND, HIPLINE)
-		Ap12=rPoint(jf, 'Ap12', ASTART, RISELINE)
-		Ap13=rPoint(jf, 'Ap13', AEND, RISELINE)
-		Ap14=rPointP(jf, 'Ap14', pntFromDistanceAndAngleP(Ap13, (1.25*IN), angleFromSlope(1.0, 1.0)))
-		Ap15=rPoint(jf, 'Ap15', Ap13.x+(2.0*IN), RISELINE)
-		Ap16=rPoint(jf, 'Ap16', Ap15.x/2.0, RISELINE)
-		Ap17=rPoint(jf, 'Ap17', Ap16.x, KNEELINE)
-		Ap18=rPoint(jf, 'Ap18', Ap16.x-(4.0*IN), KNEELINE)
-		Ap19=rPoint(jf, 'Ap19', Ap16.x+(4.0*IN), KNEELINE)
-		Ap20=rPoint(jf, 'Ap20', Ap16.x, HEMLINE)
-		Ap21=rPoint(jf, 'Ap21', Ap20.x-(3.5*IN), HEMLINE)
-		Ap22=rPoint(jf, 'Ap22', Ap20.x+(3.5*IN), HEMLINE)
-		Apa1=rPoint(jf, 'Apa1', Ap8.x-(FRONTABDOMENARC/2.0), ABDOMENLINE)
-		Apa2=rPoint(jf, 'Apa2', Ap8.x+(FRONTABDOMENARC/2.0), ABDOMENLINE)
+		Ap1=rPoint(A, 'Ap1', AEND, WAISTLINE)
+		Ap5=rPoint(A, 'Ap5', AEND/2.0, WAISTLINE)
+		Ap6=rPoint(A, 'Ap6', Ap5.x-(.25*IN), WAISTLINE)
+		Ap7=rPoint(A, 'Ap7', Ap5.x+(.25*IN), WAISTLINE)
+		Ap8=rPoint(A, 'Ap8', Ap5.x, Ap5.y+(2.5*IN))
+		Ap2=rPoint(A, 'Ap2', Ap7.x+(FRONTWAISTARC/2.0), WAISTLINE)
+		ABp3=rPoint(A, 'ABp3', Ap2.x, WAISTLINE-(0.25)*IN)
+		ABp4=rPoint(A, 'ABp4', Ap6.x-(FRONTWAISTARC/2.0), WAISTLINE)
+		ABp9=rPoint(A, 'ABp9', AEND, WAISTLINE+(abs(RISELINE-WAISTLINE)/2.0))
+		Ap10=rPoint(A, 'Ap10', ASTART, HIPLINE)
+		Ap11=rPoint(A, 'Ap11', AEND, HIPLINE)
+		Ap12=rPoint(A, 'Ap12', ASTART, RISELINE)
+		Ap13=rPoint(A, 'Ap13', AEND, RISELINE)
+		Ap14=rPointP(A, 'Ap14', pntFromDistanceAndAngleP(Ap13, (1.25*IN), angleFromSlope(1.0, 1.0)))
+		Ap15=rPoint(A, 'Ap15', Ap13.x+(2.0*IN), RISELINE)
+		Ap16=rPoint(A, 'Ap16', Ap15.x/2.0, RISELINE)
+		Ap17=rPoint(A, 'Ap17', Ap16.x, KNEELINE)
+		Ap18=rPoint(A, 'Ap18', Ap16.x-(4.0*IN), KNEELINE)
+		Ap19=rPoint(A, 'Ap19', Ap16.x+(4.0*IN), KNEELINE)
+		Ap20=rPoint(A, 'Ap20', Ap16.x, HEMLINE)
+		Ap21=rPoint(A, 'Ap21', Ap20.x-(3.5*IN), HEMLINE)
+		Ap22=rPoint(A, 'Ap22', Ap20.x+(3.5*IN), HEMLINE)
+		Apa1=rPoint(A, 'Apa1', Ap8.x-(FRONTABDOMENARC/2.0), ABDOMENLINE)
+		Apa2=rPoint(A, 'Apa2', Ap8.x+(FRONTABDOMENARC/2.0), ABDOMENLINE)
 
 		# front waist AW
-		AW1=rPointP(jf,'AW1', ABp3)
-		AW2=rPointP(jf, 'AW2', pntIntersectLinesP(ABp3, ABp4, Ap8, Ap7))
-		AW4=rPointP(jf, 'AW4', pntOnLineP(Ap8, Ap6, lineLengthP(Ap8, AW2)))
+		AW1=rPointP(A,'AW1', ABp3)
+		AW2=rPointP(A, 'AW2', pntIntersectLinesP(ABp3, ABp4, Ap8, Ap7))
+		AW4=rPointP(A, 'AW4', pntOnLineP(Ap8, Ap6, lineLengthP(Ap8, AW2)))
 		angle1=angleP(Ap7, Ap8) # angle of dart inside-leg
 		angle2=angleP(Ap8, Ap6) # angle of dart outside-leg
 		angle3=angle2 - angle1 # absolute angle of entire dart
 		angle=angle1 - angle3 # actual angle of back fold of dart after bringing outside-leg to meet inside-leg then folding to the right
 		pnt=pntIntersectLinesP(Ap8, pntFromDistanceAndAngleP(Ap8, lineLengthP(Ap8, Ap7), angle), AW1, AW2)
-		AW3=rPointP(jf, 'AW3', pntOnLineP(Ap8, Ap5, lineLengthP(Ap8, pnt)) )
-		AW5=rPointP(jf, 'AW5', ABp4)
+		AW3=rPointP(A, 'AW3', pntOnLineP(Ap8, Ap5, lineLengthP(Ap8, pnt)) )
+		AW5=rPointP(A, 'AW5', ABp4)
 		#front waist control points
 		distance=(lineLengthP(AW4, AW5)/3.0)
-		cAW5b=cPoint(jf, 'cAW5b', AW5.x+distance, AW5.y)
-		cAW5a=cPointP(jf, 'cAW5a', pntOnLineP(AW4, cAW5b, distance))
+		cAW5b=cPoint(A, 'cAW5b', AW5.x+distance, AW5.y)
+		cAW5a=cPointP(A, 'cAW5a', pntOnLineP(AW4, cAW5b, distance))
 
 		# front dart point AD
-		AD1=rPointP(jf, 'AD1', Ap8) # point of dart
-		AD2=rPoint(jf, 'AD2', AW3.x, AW3.y - (5/8.0)*IN) #midpoint of dart legs
-		AD3=rPointP(jf, 'AD3', pntIntersectLines(AW4.x, AW4.y-(5/8.0)*IN, AW5.x, AW5.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW4.x, AW4.y)) # outside dart leg
-		AD4=rPointP(jf, 'AD4', pntIntersectLines(AW1.x, AW1.y-(5/8.0)*IN, AW2.x, AW2.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW2.x, AW2.y)) #inside dart leg
+		AD1=rPointP(A, 'AD1', Ap8) # point of dart
+		AD2=rPoint(A, 'AD2', AW3.x, AW3.y - (5/8.0)*IN) #midpoint of dart legs
+		AD3=rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y-(5/8.0)*IN, AW5.x, AW5.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW4.x, AW4.y)) # outside dart leg
+		AD4=rPointP(A, 'AD4', pntIntersectLines(AW1.x, AW1.y-(5/8.0)*IN, AW2.x, AW2.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW2.x, AW2.y)) #inside dart leg
 
 		# front side seam AS
-		AS1=rPointP(jf, 'AS1', Ap10)
-		AS2=rPointP(jf, 'AS2', Ap12)
-		AS3=rPointP(jf, 'AS3', Ap18)
-		AS4=rPointP(jf, 'AS4', Ap21)
+		AS1=rPointP(A, 'AS1', Ap10)
+		AS2=rPointP(A, 'AS2', Ap12)
+		AS3=rPointP(A, 'AS3', Ap18)
+		AS4=rPointP(A, 'AS4', Ap21)
 		# front side seam control points
 		if (FRONTNORMALWAIST):
-			cAS3b=cPointP(jf, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AS1)/2.0))) # b/w AS1 & AS3
+			cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AS1)/2.0))) # b/w AS1 & AS3
 			pnts=pointList(AW5, AS1, AS3)
 			c1, c2=myGetControlPoints('FrontSideSeam', pnts)
-			cAS1a=cPoint(jf, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
-			cAS1b=cPoint(jf, 'cAS1b', AS1.x, c2[0].y) #b/w AW5 & AS1
-			cAS3a=cPoint(jf, 'cAS3a', AS1.x, c1[1].y) #b/w AS1 & AW5
+			cAS1a=cPoint(A, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
+			cAS1b=cPoint(A, 'cAS1b', AS1.x, c2[0].y) #b/w AW5 & AS1
+			cAS3a=cPoint(A, 'cAS3a', AS1.x, c1[1].y) #b/w AS1 & AW5
 		else:
-			cAS2a=cPoint(jf, 'cAS2a', min(AS2.x, AW5.x), AW5.y+(lineLengthP(AW5, AS2)/3.0)) # waistline slightly less than hipline (ex: 1.25") use AS2 else AW5
-			cAS3b=cPointP(jf, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS2, AS3)/3.0))) # b/w AS2 & AS3
+			cAS2a=cPoint(A, 'cAS2a', min(AS2.x, AW5.x), AW5.y+(lineLengthP(AW5, AS2)/3.0)) # waistline slightly less than hipline (ex: 1.25") use AS2 else AW5
+			cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS2, AS3)/3.0))) # b/w AS2 & AS3
 			pnts=pointList(cAS2a, AS2, cAS3b)
 			fcp, scp=myGetControlPoints('BackSideSeam', pnts)
-			cAS2b=cPoint(jf, 'cAS2b', scp[0].x, scp[0].y) #b/w AW5 & AS2
-			cAS3a=cPoint(jf, 'cAS3a', fcp[1].x, fcp[1].y) #b/w AS2 & AS3
+			cAS2b=cPoint(A, 'cAS2b', scp[0].x, scp[0].y) #b/w AW5 & AS2
+			cAS3a=cPoint(A, 'cAS3a', fcp[1].x, fcp[1].y) #b/w AS2 & AS3
 
 		# front inseam AI
-		AI1=rPointP(jf, 'AI1', Ap22)
-		AI2=rPointP(jf, 'AI2', Ap19)
-		AI3=rPointP(jf, 'AI3', Ap15)
+		AI1=rPointP(A, 'AI1', Ap22)
+		AI2=rPointP(A, 'AI2', Ap19)
+		AI3=rPointP(A, 'AI3', Ap15)
 		#front inseam control points
-		cAI3a=cPointP(jf, 'cAI3a', pntOffLineP(AI2, AI1, (lineLengthP(AI2, AI3)/2.0))) #b/w AI2 & AI3
-		cAI3b=cPointP(jf, 'cAI3b', pntOnLineP(AI3, cAI3a, (lineLengthP(AI2, AI3)/3.0))) #b/w AI2 & AI3
+		cAI3a=cPointP(A, 'cAI3a', pntOffLineP(AI2, AI1, (lineLengthP(AI2, AI3)/2.0))) #b/w AI2 & AI3
+		cAI3b=cPointP(A, 'cAI3b', pntOnLineP(AI3, cAI3a, (lineLengthP(AI2, AI3)/3.0))) #b/w AI2 & AI3
 
 		#front center seam AC
-		AC1=rPointP(jf, 'AC1', Ap14)
+		AC1=rPointP(A, 'AC1', Ap14)
 		if (FRONTNORMALWAIST):
-			AC2=rPointP(jf, 'AC2', ABp9)
+			AC2=rPointP(A, 'AC2', ABp9)
 			# straight line for upper front center seam, control points for AC1 & AC2 only, with calculated control point cAC2b to smooth into straight line
-			cAC2b=cPointP(jf, 'cAC2b', pntOffLine(AC2.x, AC2.y, AW1.x, AW1.y, (lineLengthP(AC1, AC2)/2.0)))
+			cAC2b=cPointP(A, 'cAC2b', pntOffLine(AC2.x, AC2.y, AW1.x, AW1.y, (lineLengthP(AC1, AC2)/2.0)))
 			pnts=pointList(AI3, AC1, cAC2b)
 			fcp, scp=myGetControlPoints('FrontCenterSeam', pnts)
-			cAC1a=cPoint(jf, 'cAC1a', fcp[0].x, fcp[0].y) #b/w AI3 & AC1
-			cAC1b=cPoint(jf, 'cAC1b', scp[0].x, scp[0].y) #b/w AI3 & AC1
-			cAC2a=cPoint(jf, 'cAC2a', fcp[1].x, fcp[1].y) #b/w AC1 & AC2
+			cAC1a=cPoint(A, 'cAC1a', fcp[0].x, fcp[0].y) #b/w AI3 & AC1
+			cAC1b=cPoint(A, 'cAC1b', scp[0].x, scp[0].y) #b/w AI3 & AC1
+			cAC2a=cPoint(A, 'cAC2a', fcp[1].x, fcp[1].y) #b/w AC1 & AC2
 		else:
 			# cubic curve for entire front center seam
-			AC2=rPoint(jf, 'AC2', ABp9.x + (abs(FRONTHIPARC-FRONTWAISTARC)/4.0), ABp9.y)
-			cAC2a=cPointP(jf, 'cAC2a', pntOnLineP(AC1, Ap13, (lineLengthP(AI3, Ap13)/4.0))) #b/w AI3 & AC2
-			cAC2b=cPointP(jf, 'cAC2b', pntOffLineP(AC2, AW1, (lineLengthP(AC2, AW1)/3.0))) #b/w AI3 & AC2
+			AC2=rPoint(A, 'AC2', ABp9.x + (abs(FRONTHIPARC-FRONTWAISTARC)/4.0), ABp9.y)
+			cAC2a=cPointP(A, 'cAC2a', pntOnLineP(AC1, Ap13, (lineLengthP(AI3, Ap13)/4.0))) #b/w AI3 & AC2
+			cAC2b=cPointP(A, 'cAC2b', pntOffLineP(AC2, AW1, (lineLengthP(AC2, AW1)/3.0))) #b/w AI3 & AC2
 
-		#front grainline AG
-		AG1=rPoint(jf, 'AG1', Ap16.x, HIPLINE)
-		AG2=rPoint(jf, 'AG2', Ap16.x, Ap18.y+abs(Ap21.y-Ap18.y)/2.0)
+		#front grainline AG & label location
+		AG1=rPoint(A, 'AG1', Ap16.x, HIPLINE)
+		AG2=rPoint(A, 'AG2', Ap16.x, Ap18.y+abs(Ap21.y-Ap18.y)/2.0)
+		(A.label_x, A.label_y)=(AG2.x, AG2.y-(2.0*IN))
 
-		#create Jeans Front Grid path 'Agrid'
+		#grid 'Agrid' path
 		Agrid=path()
-		#vertical Agrid
+		#   vertical Agrid
 		addToPath(Agrid, 'M', AStart, 'L', ARise, 'M', Ap5, 'L', Ap8, 'M', Ap16, 'L', Ap20, 'M', ABp3, 'L', Ap2, 'M', AEnd, 'L', Ap13)
-		#horizontal Agridid
+		#   horizontal Agridid
 		addToPath(Agrid, 'M', AStart, 'L', AEnd, 'M', AWaist, 'L', Ap1, 'M', Apa1, 'L', Apa2, 'M', AHip, 'L', Ap11, 'M', ARise, 'L', Ap15, 'M', Ap18, 'L', Ap19)
-		#diagonal grid
+		#   diagonal grid
 		addToPath(Agrid, 'M', ABp3, 'L', ABp4, 'M', Ap13, 'L', Ap14)
-		jf.add(Path('reference','Agrid', 'Trousers Front Gridline', Agrid, 'gridline_style'))
-
-		#Jeans Front paths
-		# create seamline path 's' & cuttingline path 'c'
+		# dart 'd' path
+		d=path()
+		addToPath(d, 'M', AD1, 'L', AD2, 'M', AD3, 'L', AD1, 'L', AD4)
+		# seamline 's' & cuttingline 'c' paths
 		s=path()
 		c=path()
 		paths=pointList(s, c)
@@ -251,15 +252,13 @@ class PatternDesign():
 			if (FRONTNORMALWAIST):
 				cubicCurveP(p, cAC1a, cAC1b, AC1)
 			addToPath(p, 'C', cAC2a, cAC2b, AC2, 'L',  AW1)
-		# create front dart path 'd'
-		d=path()
-		addToPath(d, 'M', AD1, 'L', AD2, 'M', AD3, 'L', AD1, 'L', AD4)
-		# create label location, grainline, dart, seamline & cuttingline paths
-		(jf.label_x, jf.label_y)=(AG2.x, AG2.y-(2.0*IN))
-		jf.add(grainLinePath("grainLine", "Jeans Front Grainline", AG1, AG2))
-		jf.add(Path('pattern', 'dartline', 'Jeans Front Dartline', d, 'dart_style'))
-		jf.add(Path('pattern', 'seamLine', 'Jeans Front Seamline', s, 'seamline_path_style'))
-		jf.add(Path('pattern', 'cuttingLine', 'Jeans Front Cuttingline', c, 'cuttingline_style'))
+
+		# add grainline, dart, seamline & cuttingline paths to pattern
+		A.add(grainLinePath("grainLine", "Jeans Front Grainline", AG1, AG2))
+		A.add(Path('reference','Agrid', 'Jeans Front Gridline', Agrid, 'gridline_style'))
+		A.add(Path('pattern', 'dartline', 'Jeans Front Dartline', d, 'dart_style'))
+		A.add(Path('pattern', 'seamLine', 'Jeans Front Seamline', s, 'seamline_path_style'))
+		A.add(Path('pattern', 'cuttingLine', 'Jeans Front Cuttingline', c, 'cuttingline_style'))
 
 		# Jeans Back
 		jeans.add(PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0))
