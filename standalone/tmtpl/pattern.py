@@ -43,6 +43,8 @@ from patternbase import pBase
 #
 # A lot of these depend on the classes in this file, so we put them here
 
+
+
 def patternPoint(name, x, y, transform=''):
     """
     Creates pattern Points on pattern layer
@@ -54,10 +56,16 @@ def rPoint(parent, name, x, y, transform=''):
 	parent.add(pnt)
 	return pnt
 
+def rPointP(parent, name, pnt, transform=''):
+	return rPoint(parent, name, pnt.x, pnt.y, transform='')
+
 def cPoint(parent, name, x, y, transform=''):
 	pnt = Point('reference', name,  x,  y,  'controlpoint_style', transform)
 	parent.add(pnt)
 	return pnt
+
+def cPointP(parent, name, pnt, transform=''):
+	return cPoint(parent, name, pnt.x, pnt.y, transform='')
 
 def gridPath(name, label, pathSVG, transform = ''):
     """
@@ -142,6 +150,11 @@ def angleFromSlope(rise, run):
     """
     return math.atan2( rise, run )
 
+def angleP(pnt1, pnt2):
+		rise=-(pnt2.y-pnt1.y)
+		run=(pnt2.x-pnt1.x)
+		return angleFromSlope(rise, run)
+
 def pointFromDistanceAndAngle(x1, y1, distance, angle):
     # http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
     r=distance
@@ -149,6 +162,17 @@ def pointFromDistanceAndAngle(x1, y1, distance, angle):
     y = y1 - (r * sin(angle))
     #return (x, y)
     return (x1+(r*math.cos(angle)), y1-(r*math.sin(angle)))
+
+def pointFromDistanceAndAngleP(pnt, distance, angle):
+	x, y = pointFromDistanceAndAngle(pnt.x, pnt.y, distance, angle)
+	return x, y
+
+def pntFromDistanceAndAngleP(pnt, distance, angle):
+	x, y = pointFromDistanceAndAngle(pnt.x, pnt.y, distance, angle)
+	pnt=Pnt()
+	pnt.x=x
+	pnt.y=y
+	return pnt
 
 def angleOfLine(x1, y1, x2, y2):
     """
@@ -198,7 +222,7 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
 def pointOnLineP(p1, p2, distance, rotation = 0):
     """
     Accepts two points and an optional rotation angle
-    returns a point on the line measured from p1
+    Returns x, y values on the line measured from p1
     the point is optionally rotated about the first point by the rotation angle in degrees
     """
     x, y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
@@ -206,12 +230,36 @@ def pointOnLineP(p1, p2, distance, rotation = 0):
 
 def pointOffLineP(p1, p2, distance, rotation = 0):
     """
-    Accepts two points and an optional rotation angle
-    returns a point away from the line, measured from p1
+    Accepts two point objects and an optional rotation angle, returns x, y
+    Returns x, y values away from the line, measured from p1, away from p2
     the point is optionally rotated about the first point by the rotation angle in degrees
     """
     (x, y)=pointAlongLine(p1.x, p1.y, p2.x, p2.y, -distance, rotation)
     return x, y
+
+def pntOnLineP(p1, p2, distance, rotation = 0):
+    """
+    Accepts two point objects and an optional rotation angle
+    Returns a point object on the line, measured from p1, towards p2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    x, y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+    pnt=Pnt()
+    pnt.x=x
+    pnt.y=y
+    return pnt
+
+def pntOffLineP(p1, p2, distance, rotation = 0):
+    """
+    Accepts two points and an optional rotation angle
+    Returns a point object, measured from p1, away from p2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    x, y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, -distance, rotation)
+    pnt=Pnt()
+    pnt.x=x
+    pnt.y=y
+    return pnt
 
 def boundingBox(path):
     xlist = []
@@ -442,9 +490,9 @@ def lineLengthP(p1, p2):
     length =  math.sqrt(((p2.x-p1.x)**2)+((p2.y-p1.y)**2))
     return length
 
-def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
+def intersectLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
     """
-    Find intersection between two lines.
+    Find intersection between two lines. Accepts 8 values (begin & end for 2 lines), returns x & y values.
     Intersection does not have to be within the supplied line segments
     """
     # TODO this can be improved
@@ -469,7 +517,7 @@ def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2,
 
     # test for parallel
     if abs(b2 - b1) < 0.01:
-        debug('***** Parallel lines in intersectionOfLines *****')
+        debug('***** Parallel lines in intersectLines *****')
         return None, None
 
     # find x where m1*xstart1 + b1 = m2*xend1 + b2, so that xstart1 = x & xend1 =x
@@ -482,14 +530,35 @@ def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2,
     y = (m1 * x) + b1
     return x, y
 
-def intersectionOfLinesP(p1, p2, p3, p4):
+def intersectLinesP(p1, p2, p3, p4):
     """
-    Find intersection between two lines.
+    Find intersection between two lines. Accepts 4 point objects, Returns x, y values
     Intersection does not have to be within the supplied line segments
     """
-    x, y = intersectionOfLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
+    x, y = intersectLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
     return x, y
 
+def pntIntersectLines(x1, y1, x2, y2, x3, y3, x4, y4):
+	"""
+	Find intersection between two lines. Accepts 8 values (begin & end for 2 lines), Returns pnt object
+	Intersection does not have to be within the supplied line segments
+	"""
+	x, y = intersectLines(x1, y1, x2, y2, x3, y3, x4, y4)
+	pnt=Pnt()
+	pnt.x=x
+	pnt.y=y
+	return pnt
+
+def pntIntersectLinesP(p1, p2, p3, p4):
+	"""
+	Find intersection between two lines. Accepts 4 point objects, Returns pnt object
+	Intersection does not have to be within the supplied line segments
+	"""
+	x, y = intersectLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
+	pnt=Pnt()
+	pnt.x=x
+	pnt.y=y
+	return pnt
 
 def extractMarkerId(markertext):
     # Regex -
@@ -499,7 +568,47 @@ def extractMarkerId(markertext):
     mid = m.group(0).split('"')[1]
     return mid
 
+
+def addToPath(p, *args):
+	"""
+	Accepts a path object and a string variable containing a pseudo svg path using M,L,C and point objects.
+	Calls functions to add commands and points to the path object
+	"""
+	pnt=Pnt()
+	tokens=[]
+	for arg in args:
+		tokens.append(arg)
+	i=0
+	while (i < len(tokens)):
+		cmd=tokens[i]
+		if (cmd == 'M'):
+			pnt = tokens[i+1]
+			moveP(p, pnt)
+			i=i+2
+		elif (cmd=='L'):
+			pnt=tokens[i+1]
+			lineP(p, pnt)
+			i=i+2
+		elif (cmd == 'C'):
+			c1=tokens[i+1]
+			c2=tokens[i+2]
+			pnt=tokens[i+3]
+			cubicCurveP(p, c1, c2, pnt)
+			i=i+4
+
+	return
+
+
+
+
+
 # ---- Pattern Classes ----------------------------------------
+
+class Pnt:
+    def __init__(self):
+        self.x=0.0
+        self.y=0.0
+        self.name=''
 
 class Pattern(pBase):
     """
