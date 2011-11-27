@@ -151,8 +151,8 @@ class PatternDesign():
 		Ap20=rPoint(jf, 'Ap20', Ap16.x, HEMLINE)
 		Ap21=rPoint(jf, 'Ap21', Ap20.x-(3.5*IN), HEMLINE)
 		Ap22=rPoint(jf, 'Ap22', Ap20.x+(3.5*IN), HEMLINE)
-		Apa1=rPoint(jf, 'Apa1', Ap8.x-(FRONTABDOMENARC/2.0), ABDOMENLINE )
-		Apa2=rPoint(jf, 'Apa2', Ap8.x+(FRONTABDOMENARC/2.0), ABDOMENLINE )
+		Apa1=rPoint(jf, 'Apa1', Ap8.x-(FRONTABDOMENARC/2.0), ABDOMENLINE)
+		Apa2=rPoint(jf, 'Apa2', Ap8.x+(FRONTABDOMENARC/2.0), ABDOMENLINE)
 
 		# front waist AW
 		AW1=rPointP(jf,'AW1', ABp3)
@@ -411,19 +411,28 @@ class PatternDesign():
 		# Jeans Waistband
 		#jeans.add(PatternPiece('pattern', 'LeftWaistband', letter='c', fabric=2, interfacing=1, lining=0))
 		#jc=jeans.LeftWaistband
-		#CSTART=0.0
-		#CEND=(FRONTWAISTARC+BACKWAISTARC)
-		#CStart=rPoint(jc, 'CStart', BSTART, BSTART)
-		#CEnd=rPoint(jc, 'CEnd', BEND, BSTART)
-		#(x, y)=pointOnLineP(Ap1, AC2, 1.0*IN)
-		#Cp1=rPoint(jc, 'Cp1', x, y)
-		#if FRONTNORMALWAIST:
-		#	(x, y)=pointOnLineP(Bp4, cAS1a, (1.0*IN))
-		#else:
-		#	(x, y)=pointOnLineP(Bp4, cAS2a, (1.0*IN))
-		#Cp2=rPoint(jc, 'Cp2', x, y)
-		#(x, y)=intersectLinesP(Cp1, Cp2, AD1, AD3)
-		#CBp3=rPoint(jc, 'CBp3', x, y)
+		CSTART=0.0
+		CEND=(FRONTWAISTARC+BACKWAISTARC)
+		CStart=rPoint(jf, 'CStart', BSTART, BSTART)
+		CEnd=rPoint(jf, 'CEnd', BEND, BSTART)
+		#frontwaist points
+		Cp1=rPointP(jf, 'Cp1', pntOnLineP(AW1, AC2, 1.0*IN))
+		if FRONTNORMALWAIST:
+			pnt=pntOnLineP(AW5, cAS1a, (1.0*IN))
+		else:
+			pnt=pntOnLineP(AW5, cAS2a, (1.0*IN))
+		Cp2=rPointP(jf, 'Cp2', pnt)
+		Cp3=rPointP(jf, 'Cp3', pntIntersectLinesP(Cp1, Cp2, AD1, AD3))
+		Cp4=rPointP(jf, 'Cp4', pntIntersectLinesP(Cp1, Cp2, AD1, AD4))
+		#backwaist points
+		Cp5=rPointP(jb, 'Cp5', pntOnLineP(BW1, BC2, 1.0*IN))
+		if BACKNORMALWAIST:
+			pnt=pntOnLineP(BW5, cBS1a, (1.0*IN))
+		else:
+			pnt=pntOnLineP(BW5, cBS2a, (1.0*IN))
+		Cp6=rPointP(jb, 'Cp6', pnt)
+		Cp7=rPointP(jb, 'Cp7', pntIntersectLinesP(Cp5, Cp6, BD1, BD3))
+		Cp8=rPointP(jb, 'Cp8', pntIntersectLinesP(Cp5, Cp6, BD1, BD4))
 
 
 		#call draw once for the entire pattern
