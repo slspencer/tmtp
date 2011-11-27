@@ -193,6 +193,24 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     angle = lineangle + (rotation * (math.pi/180))
     x = (distance * math.cos(angle)) + x1
     y = (distance * math.sin(angle)) + y1
+    return (x, y)
+
+def pointOnLineP(p1, p2, distance, rotation = 0):
+    """
+    Accepts two points and an optional rotation angle
+    returns a point on the line measured from p1
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    x, y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+    return (x, y)
+
+def pointOffLineP(p1, p2, distance, rotation = 0):
+    """
+    Accepts two points and an optional rotation angle
+    returns a point away from the line, measured from p1
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    (x, y)=pointAlongLine(p1.x, p1.y, p2.x, p2.y, -distance, rotation)
     return x, y
 
 def boundingBox(path):
@@ -464,16 +482,13 @@ def intersectionOfLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2,
     y = (m1 * x) + b1
     return x, y
 
-def intersectionOfLinesP(p1, p2, p3, p4, name):
+def intersectionOfLinesP(p1, p2, p3, p4):
     """
     Find intersection between two lines.
     Intersection does not have to be within the supplied line segments
     """
     x, y = intersectionOfLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
-    pnt = Point('reference', '%s' % name, styledef = 'controlpoint_style')
-    pnt.x = x
-    pnt.y = y
-    return pnt
+    return x, y
 
 
 def extractMarkerId(markertext):
