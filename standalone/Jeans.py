@@ -117,7 +117,7 @@ class PatternDesign():
 		jeans.styledefs.update(self.styledefs)
 		jeans.markerdefs.update(self.markerdefs)
 
-		# Jeans Front A
+		# Jeans Front 'A'
 		jeans.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
 		A=jeans.front
 		ASTART=0.0
@@ -260,7 +260,7 @@ class PatternDesign():
 		A.add(Path('pattern', 'seamLine', 'Jeans Front Seamline', s, 'seamline_path_style'))
 		A.add(Path('pattern', 'cuttingLine', 'Jeans Front Cuttingline', c, 'cuttingline_style'))
 
-		# Jeans Back
+		# Jeans Back 'B'
 		jeans.add(PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0))
 		B=jeans.back
 		BSTART=0.0
@@ -369,20 +369,23 @@ class PatternDesign():
 			cBC2a=cPointP(B, 'cBC2a', pntOnLineP(BC1, Bp13, (lineLengthP(BI3, Bp13)/4.0))) #b/w BI3 & BC2
 			cBC2b=cPointP(B, 'cBC2b', pntOffLineP(BC2, BW1, (lineLengthP(BC2, BW1)/3.0))) #b/w BI3 & BC2
 
-		#back grainline
+		#back grainline & label location
 		BG1=rPoint(B, 'BG1', Bp17.x, HIPLINE)
 		BG2=rPoint(B, 'BG2', BG1.x, Bp18.y+(Bp21.y-Bp18.y)/2.0)
+		(B.label_x, B.label_y)=(BG2.x, BG2.y-(2.0*IN))
 
-		#Trousers Back Grid
+		#grid 'Bgrid' path
 		Bgrid=path()
-		#vertical grid
+		#   vertical grid
 		addToPath(Bgrid, 'M', BStart, 'L', BRise, 'M', Bp1, 'L', Bp13, 'M', BEnd, 'L', Bp15, 'M', Bp17, 'L', Bp21, 'M', Bp5, 'L', Bp8)
-		#horizontal grid
+		#   horizontal grid
 		addToPath(Bgrid, 'M', BStart, 'L', BEnd, 'M', BWaist, 'L', Bp2, 'M', BHip, 'L', Bp11, 'M', BRise, 'L', Bp15, 'M', Bp19, 'L', Bp20)
-		#diagonal grid
+		#   diagonal grid
 		addToPath(Bgrid, 'M', BW1, 'L', BW5, 'M', Bp13, 'L', Bp14)
-
-		#Trousers Back paths
+		#dart 'd' path
+		d=path()
+		addToPath(d, 'M', BD1, 'L', BD2, 'M', BD3, 'L', BD1, 'L', BD4)
+		#seamline 's' & cuttingline 'c' paths
 		s=path()
 		c=path()
 		paths=pointList(s, c)
@@ -396,18 +399,14 @@ class PatternDesign():
 			if (BACKNORMALWAIST):
 				addToPath(p, 'C', cBC1a, cBC1b, BC1)
 			addToPath(p, 'C', cBC2a, cBC2b, BC2, 'L', BW1)
-		# create front dart line
-		d=path()
-		addToPath(d, 'M', BD1, 'L', BD2, 'M', BD3, 'L', BD1, 'L', BD4)
-		# create label location, grainline, seamline & cuttingline paths
-		(B.label_x, B.label_y)=(BG2.x, BG2.y-(2.0*IN))
+		# add grid, dart, grainline, seamline & cuttingline paths to pattern
 		B.add(grainLinePath("grainLine", "Jeans Back Grainline", BG1, BG2))
 		B.add(Path('reference','Bgrid', 'Trousers Back Gridline', Bgrid, 'gridline_style'))
 		B.add(Path('pattern', 'dartline', 'Jeans Back Dartline', d, 'dart_style'))
 		B.add(Path('pattern', 'seamLine', 'Jeans Back Seamline', s, 'seamline_path_style'))
 		B.add(Path('pattern', 'cuttingLine', 'Jeans Back Cuttingline', c, 'cuttingline_style'))
 
-		# Jeans Waistband
+		# Jeans Waistband 'C'
 		jeans.add(PatternPiece('pattern', 'LeftWaistband', letter='C', fabric=2, interfacing=1, lining=0))
 		C=jeans.LeftWaistband
 		CSTART=0.0
@@ -436,11 +435,12 @@ class PatternDesign():
 		Cp10=rPointP(C, 'Cp10', pnt)
 		Cp11=rPointP(C, 'Cp11', pntIntersectLinesP(Cp9, Cp10, BD1, BD3))
 		Cp12=rPointP(C, 'Cp12', pntIntersectLinesP(Cp9, Cp10, BD1, BD4))
-		#grainline points
+		#grainline points & label location
 		CG1=rPoint(C, 'CG1', Cp4.x, Cp4.y - (0.5*IN))
 		CG2=rPoint(C, 'CG2', Cp4.x + (3.0*IN), CG1.y)
+		(C.label_x, C.label_y)=(CG2.x, CG2.y)
 
-		#Left Waistband Grid
+		#grid 'Cgrid' path
 		Cgrid=path()
 		addToPath(Cgrid, 'M', Cp1, 'L', Cp4, 'M', Cp3, 'L', Cp2)
 		addToPath(Cgrid, 'M', Cp5, 'L', Cp7, 'M', Cp8, 'L', Cp6)
@@ -448,7 +448,7 @@ class PatternDesign():
 		addToPath(Cgrid, 'M', Cp3, 'L', Cp8)
 		addToPath(Cgrid, 'M', Cp4, 'L', Cp7)
 		addToPath(Cgrid, 'M', Cp9, 'L', Cp12, 'M', Cp11, 'L', Cp10)
-		# Left Waistband paths
+		# seamline 's' & cuttingline 'c' paths
 		s=path()
 		c=path()
 		paths=pointList(s, c)
@@ -457,10 +457,9 @@ class PatternDesign():
 			addToPath(p, 'M', Cp5, 'L', Cp7, 'M', Cp8, 'L', Cp6)
 			addToPath(p, 'M', Cp1, 'L', Cp5)
 			addToPath(p, 'M', Cp9, 'L', Cp12, 'M', Cp11, 'L', Cp10)
-		# create label location, grainline, seamline & cuttingline paths
-		(C.label_x, C.label_y)=(CG2.x, CG2.y)
+		# add grainline, seamline & cuttingline paths to pattern
 		C.add(grainLinePath("grainLine", "Left Waistband Grainline", CG1, CG2))
-		C.add(Path('reference','Cgrid', 'Left Waistband Reference Grid', Cgrid, 'gridline_style'))
+		C.add(Path('reference','grid', 'Left Waistband Reference Grid', Cgrid, 'gridline_style'))
 		C.add(Path('pattern', 'seamLine', 'Left Waistband Seamline', s, 'seamline_path_style'))
 		C.add(Path('pattern', 'cuttingLine', 'Left Waistband Cuttingline', c, 'cuttingline_style'))
 
