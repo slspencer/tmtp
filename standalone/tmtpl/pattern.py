@@ -23,7 +23,7 @@ import math
 import json
 import string
 import re
-from math import sin, cos
+from math import sin, cos, pi
 
 from pysvg.filter import *
 from pysvg.gradient import *
@@ -209,9 +209,10 @@ def slopeOfLineP(P1, p2):
 
 def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     """
-    Accepts two pairs of coordinates and an optional rotation angle
-    returns a point along the line (can be extended from the line)
-    the point is optionally rotated about the first point by the rotation angle in degrees
+    Accepts two pairs of coordinates x1,y1,x2,y2 and an optional rotation angle
+    Returns x,y measured from x1, y1 towards x2,y2
+    Negative distance returns x,y measured in opposite direction
+    The point is optionally rotated about the first point by the rotation angle in degrees
     """
     lineangle = angleOfLine(x1, y1, x2, y2)
     angle = lineangle + (rotation * (math.pi/180))
@@ -219,14 +220,62 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
     y = (distance * math.sin(angle)) + y1
     return (x, y)
 
+def pointOnLine(x1, y1, x2, y2, distance, rotation = 0):
+    """
+    Accepts x1,y1,x2,y2 and an optional rotation angle
+    Returns x, y values on the line measured from x1,y1 towards x2,y2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    x, y=pointAlongLine(x1, y1, x2, y2, distance, rotation)
+    return (x, y)
+
+def pntOnLine(x1, y1, x2, y2, distance, rotation = 0):
+    """
+    Accepts x1,y1,x2,y2 and an optional rotation angle
+    Returns a point object pnt on the line measured from x1,y1 towards x2,y2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    pnt=Pnt()
+    pnt.x, pnt.y=pointAlongLine(x1, y1, x2, y2, distance, rotation)
+    return pnt
+
 def pointOnLineP(p1, p2, distance, rotation = 0):
     """
-    Accepts two points and an optional rotation angle
+    Accepts two points p1, p2 and an optional rotation angle
     Returns x, y values on the line measured from p1
     the point is optionally rotated about the first point by the rotation angle in degrees
     """
     x, y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
     return (x, y)
+
+def pntOnLineP(p1, p2, distance, rotation = 0):
+    """
+    Accepts two points p1, p2 and an optional rotation angle
+    Returns a point object pnt on the line, measured from p1, towards p2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    pnt=Pnt()
+    pnt.x, pnt.y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+    return pnt
+
+def pointOffLine(x1, y1, x2, y2, distance, rotation = 0):
+    """
+    Accepts two point objects and an optional rotation angle, returns x, y
+    Returns x, y values away from the line, measured from p1, opposite direction from p2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    (x, y)=pointAlongLine(x1, y1, x2, y2, -distance, rotation)
+    return x, y
+
+def pntOffLine(x1, y1, x2, y2, distance, rotation = 0):
+    """
+    Accepts x1,y1,x2,y2 and an optional rotation angle
+    Returns a point object pnt, measured from p1, opposite direction from p2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    pnt=Pnt()
+    pnt.x, pnt.y=pointAlongLine(x1, y1, x2, y2, -distance, rotation)
+    return pnt
 
 def pointOffLineP(p1, p2, distance, rotation = 0):
     """
@@ -237,28 +286,14 @@ def pointOffLineP(p1, p2, distance, rotation = 0):
     (x, y)=pointAlongLine(p1.x, p1.y, p2.x, p2.y, -distance, rotation)
     return x, y
 
-def pntOnLineP(p1, p2, distance, rotation = 0):
-    """
-    Accepts two point objects and an optional rotation angle
-    Returns a point object on the line, measured from p1, towards p2
-    the point is optionally rotated about the first point by the rotation angle in degrees
-    """
-    x, y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
-    pnt=Pnt()
-    pnt.x=x
-    pnt.y=y
-    return pnt
-
 def pntOffLineP(p1, p2, distance, rotation = 0):
     """
     Accepts two points and an optional rotation angle
-    Returns a point object, measured from p1, away from p2
+    Returns a point object pnt, measured from p1, away from p2
     the point is optionally rotated about the first point by the rotation angle in degrees
     """
-    x, y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, -distance, rotation)
     pnt=Pnt()
-    pnt.x=x
-    pnt.y=y
+    pnt.x, pnt.y=pointAlongLine(p1.x, p1.y, p2.x, p2.y, -distance, rotation)
     return pnt
 
 def boundingBox(path):
@@ -599,7 +634,51 @@ def addToPath(p, *args):
 	return
 
 
+def connectObjects(connector_pnts, old_pnts):
+		# connector[0] and connector[1] are the connecting points of the stationary object
+		# connector[1] and connector[2] are the connecting points of the object to be translated & rotated
+		# 1st 2 points in old_pnts must be connector[2] and connector[3]
 
+		t_pnts=[]
+		r_pnts=[]
+
+		#translate
+		(dx,dy)=(connector_pnts[0].x - connector_pnts[2].x), (connector_pnts[0].y - connector_pnts[2].y)
+		i=0
+		for old_pnt in old_pnts:
+			t_pnts.append(Pnt())
+			t_pnts[i].x=old_pnts[i].x + dx
+			t_pnts[i].y=old_pnts[i].y + dy
+			i=i+1
+
+		#rotate
+		rise1=-(connector_pnts[1].y - connector_pnts[0].y)
+		run1=(connector_pnts[1].x - connector_pnts[0].x)
+		angle1=angleFromSlope(rise1, run1) # angle of connecting line of 1st object (connector1 to connector0)
+
+		rise2=-(t_pnts[1].y - connector_pnts[0].y)
+		run2=(t_pnts[1].x - connector_pnts[0].x)
+		angle2=angleFromSlope(rise2, run2) # angle of connecting line of translated 2nd object (t_pnts1 to connector0)
+
+		rotation_angle=(angle2 - angle1) # subtract this angle from each angle of 2nd object's points towards connector0
+
+		i=1 # don't rotate the 1st translated point, it should now be equal to connector0
+		r_pnts.append(t_pnts[0])
+		for t_pnt in t_pnts:
+			if  (i != len(t_pnts)):
+				distance=lineLength(connector_pnts[0].x, connector_pnts[0].y, t_pnts[i].x, t_pnts[i].y)
+				rise=-(t_pnts[i].y - connector_pnts[0].y)
+				run=(t_pnts[i].x - connector_pnts[0].x)
+				translated_angle=angleFromSlope(rise, run)
+				r_angle=translated_angle - rotation_angle
+				(x, y)=pointFromDistanceAndAngle(connector_pnts[0].x, connector_pnts[0].y, distance, r_angle)
+				#add to r_pnts[]
+				r_pnts.append(Pnt())
+				r_pnts[i].x=x
+				r_pnts[i].y=y
+				i=i+1
+
+		return r_pnts
 
 
 # ---- Pattern Classes ----------------------------------------
