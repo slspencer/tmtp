@@ -525,45 +525,56 @@ def lineLengthP(p1, p2):
     length =  math.sqrt(((p2.x-p1.x)**2)+((p2.y-p1.y)**2))
     return length
 
+
 def intersectLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
-    """
-    Find intersection between two lines. Accepts 8 values (begin & end for 2 lines), returns x & y values.
-    Intersection does not have to be within the supplied line segments
-    """
-    # TODO this can be improved
+	"""
+	Find intersection between two lines. Accepts 8 values (begin & end for 2 lines), returns x & y values.
+	Intersection does not have to be within the supplied line segments
+	"""
+	# TODO this can be improved
 
-    # Find point x,y where m1*x+b1=m2*x + b2
-    # m = (ystart1-y2)/(xstart1-xend1) --> find slope for each line
-    # y = mx + b --> b = y - mx  --> find b for each line
+	# Find point x,y where m1*x+b1=m2*x + b2
+	# m = (ystart1-y2)/(xstart1-xend1) --> find slope for each line
+	# y = mx + b --> b = y - mx  --> find b for each line
+	FIRST_VERTICAL=''
+	SECOND_VERTICAL=''
+	if (xend1==xstart1):
+		# vertical 1st line
+		FIRST_VERTICAL='True'
+		x = xstart1
+	else:
+		m1= slopeOfLine(xstart1, ystart1, xend1, yend1)
+		b1 = (ystart1 - (m1 * xstart1)) # b=y-mx
 
-    try:
-        m1= slopeOfLine(xstart1, ystart1, xend1, yend1)
-    except ZeroDivisionError:
-        # vertical line
-        x = xstart1
-    b1 = (ystart1 - (m1 * xstart1)) # b=y-mx
+	if (xend2==xstart2):
+		# vertical 2nd line
+		SECOND_VERTICAL='True'
+		x = xstart2
+	else:
+		m2 = slopeOfLine(xstart2, ystart2, xend2, yend2)
+		b2 = (ystart2 - (m2 * xstart2))
 
-    try:
-        m2 = slopeOfLine(xstart2, ystart2, xend2, yend2)
-    except ZeroDivisionError:
-        # vertical line
-        x = xstart2
-    b2 = (ystart2 - (m2 * xstart2))
+	# test for parallel
+	if (FIRST_VERTICAL and SECOND_VERTICAL):
+		debug('***** Parallel lines in intersectLines *****')
+		return None, None
+	elif (not (FIRST_VERTICAL or SECOND_VERTICAL)):
+			if 	(abs(b2 - b1) < 0.01):
+				debug('***** Parallel lines in intersectLines *****')
+				return None, None
 
-    # test for parallel
-    if abs(b2 - b1) < 0.01:
-        debug('***** Parallel lines in intersectLines *****')
-        return None, None
-
-    # find x where m1*xstart1 + b1 = m2*xend1 + b2, so that xstart1 = x & xend1 =x
-    # m1*x + b1        = m2*x + b2
-    # m1*x - m2*x      =  b2 - b1
-    # x( m1 - m2 )   = b2 - b1
-    # x = (b2-b1)/(m1-m2)
-    x = (b2 - b1) / (m1 - m2)
-    # find y where y = m1*x + b1  =  --> arbitrary choice, could have used y = m2*x + b2
-    y = (m1 * x) + b1
-    return x, y
+	# find x where m1*x + b1 = m2*x + b2
+	# m1*x - m2*x	 =  b2 - b1
+	# x( m1 - m2 )  = b2 - b1
+	# x = (b2-b1)/(m1-m2)
+	if (FIRST_VERTICAL):
+		y = m2*x + b2
+	elif (SECOND_VERTICAL):
+		y = m1*x + b1
+	else:
+		x = (b2 - b1) / (m1 - m2)
+		y = (m1 * x) + b1 # arbitrary choice, could have used y = m2*x + b2
+	return x, y
 
 def intersectLinesP(p1, p2, p3, p4):
     """
