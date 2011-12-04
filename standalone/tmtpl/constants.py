@@ -19,15 +19,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # measurement constants
-IN_TO_PT = (72.72/1.0) #convert inches to printer's points
-CM_TO_PT = (72.72/2.54) #convert centimeters to printer's points
 IN_TO_CM = (2.54/1.0) #convert inches to centimeters
 CM_TO_IN = (1/2.54) #convert centimeters to inches
+
+IN_TO_PT = (72.72/1.0) #convert inches to printer's points
+CM_TO_PT = (72.72/2.54) #convert centimeters to printer's points
+PT_TO_IN = (1/IN_TO_PT)
+PT_TO_CM = (1/CM_TO_PT)
+
 IN_TO_PX = (90/1.0) #convert inches to pixels - Inkscape value
 CM_TO_PX = (90/2.54) #convert cm to px - Inkscape value
+PX_TO_IN = (1/IN_TO_PX)
+PX_TO_CM = (1/CM_TO_PX)
 
-CM=CM_TO_PX
-IN=IN_TO_PX
 
 # sewing constants
 QUARTER_SEAM_ALLOWANCE=(IN_TO_PX*1/4.0) #1/4" seam allowance
