@@ -84,7 +84,8 @@ class PatternDesign():
 		TG=TestGrid('notes', 'testgrid', self.cfg['paper_width']/3.0, 0, stylename='cuttingline_style')
 		doc.add(TG)
 
-		#client & pattern measurements - in pixels!
+		# All measurements are in pixels...CM=CM_TO_PX, IN=IN_TO_PX, etc.
+		#client & pattern measurements
 		FRONTWAISTARC=(cd.front_waist_arc)
 		FRONTABDOMENARC=(cd.front_abdomen_arc)
 		FRONTHIPARC=(cd.front_hip_arc)
@@ -106,6 +107,7 @@ class PatternDesign():
 		RISELINE=WAISTLINE + cd.rise
 		HIPLINE=WAISTLINE + (2/3.0)*(RISELINE)
 		HEMLINE=WAISTLINE + cd.outside_leg
+		THIGHLINE=RISELINE + (1.0*IN)
 		KNEELINE=RISELINE+(abs(HEMLINE-RISELINE)/2.0)-(1.0*IN)
 
 		WAISTBAND=(1.0*IN) # Height of Waistband
@@ -137,6 +139,7 @@ class PatternDesign():
 		AAbdomen=rPoint(A, 'AAbdomen', ASTART, ABDOMENLINE)
 		AHip=rPoint(A, 'AHip', ASTART, HIPLINE)
 		ARise=rPoint(A, 'ARise', ASTART, RISELINE)
+		AThigh=rPoint(A, 'AThigh', ASTART, THIGHLINE)
 
 		Ap1=rPoint(A, 'Ap1', AEND, WAISTLINE) # right side of reference grid
 		Ap5=rPoint(A, 'Ap5', AEND/2.0, WAISTLINE) # dart midpoint
@@ -246,14 +249,14 @@ class PatternDesign():
 			cAC2a=cPointP(A, 'cAC2a', pntOnLineP(Ap14, Ap13, (lineLengthP(Ap14, Ap13)/4.0)))
 
 		# points to create Jeans Waistband pattern 'C'
-		Ap25=rPointP(A, 'Ap25', pntOnLineP(AW1, AC2, WAISTBAND)) # waistband below center waist
+		AWB1=rPointP(A, 'AWB1', pntOnLineP(AW1, AC2, WAISTBAND)) # waistband below center waist
 		if FRONTNORMALWAIST:
 			pnt=pntOnLineP(AW5, cAS1a, WAISTBAND)
 		else:
 			pnt=pntOnLineP(AW5, cAS2a, WAISTBAND)
-		Ap28=rPointP(A, 'Ap28', pnt) # waistband line 1in. below side waist
-		Ap26=rPointP(A, 'Ap26', pntIntersectLinesP(Ap25, Ap28, Ap8, Ap7)) # waistband line at inside dart leg
-		Ap27=rPointP(A, 'Ap27', pntIntersectLinesP(Ap25, Ap28, Ap8, Ap6)) # waistband line at outside dart leg
+		AWB4=rPointP(A, 'AWB4', pnt) # waistband line 1in. below side waist
+		AWB2=rPointP(A, 'AWB2', pntIntersectLinesP(AWB1, AWB4, Ap8, Ap7)) # waistband line at inside dart leg
+		AWB3=rPointP(A, 'AWB3', pntIntersectLinesP(AWB1, AWB4, Ap8, Ap6)) # waistband line at outside dart leg
 
 		#front grainline AG & label location
 		AG1=rPoint(A, 'AG1', Ap16.x, HIPLINE)
@@ -265,7 +268,7 @@ class PatternDesign():
 		#   vertical Agrid
 		addToPath(Agrid, 'M', AStart, 'L', ARise, 'M', Ap5, 'L', Ap8, 'M', Ap16, 'L', Ap20, 'M', Ap3, 'L', Ap2, 'M', AEnd, 'L', Ap13)
 		#   horizontal Agridid
-		addToPath(Agrid, 'M', AStart, 'L', AEnd, 'M', AWaist, 'L', Ap1, 'M', Ap23, 'L', Ap24, 'M', AHip, 'L', Ap11, 'M', ARise, 'L', Ap15, 'M', Ap18, 'L', Ap19, 'M', Ap25, 'L', Ap26, 'M', Ap27, 'L', Ap28)
+		addToPath(Agrid, 'M', AStart, 'L', AEnd, 'M', AWaist, 'L', Ap1, 'M', Ap23, 'L', Ap24, 'M', AHip, 'L', Ap11, 'M', ARise, 'L', Ap15, 'M', Ap18, 'L', Ap19, 'M', AWB1, 'L', AWB2, 'M', AWB3, 'L', AWB4)
 		#   diagonal grid
 		addToPath(Agrid, 'M', Ap3, 'L', Ap4, 'M', Ap13, 'L', Ap14)
 		# dart 'd' path
@@ -434,19 +437,19 @@ class PatternDesign():
 		angle1=angleFromSlope(-run, rise) # inverse rise/run --> -run/rise
 		pnt1=pntFromDistanceAndAngleP(BW1, WAISTBAND, angle1)
 		pnt2=pntFromDistanceAndAngleP(BW2, WAISTBAND, angle1)
-		Bp26=rPointP(B, 'Bp26', pntIntersectLinesP(pnt1, pnt2, BW1, BC2))
-		Bp27=rPointP(B, 'Bp27', pntIntersectLinesP(pnt1, pnt2, BW2, BD1))
+		BWB1=rPointP(B, 'BWB1', pntIntersectLinesP(pnt1, pnt2, BW1, BC2))
+		BWB2=rPointP(B, 'BWB2', pntIntersectLinesP(pnt1, pnt2, BW2, BD1))
 		# back waistband, side section
 		rise=-(BW4.y - BW5.y)# negate this b/c y increases from top to bottom of drawing
 		run=BW4.x - BW5.y
 		angle1=angleFromSlope(-run, rise) # inverse rise/run --> -run/rise
 		pnt1=pntFromDistanceAndAngleP(BW4, WAISTBAND, angle1)
 		pnt2=pntFromDistanceAndAngleP(BW5, WAISTBAND, angle1)
-		Bp28=rPointP(B, 'Bp28', pntIntersectLinesP(pnt1, pnt2, BW4, BD1))
+		BWB3=rPointP(B, 'BWB3', pntIntersectLinesP(pnt1, pnt2, BW4, BD1))
 		if BACKNORMALWAIST:
-			Bp29=rPointP(B, 'Bp29', pntIntersectLinesP(pnt1, pnt2, BW5, cBS1a))
+			BWB4=rPointP(B, 'BWB4', pntIntersectLinesP(pnt1, pnt2, BW5, cBS1a))
 		else:
-			Bp29=rPointP(B, 'Bp29', pntIntersectLinesP(pnt1, pnt2, BW5, cBS2a))
+			BWB4=rPointP(B, 'BWB4', pntIntersectLinesP(pnt1, pnt2, BW5, cBS2a))
 
 		#back grainline & label location
 		BG1=rPoint(B, 'BG1', Bp17.x, HIPLINE)
@@ -460,7 +463,7 @@ class PatternDesign():
 		#   horizontal grid
 		addToPath(Bgrid, 'M', BStart, 'L', BEnd, 'M', BWaist, 'L', Bp2, 'M', BHip, 'L', Bp11, 'M', BRise, 'L', Bp15, 'M', Bp19, 'L', Bp20)
 		#   diagonal grid
-		addToPath(Bgrid, 'M', BW1, 'L', BW5, 'M', Bp13, 'L', Bp14, 'M', Bp26, 'L', Bp27, 'M', Bp28, 'L', Bp29)
+		addToPath(Bgrid, 'M', BW1, 'L', BW5, 'M', Bp13, 'L', Bp14, 'M', BWB1, 'L', BWB2, 'M', BWB3, 'L', BWB4)
 		#dart 'd' path
 		d=path()
 		addToPath(d, 'M', BD1, 'L', BD2, 'M', BD3, 'L', BD1, 'L', BD4)
@@ -497,47 +500,47 @@ class PatternDesign():
 		CStart=rPoint(C, 'CStart', BSTART, BSTART)
 		CEnd=rPoint(C, 'CEnd', BEND, BSTART)
 
-		CX1=rPoint(C,'CX1', Ap28.x, Ap28.y-WAISTBAND) # reference point to center the waistband
+		CX1=rPoint(C,'CX1', AWB4.x, AWB4.y-WAISTBAND) # reference point to center the waistband
 
-		connector0=Ap28 #object1..front waistband,center section, right side, low...Ap28 <===> Ap28 (connector2)...no change
-		connector1=CX1 # object1...point vertical from Ap28...CX1<===> AW5 ...straightens up 1st object
-		connector2=Ap28 #object2...front waistband,side section, left side, low
+		connector0=AWB4 #object1..front waistband,center section, right side, low...AWB4 <===> AWB4 (connector2)...no change
+		connector1=CX1 # object1...point vertical from AWB4...CX1<===> AW5 ...straightens up 1st object
+		connector2=AWB4 #object2...front waistband,side section, left side, low
 		connector3=AW1  #object2...front waistband,side section, left side, high
 		connector_pnts=pointList(connector0, connector1, connector2, connector3)
-		old_pnts=pointList(Ap28, AW5, AW4, Ap27) # front waistband, side section old points
+		old_pnts=pointList(AWB4, AW5, AW4, AWB3) # front waistband, side section old points
 		new_pnts=connectObjects(connector_pnts, old_pnts) # front waistband, side section new points
 		C8=rPoint(C, 'C8', new_pnts[0].x, new_pnts[0].y)
 		C3=rPoint(C, 'C3', new_pnts[1].x, new_pnts[1].y)
 		C2=rPoint(C, 'C2', new_pnts[2].x, new_pnts[2].y)
 		C9=rPoint(C, 'C9', new_pnts[3].x, new_pnts[3].y)
 
-		connector0=Ap28 #object1..Ap28 <===> Bp29
+		connector0=AWB4 #object1..AWB4 <===> BWB4
 		connector1=CX1 #object1...CX1 <===> BW5
-		connector2=Bp29 #object2...back waistband,side section, right side, low
+		connector2=BWB4 #object2...back waistband,side section, right side, low
 		connector3=BW5  #object2...back waistband,side section, right side, high
 		connector_pnts=pointList(connector0, connector1, connector2, connector3)
-		old_pnts=pointList(Bp29, BW5, BW4, Bp28) # front waistband, side section old points
+		old_pnts=pointList(BWB4, BW5, BW4, BWB3) # front waistband, side section old points
 		new_pnts=connectObjects(connector_pnts, old_pnts) # front waistband, side section new points
 		# new_pnts[0] =C8 ( on lower edge of waistband), new_pnts[1] =C3 (on upper edge)
 		C4=rPoint(C, 'C4', new_pnts[2].x, new_pnts[2].y)
 		C7=rPoint(C, 'C7', new_pnts[3].x, new_pnts[3].y)
 
-		connector0=C9 #object2...front waistband,side section,right side, low...C9 <===> Ap26
+		connector0=C9 #object2...front waistband,side section,right side, low...C9 <===> AWB2
 		connector1=C2 #object2...front waistband,side section,right side, high...C2<===> AW2
-		connector2=Ap26 #object3...front waistband,center section,right side,low
+		connector2=AWB2 #object3...front waistband,center section,right side,low
 		connector3=AW2 #object3...front waistband,center section,right side,high
 		connector_pnts=pointList(connector0, connector1, connector2, connector3)
-		old_pnts=pointList(Ap26, AW2, AW1, Ap25)
+		old_pnts=pointList(AWB2, AW2, AW1, AWB1)
 		new_pnts=connectObjects(connector_pnts, old_pnts)
 		C1=rPoint(C, 'C1', new_pnts[2].x, new_pnts[2].y)
 		C10=rPoint(C, 'C10', new_pnts[3].x, new_pnts[3].y)
 
-		connector0=C7 #object3...back waistband,side section,left side, low...C7 <===> Bp27 (connector6)
+		connector0=C7 #object3...back waistband,side section,left side, low...C7 <===> BWB2 (connector6)
 		connector1=C4 #object3...front waistband,side section,left side, high...C4 <===> BW2 (connector7)
-		connector2=Bp27 #object4...back waistband,center section,right side,low
+		connector2=BWB2 #object4...back waistband,center section,right side,low
 		connector3=BW2 #object4...back waistband,center section,right side,high
 		connector_pnts=pointList(connector0, connector1, connector2, connector3)
-		old_pnts=pointList(Bp27, BW2, BW1, Bp26)
+		old_pnts=pointList(BWB2, BW2, BW1, BWB1)
 		new_pnts=connectObjects(connector_pnts, old_pnts)
 		C5=rPoint(C, 'C5', new_pnts[2].x, new_pnts[2].y)
 		C6=rPoint(C, 'C6', new_pnts[3].x, new_pnts[3].y)
