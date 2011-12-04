@@ -84,16 +84,25 @@ class PatternDesign():
 		TG=TestGrid('notes', 'testgrid', self.cfg['paper_width']/3.0, 0, stylename='cuttingline_style')
 		doc.add(TG)
 
-		#client & pattern measurements
-		FRONTWAISTARC=(cd.front_waist_width/2.0)
-		FRONTABDOMENARC=(cd.front_abdomen_width/2.0)
-		FRONTHIPARC=(cd.front_hip_width/2.0)
-		BACKWAISTARC=(cd.back_waist_width/2.0)
-		BACKABDOMENARC=(cd.back_abdomen_width/2.0)
-		BACKHIPARC=(cd.back_hip_width/2.0)
+		#client & pattern measurements - in pixels!
+		FRONTWAISTARC=(cd.front_waist_arc)
+		FRONTABDOMENARC=(cd.front_abdomen_arc)
+		FRONTHIPARC=(cd.front_hip_arc)
+		BACKWAISTARC=(cd.waist_circumference - (2*FRONTWAISTARC))/2.0
+		BACKABDOMENARC=(cd.abdomen_circumference - (2*FRONTABDOMENARC))/2.0
+		BACKHIPARC=(cd.hip_circumference - (2*FRONTHIPARC))/2.0
+		THIGHARC=(cd.thigh_circumference/4.0)
+
+		print 'Waist =',  cd.waist_circumference * PX_TO_IN,  cd.waist_circumference * PX_TO_CM
+		print 'FrontWaistArc = ',  FRONTWAISTARC* PX_TO_IN, FRONTWAISTARC* PX_TO_CM
+		print 'BackWaistArc =', BACKWAISTARC* PX_TO_IN,  BACKWAISTARC* PX_TO_CM
+
+		print 'Hip =', cd.hip_circumference * PX_TO_IN,  cd.hip_circumference * PX_TO_CM
+		print 'FrontHipArc =', FRONTHIPARC * PX_TO_IN,  FRONTHIPARC * PX_TO_CM
+		print 'BackHipArc =',  BACKHIPARC * PX_TO_IN, BACKHIPARC * PX_TO_CM
 
 		WAISTLINE=(1.0*IN) # Jeans waist is 1" lower than actual waist
-		ABDOMENLINE=WAISTLINE + cd.front_abdomen_height
+		ABDOMENLINE=WAISTLINE + cd.abdomen_height
 		RISELINE=WAISTLINE + cd.rise
 		HIPLINE=WAISTLINE + (2/3.0)*(RISELINE)
 		HEMLINE=WAISTLINE + cd.outside_leg
@@ -267,7 +276,9 @@ class PatternDesign():
 		c=path()
 		paths=pointList(s, c)
 		for p in paths:
-			addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
+			# - addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) --> waistband from waist to 1" below waist
+			# - waistband from 1" below waist to 2" below waist
+			addToPath(p, 'M', A,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
 			if (FRONTNORMALWAIST):
 				addToPath(p, 'C', cAS1a, cAS1b, AS1)
 			else:
