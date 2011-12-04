@@ -281,7 +281,7 @@ class PatternDesign():
 		for p in paths:
 			# - addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) --> waistband from waist to 1" below waist
 			# - waistband from 1" below waist to 2" below waist
-			addToPath(p, 'M', A,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
+			addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
 			if (FRONTNORMALWAIST):
 				addToPath(p, 'C', cAS1a, cAS1b, AS1)
 			else:
