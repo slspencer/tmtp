@@ -86,25 +86,29 @@ class PatternDesign():
 
 		# All measurements are in pixels...CM=CM_TO_PX, IN=IN_TO_PX, etc.
 		#client & pattern measurements
-		FRONTWAISTARC=(cd.front_waist_arc)
-		FRONTABDOMENARC=(cd.front_abdomen_arc)
-		FRONTHIPARC=(cd.front_hip_arc)
-		BACKWAISTARC=(cd.waist_circumference - (2*FRONTWAISTARC))/2.0
-		BACKABDOMENARC=(cd.abdomen_circumference - (2*FRONTABDOMENARC))/2.0
-		BACKHIPARC=(cd.hip_circumference - (2*FRONTHIPARC))/2.0
-		THIGHARC=(cd.thigh_circumference/4.0)
+		FRONT_WAIST_ARC=(cd.front_waist_arc)
+		FRONT_ABDOMEN_ARC=(cd.front_abdomen_arc)
+		FRONT_HIP_ARC=(cd.front_hip_arc)
+		BACK_WAIST_ARC=(cd.waist_circumference - (2*FRONT_WAIST_ARC))/2.0
+		BACK_ABDOMEN_ARC=(cd.abdomen_circumference - (2*FRONT_ABDOMEN_ARC))/2.0
+		BACK_HIP_ARC=(cd.hip_circumference - (2*FRONT_HIP_ARC))/2.0
+		THIGH_ARC=(cd.thigh_circumference/4.0)
+		FRONT_RISE=(cd.front_rise)
+		SIDE_RISE=(cd.side_rise)
+		BACK_RISE=(cd.back_rise)
 
 		print 'Waist =',  cd.waist_circumference * PX_TO_IN,  cd.waist_circumference * PX_TO_CM
-		print 'FrontWaistArc = ',  FRONTWAISTARC* PX_TO_IN, FRONTWAISTARC* PX_TO_CM
-		print 'BackWaistArc =', BACKWAISTARC* PX_TO_IN,  BACKWAISTARC* PX_TO_CM
+		print 'FRONT_WAIST_ARC = ',  FRONT_WAIST_ARC* PX_TO_IN, FRONT_WAIST_ARC* PX_TO_CM
+		print 'BACK_WAIST_ARC =', BACK_WAIST_ARC* PX_TO_IN,  BACK_WAIST_ARC* PX_TO_CM
+		print 'THIGH_ARC =',  THIGH_ARC*PX_TO_IN,  THIGH_ARC*PX_TO_CM
 
 		print 'Hip =', cd.hip_circumference * PX_TO_IN,  cd.hip_circumference * PX_TO_CM
-		print 'FrontHipArc =', FRONTHIPARC * PX_TO_IN,  FRONTHIPARC * PX_TO_CM
-		print 'BackHipArc =',  BACKHIPARC * PX_TO_IN, BACKHIPARC * PX_TO_CM
+		print 'FRONT_HIP_ARC =', FRONT_HIP_ARC * PX_TO_IN,  FRONT_HIP_ARC * PX_TO_CM
+		print 'BACK_HIP_ARC =',  BACK_HIP_ARC * PX_TO_IN, BACK_HIP_ARC * PX_TO_CM
 
 		WAISTLINE=(1.0*IN) # Jeans waist is 1" lower than actual waist
 		ABDOMENLINE=WAISTLINE + cd.abdomen_height
-		RISELINE=WAISTLINE + cd.rise
+		RISELINE=WAISTLINE + max(cd.front_rise, cd.side_rise, cd.back_rise)
 		HIPLINE=WAISTLINE + (2/3.0)*(RISELINE)
 		HEMLINE=WAISTLINE + cd.outside_leg
 		THIGHLINE=RISELINE + (1.0*IN)
@@ -112,15 +116,25 @@ class PatternDesign():
 
 		WAISTBAND=(1.0*IN) # Height of Waistband
 
-		if ((FRONTHIPARC-FRONTWAISTARC)>= (2.0*IN)):
-			FRONTNORMALWAIST=1
+		if ((FRONT_HIP_ARC-FRONT_WAIST_ARC)>= (2.0*IN)):
+			FRONT_NORMAL_WAIST=1
 		else:
-			FRONTNORMALWAIST=0
+			FRONT_NORMAL_WAIST=0
 
-		if ((BACKHIPARC-BACKWAISTARC)>= (2.0*IN)):
-			BACKNORMALWAIST=1
+		if ((BACK_HIP_ARC-BACK_WAIST_ARC)>= (2.0*IN)):
+			BACK_NORMAL_WAIST=1
 		else:
-			BACKNORMALWAIST=0
+			BACK_NORMAL_WAIST=0
+
+		if (FRONT_HIP_ARC - (2*THIGH_ARC)>=(1.0*IN)):
+			FRONTNORMALTHIGH=1
+		else:
+			FRONTNORMALTHIGH=0
+
+		if (BACK_HIP_ARC - (2*THIGH_ARC) >= (1.0*IN)):
+			BACK_NORMAL_THIGH=1
+		else:
+			BACK_NORMAL_THIGH=0
 
 		#Begin Jeans Pattern Set
 		jeans=Pattern('jeans')
@@ -132,7 +146,7 @@ class PatternDesign():
 		jeans.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
 		A=jeans.front
 		ASTART=0.0
-		AEND=(FRONTHIPARC+((1/8.0)*IN))
+		AEND=(FRONT_HIP_ARC+((1/8.0)*IN))
 		AStart=rPoint(A, 'AStart', ASTART, ASTART)
 		AEnd=rPoint(A, 'AEnd', AEND, ASTART)
 		AWaist=rPoint(A, 'AWaist', ASTART, WAISTLINE)
@@ -146,9 +160,9 @@ class PatternDesign():
 		Ap6=rPoint(A, 'Ap6', Ap5.x-(.25*IN), WAISTLINE) #dart outside leg (left on pattern)
 		Ap7=rPoint(A, 'Ap7', Ap5.x+(.25*IN), WAISTLINE) # dart inside leg (right on pattern)
 		Ap8=rPoint(A, 'Ap8', Ap5.x, Ap5.y+(2.5*IN)) # dart point
-		Ap2=rPoint(A, 'Ap2', Ap7.x+(FRONTWAISTARC/2.0), WAISTLINE)
+		Ap2=rPoint(A, 'Ap2', Ap7.x+(FRONT_WAIST_ARC/2.0), WAISTLINE)
 		Ap3=rPoint(A, 'Ap3', Ap2.x, WAISTLINE-(0.25)*IN) # center waist
-		Ap4=rPoint(A, 'Ap4', Ap6.x-(FRONTWAISTARC/2.0), WAISTLINE) # side waist
+		Ap4=rPoint(A, 'Ap4', Ap6.x-(FRONT_WAIST_ARC/2.0), WAISTLINE) # side waist
 		Ap9=rPoint(A, 'Ap9', AEND, (RISELINE/2.0)) # center front 'pivot' point from crotch curve to front fly
 		Ap10=rPoint(A, 'Ap10', ASTART, HIPLINE)
 		Ap11=rPoint(A, 'Ap11', AEND, HIPLINE)
@@ -157,14 +171,18 @@ class PatternDesign():
 		Ap14=rPointP(A, 'Ap14', pntFromDistanceAndAngleP(Ap13, (1.25*IN), angleFromSlope(1.0, 1.0))) # inside crotch curve point
 		Ap15=rPoint(A, 'Ap15', Ap13.x+(2.0*IN), RISELINE) # point of crotch
 		Ap16=rPoint(A, 'Ap16', Ap15.x/2.0, RISELINE) # creaseline point
+		ACREASELINE=Ap16.x
 		Ap17=rPoint(A, 'Ap17', Ap16.x, KNEELINE)
 		Ap18=rPoint(A, 'Ap18', Ap16.x-(4.0*IN), KNEELINE) # outside knee
 		Ap19=rPoint(A, 'Ap19', Ap16.x+(4.0*IN), KNEELINE) # inside knee
 		Ap20=rPoint(A, 'Ap20', Ap16.x, HEMLINE)
 		Ap21=rPoint(A, 'Ap21', Ap20.x-(3.5*IN), HEMLINE) # outside hem
 		Ap22=rPoint(A, 'Ap22', Ap20.x+(3.5*IN), HEMLINE) # inside hem
-		Ap23=rPoint(A, 'Ap23', Ap8.x-(FRONTABDOMENARC/2.0), ABDOMENLINE)
-		Ap24=rPoint(A, 'Ap24', Ap8.x+(FRONTABDOMENARC/2.0), ABDOMENLINE)
+		Ap23=rPoint(A, 'Ap23', Ap8.x-(FRONT_ABDOMEN_ARC/2.0), ABDOMENLINE)
+		Ap24=rPoint(A, 'Ap24', Ap8.x+(FRONT_ABDOMEN_ARC/2.0), ABDOMENLINE)
+		Ap25=rPoint(A, 'Ap25', ACREASELINE - THIGH_ARC,  THIGHLINE)
+		Ap26=rPoint(A, 'Ap26', ACREASELINE + THIGH_ARC, THIGHLINE )
+
 
 		# front waist AW
 		AW1=rPointP(A,'AW1', Ap3) #  front center seam at waist
@@ -192,31 +210,49 @@ class PatternDesign():
 		AD3=rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y-(5/8.0)*IN, AW5.x, AW5.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW4.x, AW4.y)) # outside dart leg
 		AD4=rPointP(A, 'AD4', pntIntersectLines(AW1.x, AW1.y-(5/8.0)*IN, AW2.x, AW2.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW2.x, AW2.y)) #inside dart leg
 
+		# front thigh points
+		AT1=rPointP(A, 'AT1', Ap25)
+		AT2=rPointP(A, 'AT2', Ap26)
+
 		# front side seam AS
 		AS1=rPointP(A, 'AS1', Ap10)
 		AS2=rPointP(A, 'AS2', Ap12)
 		AS3=rPointP(A, 'AS3', Ap18)
 		AS4=rPointP(A, 'AS4', Ap21)
 		# front side seam control points
-		if (FRONTNORMALWAIST):
-			cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AS1)/2.0))) # b/w AS1 & AS3
-			pnts=pointList(AW5, AS1, AS3)
-			c1, c2=myGetControlPoints('FrontSideSeam', pnts)
-			cAS1a=cPoint(A, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
-			cAS1b=cPoint(A, 'cAS1b', AS1.x, c2[0].y) #b/w AW5 & AS1
-			cAS3a=cPoint(A, 'cAS3a', AS1.x, c1[1].y) #b/w AS1 & AW5
+		if (FRONTNORMALTHIGH):
+			if (FRONT_NORMAL_WAIST):
+				cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AS1)/2.0))) # b/w AS1 & AS3
+				pnts=pointList(AW5, AS1, AS3)
+				c1, c2=myGetControlPoints('FrontSideSeam', pnts)
+				cAS1a=cPoint(A, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
+				cAS1b=cPoint(A, 'cAS1b', AS1.x, c2[0].y) #b/w AW5 & AS1
+				cAS3a=cPoint(A, 'cAS3a', AS1.x, c1[1].y) #b/w AS1 & AW5
+			else:
+				cAS2a=cPoint(A, 'cAS2a', min(AS2.x, AW5.x), AW5.y+(lineLengthP(AW5, AS2)/3.0)) # waistline slightly less than hipline (ex: 1.25") use AS2 else AW5
+				cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS2, AS3)/3.0))) # b/w AS2 & AS3
+				pnts=pointList(cAS2a, AS2, cAS3b)
+				c1, c2=myGetControlPoints('BackSideSeam', pnts)
+				cAS2b=cPoint(A, 'cAS2b', c2[0].x, c2[0].y) #b/w AW5 & AS2
+				cAS3a=cPoint(A, 'cAS3a', c1[1].x, c1[1].y) #b/w AS2 & AS3
 		else:
-			cAS2a=cPoint(A, 'cAS2a', min(AS2.x, AW5.x), AW5.y+(lineLengthP(AW5, AS2)/3.0)) # waistline slightly less than hipline (ex: 1.25") use AS2 else AW5
-			cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS2, AS3)/3.0))) # b/w AS2 & AS3
-			pnts=pointList(cAS2a, AS2, cAS3b)
-			c1, c2=myGetControlPoints('BackSideSeam', pnts)
-			cAS2b=cPoint(A, 'cAS2b', c2[0].x, c2[0].y) #b/w AW5 & AS2
-			cAS3a=cPoint(A, 'cAS3a', c1[1].x, c1[1].y) #b/w AS2 & AS3
+				cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AT1)/2.0))) # b/w AS1 & AS3
+				pnts=pointList(AW5, AS1, AT1, AS3)
+				c1, c2=myGetControlPoints('FrontSideSeam', pnts)
+				cAS1a=cPoint(A, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
+				cAS1b=cPoint(A, 'cAS1b', c2[0].x, c2[0].y) #b/w AW5 & AS1
+				cAT1a=cPoint(A, 'cAT1a', c1[1].x, c1[1].y) #b/w AS1 & AT1
+				cAT1b=cPoint(A, 'cAT1b', c2[1].x, c2[1].y) #b/w AS1 & AT1
+				cAS3a=cPoint(A, 'cAS3a', c1[2].x, c1[2].y) #b/w AS1 & AW5
 
 		# front inseam AI
 		AI1=rPointP(A, 'AI1', Ap22)
 		AI2=rPointP(A, 'AI2', Ap19)
-		AI3=rPointP(A, 'AI3', Ap15)
+		# crotch point should be at least 1/3rd inch greater than calculated inner thigh point (Ap25)
+		if (Ap15.x - (0.3*IN) > Ap26.x):
+			AI3=rPointP(A, 'AI3', Ap15)
+		else:
+			AI3=rPoint(A, 'AI3', Ap26.x + (0.3*IN), Ap15.y)
 		#front inseam control points
 		cAI3a=cPointP(A, 'cAI3a', pntOffLineP(AI2, AI1, (lineLengthP(AI2, AI3)/2.0))) #b/w AI2 & AI3
 		cAI3b=cPointP(A, 'cAI3b', pntOnLineP(AI3, cAI3a, (lineLengthP(AI2, AI3)/3.0))) #b/w AI2 & AI3
@@ -227,7 +263,7 @@ class PatternDesign():
 			FRONTLARGERWAIST=1
 		else:
 			FRONTLARGERWAIST=0
-		if (FRONTNORMALWAIST):
+		if (FRONT_NORMAL_WAIST):
 			AC2=rPointP(A, 'AC2', Ap9)
 			# straight line for upper front center seam, control points for AC1 & AC2 only, with calculated control point cAC2b to smooth into straight line
 			cAC2b=cPointP(A, 'cAC2b', pntOffLine(AC2.x, AC2.y, AW1.x, AW1.y, (lineLengthP(AC1, AC2)/2.0)))
@@ -250,7 +286,7 @@ class PatternDesign():
 
 		# points to create Jeans Waistband pattern 'C'
 		AWB1=rPointP(A, 'AWB1', pntOnLineP(AW1, AC2, WAISTBAND)) # waistband below center waist
-		if FRONTNORMALWAIST:
+		if FRONT_NORMAL_WAIST:
 			pnt=pntOnLineP(AW5, cAS1a, WAISTBAND)
 		else:
 			pnt=pntOnLineP(AW5, cAS2a, WAISTBAND)
@@ -267,13 +303,15 @@ class PatternDesign():
 		Agrid=path()
 		#   vertical Agrid
 		addToPath(Agrid, 'M', AStart, 'L', ARise, 'M', Ap5, 'L', Ap8, 'M', Ap16, 'L', Ap20, 'M', Ap3, 'L', Ap2, 'M', AEnd, 'L', Ap13)
-		#   horizontal Agridid
-		addToPath(Agrid, 'M', AStart, 'L', AEnd, 'M', AWaist, 'L', Ap1, 'M', Ap23, 'L', Ap24, 'M', AHip, 'L', Ap11, 'M', ARise, 'L', Ap15, 'M', Ap18, 'L', Ap19, 'M', AWB1, 'L', AWB2, 'M', AWB3, 'L', AWB4)
+		#   horizontal Agrid
+		addToPath(Agrid, 'M', AStart, 'L', AEnd, 'M', AWaist, 'L', Ap1, 'M', Ap23, 'L', Ap24, 'M', AHip, 'L', Ap11)
+		addToPath(Agrid, 'M', ARise, 'L', Ap15, 'M', Ap18, 'L', Ap19, 'M', AWB1, 'L', AWB2, 'M', AWB3, 'L', AWB4, 'M', AT1, 'L', AT2)
 		#   diagonal grid
 		addToPath(Agrid, 'M', Ap3, 'L', Ap4, 'M', Ap13, 'L', Ap14)
 		# dart 'd' path
 		d=path()
 		addToPath(d, 'M', AD1, 'L', AD2, 'M', AD3, 'L', AD1, 'L', AD4)
+
 		# seamline 's' & cuttingline 'c' paths
 		s=path()
 		c=path()
@@ -282,12 +320,15 @@ class PatternDesign():
 			# - addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) --> waistband from waist to 1" below waist
 			# - waistband from 1" below waist to 2" below waist
 			addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
-			if (FRONTNORMALWAIST):
-				addToPath(p, 'C', cAS1a, cAS1b, AS1)
+			if (FRONTNORMALTHIGH):
+				if (FRONT_NORMAL_WAIST):
+					addToPath(p, 'C', cAS1a, cAS1b, AS1)
+				else:
+					addToPath(p, 'C', cAS2a, cAS2b, AS2)
 			else:
-				addToPath(p, 'C', cAS2a, cAS2b, AS2)
+					addToPath(p, 'C', cAS1a, cAS1b, AS1, 'C', cAT1a, cAT1b, AT1)
 			addToPath(p, 'C', cAS3a, cAS3b, AS3, 'L', AS4, 'L', AI1, 'L',  AI2, 'C', cAI3a, cAI3b, AI3)
-			if (FRONTNORMALWAIST):
+			if (FRONT_NORMAL_WAIST):
 				cubicCurveP(p, cAC1a, cAC1b, AC1)
 			addToPath(p, 'C', cAC2a, cAC2b, AC2, 'L',  AW1)
 
@@ -302,25 +343,25 @@ class PatternDesign():
 		jeans.add(PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0))
 		B=jeans.back
 		BSTART=0.0
-		BEND=((1.25)*BACKHIPARC)
+		BEND=((1.25)*BACK_HIP_ARC)
 		BStart=rPoint(B, 'BStart', BSTART, BSTART)
 		BEnd=rPoint(B, 'BEnd', BEND, BSTART)
 		BWaist=rPoint(B, 'BWaist', BSTART, WAISTLINE)
 		BAbdomen=rPoint(B, 'BAbdomen', BSTART, ABDOMENLINE)
 		BHip=rPoint(B, 'BHip', BSTART, HIPLINE)
 		BRise=rPoint(B, 'BRise', BSTART, RISELINE)
-		Bp1=rPoint(B, 'Bp1', BSTART+((0.25)*BACKHIPARC), WAISTLINE)
+		Bp1=rPoint(B, 'Bp1', BSTART+((0.25)*BACK_HIP_ARC), WAISTLINE)
 		Bp2=rPoint(B, 'Bp2', BEND, WAISTLINE)
 		Bp5=rPoint(B, 'Bp5', Bp1.x+((BEND-Bp1.x)/2.0), WAISTLINE)
 		Bp6=rPoint(B, 'Bp6', Bp5.x-((3/8.0)*IN), WAISTLINE)
 		Bp7=rPoint(B, 'Bp7', Bp5.x + ((3/8.0)*IN), WAISTLINE)
 		Bp8=rPoint(B, 'Bp8', Bp5.x, (Bp5.y + (3.5*IN) ) )
-		if (BACKNORMALWAIST):
+		if (BACK_NORMAL_WAIST):
 			Bp3=rPoint(B, 'Bp3', Bp1.x+(1.75*IN), WAISTLINE)
-			Bp4=rPoint(B, 'Bp4', Bp1.x+(BACKWAISTARC)+(1.0*IN), WAISTLINE)
+			Bp4=rPoint(B, 'Bp4', Bp1.x+(BACK_WAIST_ARC)+(1.0*IN), WAISTLINE)
 		else:
-			Bp3=rPoint(B, 'Bp3', Bp6.x-(BACKWAISTARC/2.0)-((1/8)*IN), WAISTLINE)
-			Bp4=rPoint(B, 'Bp4', Bp7.x+(BACKWAISTARC/2.0)+((1/8)*IN), WAISTLINE)
+			Bp3=rPoint(B, 'Bp3', Bp6.x-(BACK_WAIST_ARC/2.0)-((1/8)*IN), WAISTLINE)
+			Bp4=rPoint(B, 'Bp4', Bp7.x+(BACK_WAIST_ARC/2.0)+((1/8)*IN), WAISTLINE)
 		Bp9=rPoint(B, 'Bp9', Bp1.x, HIPLINE-(abs(RISELINE-HIPLINE)/2.0))
 		Bp10=rPoint(B, 'Bp10', Bp1.x, HIPLINE)
 		Bp11=rPoint(B, 'Bp11', Bp2.x, HIPLINE)
@@ -329,19 +370,23 @@ class PatternDesign():
 		Bp14=rPointP(B, 'Bp14', pntFromDistanceAndAngleP(Bp13, (1.75*IN), angleFromSlope(1.0, -1.0)))
 		Bp15=rPoint(B, 'Bp15', Bp2.x, RISELINE)
 		Bp16=rPoint(B, 'Bp16', Bp15.x-((3./8.0)*IN), RISELINE)
-		Bp17=rPoint(B, 'Bp17',(Bp16.x-Bp12.x)/2., RISELINE)
+		Bp17=rPoint(B, 'Bp17',(Bp16.x-Bp12.x)/2., RISELINE) # Creaseline
+		BCREASELINE=Bp17.x
 		Bp18=rPoint(B, 'Bp18', Bp17.x, KNEELINE)
 		Bp19=rPoint(B, 'Bp19', Bp18.x-(4.50*IN), KNEELINE)
 		Bp20=rPoint(B, 'Bp20', Bp18.x+(4.50*IN), KNEELINE)
 		Bp21=rPoint(B, 'Bp21', Bp18.x, HEMLINE)
 		Bp22=rPoint(B, 'Bp22', Bp21.x-(4.*IN), HEMLINE)
 		Bp23=rPoint(B, 'Bp23', Bp21.x+(4.*IN), HEMLINE)
-		Bp24=rPoint(B, 'Bp24', Bp8.x-(BACKABDOMENARC/2.0)-((1/8.0)*IN), ABDOMENLINE)
-		Bp25=rPoint(B, 'Bp25', Bp8.x+(BACKABDOMENARC/2.0)+((1/8.0)*IN), ABDOMENLINE)
+		Bp24=rPoint(B, 'Bp24', Bp8.x-(BACK_ABDOMEN_ARC/2.0)-((1/8.0)*IN), ABDOMENLINE)
+		Bp25=rPoint(B, 'Bp25', Bp8.x+(BACK_ABDOMEN_ARC/2.0)+((1/8.0)*IN), ABDOMENLINE)
+		Bp26=rPoint(B, 'Bp26', BCREASELINE + THIGH_ARC,  THIGHLINE)
+		Bp27=rPoint(B, 'Bp27', BCREASELINE - THIGH_ARC, THIGHLINE)
 
 		# back waist
 		BW1=rPoint(B,'BW1', Bp3.x, BStart.y) # back center seam at waist
 		if (BW1.x < Bp9.x):
+			# BW1 waistpoint extends past (inside) calculated inflection point on back center seam (Bp9)
 			BACKLARGERWAIST=1
 		else:
 			BACKLARGERWAIST=0
@@ -373,30 +418,53 @@ class PatternDesign():
 		BD3=rPointP(B, 'BD3', pntIntersectLines(BW4.x, BW4.y-(5/8.0)*IN, BW5.x, BW5.y-(5/8.0)*IN, Bp8.x, Bp8.y, BW4.x, BW4.y)) # dart outside leg at cuttingline
 		BD4=rPointP(B, 'BD4', pntIntersectLines(BW1.x, BW1.y-(5/8.0)*IN, BW2.x, BW2.y-(5/8.0)*IN, Bp8.x, Bp8.y, BW2.x, BW2.y)) # dart inside leg at cuttingline
 
+		# back thigh points
+		BT1=rPointP(B, 'BT1', Bp26)
+		BT2=rPointP(B, 'BT2', Bp27)
+
 		#back side seam
 		BS1=rPointP(B, 'BS1', Bp11)
 		BS2=rPointP(B, 'BS2', Bp15)
 		BS3=rPointP(B, 'BS3', Bp20)
 		BS4=rPointP(B, 'BS4', Bp23)
-		if (BACKNORMALWAIST):
-			cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS3, BS1)/2.0))) # b/w BS1 & BS3
-			pnts=pointList(BW5, BS1, BS3)
-			c1, c2=myGetControlPoints('BackSideSeam', pnts)
-			cBS1a=cPoint(B, 'cBS1a', c1[0].x, c1[0].y) #b/w BW5 & BS2
-			cBS1b=cPoint(B, 'cBS1b', BS1.x, c2[0].y) #b/w BW5 & BS1
-			cBS3a=cPoint(B, 'cBS3a', BS1.x, c1[1].y) #b/w BS1 & BW5
+		if (BACK_NORMAL_THIGH):
+			# normal thigh
+			if (BACK_NORMAL_WAIST):
+				# normal waist
+				cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS3, BS1)/2.0))) # b/w BS1 & BS3
+				pnts=pointList(BW5, BS1, BS3)
+				c1, c2=myGetControlPoints('BackSideSeam', pnts)
+				cBS1a=cPoint(B, 'cBS1a', c1[0].x, c1[0].y) #b/w BW5 & BS2
+				cBS1b=cPoint(B, 'cBS1b', BS1.x, c2[0].y) #b/w BW5 & BS1
+				cBS3a=cPoint(B, 'cBS3a', BS1.x, c1[1].y) #b/w BS1 & BW5
+			else:
+				# larger waist
+				cBS2a=cPoint(B, 'cBS2a', BW5.x, BW5.y+(lineLengthP(BW5, BS2)/3.0))
+				cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS2, BS3)/3.0))) # b/w BS2 & BS3
+				pnts=pointList(cBS2a, BS2, cBS3b)
+				c1, c2=myGetControlPoints('BackSideSeam', pnts)
+				cBS2b=cPoint(B, 'cBS2b', c2[0].x, c2[0].y) #b/w BW5 & BS2
+				cBS3a=cPoint(B, 'cBS3a', c1[1].x, c1[1].y) #b/w BS2 & BS3
 		else:
-			cBS2a=cPoint(B, 'cBS2a', BW5.x, BW5.y+(lineLengthP(BW5, BS2)/3.0))
-			cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS2, BS3)/3.0))) # b/w BS2 & BS3
-			pnts=pointList(cBS2a, BS2, cBS3b)
-			c1, c2=myGetControlPoints('BackSideSeam', pnts)
-			cBS2b=cPoint(B, 'cBS2b', c2[0].x, c2[0].y) #b/w BW5 & BS2
-			cBS3a=cPoint(B, 'cBS3a', c1[1].x, c1[1].y) #b/w BS2 & BS3
+			# larger thigh
+			print 'larger thigh'
+			cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS3, BT1)/2.0))) # b/w BS1 & BS3
+			pnts=pointList(BW5, BS1, BT1, cBS3b)
+			c1, c2=myGetControlPoints('FrontSideSeam', pnts)
+			cBS1a=cPoint(B, 'cBS1a', c1[0].x, c1[0].y) #b/w BW5 & BS1
+			cBS1b=cPoint(B, 'cBS1b', c2[0].x, c2[0].y) #b/w BW5 & BS1
+			cBT1a=cPoint(B, 'cBT1a', c1[1].x, c1[1].y) #b/w BS1 & BT1
+			cBT1b=cPoint(B, 'cBT1b', c2[1].x, c2[1].y) #b/w BS1 & BT1
+			cBS3a=cPoint(B, 'cBS3a', c1[2].x, c1[2].y) #b/w BT1 & BS3
 
 		# back inseam
 		BI1=rPointP(B, 'BI1', Bp22)
 		BI2=rPointP(B, 'BI2', Bp19)
-		BI3=rPointP(B, 'BI3', Bp12)
+		# crotch point should be at least 1/3rd inch past inner thigh point (BT2)
+		if (Bp12.x <= (BT2.x - (0.3*IN)) ):
+			BI3=rPointP(B, 'BI3', Bp12)
+		else:
+			BI3=rPoint(B, 'BI3', BT2.x - (0.3*IN), Bp12.y)
 		distance=(lineLengthP(BI2, BI3)/3.0)
 		cBI3a=cPointP(B, 'cBI3a', pntOffLineP(BI2, BI1, distance)) #b/w BI2 & BI3
 		cBI3b=cPointP(B, 'cBI3b', pntOnLineP(BI3, cBI3a, distance)) #b/w BI2 & BI3
@@ -404,7 +472,7 @@ class PatternDesign():
 		#back center seam
 		BC1=rPointP(B, 'BC1', Bp14)
 		#back center seam control points
-		if (BACKNORMALWAIST):
+		if (BACK_NORMAL_WAIST):
 			# curve through BI3,BC1, BC2, then straight to BW1
 			BC2=rPointP(B, 'BC2', Bp9)
 			cBC2b=cPointP(B, 'cBC2b', pntOffLineP(BC2, BW1, (lineLengthP(BC1, BC2)/3.0)))
@@ -428,8 +496,6 @@ class PatternDesign():
 				cBC2b=cPointP(B, 'cBC2b', pntOffLineP(BC2, BW1, (lineLengthP(BC2, BC1)/3.0)))
 				cBC2a=cPoint(B, 'cBC2a', pntOnLineP(Bp14, Bp13, (lineLengthP(Bp14, Bp13)/4.0)))
 
-
-
 		# back points to create Jeans Waistband pattern 'C'
 		# back waistband, center section
 		rise=-(BW2.y - BW1.y)# negate this b/c y increases from top to bottom of drawing
@@ -446,7 +512,7 @@ class PatternDesign():
 		pnt1=pntFromDistanceAndAngleP(BW4, WAISTBAND, angle1)
 		pnt2=pntFromDistanceAndAngleP(BW5, WAISTBAND, angle1)
 		BWB3=rPointP(B, 'BWB3', pntIntersectLinesP(pnt1, pnt2, BW4, BD1))
-		if BACKNORMALWAIST:
+		if BACK_NORMAL_WAIST:
 			BWB4=rPointP(B, 'BWB4', pntIntersectLinesP(pnt1, pnt2, BW5, cBS1a))
 		else:
 			BWB4=rPointP(B, 'BWB4', pntIntersectLinesP(pnt1, pnt2, BW5, cBS2a))
@@ -461,24 +527,33 @@ class PatternDesign():
 		#   vertical grid
 		addToPath(Bgrid, 'M', BStart, 'L', BRise, 'M', Bp1, 'L', Bp13, 'M', BEnd, 'L', Bp15, 'M', Bp17, 'L', Bp21, 'M', Bp5, 'L', Bp8)
 		#   horizontal grid
-		addToPath(Bgrid, 'M', BStart, 'L', BEnd, 'M', BWaist, 'L', Bp2, 'M', BHip, 'L', Bp11, 'M', BRise, 'L', Bp15, 'M', Bp19, 'L', Bp20)
+		addToPath(Bgrid, 'M', BStart, 'L', BEnd, 'M', BWaist, 'L', Bp2, 'M', BHip, 'L', Bp11, 'M', BRise, 'L', Bp15, 'M', Bp19, 'L', Bp20, 'M', BT1, 'L', BT2)
 		#   diagonal grid
 		addToPath(Bgrid, 'M', BW1, 'L', BW5, 'M', Bp13, 'L', Bp14, 'M', BWB1, 'L', BWB2, 'M', BWB3, 'L', BWB4)
 		#dart 'd' path
 		d=path()
 		addToPath(d, 'M', BD1, 'L', BD2, 'M', BD3, 'L', BD1, 'L', BD4)
+
+
 		#seamline 's' & cuttingline 'c' paths
 		s=path()
 		c=path()
 		paths=pointList(s, c)
 		for p in paths:
 			addToPath(p, 'M', BW1, 'L', BW2, 'L', BW3, 'L', BW4, 'C', cBW5a, cBW5b, BW5)
-			if (BACKNORMALWAIST):
-				addToPath(p, 'C', cBS1a, cBS1b, BS1)
+			if (BACK_NORMAL_THIGH):
+				# normal thigh
+				if (BACK_NORMAL_WAIST):
+					# normal waist
+					addToPath(p, 'C', cBS1a, cBS1b, BS1)
+				else:
+					# large waist
+					addToPath(p, 'C', cBS2a, cBS2b, BS2)
 			else:
-				addToPath(p, 'C', cBS2a, cBS2b, BS2)
+				# large thigh
+				addToPath(p, 'C', cBS1a, cBS1b, BS1, 'C', cBT1a, cBT1b, BT1)
 			addToPath(p, 'C', cBS3a, cBS3b, BS3, 'L', BS4, 'L', BI1, 'L', BI2, 'C', cBI3a, cBI3b, BI3)
-			if (BACKNORMALWAIST) :
+			if (BACK_NORMAL_WAIST) :
 				addToPath(p, 'C', cBC1a, cBC1b, BC1, 'C', cBC2a, cBC2b, BC2, 'L', BW1)
 			elif (BACKLARGERWAIST):
 				addToPath(p, 'C', cBC2a, cBC2b, BC2, 'C', cBW1a, cBW1b, BW1)
@@ -496,7 +571,7 @@ class PatternDesign():
 		jeans.add(PatternPiece('pattern', 'LeftWaistband', letter='C', fabric=2, interfacing=1, lining=0))
 		C=jeans.LeftWaistband
 		CSTART=0.0
-		CEND=(FRONTWAISTARC+BACKWAISTARC)
+		CEND=(FRONT_WAIST_ARC+BACK_WAIST_ARC)
 		CStart=rPoint(C, 'CStart', BSTART, BSTART)
 		CEnd=rPoint(C, 'CEnd', BEND, BSTART)
 
