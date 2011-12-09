@@ -257,6 +257,35 @@
 
 
 
+   "front_rise": {
+  		  "value":"21.59",
+		  "type":"float",
+		  "gui_text":"Front Rise"
+		  },
+"side_rise": {
+  		  "value":"26.67",
+		  "type":"float",
+		  "gui_text":"Side Rise"
+		  },
+"back_rise": {
+  		  "value":"24.13",
+		  "type":"float",
+		  "gui_text":"Rise"
+		  },
+
+
+  "crotch_depth_front": {
+  		  "value":"5.08",
+		  "type":"float",
+		  "gui_text":"Crotch Front"
+		  },
+  "crotch_depth_back": {
+  		  "value":"12.70",
+		  "type":"float",
+		  "gui_text":"Crotch Back"
+		  },
+
+
   "outside_leg": {
   		  "value":"110",
 		  "type":"float",
@@ -266,24 +295,6 @@
   		  "value":"80",
 		  "type":"float",
 		  "gui_text":"Inside Leg length-->Crotch to Floor"
-		  },
-
-
-
-   "rise": {
-  		  "value":"27",
-		  "type":"float",
-		  "gui_text":"Rise"
-		  },
-  "crotch_front": {
-  		  "value":"28",
-		  "type":"float",
-		  "gui_text":"Crotch Front"
-		  },
-  "crotch_back": {
-  		  "value":"73",
-		  "type":"float",
-		  "gui_text":"Crotch Back"
 		  },
 
 
@@ -302,7 +313,6 @@
 		  "type":"float",
 		  "gui_text":"Back Thigh Width"
           },
-
 
 
   "knee_circumference": {
