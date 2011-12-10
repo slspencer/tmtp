@@ -254,6 +254,21 @@
 		  "type":"float",
 		  "gui_text":"Hip Height"
           },
+  "front_hip_height": {
+          "value":"21.6",
+		  "type":"float",
+		  "gui_text":"Hip Height"
+          },
+  "side_hip_height": {
+          "value":"24.13",
+		  "type":"float",
+		  "gui_text":"Hip Height"
+          },
+  "back_hip_height": {
+          "value":"25.4",
+		  "type":"float",
+		  "gui_text":"Hip Height"
+          },
 
 
 
@@ -263,23 +278,23 @@
 		  "gui_text":"Front Rise"
 		  },
 "side_rise": {
-  		  "value":"26.67",
+  		  "value":"24.13",
 		  "type":"float",
 		  "gui_text":"Side Rise"
 		  },
 "back_rise": {
-  		  "value":"24.13",
+  		  "value":"26.67",
 		  "type":"float",
 		  "gui_text":"Rise"
 		  },
 
 
-  "crotch_depth_front": {
+  "front_crotch_length": {
   		  "value":"5.08",
 		  "type":"float",
 		  "gui_text":"Crotch Front"
 		  },
-  "crotch_depth_back": {
+  "back_crotch_length": {
   		  "value":"12.70",
 		  "type":"float",
 		  "gui_text":"Crotch Back"
