@@ -206,9 +206,9 @@ class PatternDesign():
 
 		# front dart AD
 		AD1=rPointP(A, 'AD1', Ap8) # point of dart
-		AD2=rPointP(A, 'AD2', pntOffLineP(AW3, Ap8, (5/8*IN))) # center dart line at cuttingline
-		AD3=rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y-(5/8.0)*IN, AW5.x, AW5.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW4.x, AW4.y)) # outside dart leg
-		AD4=rPointP(A, 'AD4', pntIntersectLines(AW1.x, AW1.y-(5/8.0)*IN, AW2.x, AW2.y-(5/8.0)*IN, Ap8.x, Ap8.y, AW2.x, AW2.y)) #inside dart leg
+		AD2=rPointP(A, 'AD2', pntOffLineP(AW3, Ap8, SEAM_ALLOWANCE)) # center dart line at cuttingline
+		AD3=rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y-SEAM_ALLOWANCE, AW5.x, AW5.y-SEAM_ALLOWANCE, Ap8.x, Ap8.y, AW4.x, AW4.y)) # outside dart leg
+		AD4=rPointP(A, 'AD4', pntIntersectLines(AW1.x, AW1.y-SEAM_ALLOWANCE, AW2.x, AW2.y-SEAM_ALLOWANCE, Ap8.x, Ap8.y, AW2.x, AW2.y)) #inside dart leg
 
 		# front thigh points
 		AT1=rPointP(A, 'AT1', Ap25)
@@ -414,9 +414,9 @@ class PatternDesign():
 
 		#back dart
 		BD1=rPointP(B, 'BD1', Bp8) # point of dart
-		BD2=rPointP(B, 'BD2', pntOffLineP(BW3, Bp8, (5/8.0*IN))) # center dart line at cuttingline
-		BD3=rPointP(B, 'BD3', pntIntersectLines(BW4.x, BW4.y-(5/8.0)*IN, BW5.x, BW5.y-(5/8.0)*IN, Bp8.x, Bp8.y, BW4.x, BW4.y)) # dart outside leg at cuttingline
-		BD4=rPointP(B, 'BD4', pntIntersectLines(BW1.x, BW1.y-(5/8.0)*IN, BW2.x, BW2.y-(5/8.0)*IN, Bp8.x, Bp8.y, BW2.x, BW2.y)) # dart inside leg at cuttingline
+		BD2=rPointP(B, 'BD2', pntOffLineP(BW3, Bp8, SEAM_ALLOWANCE)) # center dart line at cuttingline
+		BD3=rPointP(B, 'BD3', pntIntersectLines(BW4.x, BW4.y-SEAM_ALLOWANCE, BW5.x, BW5.y-SEAM_ALLOWANCE, Bp8.x, Bp8.y, BW4.x, BW4.y)) # dart outside leg at cuttingline
+		BD4=rPointP(B, 'BD4', pntIntersectLines(BW1.x, BW1.y-SEAM_ALLOWANCE, BW2.x, BW2.y-SEAM_ALLOWANCE, Bp8.x, Bp8.y, BW2.x, BW2.y)) # dart inside leg at cuttingline
 
 		# back thigh points
 		BT1=rPointP(B, 'BT1', Bp26)
