@@ -273,17 +273,17 @@
 
 
    "front_rise": {
-  		  "value":"21.59",
+  		  "value":"24.75",
 		  "type":"float",
 		  "gui_text":"Front Rise"
 		  },
 "side_rise": {
-  		  "value":"24.13",
+  		  "value":"26.0",
 		  "type":"float",
 		  "gui_text":"Side Rise"
 		  },
 "back_rise": {
-  		  "value":"26.67",
+  		  "value":"27.25",
 		  "type":"float",
 		  "gui_text":"Rise"
 		  },
@@ -301,12 +301,12 @@
 		  },
 
 
-  "outside_leg": {
+  "outseam": {
   		  "value":"110",
 		  "type":"float",
 		  "gui_text":"Outside Leg length--> Waist to Floor"
 		  },
-  "inside_leg": {
+  "inseam": {
   		  "value":"80",
 		  "type":"float",
 		  "gui_text":"Inside Leg length-->Crotch to Floor"
