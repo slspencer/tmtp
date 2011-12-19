@@ -29,9 +29,14 @@ PT_TO_CM = (1/CM_TO_PT)
 
 IN_TO_PX = (90/1.0) #convert inches to pixels - Inkscape value
 CM_TO_PX = (90/2.54) #convert cm to px - Inkscape value
-PX_TO_IN = (1/IN_TO_PX)
-PX_TO_CM = (1/CM_TO_PX)
+MM_TO_PX=CM_TO_PX/10.0 # convert mm to px - Inkscape value
+CM=CM_TO_PX # shorthand for CM_TO_PX, useful in design file
+IN=IN_TO_PX # shorthand for IN_TO_PX, useful in design file
+MM=MM_TO_PX # need millimeters shorthand, too!
 
+PX_TO_IN = (1/IN_TO_PX) # convert pixels to inches - Inkscape value 90ppi
+PX_TO_CM = (1/CM_TO_PX) # convert pixels to centimeters - Inkscape
+PX_TO_MM = (1/MM_TO_PX) # convert pixels to millimeters - inkscape
 
 # sewing constants
 QUARTER_SEAM_ALLOWANCE=(IN_TO_PX*1/4.0) #1/4" seam allowance
