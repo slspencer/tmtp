@@ -83,19 +83,19 @@ def seamLinePath(name, label, pathSVG, transform = ''):
 	"""
 	Creates Seamline path on pattern layer
 	"""
-	return Path('pattern', name, label, pathSVG, 'seamline_path_style', transform)
+	return Path('pattern', name, label, pathSVG, 'seamline_style', transform)
 
 def patternLinePath(name, label, pathSVG, transform = ''):
 	"""
 	Creates pattern line path on pattern layer, other than cuttingline, seamline, or hemline - used for darts, etc.
 	"""
-	return Path('pattern', name, label, pathSVG, 'dart_style', transform)
+	return Path('pattern', name, label, pathSVG, 'dartline_style', transform)
 
 def stitchLinePath( name, label,  pathSVG, transform = '' ):
 	"""
 	Creates stitch line on pattern layer, other than cuttingline, seamline, or hemline
 	"""
-	return Path('pattern', name, label, pathSVG, 'dart_style',transform)
+	return Path('pattern', name, label, pathSVG, 'dartline_style',transform)
 
 def grainLinePath(name, label, pnt1, pnt2,  transform=''):
 	"""
@@ -143,17 +143,39 @@ def cubicCurveP(pathSVG, control1, control2, point, transform=''):
 		px,  py = transformPoint(point.x, point.y, transform)
 	return pathSVG.appendCubicCurveToPath(c1x, c1y, c2x, c2y, px, py, relative = False)
 
+def angleFromDegree(degree):
+	return degree * math.pi/180.0
+
 def angleFromSlope(rise, run):
 	"""
 	works with both positive and negative values of rise and run
-	returns angle in radians
+	accepts rise, run inputs and returns angle in radians
 	"""
-	return math.atan2( rise, run )
+	return math.atan2( -rise, run ) # negate y b/c y increases from top to bottom so opposite of cartesian coords
 
 def angleFromSlopeP(pnt1, pnt2):
-		rise=-(pnt2.y-pnt1.y)
-		run=(pnt2.x-pnt1.x)
-		return angleFromSlope(rise, run)
+	rise=(pnt2.y-pnt1.y)
+	run=(pnt2.x-pnt1.x)
+	return angleFromSlope(rise, run)
+
+def angleFromLine(x1, y1, x2, y2):
+	rise = y2 - y1
+	run = x2 - x1
+	return angleFromSlope(rise, run)
+
+def angleFromLineP(p1, p2):
+	return angleFromLine(p1.x, p1.y, p2.x, p2.y)
+
+def angleFromVectorP(p1, p2, p3):
+	L1 = lineLengthP(p1, p2)
+	L2 = lineLengthP(p1, p3)
+	L3 = lineLengthP(p2, p3)
+	return math.acos((L1**2 + L2**2 - L3**2)/(2 * L1 * L2))
+
+
+
+
+
 
 def pointFromDistanceAndAngle(x1, y1, distance, angle):
 	# http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
@@ -161,7 +183,7 @@ def pointFromDistanceAndAngle(x1, y1, distance, angle):
 	x = x1 + (r * cos(angle))
 	y = y1 - (r * sin(angle))
 	#return (x, y)
-	return (x1+(r*math.cos(angle)), y1-(r*math.sin(angle)))
+	return (x , y )
 
 def pointFromDistanceAndAngleP(pnt, distance, angle):
 	x, y = pointFromDistanceAndAngle(pnt.x, pnt.y, distance, angle)
@@ -191,9 +213,10 @@ def slopeOfLine(x1, y1, x2, y2):
 	"""
 	Accepts two sets of coordinates and returns the slope
 	"""
-	try:
+	if (x2 <> x1):
 		m = (y2-y1)/(x2-x1)
-	except ZeroDivisionError:
+	else:
+		print 'Vertical Line'
 		m = None
 	return m
 
@@ -201,10 +224,10 @@ def slopeOfLineP(P1, p2):
 	"""
 	Accepts two points and returns the slope
 	"""
-	try:
+	if ((p2.x - p1.x) <> 0):
 		m = (p2.y-p1.y)/(p2.x-p1.x)
-	except ZeroDivisionError:
-		m = None
+	else:
+		m = math.pi
 	return m
 
 def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
@@ -516,6 +539,26 @@ def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
 	new_xmax, new_ymax = transformPoint(xmax, ymax, transform)
 	return new_xmin, new_ymin, new_xmax, new_ymax
 
+def xyMidpoint(x1, y1, x2, y2, n=0.5):
+	'''Accepts x1,y1,x2,y2 and 0<n<1, returns x,y'''
+	return (x1 + x2)*n,  (y1 + y2)*n
+
+def xyMidpointP(p1, p2, n=0.5):
+	'''Accepts p1 & p2 and 0<n<1, returns x, y'''
+	return xyMidpoint(p1.x,  p1.y,  p2.x,  p2.y, n)
+
+def  pntMidPoint(x1, y1, x2, y2, n=0.5):
+	'''Accepts x1,y1,x2,y2 and 0<n<1, returns pnt'''
+	pnt=Pnt()
+	pnt.x, pnt.y=xyMidPoint(x1, y1, x2, y2, n)
+	return pnt
+
+def pntMidpointP(	p1, p2, n=0.5):
+	'''Accepts p1 & p2 and 0<n<1, returns p3'''
+	pnt=Pnt()
+	pnt.x,  pnt.y = xyMidpointP(p1, p2, n)
+	return pnt
+
 def lineLength(xstart, ystart, xend, yend):
 	"""Accepts four values x1, y1, x2, y2 and returns distance"""
 	#a^2 + b^2 = c^2
@@ -524,6 +567,55 @@ def lineLength(xstart, ystart, xend, yend):
 def lineLengthP(p1, p2):
 	"""Accepts two point objects and returns distance between the points"""
 	return lineLength(p1.x, p1.y, p2.x, p2.y)
+
+def xyIntersectLines2(L1x1, L1y1, L1x2, L1y2, L2x1, L2y1, L2x2, L2y2):
+	print 'L1x1 =', L1x1
+	print 'L1y1 =', L1y1
+	print 'L1x2 =', L1x2
+	print 'L1y2 =', L1y2
+	print 'L2x1 =', L2x1
+	print 'L2y1 =', L2y1
+	print 'L2x2 =', L2x2
+	print 'L2y2 =', L2y2
+	L1startx = float(L1x1)
+	L1starty = float(L1y1)
+	L1endx = float(L1x2)
+	L1endy = float(L1y2)
+	L2startx = float(L2x1)
+	L2starty = float(L2y1)
+	L2endx = float(L2x2)
+	L2endy = float(L2y2)
+	print 'L1startx, L1starty', L1startx, L1starty
+	print 'L1endx,L1endy', L1endx, L1endy
+	print 'L2startx, L2starty', L2startx, L2starty
+	print 'L2endx, L2endy', L2endx, L2endy
+	if (L1startx == L1endx):
+		x = L1startx
+		L2m = slopeOfLine(L2startx, L2starty, L2endx, L2endy)
+		L2b = L2starty - L2m*L2startx
+		y = L2m*x + L2b
+	elif (L2startx == L2endx):
+		print 'L1startx, L1endx -->',  L1startx,  L1endx
+		print  'L2startx, L2endx, L1m -->', L2startx, L2endx, slopeOfLine(L1startx, L1starty, L1endx, L1endy)
+		x = L2startx
+		L1m = slopeOfLine(L1startx, L1starty, L1endx, L1endy)
+		L1b = L1starty - L1m*L1startx
+		y = L1m*x + L1b
+	else:
+		print 'L1startx, L1starty, L1endx, L1endy --> ', L1startx,   L1starty,   L1endx,  L1endy
+		print ""
+		print ""
+		L1m = (L1endy - L1starty)/(L1endx - L1startx)
+		L2m = (L2endy - L2starty)/(L2endx - L2startx)
+		L1b = L1starty - L1m*L1startx
+		L2b = L2starty - L2m*L2startx
+		if (abs(L1b - L2b) < 0.01):
+			debug('***** Parallel lines in intersectLines2 *****')
+			return None, None
+		else:
+			x = (L2b - L1b) / (L1m - L2m)
+			y = (L1m * x) + L1b # arbitrary choice, could have used L2m & L2b
+	return x, y
 
 def intersectLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
 	"""
@@ -599,10 +691,11 @@ def pntIntersectLinesP(p1, p2, p3, p4):
 	Find intersection between two lines. Accepts 4 point objects, Returns pnt object
 	Intersection does not have to be within the supplied line segments
 	"""
-	x, y = intersectLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
+	x, y = xyIntersectLines2(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
 	pnt=Pnt()
 	pnt.x=x
 	pnt.y=y
+	print 'pntIntersectLinesP -->',  pnt.x,  pnt.y
 	return pnt
 
 def square(f):
@@ -1101,6 +1194,7 @@ class Point(pBase):
 		if grouplist is None:
 			grouplist = self.groups.keys()
 		if self.groupname in grouplist:
+			print 'self.x,y,size -->', self.x, self.y, self.size, self.id
 			(x1, y1)=(self.x - (self.size/2.0), self.y - (self.size/2.0))
 			(x2, y2)=(self.x + (self.size/2.0), self.y + (self.size/2.0))
 			return x1, y1, x2, y2
