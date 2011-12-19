@@ -1,4 +1,11 @@
 {
+    "default": {
+        "fill": "none",
+        "stroke": "red",
+        "stroke-linejoin": "miter",
+        "stroke-miterlimit": "4",
+        "stroke-width": "4"
+    },
     "buttonhole_style": {
         "fill": "none",
         "stroke": "green",
@@ -13,7 +20,7 @@
         "stroke-miterlimit": "4",
         "stroke-width": "4"
     },
-    "dart_style": {
+    "dartline_style": {
         "fill": "none",
         "stroke": "green",
         "stroke-linejoin": "miter",
@@ -21,13 +28,6 @@
         "stroke-width": "3",
         "stroke-dasharray": "6,6",
         "stroke-dashoffset": "0"
-    },
-    "default": {
-        "fill": "none",
-        "stroke": "red",
-        "stroke-linejoin": "miter",
-        "stroke-miterlimit": "4",
-        "stroke-width": "4"
     },
     "default_textblock_text_style": {
         "fill": "#000000",
@@ -65,7 +65,7 @@
         "stroke-dasharray": "6,6",
         "stroke-dashoffset": "0"
     },
-    "hemline_path_style": {
+    "hemline_style": {
         "fill": "none",
         "stroke": "green",
         "stroke-linejoin": "miter",
@@ -74,7 +74,7 @@
         "stroke-dasharray": "6,6",
         "stroke-dashoffset": "0"
     },
-    "line_path_style": {
+    "line_style": {
         "fill": "none",
         "stroke": "pink",
         "stroke-linejoin": "miter",
@@ -120,7 +120,7 @@
         "stroke-miterlimit": "4",
         "stroke-width": "2"
     },
-    "seamline_path_style": {
+    "seamline_style": {
         "fill": "none",
         "stroke": "green",
         "stroke-dasharray": "24,6",
