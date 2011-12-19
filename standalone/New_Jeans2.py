@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-# New_Jeans.py
-# Jeans Foundation #4
-# Designer: Susan Spencer Conklin
+# Nessa_pants.py
 # PatternMaker: Susan Spencer Conklin
-#
-# This pattern contains a design for a pair of jeans
+# pants shell pattern
 
 from tmtpl.constants import *
 from tmtpl.pattern import *
@@ -41,102 +38,41 @@ class PatternDesign():
 		"""
 		CM=CM_TO_PX
 		IN=IN_TO_PX
-		#The following attributes are set before calling this method:
-		#self.cd - Client Data, which has been loaded from the client data file
-		#self.styledefs - the style difinition dictionary, loaded from the styles file
-		#self.markerdefs - the marker definition dictionary
-		#self.cfg - configuration settings from the main app framework
-		#TODO - find a way to get this administrative cruft out of this pattern method
 		cd=self.cd	#client data is prefaced with cd.
 		self.cfg['clientdata']=cd
-		#TODO - also extract these from this file to somewhere else
 		printer='36" wide carriage plotter'
 		if (printer=='36" wide carriage plotter'):
 		    self.cfg['paper_width']=(36 * IN)
-		self.cfg['border']=(5*CM)#document borders
+		self.cfg['border']=(5*CM)
 		BORDER=self.cfg['border']
-		#self.cfg['verbose']=('')#debug statements
 		BORDER=self.cfg['border']
-		# 1:  womens=W, mens=M, teensgirls=TG, teenboys=TB, girls=G, boys=B, toddlers=T, babies=B, crafts=C
-		# 2:  streetwearable=S, period=P, fantasy=F
-		# 3:  3digit year: 1870:870, 880, 890,900,910,920,930,940,950,960,970,980,990,000,010
-		# 4:    none=x, Gaming=g, Futuristic=f, Cosplay=c, GothLolita=g, Military=m, BasicCostumes=c
-		# 5: dress=d, pants=p, jeans=j, shirt/blouse=s, tshirt=t, jacket=j, coat=c, vest=v, hat=h, pjs=p, lingerie=l, swimsuits=s,
-		#  ....maternity=m, accessories=a
-		# 6: casual=1, elegant=2, day&evening=3, grunge&skate=4, sports=5
-		# 7: followed by Absolute Number of patterns generated
-		#TODO - abstract these into configuration file(s)
 		metainfo={'companyName':'Seamly Patterns',  #mandatory
 					'designerName':'Susan Spencer',#mandatory
-					'patternName':'Jeans Foundation',#mandatory
+					'patternName':'pants Foundation',#mandatory
 					'patternNumber':'WS010-xj1-1' #mandatory
 					}
 		self.cfg['metainfo']=metainfo
-		#attributes for the entire svg document
 		docattrs={'currentscale' : "0.5 : 1",
 					'fitBoxtoViewport' : "True",
 					'preserveAspectRatio' : "xMidYMid meet",
 					}
 		doc=Document(self.cfg, name='document', attributes=docattrs)
-		#Set up the Title Block and Test Grid for the top of the document
 		TB=TitleBlock('notes', 'titleblock', 0, 0, stylename='titleblock_text_style')
 		doc.add(TB)
 		TG=TestGrid('notes', 'testgrid', self.cfg['paper_width']/3.0, 0, stylename='cuttingline_style')
 		doc.add(TG)
 
 		# All measurements are in pixels...CM=CM_TO_PX, IN=IN_TO_PX, etc.
-		#client & pattern measurements
-		SEAM_EASE=(1/8.0)*IN
 
-		WAISTLINE=(1.0*IN) # Waistband is 1"
-		RISELINE=WAISTLINE + max(cd.front_rise, cd.side_rise, cd.back_rise)
-		HIPLINE=WAISTLINE + (2/3.0)*(RISELINE)
-		KNEELINE=RISELINE + (cd.inseam/2.0) - (1.0*IN)
-		HEMLINE=RISELINE + cd.inseam
+		#Begin pants Pattern Set
+		pants=Pattern('pants')
+		doc.add(pants)
+		pants.styledefs.update(self.styledefs)
+		pants.markerdefs.update(self.markerdefs)
 
-		FRONT_WAIST_ARC=(cd.front_waist_arc)
-		FRONT_HIP_ARC=(cd.front_hip_arc)
-		BACK_WAIST_ARC=(cd.waist_circumference - (2*FRONT_WAIST_ARC))/2.0
-		BACK_WAIST_WIDTH=(BACK_WAIST_ARC)
-		BACK_HIP_ARC=(cd.hip_circumference - (2*FRONT_HIP_ARC))/2.0
-		BACK_HIP_HEIGHT=(cd.back_hip_height)
-
-		if (BACK_HIP_ARC - BACK_WAIST_ARC) > (3*IN):
-			BACK_DART_WIDTH=abs(BACK_HIP_ARC - BACK_WAIST_ARC)/3.0
-		else:
-			BACK_DART_WIDTH=(1*IN)
-		BACK_DART_LENGTH=(HIPLINE)/3.0
-		WAISTBAND=(1.0*IN) # Height of Waistband
-		FRONT_CROTCH_LENGTH=(cd.front_crotch_length)
-		BACK_CROTCH_LENGTH=(cd.back_crotch_length)
-		FRONT_RISE=(cd.front_rise)
-		SIDE_RISE=(cd.side_rise)
-		BACK_RISE=(cd.back_rise)
-		BACK_KNEE_WIDTH=10.0*IN
-		BACK_HEM_WIDTH=8.0*IN
-		FRONT_KNEE_WIDTH=8.0*IN
-		FRONT_HEM_WIDTH=7.0*IN
-		INSEAM=cd.inseam
-
-		if ((FRONT_HIP_ARC-FRONT_WAIST_ARC)>= (2.0*IN)):
-			FRONT_NORMAL_WAIST=1
-		else:
-			FRONT_NORMAL_WAIST=0
-
-		if ((BACK_HIP_ARC-BACK_WAIST_ARC)>= (2.0*IN)):
-			BACK_NORMAL_WAIST=1
-		else:
-			BACK_NORMAL_WAIST=0
-
-		#Begin Jeans Pattern Set
-		jeans=Pattern('jeans')
-		doc.add(jeans)
-		jeans.styledefs.update(self.styledefs)
-		jeans.markerdefs.update(self.markerdefs)
-
-		# Jeans Front 'A'
-		jeans.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
-		A=jeans.front
+		# pants Front 'A'
+		pants.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
+		A=pants.front
 		ASTART=0.0
 		AEND=(FRONT_HIP_ARC+((1/8.0)*IN))
 		AStart=rPoint(A, 'AStart', ASTART, ASTART)
@@ -252,7 +188,7 @@ class PatternDesign():
 				cAC2b=cPointP(A, 'cAC2b', pntOffLineP(AC2, AW1, (lineLengthP(AC2, AC1)/3.0)))
 			cAC2a=cPointP(A, 'cAC2a', pntOnLineP(Ap14, Ap13, (lineLengthP(Ap14, Ap13)/4.0)))
 
-		# points to create Jeans Waistband pattern 'C'
+		# points to create pants Waistband pattern 'C'
 		AWB1=rPointP(A, 'AWB1', pntOnLineP(AW1, AC2, WAISTBAND)) # waistband below center waist
 		if FRONT_NORMAL_WAIST:
 			pnt=pntOnLineP(AW5, cAS1a, WAISTBAND)
@@ -301,16 +237,16 @@ class PatternDesign():
 			addToPath(p, 'C', cAC2a, cAC2b, AC2, 'L',  AW1)
 
 		# add grainline, dart, seamline & cuttingline paths to pattern
-		A.add(grainLinePath("grainLine", "Jeans Front Grainline", AG1, AG2))
-		A.add(Path('reference','grid', 'Jeans Front Gridline', Agrid, 'gridline_style'))
-		A.add(Path('pattern', 'dartline', 'Jeans Front Dartline', d, 'dart_style'))
-		A.add(Path('pattern', 'seamLine', 'Jeans Front Seamline', s, 'seamline_path_style'))
-		A.add(Path('pattern', 'cuttingLine', 'Jeans Front Cuttingline', c, 'cuttingline_style'))
+		A.add(grainLinePath("grainLine", "pants Front Grainline", AG1, AG2))
+		A.add(Path('reference','grid', 'pants Front Gridline', Agrid, 'gridline_style'))
+		A.add(Path('pattern', 'dartline', 'pants Front Dartline', d, 'dart_style'))
+		A.add(Path('pattern', 'seamLine', 'pants Front Seamline', s, 'seamline_path_style'))
+		A.add(Path('pattern', 'cuttingLine', 'pants Front Cuttingline', c, 'cuttingline_style'))
 
-		# Jeans Back 'B'
+		# pants Back 'B'
 
-		jeans.add(PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0))
-		B=jeans.back
+		pants.add(PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0))
+		B=pants.back
 
 		BSTART=0.0
 		BEND=(BACK_HIP_ARC + 2*SEAM_EASE)
@@ -341,7 +277,8 @@ class PatternDesign():
 
 		pnt1=rPoint(B, 'NewWaistlinePnt1', BStart.x, WAISTLINE - abs(RISELINE-HIPLINE)/2.0)
 		pnt2=rPoint(B, 'NewWaistlinePnt2', BEnd.x, WAISTLINE - abs(RISELINE-HIPLINE)/2.0)
-		pnt3=intersectLineCircleP(pnt1, pnt2, BWaistOutside, BACK_WAIST_ARC + BACK_DART_WIDTH + 2*SEAM_EASE)
+		#pnt3=intersectLineCircleP(pnt1, pnt2, BWaistOutside, BACK_WAIST_ARC + BACK_DART_WIDTH + 2*SEAM_EASE)
+		pnt3=intersectLineCircleP(pnt1, pnt2, BHipOutside, BACK_RISE + 2*SEAM_EASE)
 		BWaistInside=rPointP(B, 'BWaistInside', pnt3)
 		#b + math.sqrt((y+BInflection.x)**2)
 		#x1, y1, x2, y2 = intersectCircleCircleP(BInflection, BACK_RISE + SEAM_EASE, BWaistOutside, BACK_WAIST_ARC + BACK_DART_WIDTH + 2*SEAM_EASE)
@@ -411,7 +348,7 @@ class PatternDesign():
 			# curve from BRiseInside to BInflection, then straight to BWaistInside
 			cBIb=cPointP(B, 'cBIb', pntOffLineP(BInflection, BWaistInside, lineLengthP(BInflection, BRiseInside)*(0.6))) # longer distance (.6)
 
-		# back points to create Jeans Waistband pattern
+		# back points to create pants Waistband pattern
 		# back waistband, center section
 		rise=-(BWaistInside.y - BDartInside.y)# rise of dart inside leg to waist inside -- negate this b/c y increases from top to bottom of drawing
 		run=(BWaistInside.x - BDartInside.x) # run of dart inside leg to waist inside
@@ -460,11 +397,11 @@ class PatternDesign():
 				addToPath(p, 'C', cBIa, cBIb, BInflection, 'L', BWaistInside)
 
 		# add grid, dart, grainline, seamline & cuttingline paths to pattern
-		B.add(grainLinePath('grainLine', 'Jeans Back Grainline', BGrainline1, BGrainline2))
+		B.add(grainLinePath('grainLine', 'pants Back Grainline', BGrainline1, BGrainline2))
 		B.add(Path('reference','Bgrid', 'Trousers Back Gridline', Bgrid, 'gridline_style'))
-		B.add(Path('pattern', 'dartline', 'Jeans Back Dartline', d, 'dart_style'))
-		B.add(Path('pattern', 'seamLine', 'Jeans Back Seamline', s, 'seamline_path_style'))
-		B.add(Path('pattern', 'cuttingLine', 'Jeans Back Cuttingline', c, 'cuttingline_style'))
+		B.add(Path('pattern', 'dartline', 'pants Back Dartline', d, 'dart_style'))
+		B.add(Path('pattern', 'seamLine', 'pants Back Seamline', s, 'seamline_path_style'))
+		B.add(Path('pattern', 'cuttingLine', 'pants Back Cuttingline', c, 'cuttingline_style'))
 
 
 

@@ -220,44 +220,47 @@
 		  "gui_text":"Center Back Length"
           },
 
+  "pelvic_distance":{
+		 "value":"20",
+		 "type":"float",
+		 "gui_text":"Distance between pelvic bones"
+		 },
 
-  "abdomen_circumference": {
+  "upper_hip_circumference": {
           "value":"100",
 		  "type":"float",
-		  "gui_text":"Abdomen Circumference"
+		  "gui_text":"Upper Hip Circumference"
           },
-  "front_abdomen_arc": {
+  "front_upper_hip_arc": {
           "value":"25",
 		  "type":"float",
-		  "gui_text":"Front Abdomen Width"
+		  "gui_text":"Front Upper Hip Arc"
           },
-  "abdomen_height": {
+  "upper_hip_length": {
           "value":"8",
 		  "type":"float",
-		  "gui_text":"Front Abdomen Height"
+		  "gui_text":"Upper Hip Length"
           },
 
-
-
-  "hip_circumference": {
+  "lower_hip_circumference": {
           "value":"112",
 		  "type":"float",
-		  "gui_text":"Hip Circumference"
+		  "gui_text":"Lower Hip Circumference"
           },
-  "front_hip_arc": {
+  "front_lower_hip_arc": {
           "value":"28",
 		  "type":"float",
-		  "gui_text":"Front Hip Width"
+		  "gui_text":"Front Lower Hip Arc"
           },
-  "hip_height": {
+  "lower_hip_length": {
           "value":"19.7",
 		  "type":"float",
 		  "gui_text":"Hip Height"
           },
-  "front_hip_height": {
+  "front_lower_hip_length": {
           "value":"21.6",
 		  "type":"float",
-		  "gui_text":"Hip Height"
+		  "gui_text":"Front Lower Hip Length"
           },
   "side_hip_height": {
           "value":"24.13",
@@ -270,9 +273,7 @@
 		  "gui_text":"Hip Height"
           },
 
-
-
-   "front_rise": {
+"front_rise": {
   		  "value":"24.75",
 		  "type":"float",
 		  "gui_text":"Front Rise"
@@ -335,7 +336,7 @@
 		  "type":"float",
 		  "gui_text":"Knee Circumference"
 		  },
-  "knee_height": {
+  "knee_length": {
   		  "value":"41",
 		  "type":"float",
 		  "gui_text":"Knee Height"
