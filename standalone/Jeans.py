@@ -10,7 +10,6 @@ from tmtpl.constants import *
 from tmtpl.pattern import *
 from tmtpl.document import *
 from tmtpl.client import Client
-from tmtpl.curves import GetCurveControlPoints,  myGetControlPoints
 
 #Project specific
 #from math import sin, cos, radians
@@ -224,7 +223,7 @@ class PatternDesign():
 			if (FRONT_NORMAL_WAIST):
 				cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AS1)/2.0))) # b/w AS1 & AS3
 				pnts=pointList(AW5, AS1, AS3)
-				c1, c2=myGetControlPoints('FrontSideSeam', pnts)
+				c1, c2=controlPoints('FrontSideSeam', pnts)
 				cAS1a=cPoint(A, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
 				cAS1b=cPoint(A, 'cAS1b', AS1.x, c2[0].y) #b/w AW5 & AS1
 				cAS3a=cPoint(A, 'cAS3a', AS1.x, c1[1].y) #b/w AS1 & AW5
@@ -232,13 +231,13 @@ class PatternDesign():
 				cAS2a=cPoint(A, 'cAS2a', min(AS2.x, AW5.x), AW5.y+(lineLengthP(AW5, AS2)/3.0)) # waistline slightly less than hipline (ex: 1.25") use AS2 else AW5
 				cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS2, AS3)/3.0))) # b/w AS2 & AS3
 				pnts=pointList(cAS2a, AS2, cAS3b)
-				c1, c2=myGetControlPoints('BackSideSeam', pnts)
+				c1, c2=controlPoints('BackSideSeam', pnts)
 				cAS2b=cPoint(A, 'cAS2b', c2[0].x, c2[0].y) #b/w AW5 & AS2
 				cAS3a=cPoint(A, 'cAS3a', c1[1].x, c1[1].y) #b/w AS2 & AS3
 		else:
 				cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AT1)/2.0))) # b/w AS1 & AS3
 				pnts=pointList(AW5, AS1, AT1, AS3)
-				c1, c2=myGetControlPoints('FrontSideSeam', pnts)
+				c1, c2=controlPoints('FrontSideSeam', pnts)
 				cAS1a=cPoint(A, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
 				cAS1b=cPoint(A, 'cAS1b', c2[0].x, c2[0].y) #b/w AW5 & AS1
 				cAT1a=cPoint(A, 'cAT1a', c1[1].x, c1[1].y) #b/w AS1 & AT1
@@ -268,7 +267,7 @@ class PatternDesign():
 			# straight line for upper front center seam, control points for AC1 & AC2 only, with calculated control point cAC2b to smooth into straight line
 			cAC2b=cPointP(A, 'cAC2b', pntOffLine(AC2.x, AC2.y, AW1.x, AW1.y, (lineLengthP(AC1, AC2)/2.0)))
 			pnts=pointList(AI3, AC1, cAC2b)
-			c1, c2=myGetControlPoints('FrontCenterSeam', pnts)
+			c1, c2=controlPoints('FrontCenterSeam', pnts)
 			cAC1a=cPoint(A, 'cAC1a', c1[0].x, c1[0].y) #b/w AI3 & AC1
 			cAC1b=cPoint(A, 'cAC1b', c2[0].x, c2[0].y) #b/w AI3 & AC1
 			cAC2a=cPoint(A, 'cAC2a', c1[1].x, c1[1].y) #b/w AC1 & AC2
@@ -433,7 +432,7 @@ class PatternDesign():
 				# normal waist
 				cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS3, BS1)/2.0))) # b/w BS1 & BS3
 				pnts=pointList(BW5, BS1, BS3)
-				c1, c2=myGetControlPoints('BackSideSeam', pnts)
+				c1, c2=controlPoints('BackSideSeam', pnts)
 				cBS1a=cPoint(B, 'cBS1a', c1[0].x, c1[0].y) #b/w BW5 & BS2
 				cBS1b=cPoint(B, 'cBS1b', BS1.x, c2[0].y) #b/w BW5 & BS1
 				cBS3a=cPoint(B, 'cBS3a', BS1.x, c1[1].y) #b/w BS1 & BW5
@@ -442,7 +441,7 @@ class PatternDesign():
 				cBS2a=cPoint(B, 'cBS2a', BW5.x, BW5.y+(lineLengthP(BW5, BS2)/3.0))
 				cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS2, BS3)/3.0))) # b/w BS2 & BS3
 				pnts=pointList(cBS2a, BS2, cBS3b)
-				c1, c2=myGetControlPoints('BackSideSeam', pnts)
+				c1, c2=controlPoints('BackSideSeam', pnts)
 				cBS2b=cPoint(B, 'cBS2b', c2[0].x, c2[0].y) #b/w BW5 & BS2
 				cBS3a=cPoint(B, 'cBS3a', c1[1].x, c1[1].y) #b/w BS2 & BS3
 		else:
@@ -450,7 +449,7 @@ class PatternDesign():
 			print 'larger thigh'
 			cBS3b=cPointP(B, 'cBS3b', pntOffLineP(BS3, BS4, (lineLengthP(BS3, BT1)/2.0))) # b/w BS1 & BS3
 			pnts=pointList(BW5, BS1, BT1, cBS3b)
-			c1, c2=myGetControlPoints('FrontSideSeam', pnts)
+			c1, c2=controlPoints('FrontSideSeam', pnts)
 			cBS1a=cPoint(B, 'cBS1a', c1[0].x, c1[0].y) #b/w BW5 & BS1
 			cBS1b=cPoint(B, 'cBS1b', c2[0].x, c2[0].y) #b/w BW5 & BS1
 			cBT1a=cPoint(B, 'cBT1a', c1[1].x, c1[1].y) #b/w BS1 & BT1
@@ -477,7 +476,7 @@ class PatternDesign():
 			BC2=rPointP(B, 'BC2', Bp9)
 			cBC2b=cPointP(B, 'cBC2b', pntOffLineP(BC2, BW1, (lineLengthP(BC1, BC2)/3.0)))
 			pnts=pointList(BI3, BC1, cBC2b)
-			c1, c2=myGetControlPoints('BackCenterSeam', pnts)
+			c1, c2=controlPoints('BackCenterSeam', pnts)
 			cBC1a=cPoint(B, 'cBC1a', c1[0].x, c1[0].y) #b/w BI3 & BC1
 			cBC1b=cPoint(B, 'cBC1b', c2[0].x, c2[0].y) #b/w BI3 & BC1
 			cBC2a=cPoint(B, 'cBC2a', c1[1].x, c1[1].y) #b/w BC1 & BC2
@@ -623,14 +622,14 @@ class PatternDesign():
 		cC3a=cPointP(C, 'cC3a', pntOffLineP(C2, C1, lineLengthP(C2, C3)/3.0)) #b/w C2 & C3
 		cC4b=cPointP(C, 'cC4b', pntOffLineP(C4, C5, lineLengthP(C4, C3)/4.0)) #b/w C4 & C3
 		pnts=pointList(cC3a, C3, cC4b)
-		c1, c2=myGetControlPoints('LeftWaistbandTopEdge', pnts)
+		c1, c2=controlPoints('LeftWaistbandTopEdge', pnts)
 		cC3b=cPointP(C, 'cC3b', pntOnLineP(C3, c2[0], lineLengthP(C2, C3)/3.0)) #b/w C2 & C3
 		cC4a=cPointP(C, 'cC4a', pntOnLineP(C3, c1[1], lineLengthP(C4, C3)/3.0)) #b/w C4 & C3
 
 		cC8a=cPointP(C, 'cC8a', pntOffLineP(C7, C6, lineLengthP(C7, C8)/3.0)) #b/w C7 & C8
 		cC9b=cPointP(C, 'cC9b', pntOffLineP(C9, C10, lineLengthP(C9, C8)/3.0)) #b/w C9 & C8
 		pnts=pointList(cC8a, C8, cC9b)
-		c1, c2=myGetControlPoints('LeftWaistbandLowerEdge', pnts)
+		c1, c2=controlPoints('LeftWaistbandLowerEdge', pnts)
 		cC8b=cPointP(C, 'cC8b', pntOnLineP(C8, c2[0], lineLengthP(C7, C8)/3.0)) #b/w C7 & C8
 		cC9a=cPointP(C, 'cC9a', pntOnLineP(C8, c1[1], lineLengthP(C9, C8)/3.0)) #b/w C8 & C9
 
