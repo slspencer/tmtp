@@ -1,5 +1,5 @@
  #!/usr/bin/env python
-# Nessa_pants.py
+# Nezhat_pants.py
 # PatternMaker: Susan Spencer Conklin
 # pants shell pattern
 
