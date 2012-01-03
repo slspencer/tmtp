@@ -479,7 +479,7 @@ def intersectLinesP(p1, p2, p3, p4):
 	Find intersection between two lines. Accepts 4 point objects, Returns x, y values
 	Intersection does not have to be within the supplied line segments
 	"""
-	x, y = intersectLines(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
+	x, y = xyIntersectLines2(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
 	return x, y
 
 def pntIntersectLines(x1, y1, x2, y2, x3, y3, x4, y4):
@@ -502,7 +502,7 @@ def pntIntersectLinesP(p1, p2, p3, p4):
 	pnt.y=y
 	return pnt
 
-def intersectLineCircleP(P1, P2, C, r):
+def pntIntersectLineCircleP(C, r, P1, P2):
 	"""
 	Finds intersection of a line segment and a circle.
 	Accepts two point objects P1 & P2, one circle center C (C.x,C.y), and radius r.
