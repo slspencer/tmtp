@@ -182,11 +182,14 @@ class PatternDesign():
 		cBW2b = cPointP(B, 'cBW2b', pntOnLineP(BW2, cBW2a, distance)) # 1st control point is 'aimed' at 2nd control point
 		# back center curve
 		BC1, BC2 = rPointP(B, 'BC1', i), rPointP(B, 'BC2', q)
-		distance = lineLengthP(i, ff)/3.0
-		cBC2a = cPointP(B, 'cBC2a', pntOffLineP(i, ff, distance))
-		cBC2b = cPoint(B, 'cBC2b', AC2.x - distance, AC2.y)
+		distance = lineLengthP(BC1, BC2)/3.0
+		cBC2a = cPointP(B, 'cBC2a', pntOffLineP(BC1, BW2, distance))
+		cBC2b = cPointP(B, 'cBC2b', pntOnLineP(BC2, cBC2a, distance))
 		# back inseam
 		BI1, BI2 = rPointP(B, 'BI1', ee), rPointP(B, 'BI2', y)
+		distance = lineLengthP(BC2, BI1)/3.0
+		cBI1b = cPointP(B, 'cBI1b', pntOffLineP(BI1, BI2, distance))
+		cBI1a = cPointP(B, 'cBI1a', pntOnLineP(BC2, cBI1b, distance))
 		# back sideseam
 		BS1, BS2, BS3, BS4 = rPointP(B, 'BS1', x), rPointP(B, 'BS2', dd), rPointP(B, 'BS3', z), rPointP(B, 'BS4', g)
 		# back grainline
@@ -206,7 +209,7 @@ class PatternDesign():
 		paths = pointList(SL, CL)
 		for p in paths:
 			addToPath(p, 'M', BW1, 'C', cBW2a, cBW2b, BW2) # back waistline
-			addToPath(p, 'L', BC1, 'L', BC2) # back center curve
+			addToPath(p, 'L', BC1, 'C', cBC2a, cBC2b, BC2) # back center curve
 			addToPath(p, 'L', BI1, 'L', BI2) # back inseam
 			addToPath(p, 'L', BS1, 'L', BS2, 'L', BS3, 'L', BS4) # back sideseam
 			addToPath(p, 'L', BW1) # back to beginning
