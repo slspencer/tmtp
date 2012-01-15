@@ -2,13 +2,15 @@
 *.odg
 *.ods
 *.svg
-*.pnt
+*.png
+*.pdf
+foo.*
+*~
+*.pyc
 standalone/BezierSpline/
 standalone/extrafiles/
-standalone/foo.*
 standalone/json/
 standalone/Math/
 jj_catmull/
-*~
-*.pyc
+
 
