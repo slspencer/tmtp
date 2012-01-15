@@ -84,12 +84,12 @@ class PatternDesign():
 		y = pPoint(t.x - BACK_HEM_WIDTH/2.0, cd.outseam) # back hem inseam
 		z = pPoint(0.0, cd.side_lower_hip_length + 1.0*IN) # on front & back outseam 1" below hip
 
-		aa = pntIntersectLinesP(w, z, o, n) # front outseam at kneeS
+		aa = pntIntersectLinesP(w, z, o, n) # front outseam at knee
 		bb = pPoint(s.x + lineLengthP(aa, s), cd.knee_length) # front inseam at knee
-		cc = pntIntersectLinesP(v, bb, q, p) # modified front crotch extension
+		cc = pntIntersectLinesP(v, bb, q, p) # front inseam curve calculation point
 		dd = pntIntersectLinesP(x, z, o, m) # back outseam at knee
 		ee = pPoint(u.x - lineLengthP(u, dd), cd.knee_length) # back inseam at knee
-		ff = pntIntersectLinesP(y, ee, q, p) # back inseam at rise
+		ff = pntIntersectLinesP(y, ee, q, p) # back inseam curve calculation point
 		gg = pPoint(e.x, 0.0 - 1.0*IN) # back waistline center - raised by 1"
 		hh = pPoint(gg.x + (1.0+(7/8))*IN, gg.y) # back waistline center - moved towards back outseam by 1-7/8"
 		pnts = pntIntersectLineCircleP(hh, cd.back_waist_arc, e, a) # circle center=hh, radius=back_waist_arc, line->points e & a. Returns pnts.p1 and pnts.p2
@@ -182,6 +182,9 @@ class PatternDesign():
 		cBW2b = cPointP(B, 'cBW2b', pntOnLineP(BW2, cBW2a, distance)) # 1st control point is 'aimed' at 2nd control point
 		# back center curve
 		BC1, BC2 = rPointP(B, 'BC1', i), rPointP(B, 'BC2', q)
+		distance = lineLengthP(i, ff)/3.0
+		cBC2a = cPointP(B, 'cBC2a', pntOffLineP(i, ff, distance))
+		cBC2b = cPoint(B, 'cBC2b', AC2.x - distance, AC2.y)
 		# back inseam
 		BI1, BI2 = rPointP(B, 'BI1', ee), rPointP(B, 'BI2', y)
 		# back sideseam
