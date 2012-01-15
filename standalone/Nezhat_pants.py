@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 # Nezhat_pants.py
 # PatternMaker: Susan Spencer Conklin
 # pants shell pattern
@@ -74,7 +74,7 @@ class PatternDesign():
 		dart_half_width = dart_width/2.0
 		dart_length = cd.back_upper_hip_length + (cd.back_lower_hip_length - cd.back_upper_hip_length)/3.0
 		p0 = rPoint(A, 'p0', max(cd.upper_hip_circumference, cd.lower_hip_circumference)/4.0, 0.0)
-		p1  = rPoint(A, 'p1', 0.0, 0.0)
+		p1 = rPoint(A, 'p1', 0.0, 0.0)
 		p2 = rPoint(A,  'p2', p0.x, cd.outseam + 2.54*CM) # side hem
 		p3 = rPoint(A, 'p3', 0.0, p2.y) # center hem
 		p4 = rPoint(A, 'p4', p0.x, cd.back_upper_hip_length) # outside upper hip
@@ -95,7 +95,7 @@ class PatternDesign():
 		p19 = rPoint(A, 'p19', p18.x + 2.5*CM, p18.y) # adjust inseam knee point towards kneecap by 2.54cm
 		p20 = rPointP(A, 'p20', pntFromDistanceAndAngleP(p10, lineLengthP(p10, p14)/3.0, angleOfDegree(225.0))) # center seam point 2
 
-		# sideseam curve = [AW5, AS1, AS2, AS3, AS4]
+		# back sideseam curve = [AW5, AS1, AS2, AS3, AS4]
 		AS2 = rPointP(A, 'AS2', p6) # outside lower hip
 		AS3 = rPointP(A, 'AS3', p7) # outside rise (inseam)
 		AS4 = rPointP(A, 'AS4', p8) # side hem
