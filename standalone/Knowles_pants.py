@@ -210,7 +210,7 @@ class PatternDesign():
 		for p in paths:
 			addToPath(p, 'M', BW1, 'C', cBW2a, cBW2b, BW2) # back waistline
 			addToPath(p, 'L', BC1, 'C', cBC2a, cBC2b, BC2) # back center curve
-			addToPath(p, 'L', BI1, 'L', BI2) # back inseam
+			addToPath(p, 'C', cBI1a, cBI1b, BI1, 'L', BI2) # back inseam
 			addToPath(p, 'L', BS1, 'L', BS2, 'L', BS3, 'L', BS4) # back sideseam
 			addToPath(p, 'L', BW1) # back to beginning
 		# add grainline, dart, seamline, cuttingline to pattern piece object
