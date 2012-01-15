@@ -92,13 +92,13 @@ class PatternDesign():
 		ff = pntIntersectLinesP(y, ee, q, p) # back inseam at rise
 		gg = pPoint(e.x, 0.0 - 1.0*IN) # back waistline center - raised by 1"
 		hh = pPoint(gg.x + (1.0+(7/8))*IN, gg.y) # back waistline center - moved towards back outseam by 1-7/8"
-		pnts = pntIntersectLineCircleP(hh, cd.back_waist_arc, e, a) # returns pnts.p1 pPoint and pnts.p2 pPoint
-		if (pnts.p1.y >= hh.y): # if first pPoint is lower on grid than hh
+		pnts = pntIntersectLineCircleP(hh, cd.back_waist_arc, e, a) # circle center=hh, radius=back_waist_arc, line->points e & a. Returns pnts.p1 and pnts.p2
+		if (pnts.p1.y >= hh.y): # if first intersection is lower (greater y) on grid than hh then select it as back waist at outseam
 			ii = pnts.p1
 		else:
 			ii = pnts.p2
 		jj = pPoint(a.x, 0.0 + 1.0*IN) # front waistline center - lowered by 1"
-		kk = pPoint(jj.x - 1.0*IN, jj.y) # front waistline center - moved towards front outseam by 1"
+		kk = pPoint(jj.x - 1.0*IN, jj.y) # front waistline center - moved away from center by 1"
 		ll = pPoint(kk.x - sqrt(cd.front_1_waist_arc**2 + (1.0**2)), 0.0)
 		mm = pntFromDistanceAndAngleP(k, 1.0*IN, angleOfDegree(45.0))
 		nn = pntFromDistanceAndAngleP(l, 1.0*IN, angleOfDegree(135.0))
@@ -133,10 +133,7 @@ class PatternDesign():
 		cAI1b = cPointP(A, 'cAI1b', pntOffLineP(AI1, AI2, distance))
 		cAI1a = cPointP(A, 'cAI1a', pntOnLineP(AC2, cAI1b, distance))
 		# front sideseam
-		print 'r =', r.x, r.y
 		AS1, AS2, AS3, AS4 = rPointP(A, 'AS1', w), rPointP(A, 'AS2', aa), rPointP(A, 'AS3', z), rPointP(A, 'AS4', g)
-		print 'AS2 =', AS2.x, AS2.y
-		print 'AS3 =', AS3.x, AS3.y
 		distance = lineLengthP(AS2, AS3)/3.0
 		#cAS3a = cPointP(A, 'cAS3a', pntOffLineP(AS2, AS1, distance))
 		c1, c2 = controlPoints('front_side_seam_control_points', pointList(AS1, AS2, AS3, AS4, AW1))
@@ -160,25 +157,29 @@ class PatternDesign():
 		addToPath(Agrid, 'M', mm, 'L', k)
 		addToPath(Agrid, 'M', ll, 'L', kk, 'L', h, 'L', p, 'L', v, 'L', w, 'L', z, 'L', g, 'L', ll)
 		# create seamline 'SL' & cuttingline 'CL' paths
-		SL = path()
-		CL = path()
-		paths = pointList(SL, CL)
+		SeamLine = path()
+		CuttingLine= path()
+		paths = pointList(SeamLine, CuttingLine)
 		for p in paths:
 			addToPath(p, 'M', AW1, 'C', cAW2a, cAW2b, AW2) # front waistline
 			addToPath(p, 'L', AC1, 'C', cAC2a, cAC2b, AC2) # front center curve
 			addToPath(p, 'C', cAI1a, cAI1b, AI1, 'L', AI2) # front inseam
 			addToPath(p, 'L', AS1, 'C', cAS2a, cAS2b, AS2, 'C', cAS3a, cAS3b, AS3, 'C', cAS4a, cAS4b, AS4, 'C', cAW1a, cAW1b, AW1) # front sideseam
 		# add grainline, dart, seamline, cuttingline to pattern piece object
-		A.add(Path('reference','gridline', 'pants Back Gridline', Agrid, 'gridline_style'))
-		A.add(Path('pattern', 'seamline', 'pants Back Seamline', SL, 'seamline_style'))
-		A.add(Path('pattern', 'cuttingline', 'pants Back Cuttingline', CL, 'cuttingline_style'))
-		A.add(grainLinePath('grainline', 'pants Back Grainline', Ag1, Ag2))
+		A.add(Path('reference','gridline', 'Pants Front Gridline', Agrid, 'gridline_style'))
+		A.add(Path('pattern', 'seamline', 'Pants Front Seamline', SeamLine, 'seamline_style'))
+		A.add(Path('pattern', 'cuttingline', 'Pants Front Cuttingline', CuttingLine, 'cuttingline_style'))
+		A.add(grainLinePath('grainline', 'Pants Front Grainline', Ag1, Ag2))
 
 		# pants Back 'B'
 		pants.add(PatternPiece('pattern', 'back', letter = 'B', fabric = 2, interfacing = 0, lining = 0))
 		B = pants.back
 		# back waistline
 		BW1, BW2 = rPointP(B, 'BW1', ii), rPointP(B, 'BW2', hh)
+		angle1, angle2 = angleOfLineP(BW1, BW2), angleOfLineP(BW2, BW1)
+		distance = lineLengthP(BW1, BW2)/3.0
+		cBW2a = cPoint(B, 'cBW2a', BW1.x - distance, BW1.y)
+		cBW2b = cPointP(B, 'cBW2b', pntOnLineP(BW2, cBW2a, distance)) # 1st control point is 'aimed' at 2nd control point
 		# back center curve
 		BC1, BC2 = rPointP(B, 'BC1', i), rPointP(B, 'BC2', q)
 		# back inseam
@@ -190,10 +191,6 @@ class PatternDesign():
 		# back label location
 		B.label_x, B.label_y = Bg1.x + 2.5*IN, Bg1.y
 		# create grid 'Bgrid' path
-		inc = 1
-		for p in (i, g, q, j, ee, m):
-			print inc, p.x, p.y
-			inc = inc + 1
 		Bgrid = path()
 		addToPath(Bgrid, 'M', e, 'L', c, 'L', d, 'L', f, 'L', e)
 		addToPath(Bgrid, 'M', i, 'L', g, 'M', q, 'L', j, 'M', ee, 'L', m)
@@ -205,16 +202,16 @@ class PatternDesign():
 		CL = path()
 		paths = pointList(SL, CL)
 		for p in paths:
-			addToPath(p, 'M', BW1, 'L', BW2) # back waistline
+			addToPath(p, 'M', BW1, 'C', cBW2a, cBW2b, BW2) # back waistline
 			addToPath(p, 'L', BC1, 'L', BC2) # back center curve
 			addToPath(p, 'L', BI1, 'L', BI2) # back inseam
 			addToPath(p, 'L', BS1, 'L', BS2, 'L', BS3, 'L', BS4) # back sideseam
 			addToPath(p, 'L', BW1) # back to beginning
 		# add grainline, dart, seamline, cuttingline to pattern piece object
-		B.add(Path('reference','gridline', 'pants Back Gridline', Bgrid, 'gridline_style'))
-		B.add(Path('pattern', 'seamline', 'pants Back Seamline', SL, 'seamline_style'))
-		B.add(Path('pattern', 'cuttingline', 'pants Back Cuttingline', CL, 'cuttingline_style'))
-		B.add(grainLinePath('grainline', 'pants Back Grainline', Bg1, Bg2))
+		B.add(Path('reference','gridline', 'Pants Back Gridline', Bgrid, 'gridline_style'))
+		B.add(Path('pattern', 'seamline', 'Pants Back Seamline', SL, 'seamline_style'))
+		B.add(Path('pattern', 'cuttingline', 'Pants Back Cuttingline', CL, 'cuttingline_style'))
+		B.add(grainLinePath('grainline', 'Pants Back Grainline', Bg1, Bg2))
 
 		# draw once to generate all pattern pieces
 		doc.draw()
