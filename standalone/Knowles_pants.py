@@ -123,10 +123,10 @@ class PatternDesign():
 		#cAW5a = rPointP(A, 'cAW5a', pntFromDistanceAndAngleP(AW4, distance2, angle1 + dart_half_angle))
 		#cAW5b = rPointP(A, 'cAW5b', pntFromDistanceAndAngleP(AW5, distance2, angle2 - dart_half_angle))
 		# front center curve
-		AC1, AC2 = rPointP(A, 'AC1', h), rPointP(A, 'AC2', p)
-		distance = lineLengthP(h, cc)/3.0
-		cAC2a = cPointP(A, 'cAC2a', pntOffLineP(h, kk, distance))
-		cAC2b = cPoint(A, 'cAC2b', AC2.x - distance, AC2.y)
+		AC1, AC2 = rPointP(A, 'AC1', mm), rPointP(A, 'AC2', p)
+		distance = lineLengthP(AC1, AC2)/3.0
+		cAC2a = cPointP(A, 'cAC2a', pntOffLineP(AC1, AW2, distance))
+		cAC2b = cPointP(A, 'cAC2b', pntOnLineP(AC2, cAC2a, distance))
 		# front inseam
 		AI1, AI2 = rPointP(A, 'AI1', bb), rPointP(A, 'AI2', v)
 		distance = lineLengthP(AC2, AI1)/3.0
@@ -181,7 +181,7 @@ class PatternDesign():
 		cBW2a = cPoint(B, 'cBW2a', BW1.x - distance, BW1.y)
 		cBW2b = cPointP(B, 'cBW2b', pntOnLineP(BW2, cBW2a, distance)) # 1st control point is 'aimed' at 2nd control point
 		# back center curve
-		BC1, BC2 = rPointP(B, 'BC1', i), rPointP(B, 'BC2', q)
+		BC1, BC2 = rPointP(B, 'BC1', nn), rPointP(B, 'BC2', q)
 		distance = lineLengthP(BC1, BC2)/3.0
 		cBC2a = cPointP(B, 'cBC2a', pntOffLineP(BC1, BW2, distance))
 		cBC2b = cPointP(B, 'cBC2b', pntOnLineP(BC2, cBC2a, distance))
