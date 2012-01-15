@@ -38,6 +38,7 @@ from pysvg.builders import *
 from constants import *
 from utils import debug
 from patternbase import pBase
+from document import *
 
 # ---- Pattern methods ----------------------------------------
 #
@@ -45,30 +46,40 @@ from patternbase import pBase
 
 # ----------------...Create Points..------------------------------
 
-def rPoint(parent, name, x, y, transform=''):
-	'''Accepts parent object, name, x, y, & optional transform.
-	Returns Point object. Creates red dot on reference layer for pattern calculation point.'''
-	pnt = Point('reference', name, x, y, 'point_style', transform)
+def pPoint(x, y):
+	'''Accepts x,y and returns an object of class Pnt - Does not create an SVG point'''
+	pnt = Pnt(x, y)
+	return pnt
+
+def pPointP(pnt1):
+	'''Accepts an object of class Point or Pnt (can be from another calculation).
+	Returns an object of class Pnt - Does not create an SVG point'''
+	pnt = Pnt(pnt1.x, pnt1.y)
+	return pnt
+
+def rPoint(parent, id, x, y, transform=''):
+	'''Accepts parent object, id, x, y, & optional transform.
+	Returns object of class Point. Creates SVG red dot on reference layer for pattern calculation point.'''
+	pnt = Point('reference', id, x, y, 'point_style', transform)
 	parent.add(pnt)
 	return pnt
 
-def rPointP(parent, name, pnt, transform=''):
-	'''Accepts parent object, name, point object (can be from another calculation), and optional transform.
-	Returns Point object. Creates red dot on reference layer for pattern calculation point.
-	Example w/o transform: AW2 = rPointP(A, 'AW2', pntOnLineP(AW1, AW5, cd.pelvic_distance/2.0))'''
-	return rPoint(parent, name, pnt.x, pnt.y, transform='')
+def rPointP(parent, id, pnt, transform=''):
+	'''Accepts parent object, id, point object (can be from another calculation), and optional transform.
+	Returns object of class Point. Creates SVG red dot on reference layer for pattern calculation point.'''
+	return rPoint(parent, id, pnt.x, pnt.y, transform='')
 
-def cPoint(parent, name, x, y, transform=''):
-	'''Accepts parent object, name, x, y, and optional transform. Returns Point object. Creates blue open dot on reference layer to display control point in bezier curves.'''
-	pnt = Point('reference', name,  x,  y,  'controlpoint_style', transform)
+def cPoint(parent, id, x, y, transform=''):
+	'''Accepts parent object, id, x, y, and optional transform.	Returns object of class Point.
+	Creates SVG blue open dot on reference layer to display control point in bezier curves.'''
+	pnt = Point('reference', id,  x,  y,  'controlpoint_style', transform)
 	parent.add(pnt)
 	return pnt
 
-def cPointP(parent, name, pnt, transform=''):
-	'''Accepts parent object, name, point object (can be from another calculation), and optional transform.
-	Returns Point object. Creates blue open dot on reference layer for control point in bezier curves.
-	Example w/o transform: cAW2a = cPointP(A, 'cAW2b', pntOnLineP(AW1, AW5, cd.pelvic_distance/2.0))'''
-	return cPoint(parent, name, pnt.x, pnt.y, transform='')
+def cPointP(parent, id, pnt, transform=''):
+	'''Accepts parent object, id, point object (can be from another calculation), and optional transform.
+	Returns object of class Point. Creates SVG blue open dot on reference layer for control point in bezier curves.'''
+	return cPoint(parent, id, pnt.x, pnt.y, transform='')
 
 # ----------------...Add Points to Paths..------------------------------
 
@@ -238,7 +249,8 @@ def pointFromDistanceAndAngle(x1, y1, distance, angle):
 	# http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
 	r = distance
 	x = x1 + (r * cos(angle))
-	y = y1 + (r * sin(angle))
+	#y = y1 + (r * sin(angle))
+	y = y1 - (r * sin(angle))
 	return (x , y )
 
 def pointFromDistanceAndAngleP(pnt, distance, angle):
@@ -505,7 +517,7 @@ def pntIntersectLinesP(p1, p2, p3, p4):
 def pntIntersectLineCircleP(C, r, P1, P2):
 	"""
 	Finds intersection of a line segment and a circle.
-	Accepts two point objects P1 & P2, one circle center C (C.x,C.y), and radius r.
+	Accepts circle center point object C, radius r, and two line point objects P1 & P2
 	Returns an object P with number of intersection points, and up to two coordinate pairs.
 	Based on paulbourke.net/geometry/sphereline/sphere_line_intersection.py, written in Python 3.2 by Campbell Barton
 	"""
@@ -619,8 +631,9 @@ def controlPoints(name, knots):
 		next=(i+1)
 
 		# c2[previous] is  on angle of knot[next] to knot[previous] --> backwards relative to direction of curve
-		rise=(knots[previous].y-knots[next].y)
-		run=(knots[previous].x-knots[next].x)
+		#rise=(knots[previous].y-knots[next].y)
+		rise = -(knots[previous].y - knots[next].y)
+		run = (knots[previous].x-knots[next].x)
 		angle=angleOfSlope(rise, run) # angle from knots[previous] to knots[next]
 		length=math.sqrt(((knots[current].y-knots[previous].y)**2)+((knots[current].x-knots[previous].x)**2))/3.0 # 1/3 distance between knots[previous] & knots[current]
 		x, y=pointFromDistanceAndAngle(knots[current].x, knots[current].y, length, angle)
@@ -631,7 +644,7 @@ def controlPoints(name, knots):
 		if (current==1):
 			# c1[0]
 			# on angle of knot[0] to c2[0] --> forwards
-			rise = (c2[0].y - knots[0].y)
+			rise = -(c2[0].y - knots[0].y)
 			run = (c2[0].x - knots[0].x)
 			angle = angleOfSlope(rise, run)
 			x, y = pointFromDistanceAndAngle(knots[0].x, knots[0].y, length, angle)
@@ -641,7 +654,7 @@ def controlPoints(name, knots):
 
 		# c1[current]
 		# on angle from knots[previous] to knots[next] --> forwards --> opposite angle from c2[previous]
-		rise = (knots[next].y - knots[previous].y)
+		rise = -(knots[next].y - knots[previous].y)
 		run = (knots[next].x - knots[previous].x)
 		angle = angleOfSlope(rise, run)
 		length = math.sqrt(((knots[current].y - knots[next].y)**2) + ((knots[current].x - knots[next].x)**2))/3.0
@@ -653,7 +666,7 @@ def controlPoints(name, knots):
 		if (current==c_num):
 			# c2[c_num]
 			# on angle from knot[k_num] to c1[c_num]
-			rise = (c1[c_num].y - knots[k_num].y)
+			rise = -(c1[c_num].y - knots[k_num].y)
 			run = (c1[c_num].x - knots[k_num].x)
 			angle = angleOfSlope(rise, run) # angle from knots[k_num] to c1[c_num]
 			x, y=pointFromDistanceAndAngle(knots[k_num].x, knots[k_num].y, length, angle) # use length from current segment c1
@@ -952,15 +965,38 @@ def connectObjects(connector_pnts, old_pnts):
 
 		return r_pnts
 
+# ---- Set up pattern document with design info ----------------------------------------
+def setupPattern(pattern_design, clientData, printer, companyName, designerName, patternName, patternNumber):
+		pattern_design.cfg['clientdata'] = clientData
+		if (printer == '36" wide carriage plotter'):
+			pattern_design.cfg['paper_width'] = (36 * IN)
+		pattern_design.cfg['border'] = (5*CM)
+		BORDER = pattern_design.cfg['border']
+		metainfo = {'companyName': companyName,  #mandatory
+					'designerName': designerName,#mandatory
+					'patternName': patternName,#mandatory
+					'patternNumber': patternNumber #mandatory
+					}
+		pattern_design.cfg['metainfo'] = metainfo
+		docattrs = {'currentscale' : "0.5 : 1",
+					'fitBoxtoViewport' : "True",
+					'preserveAspectRatio' : "xMidYMid meet",
+					}
+		doc = Document(pattern_design.cfg, name = 'document', attributes = docattrs)
+		TB = TitleBlock('notes', 'titleblock', 0.0, 0.0, stylename = 'titleblock_text_style')
+		doc.add(TB)
+		TG = TestGrid('notes', 'testgrid', pattern_design.cfg['paper_width']/5.0, 0.0, stylename = 'cuttingline_style')
+		doc.add(TG)
+		return doc
 
 # ---- Pattern Classes ----------------------------------------
 
 class Pnt():
-	'''Accepts x,y & name. Returns an object with x,y,name values.  Does not create point in svg document'''
-	def __init__(self):
-		self.x=0.0
-		self.y=0.0
-		self.name=''
+	'''Accepts x,y & name. Returns an object with .x, .y, and .id children.  Does not create point in SVG document'''
+	def __init__(self, x=0.0, y=0.0, name=''):
+		self.x = x
+		self.y = y
+		self.name = ''
 
 class Pattern(pBase):
 	"""
