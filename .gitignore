@@ -1,6 +1,8 @@
 *.odp
 *.odg
 *.ods
+*.svg
+*.pnt
 standalone/BezierSpline/
 standalone/extrafiles/
 standalone/foo.*
