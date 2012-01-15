@@ -1,11 +1,10 @@
  #!/usr/bin/env python
 # Knowles_jean_sloper.py
 # Pattern Maker: Susan Spencer Conklin
-# jeans shepLL pattern
+# pants shepLL pattern
 
 from tmtpl.constants import *
 from tmtpl.pattern import *
-from tmtpl.document import *
 from tmtpl.client import Client
 
 #Project specific
@@ -32,116 +31,194 @@ class PatternDesign():
 
 	def pattern(self):
 		"""
-		Method defining a pattern design. This is where the designer places
-		apLL elements of the design definition
+		Method defining a pattern design.
+		This is where the designer places all elements of the design definition
 		"""
-		cd = self.cd	#client data is prefaced with cd.
-		self.cfg['clientdata'] = cd
+		cd = self.cd	#client data is prefaced with cd
 		printer = '36" wide carriage plotter'
-		if (printer == '36" wide carriage plotter'):
-		    self.cfg['paper_width'] = (36 * IN)
-		self.cfg['border'] = (5*CM)
-		BORDER = self.cfg['border']
-		metainfo = {'companyName':'Seamly Patterns',  #mandatory
-					'designerName':'Susan Spencer',#mandatory
-					'patternName':'Knowles Jean Sloper',#mandatory
-					'patternNumber':'120102-WSP' #mandatory
-					}
-		self.cfg['metainfo'] = metainfo
-		docattrs = {'currentscale' : "0.5 : 1",
-					'fitBoxtoViewport' : "True",
-					'preserveAspectRatio' : "xMidYMid mpEEt",
-					}
-		doc = Document(self.cfg, name = 'document', attributes = docattrs)
-		TB = TitleBlock('notes', 'titleblock', 0.0, 0.0, stylename = 'titleblock_text_style')
-		doc.add(TB)
-		TG = TestGrid('notes', 'testgrid', self.cfg['paper_width']/4.0, 0.0,stylename = 'cuttingline_style')
-		doc.add(TG)
+		companyName = 'Seamly Patterns'  # mandatory
+		designerName = 'Susan Spencer' # mandatory
+		patternName = 'Knowles Jean Sloper' # mandatory
+		patternNumber = '120102-WSP' # mandatory
+		doc = setupPattern(self, cd, printer, companyName, designerName, patternName, patternNumber)
 
-		# ApLL measurements are converted to pixels...  CM = CM_TO_PX    IN = IN_TO_PX   MM = pMM_TO_PX
-		# ApLL angles are in radians
+		# All measurements are converted to pixels...  CM = CM_TO_PX    IN = IN_TO_PX   MM = MM_TO_PX
+		# All angles are in radians
 
-		# begin jeans Pattern Set
-		jeans = Pattern('jeans')
-		jeans.styledefs.update(self.styledefs)
-		jeans.markerdefs.update(self.markerdefs)
-		doc.add(jeans)
-		base = doc.jeans
+		# pattern constants
 		SEAM_EASE = 0.25*IN
 		FRONT_HEM_WIDTH = cd.lower_hip_circumference * (6.0/37.5) # 6" front hem width for 37.5" hips
 		BACK_HEM_WIDTH = cd.lower_hip_circumference * (7.0/37.5) # 7" back hem width for 37.5" hips
 
-		# jeans Front 'A'
-		jeans.add(PatternPiece('pattern', 'front', letter = 'A', fabric = 2, interfacing = 0, lining = 0))
-		A = jeans.front
-		a = rPoint(A, 'a', cd.front_lower_hip_arc + SEAM_EASE,  0)
-		b = rPoint(A, 'b', a.x,  cd.outseam)
-		c = rPoint(A, 'c', 0, 0)
-		d = rPoint(A, 'd', 0, cd.outseam)
-		e = rPoint(A, 'e', 0 - (cd.back_lower_hip_arc + SEAM_EASE), 0)
-		f = rPoint(A, 'f', e.x, cd.outseam)
-		g = rPoint(A, 'g', 0, cd.side_lower_hip_length)
-		h = rPoint(A, 'h', a.x, cd.side_lower_hip_length)
-		i = rPoint(A, 'i', e.x, cd.side_lower_hip_length)
-		j = rPoint(A, 'j', 0, cd.side_rise)
-		k = rPoint(A, 'k', a.x, cd.side_rise)
-		l = rPoint(A, 'l', e.x, cd.side_rise)
-		m = rPoint(A, 'm', 0, cd.knee_length)
-		n = rPoint(A, 'n', a.x,  cd.knee_length)
-		o = rPoint(A, 'o', e.x,  cd.knee_length)
-		p = rPoint(A, 'p', k.x + cd.front_crotch_extension, cd.side_rise)
-		q = rPoint(A, 'q', l.x - cd.back_crotch_extension, cd.side_rise)
-		r = rPoint(A, 'r', (p.x - 0)/2.0, cd.side_rise)
-		s = rPoint(A, 's', r.x, cd.knee_length)
-		t = rPoint(A, 't', (0 - r.x)/2.0, cd.side_rise)
-		u = rPoint(A, 'u', t.x, cd.knee_length)
-		v = rPoint(A, 'v', r.x + FRONT_HEM_WIDTH/2.0,  cd.outseam)
-		w = rPoint(A, 'w', r.x - FRONT_HEM_WIDTH/2.0, cd.outseam)
-		x = rPoint(A, 'x', t.x + BACK_HEM_WIDTH/2.0, cd.outseam)
-		y = rPoint(A, 'y', t.x - BACK_HEM_WIDTH/2.0, cd.outseam)
-		z = rPoint(A, 'z', 0, cd.side_lower_hip_length + 1.0*IN)
+		# pattern object
+		pants = Pattern('pants')
+		pants.styledefs.update(self.styledefs)
+		pants.markerdefs.update(self.markerdefs)
+		doc.add(pants)
 
-		aa = rPointP(A, 'aa', pntIntersectLinesP(w, z, o, n))
-		bb = rPoint(A, 'bb', s.x + lineLengthP(aa, s), cd.knee_length)
-		cc = rPointP(A, 'cc', pntIntersectLinesP(v, bb, q, p))
-		dd = rPointP(A, 'dd', pntIntersectLinesP(x, z, o, n))
-		ee = rPoint(A, 'ee', u.x - lineLengthP(u, dd), cd.knee_length)
-		ff = rPointP(A, 'ff', pntIntersectLinesP(y, ee, q, p))
-		gg = rPoint(A, 'gg', e.x, 0 - 1.0*IN)
-		hh = rPoint(A, 'hh', ee.x + (1+7/8)*IN, gg.y)
-		Pnts = pntIntersectLineCircleP(hh, cd.back_waist_arc, e, a) # returns P.p1 & P.p2
-		if (Pnts.p1.y >= hh.y):
-			pnt = Pnts.p1
+		# pattern points
+		a = pPoint(cd.front_lower_hip_arc + SEAM_EASE, 0.0) # front waist center pattern calculation point
+		b = pPoint(a.x,  cd.outseam) # front hem inseam pattern calculation point (pPoint)
+		c = pPoint(0.0, 0.0) # back & front & back waist outseam pPoint
+		d = pPoint(0.0, cd.outseam) # front & back hem outseam pPoint
+		e = pPoint(0.0 - (cd.back_lower_hip_arc + SEAM_EASE), 0.0) # back waist center pPoint
+		f = pPoint(e.x, cd.outseam) # back hem inseam pPoint
+		g = pPoint(0.0, cd.side_lower_hip_length) # front & back hip outseam pPoint
+		h = pPoint(a.x, cd.side_lower_hip_length) # front inseam pPoint
+		i = pPoint(e.x, cd.side_lower_hip_length) # back inseam pPoint
+		j = pPoint(0.0, cd.side_rise) # front & back rise outseam pPoint
+		k = pPoint(a.x, cd.side_rise) # front rise inseam pPoint
+		l = pPoint(e.x, cd.side_rise) # back rise inseam pPoint
+		m = pPoint(0.0, cd.knee_length) # front & back knee outseam pPoint
+		n = pPoint(a.x,  cd.knee_length) # front knee inseam pPoint
+		o = pPoint(e.x,  cd.knee_length) # back knee inseam pPoint
+		p = pPoint(k.x + cd.front_crotch_extension, cd.side_rise) # front crotch inseam pPoint
+		q = pPoint(l.x - cd.back_crotch_extension, cd.side_rise) # back crotch inseam pPoint
+		r = pPoint((p.x)/2.0, cd.side_rise) # front creaseline point at rise
+		s = pPoint(r.x, cd.knee_length) # front knee midpoint
+		t = pPoint(0.0 - r.x, cd.side_rise) # back creaseline point at rise
+		u = pPoint(t.x, cd.knee_length) # back knee midpoint
+		v = pPoint(r.x + FRONT_HEM_WIDTH/2.0,  cd.outseam) # front hem inseam
+		w = pPoint(r.x - FRONT_HEM_WIDTH/2.0, cd.outseam) # front hem outseam
+		x = pPoint(t.x + BACK_HEM_WIDTH/2.0, cd.outseam) # back hem outseam
+		y = pPoint(t.x - BACK_HEM_WIDTH/2.0, cd.outseam) # back hem inseam
+		z = pPoint(0.0, cd.side_lower_hip_length + 1.0*IN) # on front & back outseam 1" below hip
+
+		aa = pntIntersectLinesP(w, z, o, n) # front outseam at kneeS
+		bb = pPoint(s.x + lineLengthP(aa, s), cd.knee_length) # front inseam at knee
+		cc = pntIntersectLinesP(v, bb, q, p) # modified front crotch extension
+		dd = pntIntersectLinesP(x, z, o, m) # back outseam at knee
+		ee = pPoint(u.x - lineLengthP(u, dd), cd.knee_length) # back inseam at knee
+		ff = pntIntersectLinesP(y, ee, q, p) # back inseam at rise
+		gg = pPoint(e.x, 0.0 - 1.0*IN) # back waistline center - raised by 1"
+		hh = pPoint(gg.x + (1.0+(7/8))*IN, gg.y) # back waistline center - moved towards back outseam by 1-7/8"
+		pnts = pntIntersectLineCircleP(hh, cd.back_waist_arc, e, a) # returns pnts.p1 pPoint and pnts.p2 pPoint
+		if (pnts.p1.y >= hh.y): # if first pPoint is lower on grid than hh
+			ii = pnts.p1
 		else:
-			pnt = Pnts.p2
-		ii = rPointP(A, 'ii', pnt)
-		jj = rPoint(A, 'jj', a.x, 0 + 1.0*IN)
-		kk = rPoint(A, 'kk', jj.x - 1.0*IN, jj.y)
-		ll = rPoint(A, 'll', kk.x - sqrt(cd.front_1_waist_arc**2 + (1.0**2)), 0)
-		mm = rPointP(A, 'mm', pntFromDistanceAndAngleP(k, 1.0*IN, angleOfDegree(45.0)))
-		nn = rPointP(A, 'nn', pntFromDistanceAndAngleP(l, 1.0*IN, angleOfDegree(135.0)))
+			ii = pnts.p2
+		jj = pPoint(a.x, 0.0 + 1.0*IN) # front waistline center - lowered by 1"
+		kk = pPoint(jj.x - 1.0*IN, jj.y) # front waistline center - moved towards front outseam by 1"
+		ll = pPoint(kk.x - sqrt(cd.front_1_waist_arc**2 + (1.0**2)), 0.0)
+		mm = pntFromDistanceAndAngleP(k, 1.0*IN, angleOfDegree(45.0))
+		nn = pntFromDistanceAndAngleP(l, 1.0*IN, angleOfDegree(135.0))
 
-		# front grainline & pattern piece label location
-		Ag1 = rPointP(A, 'Ag1', r)
-		Ag2 = rPointP(A, 'Ag2', s)
-		(A.label_x, A.label_y) = (Ag1.x - 2.5*IN, Ag1.y)
+		# pants Front 'A'
+		pants.add(PatternPiece('pattern', 'front', letter = 'A', fabric = 2, interfacing = 0, lining = 0))
+		A = pants.front
+		# front waistline
+		AW1, AW2 = rPointP(A, 'AW1', ll), rPointP(A, 'AW2', kk)
+		angle1, angle2 = angleOfLineP(AW1, AW2), angleOfLineP(AW2, AW1)
+		distance = lineLengthP(AW1, AW2)/3.0
+		cAW2b = cPoint(A, 'cAW2b', AW2.x - distance, AW2.y)
+		cAW2a = cPointP(A, 'cAW2a', pntOnLineP(AW1, cAW2b, distance)) # 1st control point is 'aimed' at 2nd control point
+		#AW4, AW5 = rPoint(A, 'AW4', AW2.x + dart_width,  AW2.y), rPointP(A, 'AW5', kk)
+		#angle1, angle2 = angleOfLineP(AW1, AW2), angleOfLineP(AW2, AW1)
+		#dart_half_angle = angleOfVectorP(AW4, AD1, AW2)/2.0
+		#distance1,  distance2 = lineLengthP(AW1, AW2)/3.0, lineLengthP(AW4, AW5)/3.0
+		#pnt = pntFromDistanceAndAngleP(AW2, 2*CM, angle2)
+		#AW3 = rPointP(A, 'AW3', pntIntersectLinesP(AW2, pnt, AD1, AD0))
+		#cAW2a = rPointP(A, 'cAW2a', pntFromDistanceAndAngleP(AW1, distance1, angle1 + dart_half_angle))
+		#cAW2b = rPointP(A, 'cAW2b', pntFromDistanceAndAngleP(AW2, distance1, angle2 - dart_half_angle))
+		#cAW5a = rPointP(A, 'cAW5a', pntFromDistanceAndAngleP(AW4, distance2, angle1 + dart_half_angle))
+		#cAW5b = rPointP(A, 'cAW5b', pntFromDistanceAndAngleP(AW5, distance2, angle2 - dart_half_angle))
+		# front center curve
+		AC1, AC2 = rPointP(A, 'AC1', h), rPointP(A, 'AC2', p)
+		distance = lineLengthP(h, cc)/3.0
+		cAC2a = cPointP(A, 'cAC2a', pntOffLineP(h, kk, distance))
+		cAC2b = cPoint(A, 'cAC2b', AC2.x - distance, AC2.y)
+		# front inseam
+		AI1, AI2 = rPointP(A, 'AI1', bb), rPointP(A, 'AI2', v)
+		distance = lineLengthP(AC2, AI1)/3.0
+		cAI1b = cPointP(A, 'cAI1b', pntOffLineP(AI1, AI2, distance))
+		cAI1a = cPointP(A, 'cAI1a', pntOnLineP(AC2, cAI1b, distance))
+		# front sideseam
+		print 'r =', r.x, r.y
+		AS1, AS2, AS3, AS4 = rPointP(A, 'AS1', w), rPointP(A, 'AS2', aa), rPointP(A, 'AS3', z), rPointP(A, 'AS4', g)
+		print 'AS2 =', AS2.x, AS2.y
+		print 'AS3 =', AS3.x, AS3.y
+		distance = lineLengthP(AS2, AS3)/3.0
+		#cAS3a = cPointP(A, 'cAS3a', pntOffLineP(AS2, AS1, distance))
+		c1, c2 = controlPoints('front_side_seam_control_points', pointList(AS1, AS2, AS3, AS4, AW1))
+		cAS2a = cPointP(A, 'cAS2a', c1[0])
+		cAS2b = cPointP(A, 'cAS2b', c2[0])
+		cAS3a = cPointP(A, 'cAS3a', c1[1])
+		cAS3b = cPoint(A, 'cAS3b', AS3.x, c2[1].y)
+		cAS4a = cPoint(A, 'cAS4a', AS3.x, c1[2].y)
+		cAS4b = cPoint(A, 'cAS4b', AS4.x, c2[2].y)
+		cAW1a = cPoint(A, 'cAW1a', AS4.x, c1[3].y)
+		cAW1b = cPointP(A, 'cAW1b', c2[3])
+		# front grainline
+		Ag1, Ag2 = rPointP(A, 'Ag1', r), rPointP(A, 'Ag2', s)
+		# front label location
+		A.label_x, A.label_y = Ag1.x - 2.5*IN, Ag1.y
 
-		# grid 'Agrid' path
+		# create grid 'Agrid' path
 		Agrid = path()
-		addToPath(Agrid, 'M', a, 'L', b, 'L', f, 'L', e,  'L', a)
-		addToPath(Agrid, 'M', i, 'L', h, 'M', q, 'L', p,  'M', ee, 'L', bb)
-		addToPath(Agrid, 'M', hh, 'L', i, 'M', ll, 'L', kk)
-		addToPath(Agrid, 'M', nn, 'L', l, 'M', mm, 'L', k)
-		addToPath(Agrid, 'M', ff, 'L', y, 'M', z, 'L', x)
-		addToPath(Agrid, 'M', cc, 'L', v, 'M', z, 'L', w)
+		addToPath(Agrid, 'M', c, 'L', a, 'L', b, 'L', d,  'L', c)
+		addToPath(Agrid, 'M', g, 'L', h, 'M', j, 'L', p,  'M', m, 'L', bb)
+		addToPath(Agrid, 'M', mm, 'L', k)
+		addToPath(Agrid, 'M', ll, 'L', kk, 'L', h, 'L', p, 'L', v, 'L', w, 'L', z, 'L', g, 'L', ll)
+		# create seamline 'SL' & cuttingline 'CL' paths
+		SL = path()
+		CL = path()
+		paths = pointList(SL, CL)
+		for p in paths:
+			addToPath(p, 'M', AW1, 'C', cAW2a, cAW2b, AW2) # front waistline
+			addToPath(p, 'L', AC1, 'C', cAC2a, cAC2b, AC2) # front center curve
+			addToPath(p, 'C', cAI1a, cAI1b, AI1, 'L', AI2) # front inseam
+			addToPath(p, 'L', AS1, 'C', cAS2a, cAS2b, AS2, 'C', cAS3a, cAS3b, AS3, 'C', cAS4a, cAS4b, AS4, 'C', cAW1a, cAW1b, AW1) # front sideseam
+		# add grainline, dart, seamline, cuttingline to pattern piece object
+		A.add(Path('reference','gridline', 'pants Back Gridline', Agrid, 'gridline_style'))
+		A.add(Path('pattern', 'seamline', 'pants Back Seamline', SL, 'seamline_style'))
+		A.add(Path('pattern', 'cuttingline', 'pants Back Cuttingline', CL, 'cuttingline_style'))
+		A.add(grainLinePath('grainline', 'pants Back Grainline', Ag1, Ag2))
 
-		# add grainline, dart, seamline & cuttingline paths to pattern
-		A.add(Path('reference','gridline', 'jeans Back Gridline', Agrid, 'gridline_style'))
-		A.add(grainLinePath('grainline', 'jeans Back Grainline', Ag1, Ag2))
+		# pants Back 'B'
+		pants.add(PatternPiece('pattern', 'back', letter = 'B', fabric = 2, interfacing = 0, lining = 0))
+		B = pants.back
+		# back waistline
+		BW1, BW2 = rPointP(B, 'BW1', ii), rPointP(B, 'BW2', hh)
+		# back center curve
+		BC1, BC2 = rPointP(B, 'BC1', i), rPointP(B, 'BC2', q)
+		# back inseam
+		BI1, BI2 = rPointP(B, 'BI1', ee), rPointP(B, 'BI2', y)
+		# back sideseam
+		BS1, BS2, BS3, BS4 = rPointP(B, 'BS1', x), rPointP(B, 'BS2', dd), rPointP(B, 'BS3', z), rPointP(B, 'BS4', g)
+		# back grainline
+		Bg1, Bg2 = rPointP(B, 'Bg1', t), rPointP(B, 'Bg2', u)
+		# back label location
+		B.label_x, B.label_y = Bg1.x + 2.5*IN, Bg1.y
+		# create grid 'Bgrid' path
+		inc = 1
+		for p in (i, g, q, j, ee, m):
+			print inc, p.x, p.y
+			inc = inc + 1
+		Bgrid = path()
+		addToPath(Bgrid, 'M', e, 'L', c, 'L', d, 'L', f, 'L', e)
+		addToPath(Bgrid, 'M', i, 'L', g, 'M', q, 'L', j, 'M', ee, 'L', m)
+		addToPath(Bgrid, 'M', nn, 'L', l)
+		addToPath(Bgrid, 'M', q, 'L', y, 'M', x, 'L', z)
+		addToPath(Bgrid, 'M', q, 'L', i, 'L', hh, 'L', ii, 'L', g)
+		# create seamline 'SL' & cuttingline 'CL' paths
+		SL = path()
+		CL = path()
+		paths = pointList(SL, CL)
+		for p in paths:
+			addToPath(p, 'M', BW1, 'L', BW2) # back waistline
+			addToPath(p, 'L', BC1, 'L', BC2) # back center curve
+			addToPath(p, 'L', BI1, 'L', BI2) # back inseam
+			addToPath(p, 'L', BS1, 'L', BS2, 'L', BS3, 'L', BS4) # back sideseam
+			addToPath(p, 'L', BW1) # back to beginning
+		# add grainline, dart, seamline, cuttingline to pattern piece object
+		B.add(Path('reference','gridline', 'pants Back Gridline', Bgrid, 'gridline_style'))
+		B.add(Path('pattern', 'seamline', 'pants Back Seamline', SL, 'seamline_style'))
+		B.add(Path('pattern', 'cuttingline', 'pants Back Cuttingline', CL, 'cuttingline_style'))
+		B.add(grainLinePath('grainline', 'pants Back Grainline', Bg1, Bg2))
 
-		#capLL draw once for the entire pattern
+		# draw once to generate all pattern pieces
 		doc.draw()
+
 		return
 
 # vi:set ts = 4 sw = 4 expandtab:
-
