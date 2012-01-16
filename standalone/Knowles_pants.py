@@ -136,7 +136,7 @@ class PatternDesign():
 		AS1, AS2, AS3, AS4 = rPointP(A, 'AS1', w), rPointP(A, 'AS2', aa), rPointP(A, 'AS3', z), rPointP(A, 'AS4', g)
 		distance = lineLengthP(AS2, AS3)/3.0
 		#cAS3a = cPointP(A, 'cAS3a', pntOffLineP(AS2, AS1, distance))
-		c1, c2 = controlPoints('front_side_seam_control_points', pointList(AS1, AS2, AS3, AS4, AW1))
+		c1, c2 = controlPoints('front_sideseam_control_points', pointList(AS1, AS2, AS3, AS4, AW1))
 		cAS2a = cPointP(A, 'cAS2a', c1[0])
 		cAS2b = cPointP(A, 'cAS2b', c2[0])
 		cAS3a = cPointP(A, 'cAS3a', c1[1])
@@ -192,6 +192,14 @@ class PatternDesign():
 		cBI1a = cPointP(B, 'cBI1a', pntOnLineP(BC2, cBI1b, distance))
 		# back sideseam
 		BS1, BS2, BS3, BS4 = rPointP(B, 'BS1', x), rPointP(B, 'BS2', dd), rPointP(B, 'BS3', z), rPointP(B, 'BS4', g)
+		pnts = pointList(BS1, BS2, BS3, AW1)
+		c1, c2 = controlPoints('back_sideseam_control_points', pointList(BS1, BS2, BS4, BW1))
+		cBS2a = cPointP(B, 'cBS2a', c1[0])
+		cBS2b = cPointP(B, 'cBS2b', c2[0])
+		cBS4a = cPointP(B, 'cBS4a', c1[1])
+		cBS4b = cPointP(B, 'cBS4b', c2[1])
+		cBW1a = cPointP(B, 'cBW1a', c1[2])
+		cBW1b = cPointP(B, 'cBW1b', c2[2])
 		# back grainline
 		Bg1, Bg2 = rPointP(B, 'Bg1', t), rPointP(B, 'Bg2', u)
 		# back label location
@@ -211,8 +219,7 @@ class PatternDesign():
 			addToPath(p, 'M', BW1, 'C', cBW2a, cBW2b, BW2) # back waistline
 			addToPath(p, 'L', BC1, 'C', cBC2a, cBC2b, BC2) # back center curve
 			addToPath(p, 'C', cBI1a, cBI1b, BI1, 'L', BI2) # back inseam
-			addToPath(p, 'L', BS1, 'L', BS2, 'L', BS3, 'L', BS4) # back sideseam
-			addToPath(p, 'L', BW1) # back to beginning
+			addToPath(p, 'L', BS1, 'L', BS2, 'C', cBS4a, cBS4b, BS4,'C', cBW1a, cBW1b, BW1) # back sideseam
 		# add grainline, dart, seamline, cuttingline to pattern piece object
 		B.add(Path('reference','gridline', 'Pants Back Gridline', Bgrid, 'gridline_style'))
 		B.add(Path('pattern', 'seamline', 'Pants Back Seamline', SL, 'seamline_style'))
