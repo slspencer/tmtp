@@ -153,13 +153,9 @@ class PatternDesign():
 			addToPath(p, 'C', cAI1a, cAI1b, AI1, 'L', AI2) # front inseam
 			addToPath(p, 'L', AS1, 'C', cAS2a, cAS2b, AS2, 'C', cAS4a, cAS4b, AS4, 'C', cAW1a, cAW1b, AW1) # front sideseam
 		# add grainline, dart, seamline, cuttingline to pattern piece object
-		#A.add(Path('reference','gridline', 'Pants Front Gridline', Agrid, 'gridline_style'))
 		addGridLine(A, 'Pants Front', grid)
-		#A.add(Path('pattern', 'seamline', 'Pants Front Seamline', SeamLine, 'seamline_style'))
 		addSeamLine(A, 'Pants Front', seamLine)
-		#A.add(Path('pattern', 'cuttingline', 'Pants Front Cuttingline', CuttingLine, 'cuttingline_style'))
 		addCuttingLine(A, 'Pants Front', cuttingLine)
-		#A.add(grainLinePath('grainline', 'Pants Front Grainline', Ag1, Ag2))
 		addGrainLine(A, 'Pants Front', Ag1, Ag2)
 
 		# pants Back 'B'
