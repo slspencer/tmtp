@@ -202,7 +202,7 @@ class PatternDesign():
 		seamLine = path()
 		cuttingLine = path()
 		paths = pointList(seamLine, cuttingLine)
-		for p in paths:
+		for p in (seamLine, cuttingLine):
 			addToPath(p, 'M', BW1, 'C', cBW2a, cBW2b, BW2) # back waistline
 			addToPath(p, 'L', BC1, 'C', cBC2a, cBC2b, BC2) # back center curve
 			addToPath(p, 'C', cBI1a, cBI1b, BI1, 'L', BI2) # back inseam
