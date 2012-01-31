@@ -436,7 +436,7 @@ class PatternDesign():
 		Q=rPoint(tb, 'Q', x, y)# inside dart point near top of waistband
 		x, y=pointAlongLine(tb.H.x, tb.H.y, p22.x, p22.y, -distance)
 		R=rPoint(tb, 'R', x, y)#outside dart point near top of waistband
-		x, y=intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, p20.x, p20.y, p21.x, p21.y)
+		x, y=intersectLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, p20.x, p20.y, p21.x, p21.y)
 		S=rPoint(tb, 'S', x, y)# back dart center at waistline
 		distance=(2*CM)*waistRatio*(0.5)
 		x, y=pointAlongLine(tb.S.x, tb.S.y, p21.x, p21.y, distance)
@@ -447,13 +447,13 @@ class PatternDesign():
 		p26=rPoint(tb, 'p26', p9.x + (4.5*CM*seatRatio), p9.y)# upper hip at side seam
 		p27=rPoint(tb, 'p27', p10.x + (3*CM*seatRatio), p10.y)# seat at side seam
 		p28=rPoint(tb, 'p28', p11.x + (1.75*CM*seatRatio), p11.y)# rise at side seam
-		x, y=intersectionOfLines(p12.x, p12.y, p13.x, p13.y, p28.x, p28.y, Knee.x, Knee.y)#f intersection of lines p12p13 and p28Knee
+		x, y=intersectLines(p12.x, p12.y, p13.x, p13.y, p28.x, p28.y, Knee.x, Knee.y)#f intersection of lines p12p13 and p28Knee
 		#back hem allowance
 		p29=rPoint(tb, 'p29', p14.x, p14.y + (1.3*CM)*insideLegRatio)# lowered back trouser hem
 		O=rPoint(tb, 'O', p29.x, p29.y - HEM_ALLOWANCE)# lowered back trouser hemallowance
 		#control points for back center curve
 		c19=cPoint(tb, 'c19', p17.x + (abs(D.x-p17.x)/2.), p17.y)#b/w  p17 & C
-		x, y=intersectionOfLines(C.x, C.y, p23.x, p23.y, p17.x + (abs(D.x-p17.x)/2.), p17.y, p21.x, p21.y)
+		x, y=intersectLines(C.x, C.y, p23.x, p23.y, p17.x + (abs(D.x-p17.x)/2.), p17.y, p21.x, p21.y)
 		c20=cPoint(tb, 'c20', x, y)#b/w p17 & C
 		#control points waistband
 		c21=cPoint(tb, 'c21', p25.x, p25.y)# b/w p25 & p8

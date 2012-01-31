@@ -257,9 +257,9 @@ class PatternDesign():
         tf.add(Point('reference', 'K',  tf.p5.x, tf.p5.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'L',  tf.p13.x, tf.p13.y + HEM_ALLOWANCE, 'point_style'))
         tf.add(Point('reference', 'M',  tf.p15.x, tf.p15.y + HEM_ALLOWANCE, 'point_style'))
-        x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
+        x, y = intersectLines(tf.p4.x, tf.p4.y, tf.p12.x, tf.p12.y, tf.p14.x, tf.p14.y, tf.p16.x, tf.p16.y)
         tf.add(Point('reference', 'Knee', x, y, 'point_style'))
-        x, y = intersectionOfLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p13p30 and p11Knee
+        x, y = intersectLines(tf.p13.x, tf.p13.y, tf.p30.x, tf.p30.y, tf.p11.x, tf.p11.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p13p30 and p11Knee
         tf.add(Point('reference', 'p32', x, y, 'point_style')) #b/w  p11 & Knee, used to calculate sideseam curve
 
         # control points for side seam
@@ -295,7 +295,7 @@ class PatternDesign():
         distance = ( math.sqrt( ((tf.p4.x - fcp[1].x)**2) + ((tf.p4.y - fcp[1].y)**2) ) ) # find distance of J's 1st control point from p4 - use this to make 1st control point from p4
         x, y = pointAlongLine(tf.p4.x,  tf.p4.y, tf.p5.x,  tf.p5.y, -distance) # point along p4p5 at sufficient length away from p4 to create nice inseam curve
         tf.add(Point('reference', 'c17', x,  y, 'controlpoint_style'))  # b/w p4 & p2
-        x, y = intersectionOfLines(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, tf.p2.x, tf.p2.y,  tf.Knee.x,  tf.Knee.y) #  intersection of p4p5 and p2Knee
+        x, y = intersectLines(tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y, tf.p2.x, tf.p2.y,  tf.Knee.x,  tf.Knee.y) #  intersection of p4p5 and p2Knee
         tf.add(Point('reference', 'c18', x, y, 'controlpoint_style')) #b/w  p4 & p2
 
         # control points at front fly curve
@@ -540,7 +540,7 @@ class PatternDesign():
         tb.add(Point('reference', 'Q', x, y, 'point_style')) # Q marks the inside dart point at top of waistband
         x, y = pointAlongLine(tb.H.x,  tb.H.y, tb.p22.x,  tb.p22.y, -distance)
         tb.add(Point('reference', 'R', x, y, 'point_style')) # R marks the outside dart point at top of waistband
-        x, y = intersectionOfLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, tb.p20.x, tb.p20.y, tb.p21.x, tb.p21.y)
+        x, y = intersectLines(tb.H.x, tb.H.y, tb.P.x, tb.P.y, tb.p20.x, tb.p20.y, tb.p21.x, tb.p21.y)
         tb.add(Point('reference', 'S', x, y, 'point_style')) # S is center of back dart at waistline
         distance = (2*cm_to_px*waistRatio)*(0.5)   #2cm is the width of dart at waistline
         x, y = pointAlongLine(tb.S.x,  tb.S.y, tb.p21.x,  tb.p21.y, distance)
@@ -552,7 +552,7 @@ class PatternDesign():
         tb.add(Point('reference', 'p26', tf.p9.x + (4.5*cm_to_px*seatRatio), tf.p9.y, 'point_style')) # 26 is upper hip at side seam
         tb.add(Point('reference', 'p27', tf.p10.x + (3*cm_to_px*seatRatio), tf.p10.y, 'point_style')) # 27 is seat at side seam
         tb.add(Point('reference', 'p28', tf.p11.x + (1.75*cm_to_px*seatRatio), tf.p11.y, 'point_style')) # 28 is rise at side seam
-        x, y = intersectionOfLines(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, tb.p28.x, tb.p28.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p12p13 and p28Knee
+        x, y = intersectLines(tf.p12.x, tf.p12.y, tf.p13.x, tf.p13.y, tb.p28.x, tb.p28.y,  tf.Knee.x,  tf.Knee.y) # find intersection of lines p12p13 and p28Knee
         tb.add(Point('reference', 'p33', x, y, 'point_style')) #b/w  p28 & Knee, used to calculate sideseam curve
 
         # back hem allowance
@@ -561,7 +561,7 @@ class PatternDesign():
 
         #control points for back center curve
         tb.add(Point('reference', 'c1', tb.p17.x, tb.p17.y, 'controlpoint_style')) # b/w  p17 & C --> c1 = p17, 1st control point = 1st knot of curve
-        x, y = intersectionOfLines(tf.C.x, tf.C.y, tb.p19.x, tb.p19.y, tb.p17.x, tb.p17.y, tb.p28.x, tb.p28.y)
+        x, y = intersectLines(tf.C.x, tf.C.y, tb.p19.x, tb.p19.y, tb.p17.x, tb.p17.y, tb.p28.x, tb.p28.y)
         tb.add(Point('reference', 'c2', x, y, 'controlpoint_style')) # c2 is b/w p17 & C , so this curve is a Quadratic curve
 
         #control points waistband
@@ -616,7 +616,7 @@ class PatternDesign():
         distance = ( math.sqrt( ((tf.p4.x - tf.J.x)**2) + ((tf.p4.y - tf.J.y)**2) ) ) # c31 is same distance from p4 as J
         x, y = pointAlongLine(tf.p4.x,  tf.p4.y, tf.p5.x,  tf.p5.y, -distance)
         tb.add(Point('reference', 'c31', x,  y, 'controlpoint_style'))   # c31 is on slope of line p5p4 at J distance from p4
-        x, y = intersectionOfLines(tb.p17.x, tb.p17.y, tf.Knee.x, tf.Knee.y, tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y) #c32 is intersection of line p17 to Knee and p4p5
+        x, y = intersectLines(tb.p17.x, tb.p17.y, tf.Knee.x, tf.Knee.y, tf.p4.x, tf.p4.y, tf.p5.x, tf.p5.y) #c32 is intersection of line p17 to Knee and p4p5
         tb.add(Point('reference', 'c32', x, y, 'controlpoint_style'))
 
 

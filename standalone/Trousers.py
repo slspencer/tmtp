@@ -232,7 +232,7 @@ class PatternDesign():
 		c11b=cPoint(tf, 'c11b', scp[0].x,  scp[0].y) # b/w p2 & p3
 		c11c=cPoint(tf, 'c11c', fcp[1].x,  fcp[1].y) # b/w p3 & Ca
 		c11d=cPoint(tf, 'c11d', scp[1].x, scp[1].y) #b/w p3 & Ca
-		#TODO - improve intersectionOfLines function to accept vertical lines
+		#TODO - improve intersectLines function to accept vertical lines
 		#control points for hemline
 		pointlist=pointList(p13, p15, p5)
 		fcp, scp=controlPoints('HemLine', pointlist)
@@ -408,7 +408,7 @@ class PatternDesign():
 		#Points
 		#back center points
 		p17=rPoint(tb, 'p17', p2.x - (3.0*CM*hipRatio), p2.y)# extends back crotch measurement by 3cm
-		x, y=intersectionOfLines(p17.x, p17.y, p2.x, p2.y, p5.x, p5.y, p4.x, p4.y)
+		x, y=intersectLines(p17.x, p17.y, p2.x, p2.y, p5.x, p5.y, p4.x, p4.y)
 		p18=rPoint(tb, 'p18', x, y)
 		p19=rPoint(tb, 'p19', A.x +(5.0*CM*waistRatio), A.y)
 		#back waist points
@@ -448,7 +448,7 @@ class PatternDesign():
 		Q=rPoint(tb, 'Q', x, y)# inside dart point near top of waistband
 		x, y=pointAlongLine(H.x, H.y, p22.x, p22.y, -distance)
 		R=rPoint(tb, 'R', x, y)#outside dart point near top of waistband
-		x, y=intersectionOfLines(H.x, H.y, P.x, P.y, p20.x, p20.y, p21.x, p21.y)
+		x, y=intersectLines(H.x, H.y, P.x, P.y, p20.x, p20.y, p21.x, p21.y)
 		S=rPoint(tb, 'S', x, y)# back dart center at waistline
 		distance=(2*CM*waistRatio)/2.0
 		x, y=pointAlongLine(S.x, S.y, p21.x, p21.y, distance)
@@ -459,7 +459,7 @@ class PatternDesign():
 		p26=rPoint(tb, 'p26', p9.x + (4.5*CM*hipRatio), p9.y)# add to abdomenline at side seam
 		p27=rPoint(tb, 'p27', p10.x + (3.0*CM*hipRatio), p10.y)# add to hipline at side seam
 		p28=rPoint(tb, 'p28', p11.x + (2.0*CM*hipRatio), p11.y)# add to riseline at side seam
-		x, y=intersectionOfLines(p12.x, p12.y, p13.x, p13.y, p28.x, p28.y, Knee.x, Knee.y)#intersection of lines p12p13 and p28Knee
+		x, y=intersectLines(p12.x, p12.y, p13.x, p13.y, p28.x, p28.y, Knee.x, Knee.y)#intersection of lines p12p13 and p28Knee
 		#back hem allowance
 		p29=rPoint(tb, 'p29', p14.x, p14.y + (1.3*CM*insideLegRatio))# lowered back trouser hem
 		O=rPoint(tb, 'O', p29.x, p29.y - HEM_ALLOWANCE)# lowered back trouser hemallowance
