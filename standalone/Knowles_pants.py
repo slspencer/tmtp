@@ -199,9 +199,9 @@ class PatternDesign():
 		addToPath(Bgrid, 'M', q, 'L', y, 'M', x, 'L', z)
 		addToPath(Bgrid, 'M', q, 'L', i, 'L', hh, 'L', ii, 'L', g)
 		# create seamline 'SL' & cuttingline 'CL' paths
-		SL = path()
-		CL = path()
-		paths = pointList(SL, CL)
+		seamLine = path()
+		cuttingLine = path()
+		paths = pointList(seamLine, cuttingLine)
 		for p in paths:
 			addToPath(p, 'M', BW1, 'C', cBW2a, cBW2b, BW2) # back waistline
 			addToPath(p, 'L', BC1, 'C', cBC2a, cBC2b, BC2) # back center curve
@@ -209,8 +209,8 @@ class PatternDesign():
 			addToPath(p, 'L', BS1, 'L', BS2, 'C', cBS4a, cBS4b, BS4,'C', cBW1a, cBW1b, BW1) # back sideseam
 		# add grainline, dart, seamline, cuttingline to pattern piece object
 		B.add(Path('reference','gridline', 'Pants Back Gridline', Bgrid, 'gridline_style'))
-		B.add(Path('pattern', 'seamline', 'Pants Back Seamline', SL, 'seamline_style'))
-		B.add(Path('pattern', 'cuttingline', 'Pants Back Cuttingline', CL, 'cuttingline_style'))
+		B.add(Path('pattern', 'seamline', 'Pants Back Seamline', seamLine, 'seamline_style'))
+		B.add(Path('pattern', 'cuttingline', 'Pants Back Cuttingline', cuttingLine, 'cuttingline_style'))
 		B.add(grainLinePath('grainline', 'Pants Back Grainline', Bg1, Bg2))
 
 		# draw once to generate all pattern pieces
