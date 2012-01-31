@@ -16,7 +16,7 @@ from tmtpl.constants import *
 from tmtpl.pattern import *
 from tmtpl.document import *
 from tmtpl.client import Client
-from tmtpl.curves import GetCurveControlPoints,  myGetControlPoints
+from tmtpl.curves import GetCurveControlPoints
 
 #Project specific
 #from math import sin, cos, radians
@@ -201,7 +201,7 @@ class PatternDesign():
 		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
 		c12b=cPoint(tf, 'c12b', x, y) #b/w p10 & p12
 		pointlist=pointList(p7, p9, p10, p12, p13)
-		fcp, scp=myGetControlPoints('SideSeam', pointlist)
+		fcp, scp=controlPoints('SideSeam', pointlist)
 		c9a=cPoint(tf, 'c9a', fcp[0].x, fcp[0].y) #b/w p7 & p9
 		c9b=cPoint(tf, 'c9b', scp[0].x, scp[0].y) #b/w  p7 & p9
 		c10a=cPoint(tf, 'c10a', fcp[1].x, fcp[1].y) #b/w p9 & p10
@@ -209,7 +209,7 @@ class PatternDesign():
 		c12a=cPoint(tf, 'c12a', fcp[2].x, fcp[2].y) #b/w p10 & p12
 		#control points for hemallowance
 		pointlist=pointList(L, M, K)
-		fcp, scp=myGetControlPoints('HemAllowance', pointlist)
+		fcp, scp=controlPoints('HemAllowance', pointlist)
 		c5=cPoint(tf, 'c5', fcp[0].x, fcp[0].y) #b/w L & M
 		c6=cPoint(tf, 'c6', scp[0].x, scp[0].y) #b/w  L & M
 		c7=cPoint(tf, 'c7', fcp[1].x, fcp[1].y) #b/w M & K
@@ -219,7 +219,7 @@ class PatternDesign():
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
 		c9=cPoint(tf, 'c9', x, y) # b/w p4 & p2
 		pointlist=pointList(p4, c9, p2)
-		fcp, scp=myGetControlPoints('Inseam', pointlist)
+		fcp, scp=controlPoints('Inseam', pointlist)
 		c10=cPoint(tf, 'c10', scp[1].x,  scp[1].y) # b/w p4 & p2
 		#control points at front fly curve
 		Ca=cPoint(tf, 'Ca', C.x, C.y-(5.0*CM*riseRatio))
@@ -227,7 +227,7 @@ class PatternDesign():
 		dy = abs(Ca.y - p3.y)
 		Cb = cPoint(tf, 'Cb', C.x - dx, C.y - dy)
 		pointlist=pointList(p2, p3, Ca, Cb)
-		fcp, scp=myGetControlPoints('Inseam', pointlist)
+		fcp, scp=controlPoints('Inseam', pointlist)
 		c11a=cPoint(tf, 'c11a', fcp[0].x,  fcp[0].y) # b/w p2 & p3
 		c11b=cPoint(tf, 'c11b', scp[0].x,  scp[0].y) # b/w p2 & p3
 		c11c=cPoint(tf, 'c11c', fcp[1].x,  fcp[1].y) # b/w p3 & Ca
@@ -235,8 +235,8 @@ class PatternDesign():
 		#TODO - improve intersectionOfLines function to accept vertical lines
 		#control points for hemline
 		pointlist=pointList(p13, p15, p5)
-		fcp, scp=myGetControlPoints('HemLine', pointlist)
-		fcp, scp=myGetControlPoints('HemLine', pointlist)
+		fcp, scp=controlPoints('HemLine', pointlist)
+		fcp, scp=controlPoints('HemLine', pointlist)
 		c13=cPoint(tf, 'c13', fcp[0].x, fcp[0].y) #b/w 13 & 15
 		c14=cPoint(tf, 'c14', scp[0].x, scp[0].y) #b/w  13 & 15
 		c15=cPoint(tf, 'c15', fcp[1].x, fcp[1].y) #b/w 15 & 5
@@ -468,7 +468,7 @@ class PatternDesign():
 		x, y=pointAlongLine(C.x, C.y, p19.x, p19.y, -distance)
 		cCb=cPoint(tb, 'cCb', x, y)#b/w p18 & C
 		pointlist=pointList(p17, p18, cCb)
-		fcp, scp=myGetControlPoints('BackCenterSeam', pointlist)
+		fcp, scp=controlPoints('BackCenterSeam', pointlist)
 		c18a=cPoint(tb, 'c18a', fcp[0].x, fcp[0].y) #b/w p17 & p18
 		c18b=cPoint(tb, 'c18b', scp[0].x, scp[0].y) #b/w p17 & p18
 		distance=math.sqrt((abs(C.x-p18.x)**2)+(abs(C.y-p18.y)**2))/3.0
@@ -492,7 +492,7 @@ class PatternDesign():
 		x, y=pointAlongLine(p12.x, p12.y, p13.x, p13.y, -distance)
 		c25b=cPoint(tb, 'c25b', x, y) #b/w p27 & p12
 		pointlist=pointList(p21, p26, p27, p12)
-		fcp, scp=myGetControlPoints('BackSideSeam', pointlist)
+		fcp, scp=controlPoints('BackSideSeam', pointlist)
 		c23a=cPoint(tb, 'c23a', fcp[0].x, fcp[0].y) #b/w p21 & p26
 		c23b=cPoint(tb, 'c23b', scp[0].x, scp[0].y) #b/w  p21 & p26
 		c24a=cPoint(tb, 'c24a', fcp[1].x, fcp[1].y) #b/w p26 & p27
@@ -500,14 +500,14 @@ class PatternDesign():
 		c25a=cPoint(tb, 'c25a', fcp[2].x, fcp[2].y) #b/w p27 & p12
 		#control points hem line
 		pointlist=pointList(p13, p29, p5)
-		fcp, scp=myGetControlPoints('HemLine', pointlist)
+		fcp, scp=controlPoints('HemLine', pointlist)
 		c27=cPoint(tb, 'c27', fcp[0].x, fcp[0].y)#b/w p13 & p29
 		c28=cPoint(tb, 'c28', scp[0].x, scp[0].y)#b/w p13 & p29
 		c29=cPoint(tb, 'c29', fcp[1].x, fcp[1].y)#b/w p29 & p5
 		c30=cPoint(tb, 'c30', scp[1].x, scp[1].y)#b/w p29 & p5
 		#control points hem allowance
 		pointlist=pointList(L, O, K)
-		fcp, scp=myGetControlPoints('HemAllowance', pointlist)
+		fcp, scp=controlPoints('HemAllowance', pointlist)
 		c31=cPoint(tb, 'c31', fcp[0].x, fcp[0].y)#b/w L & O
 		c32=cPoint(tb, 'c32', scp[0].x, scp[0].y)#b/w L & O
 		c33=cPoint(tb, 'c33', fcp[1].x, fcp[1].y)#b/w O & K
@@ -517,7 +517,7 @@ class PatternDesign():
 		x, y=pointAlongLine(p4.x, p4.y, p5.x, p5.y, -distance)
 		c35a=cPoint(tb, 'c35a', x, y) #b/w p4 & p17
 		pointlist=pointList(p4, c35a, p17)
-		fcp, scp=myGetControlPoints('BackInseam', pointlist)
+		fcp, scp=controlPoints('BackInseam', pointlist)
 		c35b=cPoint(tb, 'c35b', scp[1].x, scp[1].y)#b/w p4 & p17
 
 		#Trousers Back Grid
