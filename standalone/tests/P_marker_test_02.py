@@ -146,7 +146,7 @@ class PatternDesign():
 
         # Now create a path using these points
         testpath = path()
-        splPath = Path('pattern', 'spline1', 'Test Spline Path', testpath, 'seamline_path_style')
+        splPath = Path('pattern', 'spline1', 'Test Spline Path', testpath, 'seamline_style')
         splPath.setMarker('Scissors', start = True, mid = True, end = True)
         part.add(splPath)
 
@@ -194,7 +194,7 @@ class PatternDesign():
 
         # Now create a path using these points
         testpath = path()
-        splPath = Path('pattern', 'spline2', 'Second Test Spline Path', testpath, 'seamline_path_style')
+        splPath = Path('pattern', 'spline2', 'Second Test Spline Path', testpath, 'seamline_style')
         splPath.setMarker('DiamondM', start = True, mid = True, end = True)
         part.add(splPath)
 

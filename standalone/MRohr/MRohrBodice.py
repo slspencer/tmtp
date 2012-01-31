@@ -298,7 +298,7 @@ class PatternDesign():
         bfgps.appendLineToPath(bf.K.x,  bf.K.y,  relative = False)
 
         bfsps = path()
-        bf.add(Path('pattern', 'bfsps', 'Bodice Front Seamline Path', bfsps, 'seamline_path_style'))
+        bf.add(Path('pattern', 'bfsps', 'Bodice Front Seamline Path', bfsps, 'seamline_style'))
         bfsps.appendMoveToPath(bf.F.x, bf.F.y, relative = False)
         bfsps.appendCubicCurveToPath(bf.F.x, bf.F.y, bf.c1.x,  bf.c1.y,  bf.E.x, bf.E.y,  relative = False)
         bfsps.appendLineToPath(bf.D.x, bf.D.y, relative = False)
@@ -361,7 +361,7 @@ class PatternDesign():
         bbgps.appendLineToPath(bb.O.x,  bb.O.y,  relative = False)
 
         bbsps = path()
-        bb.add(Path('pattern', 'bbsps', 'Bodice Back Seamline Path', bbsps, 'seamline_path_style'))
+        bb.add(Path('pattern', 'bbsps', 'Bodice Back Seamline Path', bbsps, 'seamline_style'))
         bbsps.appendMoveToPath(bb.T.x, bb.T.y, relative = False)
         bbsps.appendCubicCurveToPath( bb.c15.x, bb.c15.y, bb.c14.x,  bb.c14.y,  bb.S.x, bb.S.y,  relative = False)
         bbsps.appendLineToPath(bb.R.x, bb.R.y, relative = False)

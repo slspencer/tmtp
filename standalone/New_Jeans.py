@@ -298,8 +298,8 @@ class PatternDesign():
 		# add grainline, dart, seamline & cuttingline paths to pattern
 		A.add(grainLinePath("grainLine", "Jeans Front Grainline", AG1, AG2))
 		A.add(Path('reference','grid', 'Jeans Front Gridline', Agrid, 'gridline_style'))
-		A.add(Path('pattern', 'dartline', 'Jeans Front Dartline', d, 'dart_style'))
-		A.add(Path('pattern', 'seamLine', 'Jeans Front Seamline', s, 'seamline_path_style'))
+		A.add(Path('pattern', 'dartline', 'Jeans Front Dartline', d, 'dartline_style'))
+		A.add(Path('pattern', 'seamLine', 'Jeans Front Seamline', s, 'seamline_style'))
 		A.add(Path('pattern', 'cuttingLine', 'Jeans Front Cuttingline', c, 'cuttingline_style'))
 
 		# Jeans Back 'B'
@@ -454,8 +454,8 @@ class PatternDesign():
 		# add grid, dart, grainline, seamline & cuttingline paths to pattern
 		B.add(grainLinePath("grainLine", "Jeans Back Grainline", BG1, BG2))
 		B.add(Path('reference','Bgrid', 'Trousers Back Gridline', Bgrid, 'gridline_style'))
-		B.add(Path('pattern', 'dartline', 'Jeans Back Dartline', d, 'dart_style'))
-		B.add(Path('pattern', 'seamLine', 'Jeans Back Seamline', s, 'seamline_path_style'))
+		B.add(Path('pattern', 'dartline', 'Jeans Back Dartline', d, 'dartline_style'))
+		B.add(Path('pattern', 'seamLine', 'Jeans Back Seamline', s, 'seamline_style'))
 		B.add(Path('pattern', 'cuttingLine', 'Jeans Back Cuttingline', c, 'cuttingline_style'))
 
 		# Jeans Waistband 'C'
@@ -534,7 +534,7 @@ class PatternDesign():
 		# add grainline, seamline & cuttingline paths to pattern
 		C.add(grainLinePath("grainLine", "Left Waistband Grainline", CG1, CG2))
 		C.add(Path('reference','grid', 'Left Waistband Reference Grid', Cgrid, 'gridline_style'))
-		C.add(Path('pattern', 'seamLine', 'Left Waistband Seamline', s, 'seamline_path_style'))
+		C.add(Path('pattern', 'seamLine', 'Left Waistband Seamline', s, 'seamline_style'))
 		C.add(Path('pattern', 'cuttingLine', 'Left Waistband Cuttingline', c, 'cuttingline_style'))
 
 		#call draw once for the entire pattern

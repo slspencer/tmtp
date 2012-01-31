@@ -307,19 +307,19 @@ class PatternDesign():
 		cubicCurveP(d, c11c, c11d, C)
 		lineP(d, A)
 		# Bodice Back seamline & cuttingline paths
-		bb.add(Path('pattern', 'tfs', 'Bodice Back Seamline', d, 'seamline_path_style'))
+		bb.add(Path('pattern', 'tfs', 'Bodice Back Seamline', d, 'seamline_style'))
 		bb.add(Path('pattern', 'tfc', 'Bodice Back Cuttingline', d, 'cuttingline_style'))
 		#Bodice Back waistline
 		d=path()
 		moveP(d, B)
 		lineP(d, p7)
-		bb.add(Path('pattern', 'tfw', 'Bodice Back Waistline', d, 'dart_style'))
+		bb.add(Path('pattern', 'tfw', 'Bodice Back Waistline', d, 'dartline_style'))
 		#Bodice Back fly stitching line
 		d=path()
 		moveP(d, p3)
 		cubicCurveP(d, c17,  c18, f1)
 		lineP(d, f2)
-		bb.add(Path('pattern', 'tffs', 'Bodice Back Fly Stitchline', d, 'dart_style'))
+		bb.add(Path('pattern', 'tffs', 'Bodice Back Fly Stitchline', d, 'dartline_style'))
 		#Bodice Back grainline
 		x1, y1=(p16.x, C.y)
 		x2, y2=p16.x, (p4.y + (abs(p14.y - p4.y) / 2.0))
@@ -339,7 +339,7 @@ class PatternDesign():
 		lineP(d, B)
 		lineP(d, A)
 		#front waistband seamline & cuttingline
-		tfw.add(Path('pattern', 'tfws', 'bodice Front Waistband Seamline', d, 'seamline_path_style'))
+		tfw.add(Path('pattern', 'tfws', 'bodice Front Waistband Seamline', d, 'seamline_style'))
 		tfw.add(Path('pattern', 'tfwc', 'bodice Front Waistband Cuttingline', d, 'cuttingline_style'))
 		#front waistband grainline & label
 		(x1, y1)=(A.x + (9*CM)*waistRatio, A.y + (.5*CM)*riseRatio)
@@ -359,7 +359,7 @@ class PatternDesign():
 		cubicCurveP(d, c17, c18, f1)
 		lineP(d, f2)
 		lineP(d, A)
-		tff.add(Path('pattern', 'tffs', 'bodice Front Fly Seamline', d, 'seamline_path_style'))
+		tff.add(Path('pattern', 'tffs', 'bodice Front Fly Seamline', d, 'seamline_style'))
 		tff.add(Path('pattern', 'tffc', 'bodice Front Fly Cuttingline', d, 'cuttingline_style'))
 		#front fly grainline & label
 		(x1, y1)=(A.x + (3*CM)*waistRatio, A.y + (5*CM)*riseRatio)
@@ -380,7 +380,7 @@ class PatternDesign():
 		lineP(d, p13)
 		cubicCurveP(d, c13, c14, p15)
 		cubicCurveP(d, c15, c16, p5)
-		tfh.add(Path('pattern', 'tfhs', 'front_hemlining_seam_path', d, 'seamline_path_style'))
+		tfh.add(Path('pattern', 'tfhs', 'front_hemlining_seam_path', d, 'seamline_style'))
 		tfh.add(Path('pattern', 'tfhc', 'front_hemlining_seam_path', d, 'cuttingline_style'))
 		#front hem lining grainline path & label
 		g1x, g1y=p15.x, M.y + (1*CM)
@@ -575,9 +575,9 @@ class PatternDesign():
 		lineP(d, P)
 		#create pattern paths
 		tb.add(Path('reference','tbgrid', 'bodice Back Gridline Path', gr, 'gridline_style'))
-		tb.add(Path('pattern', 'tbd', 'bodice Back Dart', d, 'dart_style'))
-		tb.add(Path('pattern', 'tbw', 'bodice Back Waistline', w, 'dart_style'))
-		tb.add(Path('pattern', 'tbs', 'bodice Back Seamline', s, 'seamline_path_style'))
+		tb.add(Path('pattern', 'tbd', 'bodice Back Dart', d, 'dartline_style'))
+		tb.add(Path('pattern', 'tbw', 'bodice Back Waistline', w, 'dartline_style'))
+		tb.add(Path('pattern', 'tbs', 'bodice Back Seamline', s, 'seamline_style'))
 		tb.add(Path('pattern', 'tbc', 'bodice Back Cuttingline', s, 'cuttingline_style'))
 		#create grainline path & label position
 		x1, y1=p16.x, C.y
@@ -598,7 +598,7 @@ class PatternDesign():
 		lineP(d, T)
 		moveP(d, R)
 		lineP(d, U)
-		tbw.add(Path('pattern', 'tbwd', 'bodice Back Waistband Dart', d, 'dart_style'))
+		tbw.add(Path('pattern', 'tbwd', 'bodice Back Waistband Dart', d, 'dartline_style'))
 		#waistback seamline
 		d=path()
 		moveP(d, p23)
@@ -607,7 +607,7 @@ class PatternDesign():
 		lineP(d, p21)
 		lineP(d, p20)
 		lineP(d, p23)
-		tbw.add(Path('pattern', 'tbws', 'bodice Back Waistband Seamline', d, 'seamline_path_style'))
+		tbw.add(Path('pattern', 'tbws', 'bodice Back Waistband Seamline', d, 'seamline_style'))
 		tbw.add(Path('pattern', 'tbwc', 'bodice Back Waistband Cuttingline', d, 'cuttingline_style'))
 		#waistback grainline & label
 		m=(p23.y - p20.y) / (p23.x - p20.x)
@@ -632,7 +632,7 @@ class PatternDesign():
 		cubicCurveP(d, c27, c28, p29)
 		cubicCurveP(d, c29, c30, p5)
 		lineP(d, K)
-		tbh.add(Path('pattern', 'tbhs', 'back_hemlining_seamline', d, 'seamline_path_style'))
+		tbh.add(Path('pattern', 'tbhs', 'back_hemlining_seamline', d, 'seamline_style'))
 		tbh.add(Path('pattern', 'tbhc', 'back_hemlining_cuttingline', d, 'cuttingline_style'))
 		g1=rPoint(tbh, 'g1', O.x, O.y + (1.5*CM))
 		g2=rPoint(tbh, 'g2', O.x, p29.y  - (1.5*CM))

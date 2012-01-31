@@ -374,7 +374,7 @@ class PatternDesign():
         # See the pysvg library docs for the pysvg methods
         seamline_path_svg = path()
         sps = seamline_path_svg
-        tf.add(Path('pattern', 'tfsp', 'Trousers Front Seamline Path', sps, 'seamline_path_style'))
+        tf.add(Path('pattern', 'tfsp', 'Trousers Front Seamline Path', sps, 'seamline_style'))
         #waistband
         sps.appendMoveToPath(tf.A.x, tf.A.y, relative = False)
         sps.appendLineToPath(tf.p8.x, tf.p8.y, relative = False)
@@ -422,7 +422,7 @@ class PatternDesign():
         # hemline path
         hemline_path_svg = path()
         hps = hemline_path_svg
-        tf.add(Path('pattern', 'tfhp', 'Trousers Front Hemline Path', hps, 'dart_style'))
+        tf.add(Path('pattern', 'tfhp', 'Trousers Front Hemline Path', hps, 'dartline_style'))
         hps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
         hps.appendCubicCurveToPath(tf.c25.x, tf.c25.y, tf.c26.x,  tf.c26.y,  tf.p15.x, tf.p15.y,  relative = False)
         hps.appendCubicCurveToPath(tf.c27.x, tf.c27.y, tf.c28.x,  tf.c28.y,  tf.p5.x, tf.p5.y,  relative = False)
@@ -430,14 +430,14 @@ class PatternDesign():
         #waistline path
         waistline_path_svg = path()
         wps = waistline_path_svg
-        tf.add(Path('pattern', 'tfwp', 'Trousers Front Waistline Path', wps, 'dart_style'))
+        tf.add(Path('pattern', 'tfwp', 'Trousers Front Waistline Path', wps, 'dartline_style'))
         wps.appendMoveToPath(tf.B.x, tf.B.y, relative = False)
         wps.appendLineToPath(tf.p7.x, tf.p7.y, relative = False)
 
         # front fly stitching line
         fly_stitch_path_svg = path()
         fsps = fly_stitch_path_svg
-        tf.add(Path('pattern', 'ffsp', 'Trousers Front Fly Stitching Path', fsps, 'dart_style'))
+        tf.add(Path('pattern', 'ffsp', 'Trousers Front Fly Stitching Path', fsps, 'dartline_style'))
         fsps.appendMoveToPath(tf.f3.x,  tf.f3.y,  relative = False)
         fsps.appendCubicCurveToPath(tf.c29.x,  tf.c29.y,  tf.c30.x,  tf.c30.y,  tf.f4.x,  tf.f4.y,  relative = False)
         fsps.appendLineToPath(tf.f4.x,  tf.A.y,  relative = False)
@@ -670,7 +670,7 @@ class PatternDesign():
         # seam line back path
         seamline_back_path_svg = path()
         sbps = seamline_back_path_svg
-        tb.add(Path('pattern', 'tbsp', 'Trousers Back Seamline Path', sbps, 'seamline_path_style'))
+        tb.add(Path('pattern', 'tbsp', 'Trousers Back Seamline Path', sbps, 'seamline_style'))
         sbps.appendMoveToPath(tb.p17.x, tb.p17.y, relative = False)
         sbps.appendCubicCurveToPath(tb.c1.x, tb.c1.y, tb.c2.x, tb.c2.y, tf.C.x, tf.C.y, relative = False)
         sbps.appendLineToPath(tb.p23.x, tb.p23.y, relative = False)
@@ -713,7 +713,7 @@ class PatternDesign():
         # hemline back marking path
         hemline_back_path_svg = path()
         hbps = hemline_back_path_svg
-        tb.add(Path('pattern', 'tbhp', 'Trousers Back Hemline Path', hbps, 'dart_style'))
+        tb.add(Path('pattern', 'tbhp', 'Trousers Back Hemline Path', hbps, 'dartline_style'))
         hbps.appendMoveToPath(tf.p13.x, tf.p13.y, relative = False)
         hbps.appendCubicCurveToPath(tb.c21.x, tb.c21.y, tb.c22.x,  tb.c22.y,  tb.p29.x, tb.p29.y,  relative = False)
         hbps.appendCubicCurveToPath(tb.c23.x, tb.c23.y, tb.c24.x,  tb.c24.y,  tf.p5.x, tf.p5.y,  relative = False)
@@ -721,13 +721,13 @@ class PatternDesign():
         # waistline back marking path
         waistline_back_path_svg = path()
         wbps = waistline_back_path_svg
-        tb.add(Path('pattern', 'tbwp', 'Trousers Back Waistline Path', wbps, 'dart_style'))
+        tb.add(Path('pattern', 'tbwp', 'Trousers Back Waistline Path', wbps, 'dartline_style'))
         wbps.appendMoveToPath(tb.p20.x, tb.p20.y, relative = False)
         wbps.appendLineToPath(tb.p21.x, tb.p21.y, relative = False)
 
         # dart back marking path
         dart_back_path_svg = path()
-        tb.add(Path('pattern', 'tbdp', 'Trousers Back Dart Path',  dart_back_path_svg,  'dart_style'))
+        tb.add(Path('pattern', 'tbdp', 'Trousers Back Dart Path',  dart_back_path_svg,  'dartline_style'))
         dart_back_path_svg.appendMoveToPath(tb.H.x,  tb.H.y, relative = False)
         dart_back_path_svg.appendLineToPath(tb.P.x,  tb.P.y,  relative = False)
         dart_back_path_svg.appendMoveToPath(tb.Q.x,  tb.Q.y, relative = False)
@@ -760,7 +760,7 @@ class PatternDesign():
         # waistfront seamline path
         waistfront_seam_path_svg = path()
         wfsp= waistfront_seam_path_svg
-        wf.add(Path('pattern', 'twfsl', 'Trousers Waistband Front Seam Line Path',  wfsp,  'seamline_path_style'))
+        wf.add(Path('pattern', 'twfsl', 'Trousers Waistband Front Seam Line Path',  wfsp,  'seamline_style'))
         wfsp.appendMoveToPath( tf.A.x + dx,  tf.A.y + dy, relative = False)
         wfsp.appendLineToPath( tf.p8.x+ dx, tf.p8.y + dy, relative = False)
         wfsp.appendLineToPath( tf.p7.x+ dx, tf.p7.y + dy, relative = False)
@@ -797,7 +797,7 @@ class PatternDesign():
         # waistback dart path
         waistback_dart_path_svg = path()
         wbdp= waistback_dart_path_svg
-        wb.add(Path('pattern', 'twdp', 'Trousers Waistband Dart Line Path',  wbdp,  'dart_style'))
+        wb.add(Path('pattern', 'twdp', 'Trousers Waistband Dart Line Path',  wbdp,  'dartline_style'))
         wbdp.appendMoveToPath(tb.H.x + dx,  tb.H.y + dy, relative = False)
         wbdp.appendLineToPath(tb.S.x + dx,  tb.S.y + dy,  relative = False)
         wbdp.appendMoveToPath(tb.Q.x + dx,  tb.Q.y + dy, relative = False)
@@ -808,7 +808,7 @@ class PatternDesign():
         # waistback seamline path
         waistback_seam_path_svg = path()
         wbsp= waistback_seam_path_svg
-        wb.add(Path('pattern', 'twbsl', 'Trousers Waistband Back Seam Line Path',  wbsp,  'seamline_path_style'))
+        wb.add(Path('pattern', 'twbsl', 'Trousers Waistband Back Seam Line Path',  wbsp,  'seamline_style'))
         wbsp.appendMoveToPath( tb.p23.x+ dx,  tb.p23.y + dy, relative = False)
         wbsp.appendLineToPath( tb.p25.x+ dx, tb.p25.y + dy, relative = False)
         wbsp.appendCubicCurveToPath(tb.c3.x+ dx, tb.c3.y + dy, tb.c4.x+ dx, tb.c4.y + dy, tb.p22.x+ dx, tb.p22.y + dy, relative = False)
@@ -850,7 +850,7 @@ class PatternDesign():
         #create clip path as a test:
         fly_seam_path_svg = path()
         fsp= fly_seam_path_svg
-        f.add(Path('pattern', 'tfsl', 'Trousers Fly Seam Line Path',  fsp,  'seamline_path_style'))
+        f.add(Path('pattern', 'tfsl', 'Trousers Fly Seam Line Path',  fsp,  'seamline_style'))
         fsp.appendMoveToPath(tf.p3.x + dx,  tf.p3.y + dy,  relative = False)
         fsp.appendCubicCurveToPath(tf.c29.x + dx,  tf.c29.y + dy,  tf.c30.x + dx,  tf.c30.y + dy,  tf.f4.x + dx,  tf.f4.y + dy,  relative = False)
         fsp.appendLineToPath(tf.f5.x + dx,  tf.f5.y + dy,  relative = False)

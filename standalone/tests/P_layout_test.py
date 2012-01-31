@@ -89,7 +89,7 @@ class PatternDesign():
         # 12 x 12 inch square
         tw = 12.0 * in_to_pt
         path_svg = path()
-        part.add(Path('pattern', 'path', 'Path for part A', path_svg, 'seamline_path_style'))
+        part.add(Path('pattern', 'path', 'Path for part A', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)
         path_svg.appendLineToPath(tw, 0, relative = True)
         path_svg.appendLineToPath(0, tw, relative = True)
@@ -106,7 +106,7 @@ class PatternDesign():
         # 12 x 12 inch square
         tw = 12.0 * in_to_pt
         path_svg = path()
-        part.add(Path('pattern', 'path', 'Path for part B', path_svg, 'seamline_path_style'))
+        part.add(Path('pattern', 'path', 'Path for part B', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)
         path_svg.appendLineToPath(tw, 0, relative = True)
         path_svg.appendLineToPath(0, tw, relative = True)
@@ -123,7 +123,7 @@ class PatternDesign():
         # 18 x 18 inch square
         tw = 18.0 * in_to_pt
         path_svg = path()
-        part.add(Path('pattern', 'path', 'Path for part C', path_svg, 'seamline_path_style'))
+        part.add(Path('pattern', 'path', 'Path for part C', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)
         path_svg.appendLineToPath(tw, 0, relative = True)
         path_svg.appendLineToPath(0, tw, relative = True)

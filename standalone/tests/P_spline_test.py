@@ -147,7 +147,7 @@ class PatternDesign():
 
         # Now create a path using these points
         testpath = path()
-        part.add(Path('pattern', 'path', 'Test Spline Path', testpath, 'seamline_path_style'))
+        part.add(Path('pattern', 'path', 'Test Spline Path', testpath, 'seamline_style'))
 
         # start at the first point in the list
         testpath.appendMoveToPath(pointlist[0].x, pointlist[0].y, relative = False)
@@ -193,7 +193,7 @@ class PatternDesign():
 
         # Now create a path using these points
         testpath = path()
-        part.add(Path('pattern', 'path2', 'Second Test Spline Path', testpath, 'seamline_path_style'))
+        part.add(Path('pattern', 'path2', 'Second Test Spline Path', testpath, 'seamline_style'))
 
         # start at the first point in the list
         testpath.appendMoveToPath(pointlist[0].x, pointlist[0].y, relative = False)

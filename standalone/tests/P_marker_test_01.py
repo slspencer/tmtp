@@ -94,7 +94,7 @@ class PatternDesign():
         tw = 24.0 * in_to_pt
         th = 56.0 * in_to_pt
         path_svg = path()
-        part.add(Path('pattern', 'path', 'Path for part A', path_svg, 'seamline_path_style'))
+        part.add(Path('pattern', 'path', 'Path for part A', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)
         path_svg.appendLineToPath(tw, 0, relative = True)
         path_svg.appendLineToPath(0, th, relative = True)
