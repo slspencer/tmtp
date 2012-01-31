@@ -196,6 +196,22 @@ def addToPath(p, *args):
 			i=i+4
 	return
 
+def addGridLine(parent, name, path):
+	parent.add(Path('reference','gridline', name + ' Gridline', path, 'gridline_style'))
+	return
+
+def addSeamLine(parent, name, path):
+	parent.add(Path('pattern', 'seamline', name + ' Seamline', path, 'seamline_style'))
+	return
+
+def addCuttingLine(parent, name, path):
+	parent.add(Path('pattern', 'cuttingline', name + ' Cuttingline', path, 'cuttingline_style'))
+	return
+
+def addGrainLine(parent, name, pnt1, pnt2):
+	parent.add(grainLinePath('grainline', name + ' Grainline', pnt1, pnt2))
+	return
+
 # ----------------...Calculate Angle and Slope..------------------------------
 
 def slopeOfLine(x1, y1, x2, y2):
