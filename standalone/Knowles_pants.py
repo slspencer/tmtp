@@ -190,13 +190,13 @@ class PatternDesign():
 		Bg1, Bg2 = rPointP(B, 'Bg1', t), rPointP(B, 'Bg2', u)
 		# back label location
 		B.label_x, B.label_y = Bg1.x + 2.5*IN, Bg1.y
-		# create grid 'Bgrid' path
-		Bgrid = path()
-		addToPath(Bgrid, 'M', e, 'L', c, 'L', d, 'L', f, 'L', e)
-		addToPath(Bgrid, 'M', i, 'L', g, 'M', q, 'L', j, 'M', ee, 'L', m)
-		addToPath(Bgrid, 'M', nn, 'L', l)
-		addToPath(Bgrid, 'M', q, 'L', y, 'M', x, 'L', z)
-		addToPath(Bgrid, 'M', q, 'L', i, 'L', hh, 'L', ii, 'L', g)
+		# create grid path
+		grid = path()
+		addToPath(grid, 'M', e, 'L', c, 'L', d, 'L', f, 'L', e)
+		addToPath(grid, 'M', i, 'L', g, 'M', q, 'L', j, 'M', ee, 'L', m)
+		addToPath(grid, 'M', nn, 'L', l)
+		addToPath(grid, 'M', q, 'L', y, 'M', x, 'L', z)
+		addToPath(grid, 'M', q, 'L', i, 'L', hh, 'L', ii, 'L', g)
 		# create seamline 'SL' & cuttingline 'CL' paths
 		seamLine = path()
 		cuttingLine = path()
@@ -206,7 +206,7 @@ class PatternDesign():
 			addToPath(p, 'C', cBI1a, cBI1b, BI1, 'L', BI2) # back inseam
 			addToPath(p, 'L', BS1, 'L', BS2, 'C', cBS4a, cBS4b, BS4,'C', cBW1a, cBW1b, BW1) # back sideseam
 		# add grainline, dart, seamline, cuttingline to pattern piece object
-		B.add(Path('reference','gridline', 'Pants Back Gridline', Bgrid, 'gridline_style'))
+		B.add(Path('reference','gridline', 'Pants Back Gridline', grid, 'gridline_style'))
 		B.add(Path('pattern', 'seamline', 'Pants Back Seamline', seamLine, 'seamline_style'))
 		B.add(Path('pattern', 'cuttingline', 'Pants Back Cuttingline', cuttingLine, 'cuttingline_style'))
 		B.add(grainLinePath('grainline', 'Pants Back Grainline', Bg1, Bg2))
