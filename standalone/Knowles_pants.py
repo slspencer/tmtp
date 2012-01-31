@@ -151,7 +151,7 @@ class PatternDesign():
 			addToPath(p, 'L', AC1, 'C', cAC2a, cAC2b, AC2) # front center curve
 			addToPath(p, 'C', cAI1a, cAI1b, AI1, 'L', AI2) # front inseam
 			addToPath(p, 'L', AS1, 'C', cAS2a, cAS2b, AS2, 'C', cAS4a, cAS4b, AS4, 'C', cAW1a, cAW1b, AW1) # front sideseam
-		# add grainline, dart, seamline, cuttingline to pattern piece object
+		# add grainline, dart, seamline, cuttingline, etc. to pattern piece object
 		addGridLine(A, 'Pants Front', grid)
 		addSeamLine(A, 'Pants Front', seamLine)
 		addCuttingLine(A, 'Pants Front', cuttingLine)
@@ -190,6 +190,7 @@ class PatternDesign():
 		Bg1, Bg2 = rPointP(B, 'Bg1', t), rPointP(B, 'Bg2', u)
 		# back label location
 		B.label_x, B.label_y = Bg1.x + 2.5*IN, Bg1.y
+
 		# create grid path
 		grid = path()
 		addToPath(grid, 'M', e, 'L', c, 'L', d, 'L', f, 'L', e)
@@ -205,11 +206,11 @@ class PatternDesign():
 			addToPath(p, 'L', BC1, 'C', cBC2a, cBC2b, BC2) # back center curve
 			addToPath(p, 'C', cBI1a, cBI1b, BI1, 'L', BI2) # back inseam
 			addToPath(p, 'L', BS1, 'L', BS2, 'C', cBS4a, cBS4b, BS4,'C', cBW1a, cBW1b, BW1) # back sideseam
-		# add grainline, dart, seamline, cuttingline to pattern piece object
-		B.add(Path('reference','gridline', 'Pants Back Gridline', grid, 'gridline_style'))
-		B.add(Path('pattern', 'seamline', 'Pants Back Seamline', seamLine, 'seamline_style'))
-		B.add(Path('pattern', 'cuttingline', 'Pants Back Cuttingline', cuttingLine, 'cuttingline_style'))
-		B.add(grainLinePath('grainline', 'Pants Back Grainline', Bg1, Bg2))
+		# add grainline, dart, seamline, cuttingline, etc. to pattern piece object
+		addGridLine(B, 'Pants Back', grid)
+		addSeamLine(B, 'Pants Back', seamLine)
+		addCuttingLine(B, 'Pants Back', cuttingLine)
+		addGrainLine(B, 'Pants Back', Bg1, Bg2)
 
 		# draw once to generate all pattern pieces
 		doc.draw()
