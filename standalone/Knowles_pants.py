@@ -146,8 +146,7 @@ class PatternDesign():
 		# create seamline 'SL' & cuttingline 'CL' paths
 		seamLine = path()
 		cuttingLine= path()
-		paths = pointList(seamLine, cuttingLine)
-		for p in paths:
+		for p in seamLine, cuttingLine:
 			addToPath(p, 'M', AW1, 'C', cAW2a, cAW2b, AW2) # front waistline
 			addToPath(p, 'L', AC1, 'C', cAC2a, cAC2b, AC2) # front center curve
 			addToPath(p, 'C', cAI1a, cAI1b, AI1, 'L', AI2) # front inseam
