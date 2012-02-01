@@ -6,9 +6,6 @@
 from tmtpl.constants import *
 from tmtpl.pattern import *
 from tmtpl.client import Client
-
-#Project specific
-#from math import sin, cos, radians
 from math import sqrt
 
 class PatternDesign():
