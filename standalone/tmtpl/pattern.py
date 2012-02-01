@@ -228,7 +228,8 @@ def slopeOfLineP(P1, p2):
 	if ((p2.x - p1.x) <> 0):
 		m = (p2.y - p1.y)/(p2.x - p1.x)
 	else:
-		m = math.pi
+		print 'Vertical Line'
+		m = None
 	return m
 
 def degreeOfAngle(angle):
@@ -261,24 +262,28 @@ def angleOfVectorP(p1, v, p2):
 
 # ----------------...Calculate points with Angle and Slope..------------------------------
 
-def pointFromDistanceAndAngle(x1, y1, distance, angle):
+def xyFromDistanceAndAngle(x1, y1, distance, angle):
 	# http://www.teacherschoice.com.au/maths_library/coordinates/polar_-_rectangular_conversion.htm
 	r = distance
 	x = x1 + (r * cos(angle))
-	#y = y1 + (r * sin(angle))
-	y = y1 - (r * sin(angle))
+	y = y1 + (r * sin(angle))
 	return (x , y )
 
-def pointFromDistanceAndAngleP(pnt, distance, angle):
-	x, y = pointFromDistanceAndAngle(pnt.x, pnt.y, distance, angle)
+def xyFromDistanceAndAngleP(pnt, distance, angle):
+	x, y = xyFromDistanceAndAngle(pnt.x, pnt.y, distance, angle)
 	return (x, y)
+
+def pntFromDistanceAndAngle(x1, y1, distance, angle):
+	pnt1 = Pnt()
+	pnt1.x, pnt1.y = xyFromDistanceAndAngle(x1, y1, distance, angle)
+	return pnt1
 
 def pntFromDistanceAndAngleP(pnt, distance, angle):
 	pnt1 = Pnt()
-	pnt1.x, pnt1.y = pointFromDistanceAndAngle(pnt.x, pnt.y, distance, angle)
+	pnt1.x, pnt1.y = xyFromDistanceAndAngle(pnt.x, pnt.y, distance, angle)
 	return pnt1
 
-def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
+def xyOnLine(x1, y1, x2, y2, distance, rotation = 0):
 	"""
 	Accepts two pairs of coordinates x1,y1,x2,y2 and an optional rotation angle
 	Returns x,y measured from x1, y1 towards x2,y2
@@ -291,32 +296,23 @@ def pointAlongLine(x1, y1, x2, y2, distance, rotation = 0):
 	y = (distance * math.sin(angle)) + y1
 	return (x, y)
 
-def pointOnLine(x1, y1, x2, y2, distance, rotation = 0):
-	"""
-	Accepts x1,y1,x2,y2 and an optional rotation angle
-	Returns x, y values on the line measured from x1,y1 towards x2,y2
-	the point is optionally rotated about the first point by the rotation angle in degrees
-	"""
-	x, y=pointAlongLine(x1, y1, x2, y2, distance, rotation)
-	return (x, y)
-
 def pntOnLine(x1, y1, x2, y2, distance, rotation = 0):
 	"""
 	Accepts x1,y1,x2,y2 and an optional rotation angle
 	Returns a point object pnt on the line measured from x1,y1 towards x2,y2
 	the point is optionally rotated about the first point by the rotation angle in degrees
 	"""
-	pnt=Pnt()
-	pnt.x, pnt.y=pointAlongLine(x1, y1, x2, y2, distance, rotation)
+	pnt = Pnt()
+	pnt.x, pnt.y = xyOnLine(x1, y1, x2, y2, distance, rotation)
 	return pnt
 
-def pointOnLineP(p1, p2, distance, rotation = 0):
+def xyOnLineP(p1, p2, distance, rotation = 0):
 	"""
 	Accepts two points p1, p2 and an optional rotation angle
 	Returns x, y values on the line measured from p1
 	the point is optionally rotated about the first point by the rotation angle in degrees
 	"""
-	x, y = pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+	x, y = xyOnLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
 	return (x, y)
 
 def pntOnLineP(p1, p2, distance, rotation = 0):
@@ -325,16 +321,16 @@ def pntOnLineP(p1, p2, distance, rotation = 0):
 	the point is optionally rotated about the first point by the rotation angle in degrees
 	"""
 	pnt=Pnt()
-	pnt.x, pnt.y = pointAlongLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+	pnt.x, pnt.y = xyOnLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
 	return pnt
 
-def pointOffLine(x1, y1, x2, y2, distance, rotation = 0):
+def xyOffLine(x1, y1, x2, y2, distance, rotation = 0):
 	"""
 	Accepts two point objects and an optional rotation angle, returns x, y
 	Returns x, y values away from the line, measured from p1, opposite direction from p2
 	the point is optionally rotated about the first point by the rotation angle in degrees
 	"""
-	(x, y) = pointAlongLine(x1, y1, x2, y2, -distance, rotation)
+	(x, y) = xyOnLine(x1, y1, x2, y2, -distance, rotation)
 	return (x, y)
 
 def pntOffLine(x1, y1, x2, y2, distance, rotation = 0):
@@ -344,16 +340,16 @@ def pntOffLine(x1, y1, x2, y2, distance, rotation = 0):
 	the point is optionally rotated about the first point by the rotation angle in degrees
 	"""
 	pnt = Pnt()
-	pnt.x, pnt.y = pointOffLine(x1, y1, x2, y2, distance, rotation)
+	pnt.x, pnt.y = xyOffLine(x1, y1, x2, y2, distance, rotation)
 	return pnt
 
-def pointOffLineP(p1, p2, distance, rotation = 0):
+def xyOffLineP(p1, p2, distance, rotation = 0):
 	"""
 	Accepts two point objects and an optional rotation angle, returns x, y
 	Returns x, y values away from the line, measured from p1, away from p2
 	the point is optionally rotated about the first point by the rotation angle in degrees
 	"""
-	(x, y) = pointOffLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+	(x, y) = xyOffLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
 	return (x, y)
 
 def pntOffLineP(p1, p2, distance, rotation = 0):
@@ -363,7 +359,7 @@ def pntOffLineP(p1, p2, distance, rotation = 0):
 	the point is optionally rotated about the first point by the rotation angle in degrees
 	"""
 	pnt=Pnt()
-	pnt.x, pnt.y = pointOffLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+	pnt.x, pnt.y = xyOffLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
 	return pnt
 
 # ----------------...Calculate Midpoints on line..------------------------------
@@ -376,10 +372,10 @@ def xyMidpointP(p1, p2, n=0.5):
 	'''Accepts p1 & p2 and 0<n<1, returns x, y'''
 	return xyMidpoint(p1.x,  p1.y,  p2.x,  p2.y, n)
 
-def pntMidPoint(x1, y1, x2, y2, n=0.5):
+def pntMidpoint(x1, y1, x2, y2, n=0.5):
 	'''Accepts x1,y1,x2,y2 and 0<n<1, returns pnt'''
 	pnt=Pnt()
-	pnt.x, pnt.y=xyMidPoint(x1, y1, x2, y2, n)
+	pnt.x, pnt.y=xyMidpoint(x1, y1, x2, y2, n)
 	return pnt
 
 def pntMidpointP(	p1, p2, n=0.5):
@@ -633,64 +629,49 @@ def pointList(*args):
 	return points
 
 def controlPoints(name, knots):
-	k_num=len(knots)-1 # last iterator for n knots in knots[0..(n-1)]
-	c_num=k_num-1 # last iterator for n-1 curve segments.
-	c1=[] # first control point c1[0..c_num]
-	c2=[] # second control point c2[0..c_num]
+	k_num = len(knots) - 1 # last iterator for n knots 0..n-1
+	c_num = k_num - 1 # last iterator for n-1 curve segments 0..n-2
+	c1=[] # first control points c1[0..c_num]
+	c2=[] # second control points c2[0..c_num]
 
-	i=1
+	i = 1
 	while (i <= c_num):
 		# each loop produces c2[previous] and c1[current]
 		# special cases: get c1[0] in 1st loop & c2[c_num] in last loop
-		previous=(i-1)
-		current=i
-		next=(i+1)
+		# previous segment is segment b/w previous knot & current knot
+		# current segment is segment b/w current knot & next knot
+		# start with i = 1 because can't start processing with knot[0] b/c it doesn't have a previous knot
+		previous = (i - 1)
+		current = i
+		next = (i + 1)
+		last_knot = k_num
+		last_segment = c_num
 
-		# c2[previous] is  on angle of knot[next] to knot[previous] --> backwards relative to direction of curve
-		#rise=(knots[previous].y-knots[next].y)
-		rise = -(knots[previous].y - knots[next].y)
-		run = (knots[previous].x-knots[next].x)
-		angle=angleOfSlope(rise, run) # angle from knots[previous] to knots[next]
-		length=math.sqrt(((knots[current].y-knots[previous].y)**2)+((knots[current].x-knots[previous].x)**2))/3.0 # 1/3 distance between knots[previous] & knots[current]
-		x, y=pointFromDistanceAndAngle(knots[current].x, knots[current].y, length, angle)
-		pnt=Point('reference', '%s-c2%d' % (name, previous), styledef = 'controlpoint_style')
-		pnt.x, pnt.y=x, y
+		# process previous segment's c2
+		angle = angleOfLineP(knots[next], knots[previous])
+		length = lineLengthP(knots[current], knots[previous])/3.0
+		pnt = pntFromDistanceAndAngleP(knots[current], length, angle)
 		c2.append(pnt) # c2[previous]
 
-		if (current==1):
-			# c1[0]
-			# on angle of knot[0] to c2[0] --> forwards
-			rise = -(c2[0].y - knots[0].y)
-			run = (c2[0].x - knots[0].x)
-			angle = angleOfSlope(rise, run)
-			x, y = pointFromDistanceAndAngle(knots[0].x, knots[0].y, length, angle)
-			pnt = Point('reference', '%s-c1%d' % (name, previous), styledef = 'controlpoint_style')
-			pnt.x, pnt.y = x, y
+		if (current == 1):
+			# process 1st segment's c1
+			angle = angleOfLineP(knots[0], c2[0])
+			pnt = pntFromDistanceAndAngleP(knots[0], length, angle)
 			c1.append(pnt)
 
-		# c1[current]
-		# on angle from knots[previous] to knots[next] --> forwards --> opposite angle from c2[previous]
-		rise = -(knots[next].y - knots[previous].y)
-		run = (knots[next].x - knots[previous].x)
-		angle = angleOfSlope(rise, run)
-		length = math.sqrt(((knots[current].y - knots[next].y)**2) + ((knots[current].x - knots[next].x)**2))/3.0
-		x, y = pointFromDistanceAndAngle(knots[current].x, knots[current].y, length, angle)
-		pnt = Point('reference', '%s-c1%d' % (name, current), styledef = 'controlpoint_style')
-		pnt.x, pnt.y = x, y
-		c1.append(pnt)
+		# process current segment's c1
+		angle = angleOfLineP(knots[previous], knots[next])
+		length = lineLengthP(knots[current], knots[next])/3.0
+		pnt = pntFromDistanceAndAngleP(knots[current], length, angle)
+		c1.append(pnt) # c1[current]
 
-		if (current==c_num):
-			# c2[c_num]
-			# on angle from knot[k_num] to c1[c_num]
-			rise = -(c1[c_num].y - knots[k_num].y)
-			run = (c1[c_num].x - knots[k_num].x)
-			angle = angleOfSlope(rise, run) # angle from knots[k_num] to c1[c_num]
-			x, y=pointFromDistanceAndAngle(knots[k_num].x, knots[k_num].y, length, angle) # use length from current segment c1
-			pnt=Point('reference', '%s-c2%d' % (name, current), styledef = 'controlpoint_style')
-			pnt.x, pnt.y=x, y
-			c2.append(pnt)
+		if (current == c_num):
+			# process last segment's c2
+			angle = angleOfLineP(knots[last_knot], c1[last_segment])
+			pnt = pntFromDistanceAndAngleP(knots[last_knot], length, angle)
+			c2.append(pnt) # c2[last_segment]
 
-		i=(i+1)
+		i = (i + 1)
 
 	return c1,  c2
 
@@ -972,7 +953,7 @@ def connectObjects(connector_pnts, old_pnts):
 				run=(t_pnts[i].x - connector_pnts[0].x)
 				translated_angle=angleOfSlope(rise, run)
 				r_angle=translated_angle - rotation_angle
-				(x, y)=pointFromDistanceAndAngle(connector_pnts[0].x, connector_pnts[0].y, distance, r_angle)
+				(x, y)=xyFromDistanceAndAngle(connector_pnts[0].x, connector_pnts[0].y, distance, r_angle)
 				#add to r_pnts[]
 				r_pnts.append(Pnt())
 				r_pnts[i].x=x
