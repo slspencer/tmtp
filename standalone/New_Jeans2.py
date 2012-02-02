@@ -117,10 +117,10 @@ class PatternDesign():
 		cAW5a = cPointP(A, 'cAW5a', pntFromDistanceAndAngleP(AW4, distance, angleOfLineP(e, AW4) - angleOfDegree(90)))
 		cAW5b = cPointP(A, 'cAW5b', pntFromDistanceAndAngleP(AW5, distance, angleOfLineP(j, AW5) + angleOfDegree(90)))
 		distance = lineLengthP(AW1, AW2)/3.0
-		cAW2a = cPointP(A, 'cAW2a', pntFromDistanceAndAngleP(AW1, distance), angleOfLineP(k, AW1) - angleOfDegree(90))
-		cAW2b = cPointP(A, 'cAW2b', pntFromDistanceAndAngleP(AW1, distance), angleOfLineP(e, AW2) + angleOfDegree(90))
+		cAW2a = cPointP(A, 'cAW2a', pntFromDistanceAndAngleP(AW1, distance, angleOfLineP(k, AW1) - angleOfDegree(90)))
+		cAW2b = cPointP(A, 'cAW2b', pntFromDistanceAndAngleP(AW2, distance, angleOfLineP(e, AW2) + angleOfDegree(90)))
 
-		# front dart AD
+		# front dart ADS
 		AD1 = rPointP(A, 'AD1', e) # point of dart
 		AD2 = rPointP(A, 'AD2', pntOffLineP(AW3, e, SEAM_ALLOWANCE)) # center dart line at cuttingline
 		AD3 = rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y - SEAM_ALLOWANCE, AW5.x, AW5.y - SEAM_ALLOWANCE, e.x, e.y, AW4.x, AW4.y)) # outside dart leg
@@ -209,10 +209,9 @@ class PatternDesign():
 		addToPath(d, 'M', AD1, 'L', AD2, 'M', AD3, 'L', AD1, 'L', AD4)
 
 		# seamline 's' & cuttingline 'c' paths
-		s=path()
-		c=path()
-		paths=pointList(s, c)
-		for p in paths:
+		seamLine = path()
+		cuttingLine = path()
+		for p in (seamLine, cuttingLine):
 			# - addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) --> waistband from waist to 1" below waist
 			# - waistband from 1" below waist to 2" below waist
 			addToPath(p, 'M', AW1,  'C', cAW2a, cAW2b, AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
@@ -232,8 +231,8 @@ class PatternDesign():
 		A.add(grainLinePath("grainLine", "pants Front Grainline", AG1, AG2))
 		addGridLine(A, 'pants Front', grid)
 		A.add(Path('pattern', 'dartline', 'pants Front Dartline', d, 'dartline_style'))
-		A.add(Path('pattern', 'seamLine', 'pants Front Seamline', s, 'seamline_style'))
-		A.add(Path('pattern', 'cuttingLine', 'pants Front Cuttingline', c, 'cuttingline_style'))
+		A.add(Path('pattern', 'seamLine', 'pants Front Seamline', seamLine, 'seamline_style'))
+		A.add(Path('pattern', 'cuttingLine', 'pants Front Cuttingline', cuttingLine, 'cuttingline_style'))
 
 		# pants Back 'B'
 
