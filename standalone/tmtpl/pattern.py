@@ -212,6 +212,10 @@ def addGrainLine(parent, name, pnt1, pnt2):
 	parent.add(grainLinePath('grainline', name + ' Grainline', pnt1, pnt2))
 	return
 
+def addDartLine(parent, name, path):
+	parent.add(Path('pattern', 'dartline', name + ' Dartline', path, 'dartline_style'))
+	return
+
 # ----------------...Calculate Angle and Slope..------------------------------
 
 def slopeOfLine(x1, y1, x2, y2):
