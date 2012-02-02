@@ -119,9 +119,9 @@ class PatternDesign():
 
 		# front dart AD
 		AD1 = rPointP(A, 'AD1', e) # point of dart
-		AD2 = rPointP(A, 'AD2', pntOffLineP(AW3, e, (5/8*IN))) # center dart line at cuttingline
-		AD3=rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y-(5/8.0)*IN, AW5.x, AW5.y-(5/8.0)*IN, e.x, e.y, AW4.x, AW4.y)) # outside dart leg
-		AD4=rPointP(A, 'AD4', pntIntersectLines(AW1.x, AW1.y-(5/8.0)*IN, AW2.x, AW2.y-(5/8.0)*IN, e.x, e.y, AW2.x, AW2.y)) #inside dart leg
+		AD2 = rPointP(A, 'AD2', pntOffLineP(AW3, e, SEAM_ALLOWANCE)) # center dart line at cuttingline
+		AD3 = rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y - SEAM_ALLOWANCE, AW5.x, AW5.y - SEAM_ALLOWANCE, e.x, e.y, AW4.x, AW4.y)) # outside dart leg
+		AD4 = rPointP(A, 'AD4', pntIntersectLines(AW1.x, AW1.y - SEAM_ALLOWANCE, AW2.x, AW2.y - SEAM_ALLOWANCE, e.x, e.y, AW2.x, AW2.y)) #inside dart leg
 
 		# front side seam AS
 		AS1=rPointP(A, 'AS1', j)
