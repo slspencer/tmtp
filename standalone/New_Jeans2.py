@@ -231,8 +231,8 @@ class PatternDesign():
 		addGrainLine(A, "pants Front", AG1, AG2)
 		addGridLine(A, 'pants Front', grid)
 		A.add(Path('pattern', 'dartline', 'pants Front Dartline', d, 'dartline_style'))
-		A.add(Path('pattern', 'seamLine', 'pants Front Seamline', seamLine, 'seamline_style'))
-		A.add(Path('pattern', 'cuttingLine', 'pants Front Cuttingline', cuttingLine, 'cuttingline_style'))
+		addSeamLine(A, 'pants Front', seamLine)
+		addCuttingLine(A, 'pants Front', cuttingLine)
 
 		# pants Back 'B'
 
