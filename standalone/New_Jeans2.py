@@ -224,7 +224,7 @@ class PatternDesign():
 					#addToPath(p, 'C', cAS1a, cAS1b, AS1, 'C', cAT1a, cAT1b, AT1)
 			addToPath(p, 'C', cAS3a, cAS3b, AS3, 'L', AS4, 'L', AI1, 'L',  AI2, 'C', cAI3a, cAI3b, AI3)
 			if (frontNormalWaist):
-				cubicCurveP(p, cAC1a, cAC1b, AC1)
+				addToPathP(p, cAC1a, cAC1b, AC1)
 			addToPath(p, 'C', cAC2a, cAC2b, AC2, 'L',  AW1)
 
 		# add grainline, dart, seamline & cuttingline paths to pattern
