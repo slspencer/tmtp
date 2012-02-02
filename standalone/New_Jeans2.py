@@ -116,6 +116,9 @@ class PatternDesign():
 		distance = lineLengthP(AW4, AW5)/3.0
 		cAW5a = cPointP(A, 'cAW5a', pntFromDistanceAndAngleP(AW4, distance, angleOfLineP(e, AW4) - angleOfDegree(90)))
 		cAW5b = cPointP(A, 'cAW5b', pntFromDistanceAndAngleP(AW5, distance, angleOfLineP(j, AW5) + angleOfDegree(90)))
+		distance = lineLengthP(AW1, AW2)/3.0
+		cAW2a = cPointP(A, 'cAW2a', pntFromDistanceAndAngleP(AW1, distance), angleOfLineP(k, AW1) - angleOfDegree(90))
+		cAW2b = cPointP(A, 'cAW2b', pntFromDistanceAndAngleP(AW1, distance), angleOfLineP(e, AW2) + angleOfDegree(90))
 
 		# front dart AD
 		AD1 = rPointP(A, 'AD1', e) # point of dart
@@ -212,7 +215,7 @@ class PatternDesign():
 		for p in paths:
 			# - addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) --> waistband from waist to 1" below waist
 			# - waistband from 1" below waist to 2" below waist
-			addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
+			addToPath(p, 'M', AW1,  'C', cAW2a, cAW2b, AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
 			#if (FRONTNORMALTHIGH):
 			if (frontNormalWaist):
 				addToPath(p, 'C', cAS1a, cAS1b, AS1)
