@@ -205,8 +205,8 @@ class PatternDesign():
 		addToPath(grid, 'M', g, 'L', h, 'M', m, 'L', n)
 
 		# dart 'd' path
-		d=path()
-		addToPath(d, 'M', AD1, 'L', AD2, 'M', AD3, 'L', AD1, 'L', AD4)
+		dartLine = path()
+		addToPath(dartLine, 'M', AD1, 'L', AD2, 'M', AD3, 'L', AD1, 'L', AD4)
 
 		# seamline 's' & cuttingline 'c' paths
 		seamLine = path()
@@ -230,7 +230,7 @@ class PatternDesign():
 		# add grainline, dart, seamline & cuttingline paths to pattern
 		addGrainLine(A, "pants Front", AG1, AG2)
 		addGridLine(A, 'pants Front', grid)
-		addDartLine(A, 'pants Front', d)
+		addDartLine(A, 'pants Front', dartLine)
 		addSeamLine(A, 'pants Front', seamLine)
 		addCuttingLine(A, 'pants Front', cuttingLine)
 
