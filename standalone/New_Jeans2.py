@@ -20,6 +20,10 @@ class PatternDesign():
 		Method defining a pattern design. This is where the designer places
 		all elements of the design definition
 		"""
+		# All measurements are converted to pixels
+		# x increases towards right, y increases towards bottom of drawing - Quadrant is 'upside down'
+		# All angles are in radians
+		# angles start with 0 at '3:00', & move clockwise b/c quadrant is 'upside down'
 		cd = self.cd	#client data is prefaced with cd
 		printer = '36" wide carriage plotter'
 		companyName = 'Seamly Patterns'  # mandatory
@@ -28,16 +32,19 @@ class PatternDesign():
 		patternNumber = 'WS010-xj1-1' # mandatory
 		doc = setupPattern(self, cd, printer, companyName, designerName, patternName, patternNumber)
 
-		# All measurements are converted to pixels
-		# All angles are in radians
+		top = 0.0
+		side = 0.0
+		center = max(cd.front_waist_arc, cd.front_lower_hip_arc)
+		width = center + cd.front_crotch_extension
+		riseLine = cd.side_rise + (1*IN) # 1" ease
+		hipLine = (2/3.0) * riseLine
+		hemLine = riseLine + cd.inseam
+		kneeLine = riseLine + cd.inseam/2.0 - (1.0 * IN)
+		creaseLine = width/2.0
 		seamEase = (1/8.0) * IN
 		waistLine = (1.0 * IN) # Jeans waist is 1" lower than actual waist
-		riseLine = waistLine + max(cd.front_rise, cd.side_rise, cd.back_rise)
-		hipLine = waistLine + ((2/3.0) * riseLine)
-		hemLine = riseLine + cd.inseam
-		kneeLine = riseLine + abs(hemLine - riseLine)/2.0 - (1.0 * IN)
 		frontDartWidth = (1/2.0) * IN
-		frontDartLength = 2.5 * IN
+		frontDartLength = (1/3.0) * hipLine
 		backDartWidth = (3/4.0) * IN
 		backDartLength = (2/3.0) * hipLine
 		waistBand = 1.0 * IN  # Height of waistBand
@@ -51,7 +58,7 @@ class PatternDesign():
 		else:
 			frontNormalWaist = 0
 
-		if ((cd.back_lower_hip_arc-cd.back_waist_arc) >= (2.0 * IN)):
+		if ((cd.back_lower_hip_arc - cd.back_waist_arc) >= (2.0 * IN)):
 			backNormalWaist = 1
 		else:
 			backNormalWaist = 0
@@ -62,170 +69,113 @@ class PatternDesign():
 		pants.markerdefs.update(self.markerdefs)
 		doc.add(pants)
 
-		# pants Front 'A'
+		# pants Front 'A' - 0.25*IN
 		pants.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
 		A = pants.front
 
-		top = 0.0
-		side = 0.0
-		center = cd.front_lower_hip_arc + (2 * seamEase)
+		Side = rPoint(A, 'Side', side, top)
+		Center = rPoint(A, 'Center', center, top)
+		Width = rPoint(A, 'Width', width, top)
 
-		ASide = rPoint(A, 'ASide', side, top)
-		ACenter = rPoint(A, 'ACenter', center, top)
-		AWaist = rPoint(A, 'AWaist', side, waistLine)
-		AHip = rPoint(A, 'AHip', side, hipLine)
-		ARise = rPoint(A, 'ARise', side, riseLine)
+		a = pPoint(center, waistLine - 0.25*IN) # center waist, raise by 1/4in
+		b = pPoint(center - cd.front_waist_arc - frontDartWidth - 2*seamEase, waistLine) # side waist
+		c = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
+		d = pPoint(c.x + frontDartWidth/2.0, c.y) # dart inside at waist
+		e = pPoint(c.x - frontDartWidth/2.0, c.y) # dart outside at waist
+		f = pPoint(c.x, c.y + frontDartLength) # dart point
+		angle = angleOfLineP(f, e) - angleOfVectorP(c, f, e)
+		pnt1 = pntFromDistanceAndAngleP(f, frontDartLength, angle)
+		pnt2 = pntIntersectLinesP(b, c, f, pnt1) # where sewn dart fold should cross waistline
+		g = pntOnLineP(f, c, lineLengthP(f, pnt2)) # extend dart center up to make sewn dart fold cross waistline
 
-		a = pPoint(center, waistLine) # right side of reference grid
-		b = pPoint(center/2.0, waistLine) # dart midpoint
-		c = pPoint(b.x - frontDartWidth/2.0, waistLine) # dart outside leg (left on pattern)
-		d = pPoint(b.x + frontDartWidth/2.0, waistLine) # dart inside leg (right on pattern)
-		e = rPoint(A, 'e', b.x, b.y + frontDartLength) # dart point
-		f = pPoint(d.x + (cd.front_waist_arc/2.0), waistLine) # center waist
-		g = pPoint(f.x, waistLine - (0.25 * IN)) # add in 1/4in to center front length
-		h = pPoint(c.x - (cd.front_waist_arc/2.0), waistLine) # side waist
-		i = pPoint(center, (riseLine/2.0)) # center front 'pivot' point from crotch curve to front fly
-		j = pPoint(side, hipLine)
-		k = pPoint(center, hipLine)
-		l = pPoint(side, riseLine)
-		m = pPoint(center, riseLine)
-		n = pPointP(pntFromDistanceAndAngleP(m, (1.25*IN), angleOfDegree(45.0))) # inside crotch curve point
-		o = pPoint(m.x+(2.0*IN), riseLine) # point of crotch
-		p = pPoint(o.x/2.0, riseLine) # creaseline point
-		ACreaseLine = p.x
-		q = pPoint(p.x - frontKneeWidth/2.0, kneeLine) # outside knee
-		r = pPoint(p.x + frontKneeWidth/2.0, kneeLine) # inside knee
-		s = pPoint(p.x, hemLine)
-		t = pPoint(s.x - frontHemWidth/2.0, hemLine) # outside hem
-		u = pPoint(s.x + frontHemWidth/2.0, hemLine) # inside hem
+		h = pPoint(center, riseLine/2.0) # center front 'pivot' point from crotch curve to front fly
+		i = pPoint(side, hipLine) # side hip
+		j = pPoint(center, hipLine) # center hip
+		k = pPoint(side, riseLine) # side rise
+		l = pPoint(center, riseLine) # center rise
+		m = pntFromDistanceAndAngleP(l, (1.25*IN), angleOfDegree(315.0)) # center crotch curve
+		n = pPoint(l.x + cd.front_crotch_extension, riseLine) # center crotch point
+		o = pPoint(creaseLine - frontKneeWidth/2.0, kneeLine) # inside knee
+		p = pPoint(creaseLine + frontKneeWidth/2.0, kneeLine) # outside knee
+		q = pPoint(creaseLine - frontHemWidth/2.0, hemLine) # inside hem
+		r = pPoint(creaseLine + frontHemWidth/2.0, hemLine) # outside hem
+
+		pnt1 = pPoint(a.x, a.y + waistBand)
+		pnt2 = pPoint(d.x, d.y + waistBand)
+		pnt3 = pPoint(e.x, e.y + waistBand)
+		pnt4 = pPoint(b.x, b.y + waistBand)
+		t = pntIntersectLinesP(pnt1, pnt2, a, h) # waistBand at center
+		u = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
+		v = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
+		w = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
 
 		# front waist AW
-		b2 = pPointP(pntIntersectLinesP(g, h, e, b))
-		c2 = pPoint(c.x, b2.y)
-		d2 = pPoint(d.x, b2.y)
-		angle = angleOfLineP(e, c) + angleOfVectorP(b, e, c)
-		pnt1 = pntFromDistanceAndAngleP(e, frontDartLength, angle) # point along sewn dart fold
-		pnt2 = pntIntersectLinesP(h, c2, e, pnt1) # where sewn dart fold will cross waistline
-		distance = lineLengthP(e, pnt2)
-		AW1 = rPointP(A, 'AW1', g) # front center seam at new waist
-		AW2 = rPointP(A, 'AW2', d2) # inside dart at new waist
-		AW3 = rPointP(A, 'AW3', pntFromDistanceAndAngleP(e, distance, angleOfLineP(e, b))) # center dart at new waist
-		AW4 = rPointP(A, 'AW4', c2) # outside dart at new waist
-		AW5 = rPointP(A, 'AW5', h) # side waist
+		AW1 = rPointP(A, 'AW1', a) # center waist
+		AW2 = rPointP(A, 'AW2', d) # inside dart
+		AW3 = rPointP(A, 'AW3', g) # center dart
+		AW4 = rPointP(A, 'AW4', e) # outside dart
+		AW5 = rPointP(A, 'AW5', b) # side waist
 		#front waist control points
-		distance = lineLengthP(AW4, AW5)/3.0
-		cAW5a = cPointP(A, 'cAW5a', pntFromDistanceAndAngleP(AW4, distance, angleOfLineP(e, AW4) - angleOfDegree(90)))
-		cAW5b = cPointP(A, 'cAW5b', pntFromDistanceAndAngleP(AW5, distance, angleOfLineP(j, AW5) + angleOfDegree(90)))
 		distance = lineLengthP(AW1, AW2)/3.0
-		cAW2a = cPointP(A, 'cAW2a', pntFromDistanceAndAngleP(AW1, distance, angleOfLineP(k, AW1) - angleOfDegree(90)))
-		cAW2b = cPointP(A, 'cAW2b', pntFromDistanceAndAngleP(AW2, distance, angleOfLineP(e, AW2) + angleOfDegree(90)))
-
-		# front dart ADS
-		AD1 = rPointP(A, 'AD1', e) # point of dart
-		AD2 = rPointP(A, 'AD2', pntOffLineP(AW3, e, SEAM_ALLOWANCE)) # center dart line at cuttingline
-		AD3 = rPointP(A, 'AD3', pntIntersectLines(AW4.x, AW4.y - SEAM_ALLOWANCE, AW5.x, AW5.y - SEAM_ALLOWANCE, e.x, e.y, AW4.x, AW4.y)) # outside dart leg
-		AD4 = rPointP(A, 'AD4', pntIntersectLines(AW1.x, AW1.y - SEAM_ALLOWANCE, AW2.x, AW2.y - SEAM_ALLOWANCE, e.x, e.y, AW2.x, AW2.y)) #inside dart leg
-
+		cAW2b = cPointP(A, 'cAW2b', pntFromDistanceAndAngleP(AW2, distance, angleOfLineP(AW2, f) - angleOfDegree(90)))
+		cAW2a = cPointP(A, 'cAW2a', pntOnLineP(AW1, cAW2b, distance))
+		distance = lineLengthP(AW4, AW5)/3.0
+		cAW5a = cPointP(A, 'cAW5a', pntFromDistanceAndAngleP(AW4, distance, angleOfLineP(AW4, f) + angleOfDegree(90)))
+		cAW5b = cPointP(A, 'cAW5b', pntFromDistanceAndAngleP(AW5, distance, angleOfLineP(AW5, i) - angleOfDegree(90)))
+		# front dart AD
+		AD1 = rPointP(A, 'AD1', f) # dart point
+		AD2 = rPointP(A, 'AD2', pntOffLineP(d, AD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
+		AD3 = rPointP(A, 'AD3', pntOffLineP(e, AD1, SEAM_ALLOWANCE)) # outside dart at cuttingline
 		# front side seam AS
-		AS1=rPointP(A, 'AS1', j)
-		AS2=rPointP(A, 'AS2', l)
-		AS3=rPointP(A, 'AS3', q)
-		AS4=rPointP(A, 'AS4', t)
-		# front side seam control points
-		#if (FRONTNORMALTHIGH):
 		if (frontNormalWaist):
-			cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS3, AS1)/2.0))) # b/w AS1 & AS3
-			pnts=pointList(AW5, AS1, AS3)
-			c1, c2=controlPoints('FrontSideSeam', pnts)
-			cAS1a=cPoint(A, 'cAS1a', c1[0].x, c1[0].y) #b/w AW5 & AS2
-			cAS1b=cPoint(A, 'cAS1b', AS1.x, c2[0].y) #b/w AW5 & AS1
-			cAS3a=cPoint(A, 'cAS3a', AS1.x, c1[1].y) #b/w AS1 & AW5
+			AS1 = rPointP(A, 'AS1', i) # use side hip
 		else:
-			cAS2a=cPoint(A, 'cAS2a', min(AS2.x, AW5.x), AW5.y+(lineLengthP(AW5, AS2)/3.0)) # waistline slightly less than hipline (ex: 1.25") use AS2 else AW5
-			cAS3b=cPointP(A, 'cAS3b', pntOffLineP(AS3, AS4, (lineLengthP(AS2, AS3)/3.0))) # b/w AS2 & AS3
-			pnts=pointList(cAS2a, AS2, cAS3b)
-			c1, c2=controlPoints('BackSideSeam', pnts)
-			cAS2b=cPoint(A, 'cAS2b', c2[0].x, c2[0].y) #b/w AW5 & AS2
-			cAS3a=cPoint(A, 'cAS3a', c1[1].x, c1[1].y) #b/w AS2 & AS3
-
+			AS1 = rPointP(A, 'AS1', k) # use side rise for large front waist
+		AS2 = rPointP(A, 'AS2', o)
+		AS3 = rPointP(A, 'AS3', q)
+		# front side seam control points cAS
+		pnts = pointList(AW5, AS1, AS2)
+		c1, c2 = controlPoints('FrontSideSeam', pnts)
+		cAS1a, cAS1b = cPointP(A, 'cAS1a', c1[0]), cPointP(A, 'cAS1b', c2[0]) # b/w AW5 & AS1
+		cAS2a, cAS2b = cPointP(A, 'cAS2a', c1[1]), cPointP(A, 'cAS2b', pntOffLineP(AS2, AS3, lineLengthP(AS1, AS2)/3.0)) #b/w AS1 & AS2
 		# front inseam AI
-		AI1=rPointP(A, 'AI1', u)
-		AI2=rPointP(A, 'AI2', r)
-		AI3=rPointP(A, 'AI3', o)
-		#front inseam control points
-		cAI3a=cPointP(A, 'cAI3a', pntOffLineP(AI2, AI1, (lineLengthP(AI2, AI3)/2.0))) #b/w AI2 & AI3
-		cAI3b=cPointP(A, 'cAI3b', pntOnLineP(AI3, cAI3a, (lineLengthP(AI2, AI3)/3.0))) #b/w AI2 & AI3
-
+		AI1 = rPointP(A, 'AI1', r)
+		AI2 = rPointP(A, 'AI2', p)
+		AI3 = rPointP(A, 'AI3', n)
+		# front inseam control points cAI
+		cAI3a = cPointP(A, 'cAI3a', pntOffLineP(AI2, AI1, lineLengthP(AI2, AI3)/3.0)) #b/w AI2 & AI3
+		cAI3b = cPointP(A, 'cAI3b', pntOnLineP(AI3, cAI3a, lineLengthP(AI2, AI3)/3.0)) #b/w AI2 & AI3
 		#front center seam AC
-		AC1=rPointP(A, 'AC1', n)
-		if (AW1.x > i.x):
-			FRONTLARGERWAIST=1
-		else:
-			FRONTLARGERWAIST=0
-		if (frontNormalWaist):
-			AC2=rPointP(A, 'AC2', i)
-			# straight line for upper front center seam, control points for AC1 & AC2 only, with calculated control point cAC2b to smooth into straight line
-			cAC2b=cPointP(A, 'cAC2b', pntOffLine(AC2.x, AC2.y, AW1.x, AW1.y, (lineLengthP(AC1, AC2)/2.0)))
-			pnts=pointList(AI3, AC1, cAC2b)
-			c1, c2=controlPoints('FrontCenterSeam', pnts)
-			cAC1a=cPoint(A, 'cAC1a', c1[0].x, c1[0].y) #b/w AI3 & AC1
-			cAC1b=cPoint(A, 'cAC1b', c2[0].x, c2[0].y) #b/w AI3 & AC1
-			cAC2a=cPoint(A, 'cAC2a', c1[1].x, c1[1].y) #b/w AC1 & AC2
-		else:
-			if (FRONTLARGERWAIST):
-				# curve through AI3,AC2, straight to AW1
-				# move AC2 point towards center (x)
-				AC2=rPoint(A, 'AC2', i.x + (abs(AW1.x - i.x)/4.0), i.y)
-				cAC2b=cPointP(A, 'cAC2b', pntIntersectLinesP(AC2, AW1, AS1, k)) #intersection with Hipline
-			else:
-				# curve through AI3, AC2, then straight to AW1
-				AC2=rPointP(A, 'AC2', i)
-				cAC2b=cPointP(A, 'cAC2b', pntOffLineP(AC2, AW1, (lineLengthP(AC2, AC1)/3.0)))
-			cAC2a=cPointP(A, 'cAC2a', pntOnLineP(n, m, (lineLengthP(n, m)/4.0)))
-
-		# points to create pants waistBand pattern 'C'
-		AWB1=rPointP(A, 'AWB1', pntOnLineP(AW1, AC2, waistBand)) # waistBand below center waist
-		if frontNormalWaist:
-			pnt=pntOnLineP(AW5, cAS1a, waistBand)
-		else:
-			pnt=pntOnLineP(AW5, cAS2a, waistBand)
-		AWB4=rPointP(A, 'AWB4', pnt) # waistband line 1in. below side waist
-		AWB2=rPointP(A, 'AWB2', pntIntersectLinesP(AWB1, AWB4, e, d)) # waistband line at inside dart leg
-		AWB3=rPointP(A, 'AWB3', pntIntersectLinesP(AWB1, AWB4, e, c)) # waistband line at outside dart leg
+		AC1 = rPointP(A, 'AC1', m)
+		AC2 = rPointP(A, 'AC2', h)
+		# front center seam control points cAC
+		cAC2b = cPointP(A, 'cAC2b', pntOffLineP(AC2, AW1, lineLengthP(l, AC2)*(5/8.0)))
+		pnts = pointList(AI3, AC1, cAC2b)
+		c1, c2 = controlPoints('FrontCenterSeam', pnts)
+		cAC1a, cAC1b = cPointP(A, 'cAC1a', c1[0]), cPointP(A, 'cAC1b', c2[0]) #b/w AI3 & AC1
+		cAC2a = cPointP(A, 'cAC2a', c1[1]) #b/w AC1 & AC2
 		#front grainline AG & label location
-		AG1=rPoint(A, 'AG1', p.x, hipLine)
-		AG2=rPoint(A, 'AG2', p.x, q.y+abs(t.y-q.y)/2.0)
-		(A.label_x, A.label_y)=(AG2.x, AG2.y-(2.0*IN))
+		AG1 = rPoint(A, 'AG1', creaseLine, hipLine)
+		AG2 = rPoint(A, 'AG2', creaseLine, hemLine - 2.0*IN)
+		# front label location
+		A.label_x, A.label_y = creaseLine, hipLine - 2.0*IN
 
 		#grid path
-		grid=path()
-		addToPath(grid, 'M', ASide, 'L', ARise, 'M', b, 'L', e, 'M', p, 'L', s, 'M', g, 'L', f, 'M', ACenter, 'L', m)
-		addToPath(grid, 'M', ASide, 'L', ACenter, 'M', AWaist, 'L', a,'M', AHip, 'L', k)
-		addToPath(grid, 'M', ARise, 'L', o, 'M', q, 'L', r, 'M', AWB1, 'L', AWB2, 'M', AWB3, 'L', AWB4)
-		addToPath(grid, 'M', g, 'L', h, 'M', m, 'L', n)
+		grid = path()
+		addToPath(grid, 'M', Side, 'L', k, 'L', n, 'L', Width, 'L', Side, 'M', a, 'L', b, 'M', i, 'L', j, 'M', Center, 'L', l, 'M', t, 'L', u, 'M', v, 'L', w)
 
 		# dart 'd' path
 		dartLine = path()
-		addToPath(dartLine, 'M', AD1, 'L', AD2, 'M', AD3, 'L', AD1, 'L', AD4)
+		addToPath(dartLine, 'M', AD2, 'L', AD1, 'L', AD3)
 
 		# seamline 's' & cuttingline 'c' paths
 		seamLine = path()
 		cuttingLine = path()
 		for p in (seamLine, cuttingLine):
-			# - addToPath(p, 'M', AW1,  'L', AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) --> waistband from waist to 1" below waist
-			# - waistband from 1" below waist to 2" below waist
-			addToPath(p, 'M', AW1,  'C', cAW2a, cAW2b, AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5)
-			#if (FRONTNORMALTHIGH):
-			if (frontNormalWaist):
-				addToPath(p, 'C', cAS1a, cAS1b, AS1)
-			else:
-				addToPath(p, 'C', cAS2a, cAS2b, AS2)
-			#else:
-					#addToPath(p, 'C', cAS1a, cAS1b, AS1, 'C', cAT1a, cAT1b, AT1)
-			addToPath(p, 'C', cAS3a, cAS3b, AS3, 'L', AS4, 'L', AI1, 'L',  AI2, 'C', cAI3a, cAI3b, AI3)
-			if (frontNormalWaist):
-				addToPathP(p, cAC1a, cAC1b, AC1)
-			addToPath(p, 'C', cAC2a, cAC2b, AC2, 'L',  AW1)
+			addToPath(p, 'M', AW1, 'C', cAW2a, cAW2b, AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) # waist
+			addToPath(p, 'C', cAS1a, cAS1b, AS1, 'C', cAS2a, cAS2b, AS2, 'L', AS3) # side
+			addToPath(p, 'L', AI1, 'L',  AI2, 'C', cAI3a, cAI3b, AI3) # inseam
+			addToPath(p, 'C', cAC1a, cAC1b, AC1, 'C',  cAC2a, cAC2b, AC2, 'L', AW1) # center
 
 		# add grainline, dart, seamline & cuttingline paths to pattern
 		addGrainLine(A, "pants Front", AG1, AG2)
