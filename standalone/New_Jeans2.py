@@ -117,11 +117,11 @@ class PatternDesign():
 		AW5 = rPointP(A, 'AW5', b) # side waist
 		#front waist control points
 		distance = lineLengthP(AW1, AW2)/3.0
-		cAW2b = cPointP(A, 'cAW2b', pntFromDistanceAndAngleP(AW2, distance, angleOfLineP(AW2, f) - angleOfDegree(90)))
-		cAW2a = cPointP(A, 'cAW2a', pntOnLineP(AW1, cAW2b, distance))
+		AW2_c2 = cPointP(A, 'AW2_c2', pntFromDistanceAndAngleP(AW2, distance, angleOfLineP(AW2, f) - angleOfDegree(90)))
+		AW2_c1 = cPointP(A, 'AW2_c1', pntOnLineP(AW1, AW2_c2, distance))
 		distance = lineLengthP(AW4, AW5)/3.0
-		cAW5a = cPointP(A, 'cAW5a', pntFromDistanceAndAngleP(AW4, distance, angleOfLineP(AW4, f) + angleOfDegree(90)))
-		cAW5b = cPointP(A, 'cAW5b', pntFromDistanceAndAngleP(AW5, distance, angleOfLineP(AW5, i) - angleOfDegree(90)))
+		AW5_c1 = cPointP(A, 'AW5_c1', pntFromDistanceAndAngleP(AW4, distance, angleOfLineP(AW4, f) + angleOfDegree(90)))
+		AW5_c2 = cPointP(A, 'AW5_c2', pntFromDistanceAndAngleP(AW5, distance, angleOfLineP(AW5, i) - angleOfDegree(90)))
 		# front dart AD
 		AD1 = rPointP(A, 'AD1', f) # dart point
 		AD2 = rPointP(A, 'AD2', pntOffLineP(d, AD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
@@ -136,24 +136,24 @@ class PatternDesign():
 		# front side seam control points cAS
 		pnts = pointList(AW5, AS1, AS2)
 		c1, c2 = controlPoints('FrontSideSeam', pnts)
-		cAS1a, cAS1b = cPointP(A, 'cAS1a', c1[0]), cPointP(A, 'cAS1b', c2[0]) # b/w AW5 & AS1
-		cAS2a, cAS2b = cPointP(A, 'cAS2a', c1[1]), cPointP(A, 'cAS2b', pntOffLineP(AS2, AS3, lineLengthP(AS1, AS2)/3.0)) #b/w AS1 & AS2
+		AS1_c1, AS1_c2 = cPointP(A, 'AS1_c1', c1[0]), cPointP(A, 'AS1_c2', c2[0]) # b/w AW5 & AS1
+		AS2_c1, AS2_c2 = cPointP(A, 'AS2_c1', c1[1]), cPointP(A, 'AS2_c2', pntOffLineP(AS2, AS3, lineLengthP(AS1, AS2)/3.0)) #b/w AS1 & AS2
 		# front inseam AI
 		AI1 = rPointP(A, 'AI1', r)
 		AI2 = rPointP(A, 'AI2', p)
 		AI3 = rPointP(A, 'AI3', n)
 		# front inseam control points cAI
-		cAI3a = cPointP(A, 'cAI3a', pntOffLineP(AI2, AI1, lineLengthP(AI2, AI3)/3.0)) #b/w AI2 & AI3
-		cAI3b = cPointP(A, 'cAI3b', pntOnLineP(AI3, cAI3a, lineLengthP(AI2, AI3)/3.0)) #b/w AI2 & AI3
+		AI3_c1 = cPointP(A, 'AI3_c1', pntOffLineP(AI2, AI1, lineLengthP(AI2, AI3)/3.0)) #b/w AI2 & AI3
+		AI3_c2 = cPointP(A, 'AI3_c2', pntOnLineP(AI3, AI3_c1, lineLengthP(AI2, AI3)/3.0)) #b/w AI2 & AI3
 		#front center seam AC
 		AC1 = rPointP(A, 'AC1', m)
 		AC2 = rPointP(A, 'AC2', h)
 		# front center seam control points cAC
-		cAC2b = cPointP(A, 'cAC2b', pntOffLineP(AC2, AW1, lineLengthP(l, AC2)*(5/8.0)))
-		pnts = pointList(AI3, AC1, cAC2b)
+		AC2_c2 = cPointP(A, 'AC2_c2', pntOffLineP(AC2, AW1, lineLengthP(l, AC2)*(5/8.0)))
+		pnts = pointList(AI3, AC1, AC2_c2)
 		c1, c2 = controlPoints('FrontCenterSeam', pnts)
-		cAC1a, cAC1b = cPointP(A, 'cAC1a', c1[0]), cPointP(A, 'cAC1b', c2[0]) #b/w AI3 & AC1
-		cAC2a = cPointP(A, 'cAC2a', c1[1]) #b/w AC1 & AC2
+		AC1_c1, AC1_c2 = cPointP(A, 'AC1_c1', c1[0]), cPointP(A, 'AC1_c2', c2[0]) #b/w AI3 & AC1
+		AC2_c1 = cPointP(A, 'AC2_c1', c1[1]) #b/w AC1 & AC2
 		#front grainline AG & label location
 		AG1 = rPoint(A, 'AG1', creaseLine, hipLine)
 		AG2 = rPoint(A, 'AG2', creaseLine, hemLine - 2.0*IN)
@@ -172,10 +172,10 @@ class PatternDesign():
 		seamLine = path()
 		cuttingLine = path()
 		for p in (seamLine, cuttingLine):
-			addToPath(p, 'M', AW1, 'C', cAW2a, cAW2b, AW2, 'L', AW3, 'L', AW4, 'C', cAW5a,  cAW5b,  AW5) # waist
-			addToPath(p, 'C', cAS1a, cAS1b, AS1, 'C', cAS2a, cAS2b, AS2, 'L', AS3) # side
-			addToPath(p, 'L', AI1, 'L',  AI2, 'C', cAI3a, cAI3b, AI3) # inseam
-			addToPath(p, 'C', cAC1a, cAC1b, AC1, 'C',  cAC2a, cAC2b, AC2, 'L', AW1) # center
+			addToPath(p, 'M', AW1, 'C', AW2_c1, AW2_c2, AW2, 'L', AW3, 'L', AW4, 'C', AW5_c1,  AW5_c2,  AW5) # waist
+			addToPath(p, 'C', AS1_c1, AS1_c2, AS1, 'C', AS2_c1, AS2_c2, AS2, 'L', AS3) # side
+			addToPath(p, 'L', AI1, 'L',  AI2, 'C', AI3_c1, AI3_c2, AI3) # inseam
+			addToPath(p, 'C', AC1_c1, AC1_c2, AC1, 'C',  AC2_c1, AC2_c2, AC2, 'L', AW1) # center
 
 		# add grainline, dart, seamline & cuttingline paths to pattern
 		addGrainLine(A, "pants Front", AG1, AG2)
