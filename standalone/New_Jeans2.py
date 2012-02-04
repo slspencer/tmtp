@@ -178,7 +178,7 @@ class PatternDesign():
 			addToPath(p, 'C', AC1_c1, AC1_c2, AC1, 'C',  AC2_c1, AC2_c2, AC2, 'L', AW1) # center
 
 		# add grainline, dart, seamline & cuttingline paths to pattern
-		addGrainLine(A, "pants Front", AG1, AG2)
+		addGrainLine(A, AG1, AG2)
 		addGridLine(A, 'pants Front', grid)
 		addDartLine(A, 'pants Front', dartLine)
 		addSeamLine(A, 'pants Front', seamLine)
