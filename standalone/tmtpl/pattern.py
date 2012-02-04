@@ -208,8 +208,8 @@ def addCuttingLine(parent, name, path):
 	parent.add(Path('pattern', 'cuttingline', name + ' Cuttingline', path, 'cuttingline_style'))
 	return
 
-def addGrainLine(parent, name, pnt1, pnt2):
-	parent.add(grainLinePath('grainline', name + ' Grainline', pnt1, pnt2))
+def addGrainLine(parent, pnt1, pnt2):
+	parent.add(grainLinePath('grainline', parent.name + ' Grainline', pnt1, pnt2))
 	return
 
 def addDartLine(parent, name, path):
