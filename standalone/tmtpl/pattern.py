@@ -196,24 +196,24 @@ def addToPath(p, *args):
 			i=i+4
 	return
 
-def addGridLine(parent, name, path):
-	parent.add(Path('reference','gridline', name + ' Gridline', path, 'gridline_style'))
+def addGridLine(parent, path):
+	parent.add(Path('reference','gridline', parent.name + ' Gridline', path, 'gridline_style'))
 	return
 
-def addSeamLine(parent, name, path):
-	parent.add(Path('pattern', 'seamline', name + ' Seamline', path, 'seamline_style'))
+def addSeamLine(parent, path):
+	parent.add(Path('pattern', 'seamline', parent.name + ' Seamline', path, 'seamline_style'))
 	return
 
-def addCuttingLine(parent, name, path):
-	parent.add(Path('pattern', 'cuttingline', name + ' Cuttingline', path, 'cuttingline_style'))
+def addCuttingLine(parent, path):
+	parent.add(Path('pattern', 'cuttingline', parent.name + ' Cuttingline', path, 'cuttingline_style'))
 	return
 
 def addGrainLine(parent, pnt1, pnt2):
 	parent.add(grainLinePath('grainline', parent.name + ' Grainline', pnt1, pnt2))
 	return
 
-def addDartLine(parent, name, path):
-	parent.add(Path('pattern', 'dartline', name + ' Dartline', path, 'dartline_style'))
+def addDartLine(parent, path):
+	parent.add(Path('pattern', 'dartline', parent.name + ' Dartline', path, 'dartline_style'))
 	return
 
 # ----------------...Calculate Angle and Slope..------------------------------
