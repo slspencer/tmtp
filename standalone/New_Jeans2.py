@@ -63,20 +63,6 @@ class PatternDesign():
 		else:
 			backNormalWaist = 0
 
-		# pattern object
-		pants = Pattern('pants')
-		pants.styledefs.update(self.styledefs)
-		pants.markerdefs.update(self.markerdefs)
-		doc.add(pants)
-
-		# pants Front 'A' - 0.25*IN
-		pants.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
-		A = pants.front
-
-		Side = rPoint(A, 'Side', side, top)
-		Center = rPoint(A, 'Center', center, top)
-		Width = rPoint(A, 'Width', width, top)
-
 		a = pPoint(center, waistLine - 0.25*IN) # center waist, raise by 1/4in
 		b = pPoint(center - cd.front_waist_arc - frontDartWidth - 2*seamEase, waistLine) # side waist
 		c = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
@@ -108,6 +94,20 @@ class PatternDesign():
 		u = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
 		v = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
 		w = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
+
+		# pattern object
+		pants = Pattern('pants')
+		pants.styledefs.update(self.styledefs)
+		pants.markerdefs.update(self.markerdefs)
+		doc.add(pants)
+
+		# pants Front 'A' - 0.25*IN
+		pants.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
+		A = pants.front
+
+		Side = rPoint(A, 'Side', side, top)
+		Center = rPoint(A, 'Center', center, top)
+		Width = rPoint(A, 'Width', width, top)
 
 		# front waist AW
 		AW1 = rPointP(A, 'AW1', a) # center waist
