@@ -64,14 +64,15 @@ class PatternDesign():
 		width = center + cd.front_crotch_extension
 		creaseLine = width/2.0
 
-		if ((cd.front_lower_hip_arc - cd.front_waist_arc) >= (2.0 * IN)):
+		if (cd.front_lower_hip_arc > cd.front_waist_arc):
 			frontNormalWaist = 1
 		else:
 			frontNormalWaist = 0
 
 		a = pPoint(center, waistLine) # center waist
 		b = pPoint(center - cd.front_waist_arc - frontDartWidth - 2*seamEase, top) # side waist
-		c = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
+		pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
+		c = pPoint(pnt.x, pnt.y + (1/4.0)*IN)
 		d = pPoint(c.x + frontDartWidth/2.0, c.y) # dart inside at waist
 		e = pPoint(c.x - frontDartWidth/2.0, c.y) # dart outside at waist
 		f = pPoint(c.x, c.y + frontDartLength) # dart point
@@ -112,14 +113,10 @@ class PatternDesign():
 		AW4 = rPointP(A, 'AW4', e) # outside dart
 		AW5 = rPointP(A, 'AW5', b) # side waist
 		#front waist control points
-		distance = lineLengthP(AW1, AW2)/3.0
-		AW2_c1 = cPointP(A, 'AW2_c1', pntFromDistanceAndAngleP(AW1, distance, angleOfLineP(AW1, j) + angleOfDegree(90)))
-		AW2_c2 = cPointP(A, 'AW2_c2', pntOnLineP(AW2, AW2_c1, distance))
-		print angleOfLineP(AW2, f)
-		print degreeOfAngle(angleOfVectorP(f, AW2, AW2_c2))
-		distance = lineLengthP(AW4, AW5)/3.0
-		AW5_c2 = cPointP(A, 'AW5_c2', pntFromDistanceAndAngleP(AW5, distance, angleOfLineP(AW5, i) - angleOfDegree(90)))
-		AW5_c1 = cPointP(A, 'AW5_c1', pntOnLineP(AW4, AW5_c2, distance))
+		AW2_c1 = cPointP(A, 'AW2_c1', pntFromDistanceAndAngleP(AW1, lineLengthP(AW1, AW2)/3.0, angleOfLineP(j, AW1) - angleOfDegree(90)))
+		AW2_c2 = cPointP(A, 'AW2_c2', pntFromDistanceAndAngleP(AW2, lineLengthP(AW1, AW2)/3.0, angleOfLineP(f, AW2) + angleOfDegree(90)))
+		AW5_c1 = cPointP(A, 'AW5_c1', pntFromDistanceAndAngleP(AW4, lineLengthP(AW4, AW5)/3.0, angleOfLineP(f, AW4) - angleOfDegree(90)))
+		AW5_c2 = cPointP(A, 'AW5_c2', pntFromDistanceAndAngleP(AW5, lineLengthP(AW4, AW5)/3.0, angleOfLineP(i, AW5) + angleOfDegree(90)))
 		# front dart AD
 		AD1 = rPointP(A, 'AD1', f) # dart point
 		AD2 = rPointP(A, 'AD2', pntOffLineP(d, AD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
@@ -234,12 +231,10 @@ class PatternDesign():
 		BW4 = rPointP(B, 'BW4', e) # outside dart
 		BW5 = rPointP(B, 'BW5', b) # side waist
 		# back waist control points
-		distance = lineLengthP(BW1, BW2)/3.0
-		BW2_c2 = cPointP(B, 'BW2_c2', pntFromDistanceAndAngleP(BW2, distance, angleOfLineP(BW2, f) + angleOfDegree(90)))
-		BW2_c1 = cPointP(B, 'BW2_c1', pntFromDistanceAndAngleP(BW1, distance, angleOfLineP(BW1, j) + angleOfDegree(90)))
-		distance = lineLengthP(BW4, BW5)/3.0
-		BW5_c1 = cPointP(B, 'BW5_c1', pntFromDistanceAndAngleP(BW4, distance, angleOfLineP(BW4, f) - angleOfDegree(90)))
-		BW5_c2 = cPointP(B, 'BW5_c2', pntFromDistanceAndAngleP(BW5, distance, angleOfLineP(BW5, i) + angleOfDegree(90)))
+		BW2_c1 = cPointP(B, 'BW2_c1', pntFromDistanceAndAngleP(BW1, lineLengthP(BW1, BW2)/3.0, angleOfLineP(j, BW1) + angleOfDegree(90)))
+		BW2_c2 = cPointP(B, 'BW2_c2', pntFromDistanceAndAngleP(BW2, lineLengthP(BW1, BW2)/3.0, angleOfLineP(f, BW2) - angleOfDegree(90)))
+		BW5_c1 = cPointP(B, 'BW5_c1', pntFromDistanceAndAngleP(BW4, lineLengthP(BW4, BW5)/3.0, angleOfLineP(f, BW4) + angleOfDegree(90)))
+		BW5_c2 = cPointP(B, 'BW5_c2', pntFromDistanceAndAngleP(BW5, lineLengthP(BW4, BW5)/3.0, angleOfLineP(i, BW5) - angleOfDegree(90)))
 		# back dart BD
 		BD1 = rPointP(B, 'BD1', f) # dart point
 		BD2 = rPointP(B, 'BD2', pntOffLineP(d, BD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
