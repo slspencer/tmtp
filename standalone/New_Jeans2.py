@@ -68,7 +68,6 @@ class PatternDesign():
 			frontNormalWaist = 1
 		else:
 			frontNormalWaist = 0
-
 		a = pPoint(center, waistLine) # center waist
 		b = pPoint(center - cd.front_waist_arc - frontDartWidth - 2*seamEase, top) # side waist
 		pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
@@ -76,10 +75,8 @@ class PatternDesign():
 		d = pPoint(c.x + frontDartWidth/2.0, c.y) # dart inside at waist
 		e = pPoint(c.x - frontDartWidth/2.0, c.y) # dart outside at waist
 		f = pPoint(c.x, c.y + frontDartLength) # dart point
-		angle = angleOfLineP(f, e) - angleOfVectorP(c, f, e)
-		pnt1 = pntFromDistanceAndAngleP(f, frontDartLength, angle)
-		pnt2 = pntIntersectLinesP(b, c, f, pnt1) # where sewn dart fold should cross waistline
-		g = pntOnLineP(f, c, lineLengthP(f, pnt2)) # extend dart center up to make sewn dart fold cross waistline
+		angle = angleOfLineP(f, d) + angleOfVectorP(c, f, d)
+		g = pntFromDistanceAndAngleP(f, frontDartLength, angle) # on angle of sewn dart fold, after folded toward center
 
 		h = pPoint(center, riseLine/2.0) # center front 'pivot' point from crotch curve to front fly
 		i = pPoint(side, hipLine) # side hip
@@ -109,7 +106,6 @@ class PatternDesign():
 		# front waist AW
 		AW1 = rPointP(A, 'AW1', a) # center waist
 		AW2 = rPointP(A, 'AW2', d) # inside dart
-		AW3 = rPointP(A, 'AW3', g) # center dart
 		AW4 = rPointP(A, 'AW4', e) # outside dart
 		AW5 = rPointP(A, 'AW5', b) # side waist
 		#front waist control points
@@ -117,6 +113,12 @@ class PatternDesign():
 		AW2_c2 = cPointP(A, 'AW2_c2', pntFromDistanceAndAngleP(AW2, lineLengthP(AW1, AW2)/3.0, angleOfLineP(f, AW2) + angleOfDegree(90)))
 		AW5_c1 = cPointP(A, 'AW5_c1', pntFromDistanceAndAngleP(AW4, lineLengthP(AW4, AW5)/3.0, angleOfLineP(f, AW4) - angleOfDegree(90)))
 		AW5_c2 = cPointP(A, 'AW5_c2', pntFromDistanceAndAngleP(AW5, lineLengthP(AW4, AW5)/3.0, angleOfLineP(i, AW5) + angleOfDegree(90)))
+		#pnt = rPointP(A, 'pnt', pntIntersectLinesP(f, g, AW2, AW2_c2)) # where sewn dart fold should cross waistline before folding
+		#AW3 = rPointP(A, 'AW3', pntOnLineP(f, c, lineLengthP(f, pnt))) # extend dart center up to length of where sewn dart fold should cross waistline
+		pnt1 = rPointP(A, 'pnt1', pntIntersectLinesP(f, g, AW2, AW2_c2)) # where sewn dart fold should cross waistline before folding
+		pnt2 = rPointP(A, 'pnt2', pntFromDistanceAndAngleP(AW4, lineLengthP(AW4, pnt1), angleOfLineP(AW2, pnt1) - angleOfVectorP(c, f, d)))
+		pnt3 = rPointP(A, 'pnt3', pntIntersectLinesP(f, pnt1, AW4, pnt2))
+		AW3 = rPointP(A, 'AW3', pntOnLineP(f, c, lineLengthP(f, pnt3))) # extend dart center up to make sewn dart fold cross waistline
 		# front dart AD
 		AD1 = rPointP(A, 'AD1', f) # dart point
 		AD2 = rPointP(A, 'AD2', pntOffLineP(d, AD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
@@ -202,14 +204,13 @@ class PatternDesign():
 
 		a = pPoint(center + (1+(1/8.))*IN, top - (1.*IN)) # center waist
 		b = pPoint(center + cd.back_waist_arc + backDartWidth + 2*seamEase, top) # side waist
-		c = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
+		pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0)
+		c = pPoint(pnt.x, pnt.y + (1/4.0)*IN) # dart center at waist along line ab
 		d = pPoint(c.x - backDartWidth/2.0, c.y) # dart inside at waist
 		e = pPoint(c.x + backDartWidth/2.0, c.y) # dart outside at waist
 		f = pPoint(c.x, c.y + frontDartLength) # dart point
-		angle = angleOfLineP(f, e) - angleOfVectorP(c, f, e)
-		pnt1 = pntFromDistanceAndAngleP(f, backDartLength, angle)
-		pnt2 = pntIntersectLinesP(b, c, f, pnt1) # where sewn dart fold should cross waistline
-		g = pntOnLineP(f, c, lineLengthP(f, pnt2)) # extend dart center up to make sewn dart fold cross waistline
+		angle = angleOfLineP(f, d) - angleOfVectorP(c, f, d)
+		g = pntFromDistanceAndAngleP(f, backDartLength, angle) # on angle of sewn dart fold, after folded toward center
 
 		h = pPoint(center, riseLine/2.0) # center front 'pivot' point from crotch curve to front fly
 		i = pPoint(side, hipLine) # side hip
@@ -227,7 +228,6 @@ class PatternDesign():
 		# back waist BW
 		BW1 = rPointP(B, 'BW1', a) # center waist
 		BW2 = rPointP(B, 'BW2', d) # inside dart
-		BW3 = rPointP(B, 'BW3', g) # center dart
 		BW4 = rPointP(B, 'BW4', e) # outside dart
 		BW5 = rPointP(B, 'BW5', b) # side waist
 		# back waist control points
@@ -235,6 +235,10 @@ class PatternDesign():
 		BW2_c2 = cPointP(B, 'BW2_c2', pntFromDistanceAndAngleP(BW2, lineLengthP(BW1, BW2)/3.0, angleOfLineP(f, BW2) - angleOfDegree(90)))
 		BW5_c1 = cPointP(B, 'BW5_c1', pntFromDistanceAndAngleP(BW4, lineLengthP(BW4, BW5)/3.0, angleOfLineP(f, BW4) + angleOfDegree(90)))
 		BW5_c2 = cPointP(B, 'BW5_c2', pntFromDistanceAndAngleP(BW5, lineLengthP(BW4, BW5)/3.0, angleOfLineP(i, BW5) - angleOfDegree(90)))
+		pnt1 = rPointP(B, 'pnt1', pntIntersectLinesP(f, g, BW2, BW2_c2)) # where sewn dart fold should cross waistline before folding
+		pnt2 = rPointP(B, 'pnt2', pntFromDistanceAndAngleP(BW4, lineLengthP(BW4, pnt1), angleOfLineP(BW2, pnt1) + angleOfVectorP(c, f, d)))
+		pnt3 = rPointP(B, 'pnt3', pntIntersectLinesP(f, pnt1, BW4, pnt2))
+		BW3 = rPointP(B, 'BW3', pntOnLineP(f, c, lineLengthP(f, pnt3))) # extend dart center up to make sewn dart fold cross waistline
 		# back dart BD
 		BD1 = rPointP(B, 'BD1', f) # dart point
 		BD2 = rPointP(B, 'BD2', pntOffLineP(d, BD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
