@@ -283,6 +283,9 @@ class PatternDesign():
 		BI1 = rPointP(B, 'BI1', q) # inseam hem
 		BI2 = rPointP(B, 'BI2', o) # inseam knee
 		BI3 = rPointP(B, 'BI3', n) # crotch point
+		# back inseam control points cBI
+		BI3_c1 = cPointP(B, 'BI3_c1', pntOffLineP(BI2, BI1, lineLengthP(BI2, BI3)/3.0)) #b/w BI2 & BI3
+		BI3_c2 = cPointP(B, 'BI3_c2', pntOnLineP(BI3, BI3_c1, lineLengthP(BI2, BI3)/3.0)) #b/w BI2 & BI
 		#back center seam BC
 		BC1 = rPointP(B, 'BC1', m) # crotch curve
 		BC2 = rPointP(B, 'BC2', j) # center hip
@@ -307,7 +310,7 @@ class PatternDesign():
 		for p in (seamLine, cuttingLine):
 			addToPath(p, 'M', BW1, 'C', BW2_c1, BW2_c2, BW2, 'L', BW3, 'L', BW4, 'C', BW5_c1, BW5_c2, BW5) # waist
 			addToPath(p, 'C', BS1_c1, BS1_c2, BS1, 'C', BS2_c1, BS2_c2, BS2, 'L', BS3) # side
-			addToPath(p, 'L', BI1, 'L', BI2, 'L', BI3) # inseam
+			addToPath(p, 'L', BI1, 'L', BI2, 'C', BI3_c1, BI3_c2, BI3) # inseam
 			addToPath(p, 'L', BC1, 'L', BC2, 'L', BW1) # center
 
 		# add grid, dart, grainline, seamline & cuttingline paths to pattern
