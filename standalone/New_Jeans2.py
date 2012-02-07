@@ -131,10 +131,22 @@ class PatternDesign():
 		AS2 = rPointP(A, 'AS2', o)
 		AS3 = rPointP(A, 'AS3', q)
 		# front side seam control points cAS
-		pnts = pointList(AW5, AS1, AS2)
-		c1, c2 = controlPoints('FrontSideSeam', pnts)
-		AS1_c1, AS1_c2 = cPointP(A, 'AS1_c1', c1[0]), cPointP(A, 'AS1_c2', c2[0]) # b/w AW5 & AS1
-		AS2_c1, AS2_c2 = cPointP(A, 'AS2_c1', c1[1]), cPointP(A, 'AS2_c2', pntOffLineP(AS2, AS3, lineLengthP(AS1, AS2)/3.0)) #b/w AS1 & AS2
+		if (frontNormalWaist):
+			# control points next to AS1 form a vertical line at AS1.x, control point nearest AS2 is along line of hem to knee so that seam curves continuously into straight seam from knee to hem
+			distance = lineLengthP(AS1, AW5)/3.0
+			AS1_c2 = cPoint(A, 'AS1_c2', AS1.x, AS1.y - distance) # b/w AW5 & AS1
+			angle = angleOfLineP(AW5, AS1_c2)
+			AS1_c1 = cPointP(A, 'AS1_c1', pntFromDistanceAndAngleP(AW5, distance, angle)) # b/w AW5 & AS1
+			distance = lineLengthP(AS1, AS2)/3.0
+			AS2_c1 = cPoint(A, 'AS2_c1', AS1.x, AS1.y + distance) # b/w AS1 & AS2
+			angle = angleOfLineP(AS3, AS2)
+			AS2_c2 = cPointP(A, 'AS2_c2', pntFromDistanceAndAngleP(AS2, distance, angle)) #b/w AS1 & AS2
+		else:
+			# if large waist then the vertical control point is at waist AW5, side control points AS1 at rise are calculated normally, control point next to AS2 knee is along line of knee to hem.
+			pnts = pointList(AW5, AS1, AS2)
+			c1, c2 = controlPoints('FrontSideSeam', pnts)
+			AS1_c1, AS1_c2 = cPoint(A, 'AS1_c1', AW5.x, lineLengthP(AW5, AS1)/3.0), cPointP(A, 'AS1_c2', c2[0]) # b/w AW5 & AS1
+			AS2_c1, AS2_c2 = cPointP(A, 'AS2_c1', c1[1]), cPointP(A, 'AS2_c2', pntOffLineP(AS2, AS3, lineLengthP(AS1, AS2)/3.0)) #b/w AS1 & AS2
 		# front inseam AI
 		AI1 = rPointP(A, 'AI1', r)
 		AI2 = rPointP(A, 'AI2', p)
