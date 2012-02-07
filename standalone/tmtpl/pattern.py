@@ -921,47 +921,35 @@ def extractMarkerId(markertext):
 
 
 def connectObjects(connector_pnts, old_pnts):
-		# connector[0] and connector[1] are the connecting points of the stationary object
-		# connector[1] and connector[2] are the connecting points of the object to be translated & rotated
-		# 1st 2 points in old_pnts must be connector[2] and connector[3]
+		# connector_pnts[0] and old_pnts[0] will connect together
+		# connector_pnts[1] and old_pnts[1] will connect together
+		# connector_pnts[1] is counterclockwise from connector_pnts[0] on object which doesn't move
+		# old_pnts[] contains all of the points of the object to be moved in order clockwise, starting with old_pnts[0]
 
-		t_pnts=[]
-		r_pnts=[]
+		t_pnts = [] # translated points. 1st step.
+		r_pnts = [] # translated points that are rotated. 2nd step.
 
-		#translate
-		(dx,dy)=(connector_pnts[0].x - connector_pnts[2].x), (connector_pnts[0].y - connector_pnts[2].y)
-		i=0
-		for old_pnt in old_pnts:
+		# translate so that old_pnts[0] will connect with connector_pnts[0]
+		(dx, dy) = (connector_pnts[0].x - old_pnts[0].x), (connector_pnts[0].y - old_pnts[0].y)
+		i = 0
+		for o in old_pnts:
+			# translate all points in old_pnts[]
 			t_pnts.append(Pnt())
-			t_pnts[i].x=old_pnts[i].x + dx
-			t_pnts[i].y=old_pnts[i].y + dy
-			i=i+1
+			t_pnts[i].x, t_pnts[i].y = o.x + dx, o.y + dy
+			i = i + 1
 
-		#rotate
-		rise1=-(connector_pnts[1].y - connector_pnts[0].y)
-		run1=(connector_pnts[1].x - connector_pnts[0].x)
-		angle1=angleOfSlope(rise1, run1) # angle of connecting line of 1st object (connector1 to connector0)
-
-		rise2=-(t_pnts[1].y - connector_pnts[0].y)
-		run2=(t_pnts[1].x - connector_pnts[0].x)
-		angle2=angleOfSlope(rise2, run2) # angle of connecting line of translated 2nd object (t_pnts1 to connector0)
-
-		rotation_angle=(angle2 - angle1) # subtract this angle from each angle of 2nd object's points towards connector0
-
-		i=1 # don't rotate the 1st translated point, it should now be equal to connector0
+		angle1 = angleOfLineP(connector_pnts[0], connector_pnts[1])
+		angle2 = angleOfLineP(connector_pnts[0], t_pnts[1])
+		rotation_angle = angle2 - angle1 # subtract this angle from each angle of 2nd object's points towards connector0
+		i = 1 # don't rotate the 1st translated point, it should now be equal to connector0
 		r_pnts.append(t_pnts[0])
 		for t_pnt in t_pnts:
 			if  (i != len(t_pnts)):
-				distance=lineLength(connector_pnts[0].x, connector_pnts[0].y, t_pnts[i].x, t_pnts[i].y)
-				rise=-(t_pnts[i].y - connector_pnts[0].y)
-				run=(t_pnts[i].x - connector_pnts[0].x)
-				translated_angle=angleOfSlope(rise, run)
-				r_angle=translated_angle - rotation_angle
-				(x, y)=xyFromDistanceAndAngle(connector_pnts[0].x, connector_pnts[0].y, distance, r_angle)
-				#add to r_pnts[]
+				distance = lineLengthP(connector_pnts[0], t_pnts[i])
+				translated_angle = angleOfLineP(connector_pnts[0], t_pnts[i])
+				r_angle = translated_angle - rotation_angle
 				r_pnts.append(Pnt())
-				r_pnts[i].x=x
-				r_pnts[i].y=y
+				r_pnts[i] = pntFromDistanceAndAngleP(connector_pnts[0], distance, r_angle)
 				i=i+1
 
 		return r_pnts
