@@ -94,10 +94,10 @@ class PatternDesign():
 		pnt2 = pPoint(d.x, d.y + waistBand)
 		pnt3 = pPoint(e.x, e.y + waistBand)
 		pnt4 = pPoint(b.x, b.y + waistBand)
-		t = pntIntersectLinesP(pnt1, pnt2, a, h) # waistBand at center
-		u = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
-		v = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
-		w = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
+		t1 = pntIntersectLinesP(pnt1, pnt2, a, h) # waistBand at center
+		u1 = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
+		v1 = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
+		w1 = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
 
 		Side = rPoint(A, 'Side', side, top)
 		Center = rPoint(A, 'Center', center, top)
@@ -241,10 +241,10 @@ class PatternDesign():
 		pnt2 = pPoint(d.x, d.y + waistBand)
 		pnt3 = pPoint(e.x, e.y + waistBand)
 		pnt4 = pPoint(b.x, b.y + waistBand)
-		t = pntIntersectLinesP(pnt1, pnt2, a, h) # waistBand at center
-		u = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
-		v = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
-		w = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
+		t2 = pntIntersectLinesP(pnt1, pnt2, a, h) # waistBand at center
+		u2 = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
+		v2 = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
+		w2 = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
 
 		# back waist BW
 		BW1 = rPointP(B, 'BW1', a) # center waist
