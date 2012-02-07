@@ -263,14 +263,22 @@ class PatternDesign():
 		BS2 = rPointP(B, 'BS2', p) # outside knee
 		BS3 = rPointP(B, 'BS3', r) # outside hem
 		# back side seam control points
-		distance = lineLengthP(BS1, BW5)/3.0
-		BS1_c2 = cPoint(B, 'BS1_c2', BS1.x, BS1.y - distance) # b/w BW5 & BS1
-		angle = angleOfLineP(BW5, BS1_c2)
-		BS1_c1 = cPointP(B, 'BS1_c1', pntFromDistanceAndAngleP(BW5, distance, angle)) # b/w BW5 & BS1
-		distance = lineLengthP(BS1, BS2)/3.0
-		BS2_c1 = cPoint(B, 'BS2_c1', BS1.x, BS1.y + distance) # b/w BS1 & BS2
-		angle = angleOfLineP(BS3, BS2)
-		BS2_c2 = cPointP(B, 'BS2_c2', pntFromDistanceAndAngleP(BS2, distance, angle)) #b/w BS1 & BS2
+		if (backNormalWaist):
+			# control points at hip are vertical
+			distance = lineLengthP(BS1, BW5)/3.0
+			BS1_c2 = cPoint(B, 'BS1_c2', BS1.x, BS1.y - distance) # b/w BW5 & BS1
+			angle = angleOfLineP(BW5, BS1_c2)
+			BS1_c1 = cPointP(B, 'BS1_c1', pntFromDistanceAndAngleP(BW5, distance, angle)) # b/w BW5 & BS1
+			distance = lineLengthP(BS1, BS2)/3.0
+			BS2_c1 = cPoint(B, 'BS2_c1', BS1.x, BS1.y + distance) # b/w BS1 & BS2
+			angle = angleOfLineP(BS3, BS2)
+			BS2_c2 = cPointP(B, 'BS2_c2', pntFromDistanceAndAngleP(BS2, distance, angle)) #b/w BS1 & BS2
+		else:
+			# if large waist then the vertical control point is at waist BW5, side control points AS1 at rise are calculated normally, control point next to BS2 knee is along line of knee to hem.
+			pnts = pointList(BW5, BS1, BS2)
+			c1, c2 = controlPoints('BackSideSeam', pnts)
+			BS1_c1, BS1_c2 = cPoint(B, 'BS1_c1', BW5.x, lineLengthP(BW5, BS1)/3.0), cPointP(B, 'BS1_c2', c2[0]) # b/w BW5 & BS1
+			BS2_c1, BS2_c2 = cPointP(B, 'BS2_c1', c1[1]), cPointP(B, 'BS2_c2', pntOffLineP(BS2, BS3, lineLengthP(BS1, BS2)/3.0)) #b/w BS1 & BS2
 		# back inseam BI
 		BI1 = rPointP(B, 'BI1', q) # inseam hem
 		BI2 = rPointP(B, 'BI2', o) # inseam knee
