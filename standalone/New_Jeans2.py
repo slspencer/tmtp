@@ -237,6 +237,15 @@ class PatternDesign():
 		q = pPoint(creaseLine - backHemWidth/2.0, hemLine) # inside hem
 		r = pPoint(creaseLine + backHemWidth/2.0, hemLine) # outside hem
 
+		pnt1 = pPoint(a.x, a.y + waistBand)
+		pnt2 = pPoint(d.x, d.y + waistBand)
+		pnt3 = pPoint(e.x, e.y + waistBand)
+		pnt4 = pPoint(b.x, b.y + waistBand)
+		t = pntIntersectLinesP(pnt1, pnt2, a, h) # waistBand at center
+		u = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
+		v = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
+		w = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
+
 		# back waist BW
 		BW1 = rPointP(B, 'BW1', a) # center waist
 		BW2 = rPointP(B, 'BW2', d) # inside dart
@@ -306,6 +315,7 @@ class PatternDesign():
 		grid = path()
 		addToPath(grid, 'M', Crotch, 'L', Width, 'L', k, 'L', n, 'L', Crotch, 'M', Center, 'L', l, 'M', i, 'L', j) # horizontal & vertical: torso box, centerline, hipline
 		addToPath(grid, 'M', l, 'L', m, 'M', BW1, 'L', BW5, 'M', BD2, 'L', BD1, 'L', BD3) # diagonal: crotch curve, waistline, dartline
+		addToPath(grid, 'M', t, 'L', u, 'M', v, 'L', w) # line to create waistband pattern piece
 
 		# dart 'd' path
 		dartLine = path()
