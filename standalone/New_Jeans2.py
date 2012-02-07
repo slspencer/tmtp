@@ -283,12 +283,19 @@ class PatternDesign():
 		BI1 = rPointP(B, 'BI1', q) # inseam hem
 		BI2 = rPointP(B, 'BI2', o) # inseam knee
 		BI3 = rPointP(B, 'BI3', n) # crotch point
-		# back inseam control points cBI
+		# back inseam control points
 		BI3_c1 = cPointP(B, 'BI3_c1', pntOffLineP(BI2, BI1, lineLengthP(BI2, BI3)/3.0)) #b/w BI2 & BI3
 		BI3_c2 = cPointP(B, 'BI3_c2', pntOnLineP(BI3, BI3_c1, lineLengthP(BI2, BI3)/3.0)) #b/w BI2 & BI
-		#back center seam BC
+		# back center seam BC
 		BC1 = rPointP(B, 'BC1', m) # crotch curve
 		BC2 = rPointP(B, 'BC2', j) # center hip
+		# back center seam control points
+		BC2_c2 = cPointP(B, 'BC2_c2', pntOffLineP(BC2, BW1, lineLengthP(l, BC2)/3.0))
+		BC2_c1 = cPointP(B, 'BC2_c1', pntFromDistanceAndAngleP(BC1, lineLengthP(BC1, BC2_c2)/3.0, angleOfLineP(BI3, BC2))) # b/w BC1 & BC2
+		distance = lineLengthP(BI3, BC1)/3.0
+		BC1_c1 = cPoint(B, 'BC1_c1', BI3.x + distance, BI3.y)  #b/w BI3 & BC1
+		BC1_c2 = cPointP(B, 'BC1_c2', pntFromDistanceAndAngleP(BC1, distance, angleOfLineP(BC2, BI3)))
+
 		# back grainline BG
 		BG1 = rPoint(B, 'BG1', creaseLine, hipLine) # grainline end 1
 		BG2 = rPoint(B, 'BG2', creaseLine, hemLine - 2.0*IN) # grainline end 2
@@ -311,7 +318,7 @@ class PatternDesign():
 			addToPath(p, 'M', BW1, 'C', BW2_c1, BW2_c2, BW2, 'L', BW3, 'L', BW4, 'C', BW5_c1, BW5_c2, BW5) # waist
 			addToPath(p, 'C', BS1_c1, BS1_c2, BS1, 'C', BS2_c1, BS2_c2, BS2, 'L', BS3) # side
 			addToPath(p, 'L', BI1, 'L', BI2, 'C', BI3_c1, BI3_c2, BI3) # inseam
-			addToPath(p, 'L', BC1, 'L', BC2, 'L', BW1) # center
+			addToPath(p, 'C', BC1_c1, BC1_c2, BC1, 'C', BC2_c1, BC2_c2, BC2, 'L', BW1) # center
 
 		# add grid, dart, grainline, seamline & cuttingline paths to pattern
 		addGrainLine(B, BG1, BG2)
