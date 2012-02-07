@@ -232,10 +232,10 @@ class PatternDesign():
 
 		m = pntFromDistanceAndAngleP(l, (1.25*IN), angleOfDegree(225.0)) # center crotch curve
 		n = pPoint(crotch, riseLine) # center crotch point
-		o = pPoint(creaseLine - frontKneeWidth/2.0, kneeLine) # inside knee
-		p = pPoint(creaseLine + frontKneeWidth/2.0, kneeLine) # outside knee
-		q = pPoint(creaseLine - frontHemWidth/2.0, hemLine) # inside hem
-		r = pPoint(creaseLine + frontHemWidth/2.0, hemLine) # outside hem
+		o = pPoint(creaseLine - backKneeWidth/2.0, kneeLine) # inside knee
+		p = pPoint(creaseLine + backKneeWidth/2.0, kneeLine) # outside knee
+		q = pPoint(creaseLine - backHemWidth/2.0, hemLine) # inside hem
+		r = pPoint(creaseLine + backHemWidth/2.0, hemLine) # outside hem
 
 		# back waist BW
 		BW1 = rPointP(B, 'BW1', a) # center waist
