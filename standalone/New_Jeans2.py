@@ -101,7 +101,7 @@ class PatternDesign():
 
 		Side = rPoint(A, 'Side', side, top)
 		Center = rPoint(A, 'Center', center, top)
-		Width = rPoint(A, 'Width', width, top)
+		Inseam = rPoint(A, 'Inseam', width, top)
 
 		# front waist AW
 		AW1 = rPointP(A, 'AW1', a) # center waist
@@ -174,7 +174,7 @@ class PatternDesign():
 
 		#grid path
 		grid = path()
-		addToPath(grid, 'M', Side, 'L', k, 'L', n, 'L', Width, 'L', Side, 'M', AS1, 'L', j, 'M', Center, 'L', l )
+		addToPath(grid, 'M', Side, 'L', k, 'L', n, 'L', Inseam, 'L', Side, 'M', AS1, 'L', j, 'M', Center, 'L', l , 'L', m)
 		addToPath(grid, 'M', AW1, 'L', AW5,'M', AW1, 'L', AW2, 'M', AW4, 'L', AW5, 'M', t1, 'L', u1, 'M', v1, 'L', w1) # waist grid lines
 
 		# dart 'd' path
@@ -213,7 +213,7 @@ class PatternDesign():
 		side = width
 		creaseLine = width/2.0
 
-		Crotch = rPoint(B, 'Crotch', crotch, top)
+		Inseam = rPoint(B, 'Inseam', crotch, top)
 		Center = rPoint(B, 'Center', center, top)
 		Width = rPoint(B, 'Width', width, top)
 		Side = rPointP(B, 'Side', Width)
@@ -321,7 +321,7 @@ class PatternDesign():
 
 		# grid
 		grid = path()
-		addToPath(grid, 'M', Crotch, 'L', Width, 'L', k, 'L', n, 'L', Crotch, 'M', Center, 'L', l, 'M', i, 'L', j) # horizontal & vertical: torso box, centerline, hipline
+		addToPath(grid, 'M', Inseam, 'L', Width, 'L', k, 'L', n, 'L', Inseam, 'M', Center, 'L', l, 'M', i, 'L', j) # horizontal & vertical: torso box, centerline, hipline
 		addToPath(grid, 'M', l, 'L', m, 'M', BW1, 'L', BW5, 'M', BD2, 'L', BD1, 'L', BD3) # diagonal: crotch curve, waistline, dartline
 		addToPath(grid, 'M',BW1, 'L', BW2, 'M', BW4, 'L', BW5, 'M', t2, 'L', u2, 'M', v2, 'L', w2) # line to create waistband pattern piece
 
@@ -345,82 +345,56 @@ class PatternDesign():
 		addSeamLine(B, seamLine)
 		addCuttingLine(B, cuttingLine)
 
-		## Front Waistband 'C'
-		pants.add(PatternPiece('pattern', 'FrontWaistband', letter='C', fabric=2, interfacing=1, lining=0))
-		C = pants.FrontWaistband
+		# Waistfacing 'C'
+		pants.add(PatternPiece('pattern', 'Waistfacing', letter='C', fabric=0, interfacing=2, lining=2))
+		C = pants.Waistfacing
 
 		top = 0.0
 		width = cd.front_waist_arc + cd.back_waist_arc
 
-		# Waistband CW - work from front center to back center
-		# Front waistband center section
+		# Waistfacing front center section
 		# lower section
 		CW1 = rPointP(C, 'CW1', t1)
-		#CW2_c1 = cPointP(C, 'CW2_c1', u1_c1)
-		#CW2_c2 = cPointP(C, 'CW2_c2', u1_c2)
 		CW2 = rPointP(C, 'CW2', u1)
 		# upper section
 		CW9 = rPointP(C, 'CW9', AW2)
-		#CW10_c1 = cPointP(C, 'CW10_c1', AW2_c2)
-		#CW10_c2 = cPointP(C, 'CW10_c2', AW2_c1)
 		CW10 = rPointP(C, 'CW10', AW1)
 
-		# front waistband side section
-		connectorPoints = pointList(CW9, CW2) # 2 connector points from waistband above, upper = CW9, lower = CW2
-		#moveObject = pointList(AW4, v1, w1_c1, w1_c2, w1, AW5, AW5_c2, AW5_c1) # front waistband side section, outside of dart.  1st 2 points connect to connectorPoints
-		moveObject = pointList(AW4, v1, w1, AW5) # front waistband side section, outside of dart.  1st 2 points connect to connectorPoints
+		# Waistfacing front side section
+		connectorPoints = pointList(CW9, CW2) # 2 connector points from waistfacing above, upper = CW9, lower = CW2
+		moveObject = pointList(AW4, v1, w1, AW5) # front side section, outside of dart.  1st 2 points connect to connectorPoints
 		new_pnts = connectObjects(connectorPoints, moveObject) # translate & rotate front side section
 		# skip AW4/new_pnts[0] & v1/new_pnts[1], same as CW9 & CW2
-		# lower points
-		#CW3_c1 = cPointP(C, 'CW3_c1', new_pnts[2])
-		#CW3_c2 = cPointP(C, 'CW3_c2', new_pnts[3])
-		CW3 = rPointP(C, 'CW3', new_pnts[2])
-		# upper points
-		CW8 = rPointP(C, 'CW8', new_pnts[3])
-		#CW9_c1 = cPointP(C, 'CW9_c1', new_pnts[6])
-		#CW9_c2 = cPointP(C, 'CW9_c2', new_pnts[7])
+		CW3 = rPointP(C, 'CW3', new_pnts[2]) 	# lower points
+		CW8 = rPointP(C, 'CW8', new_pnts[3])		# upper points
 
-		# Back waistband side section
-		connectorPoints = pointList(CW8, CW3) # 2 connector points from waistband above, upper = CW8, lower = CW3
-		#moveObject = pointList(BW5, w2, w2_c2, w2_c1, v2, BW4, BW5_c1, BW5_c2)
+		# Waistfacing back side section
+		connectorPoints = pointList(CW8, CW3) # 2 connector points from waistfacing above, upper = CW8, lower = CW3
 		moveObject = pointList(BW5, w2, v2, BW4)
 		new_pnts = connectObjects(connectorPoints, moveObject)
 		# skip BW5/new_pnts[0] & w2/new_pnts[1], same as CW8 & CW3
-		# lower points
-		#CW4_c1 = cPointP(C, 'CW4_c1', new_pnts[2])
-		#CW4_c2 = cPointP(C, 'CW4_c2', new_pnts[3])
-		CW4 = rPointP(C, 'CW4', new_pnts[2])
-		# upper points
-		CW7 = rPointP(C, 'CW7', new_pnts[3])
-		#CW8_c1 = cPointP(C, 'CW8_c1', new_pnts[6])
-		#CW8_c2 = cPointP(C, 'CW8_c2', new_pnts[7])
+		CW4 = rPointP(C, 'CW4', new_pnts[2])		# lower points
+		CW7 = rPointP(C, 'CW7', new_pnts[3])		# upper points
 
-		# Back waistband center section
-		connectorPoints = pointList(CW7, CW4) # 2 connector points from waistband above, upper = CW7, lower = CW4
-		#moveObject = pointList(BW2, u2, u2_c2, u2_c1, t2, BW1, BW2_c1, BW2_c2)
+		# Waistfacing back center section
+		connectorPoints = pointList(CW7, CW4) # 2 connector points from waistfacing above, upper = CW7, lower = CW4
 		moveObject = pointList(BW2, u2, t2, BW1)
 		new_pnts = connectObjects(connectorPoints, moveObject)
 		# skip BW2/new_pnts[0] & u2/new_pnts[1], same as CW7 & CW4
-		# lower points
-		#CW5_c1 = cPointP(C, 'CW5_c1', new_pnts[2])
-		#CW5_c2 = cPointP(C, 'CW5_c2', new_pnts[3])
-		CW5 = rPointP(C, 'CW5', new_pnts[2])
-		# upper points
-		CW6 = rPointP(C, 'CW6', new_pnts[3])
-		#CW7_c1 = cPointP(C, 'CW7_c1', new_pnts[6])
-		#CW7_c2 = cPointP(C, 'CW7_c2', new_pnts[7])
+		CW5 = rPointP(C, 'CW5', new_pnts[2])		# lower points
+		CW6 = rPointP(C, 'CW6', new_pnts[3])		# upper points
 
-		# waistband control points
+		# Waistfacing control points
 		# lower
 		pnts = pointList(CW1, CW2, CW3, CW4, CW5)
-		c1, c2 = controlPoints('WaistbandLower', pnts)
+		c1, c2 = controlPoints('WaistfacingLower', pnts)
 		CW2_c1, CW2_c2 = cPointP(C, 'CW2_c1', c1[0]), cPointP(C, 'CW2_c2', c2[0]) # b/w CW1 & CW2
 		CW3_c1, CW3_c2 = cPointP(C, 'CW3_c1', c1[1]), cPointP(C, 'CW3_c2', c2[1]) # b/w CW2 & CW3
 		CW4_c1, CW4_c2 = cPointP(C, 'CW4_c1', c1[2]), cPointP(C, 'CW4_c2', c2[2]) # b/w CW2 & CW4
 		CW5_c1, CW5_c2 = cPointP(C, 'CW5_c1', c1[3]), cPointP(C, 'CW5_c2', c2[3]) # b/w CW4 & CW5
 		# upper
 		pnts = pointList(CW6, CW7, CW8, CW9, CW10)
-		c1, c2 = controlPoints('WaistbandUpper', pnts)
+		c1, c2 = controlPoints('WaistfacingUpper', pnts)
 		CW7_c1, CW7_c2 = cPointP(C, 'CW7_c1', c1[0]), cPointP(C, 'CW7_c2', c2[0]) # b/w CW6 & CW7
 		CW8_c1, CW8_c2 = cPointP(C, 'CW8_c1', c1[1]), cPointP(C, 'CW8_c2', c2[1]) # b/w CW7 & CW8
 		CW9_c1, CW9_c2 = cPointP(C, 'CW9_c1', c1[2]), cPointP(C, 'CW9_c2', c2[2]) # b/w CW8 & CW9
@@ -431,15 +405,13 @@ class PatternDesign():
 		CG2 = rPointP(C, 'CG2', pntFromDistanceAndAngleP(CG1, 6.5*IN, angleOfDegree(45.0)))
 		C.label_x, C.label_y = CW6.x + 0.25*IN, CW6.y + 0.25*IN
 
-		# waistband grid
+		# waistfacing grid
 		grid = path()
 		addToPath(grid, 'M', CW1, 'L', CW2, 'L', CW3, 'L', CW4, 'L', CW5, 'L', CW6, 'L', CW7, 'L', CW8, 'L', CW9, 'L', CW10, 'L', CW1)
 
 		seamLine = path()
 		cuttingLine = path()
 		for p in seamLine, cuttingLine:
-		#	addToPath(p, 'M', CW1, 'C', CW2_c1, CW2_c2, CW2, 'C', CW3_c1, CW3_c2, CW3, 'C', CW4_c1, CW4_c2, CW4, 'C', CW5_c1, CW5_c2, CW5) #lower waistband
-		#	addToPath(p, 'L', CW6, 'C', CW7_c1, CW7_c2, CW7, 'C', CW8_c1, CW8_c2, CW8, 'C', CW9_c1, CW9_c2, CW9, 'C', CW10_c1, CW10_c2, CW10, 'L', CW1) #upper waistband
 			addToPath(p, 'M', CW1, 'C', CW2_c1, CW2_c2, CW2, 'C', CW3_c1, CW3_c2, CW3, 'C', CW4_c1, CW4_c2, CW4, 'C', CW5_c1, CW5_c2, CW5) # lower waistband
 			addToPath(p, 'L', CW6, 'C', CW7_c1, CW7_c2, CW7, 'C', CW8_c1, CW8_c2, CW8, 'C', CW9_c1, CW9_c2, CW9, 'C', CW10_c1, CW10_c2, CW10, 'L', CW1) # upper waistband
 
@@ -449,8 +421,7 @@ class PatternDesign():
 		addSeamLine(C, seamLine)
 		addCuttingLine(C, cuttingLine)
 
-
-		#call draw once for the entire pattern
+		# call draw once for the entire pattern
 		doc.draw()
 		return
 
