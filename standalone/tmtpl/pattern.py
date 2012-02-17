@@ -981,7 +981,7 @@ def setupPattern(pattern_design, clientData, printer, companyName, designerName,
 # ---- Pattern Classes ----------------------------------------
 
 class Pnt():
-	'''Accepts x,y & name. Returns an object with .x, .y, and .id children.  Does not create point in SVG document'''
+	'''Accepts x,y & name. Returns an object with .x, .y, and .name children.  Does not create point in SVG document'''
 	def __init__(self, x=0.0, y=0.0, name=''):
 		self.x = x
 		self.y = y
