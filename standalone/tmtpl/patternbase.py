@@ -46,7 +46,11 @@ class pBase(object):
         Add a class instance to parent, while setting the id
         of the child to include the 'dotted path' fo all ancestors
         """
-        newid =  self.id + '.' + obj.name
+        if (hasattr(self, 'letter')):
+           newid = self.letter + '.' + obj.name
+        else:
+            newid =  self.id + '.' + obj.name
+
         # Check to make sure we don't have any duplicate IDs
         if newid in self.ids:
             raise ValueError("The name %s is used in more than one pattern object" % newid)
