@@ -3,7 +3,7 @@ This is the standalone application for generating a sewing pattern from a design
 There is not yet any good documentation for this (This is it).
 
 Output format is SVG. Client data (measurements) are imported from a json
-data file specified on the commend line.
+data file specified on the command line.
 
 Line styles are defined in a json file specified on the command line.
 
@@ -21,21 +21,7 @@ Example: ./mkpattern --tooltips --client=Susancm.json --pattern=New_Jeans2.py --
 
 The output can then be viewed with most browsers, or Inkscape with the following command line:
   With browser:  google-chrome <output file name>
-
   With Inkscape:  inkscape --file=<output file name>
-    Any inkscape command line parameter is acceptable.
-    Example: inkscape --file=foo.svg --verb=ZoomPage --verb=FullScreen --verb=FitCanvasToDrawing
-
-To add seam allowances to the pattern pieces in the output SVG file, 
-open output file with Inkscape, 
-select a pattern piece path with the path tool, 
-press the SHIFT key and left parenthesis key --> SHIFT(      
-Do this for each pattern piece in the file.
-
-For printing, open the output file in GIMP. Save as a .PDF then print the PDF file.  
-At this time Inkscape has documented SVG-to-PDF conversion problems, not present in GIMP. 
-GIMP also has better printing support.  Always check the document width & height of the SVG file, 
-compare to the PDF file. The printed output should be the same document width & height as the SVG file.
 
 It is a known bug in this code that prevents Nautilus from rendering a thumbnail of the file.
 
