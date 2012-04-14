@@ -385,7 +385,7 @@ def pMidpoint(x1, y1, x2, y2, n=0.5):
 def pMidpointP( p1, p2, n=0.5):
     '''Accepts p1 & p2 and 0<n<1, returns p3'''
     pnt=Pnt()
-    pnt.x,  pnt.y = midPoint(p1, p2, n)
+    pnt.x,  pnt.y = midPoint(p1.x,  p1.y, p2.x,  p2.y, n)
     return pnt
 
 # ----------------...Calculate intercepts given x or y..------------------------------
