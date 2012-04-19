@@ -6,7 +6,7 @@
 from tmtpl.constants import *
 from tmtpl.pattern import *
 from tmtpl.client import Client
-from math import sqrt
+from math import sqrt,  arcsec
 
 class PatternDesign():
 
@@ -91,13 +91,13 @@ class PatternDesign():
         
         # back points
         aa = pPoint(f.x + (b.x - f.x)/4.,  b.y) # calculate inner crotch curve
-        bb = pPoint(aa.x - 0.5*CM, c.y) # calculate outseam hip
+        bb1 = pPoint(aa.x, c.y) # calculate center hip
+        bb2 = (bb1.x - 0.5*CM,  bb.y) # center hip - push bb1 toward center by 0.5cm        
         cc = pPoint(aa.x,  a.y) # calculate top crotch curve
-        dd = pPoint(aa.x,  midPointP(aa, cc)) # top crotch curve
+        dd1 = pPoint(aa.x,  midPointP(aa, cc)) # top crotch curve
         ee = pPoint(cc.x + 2*CM,  a.y) # calculate center waist
-        ff = pPoint(pntOnLine( ee.x, ee.y - 2*CM, dd.x, dd.y, 4*CM)) # calculate ff & extend on line dd-ee by 4cm
-        #ff = pPoint(ee.x,  ee.y - 2*CM) # center waist
-        gg = pPointP(pntIntersectLineCircleP(ff, cd.waist_circumference/4. + 2.5*CM, cc, ee)) # outseam waist
+        ff1 = pPoint(ee.x,  ee.y - 2*CM) # calculate center waist
+        gg1 = pPointP(pntIntersectLineCircleP(ff, cd.waist_circumference/4. + 2.5*CM, cc, ee)) # outseam waist
         hh = pPoint(j.x - lineLengthP(f, j)/2., j.y) # calculate crotch point
         ii = pPoint(hh.x,  hh.y + 0.5*CM) # crotch point
         angle = angleOfDegree(225) 
@@ -108,49 +108,59 @@ class PatternDesign():
         nn = pPoint(kk.x + 1*CM, b.y) # outseam hip
         oo = pPoint(r.x - 1.0*CM,  r.y) # inseam hem 
         pp = pPoint(s.x - 1*CM,  s.y) # inseam knee
-        qq = pPointP(midpoint(ii, pp)) # calculate inseam curve
+        qq = pPointP(pMidpointP(ii, pp)) # calculate inseam curve
         angle = angleOfSlopeP(pp, ii) + angleOfDegree(90)
         rr = pPoint(qq, 1*CM, angle)
+        # rotate hipline up centered on point kk
+        #TODO - in future, substitute 4cm with difference b/w crotch lengths of client & pattern (pattern crotch length - client crotch length)
+        bb = pPointP((intersectCircleCircle( bb1, 4*CM, kk, lineLengthP(kk, bb1)))) # rotate bb1 up 4cm, around center pt kk
+        angle = angleOfVectorP(bb1, kk, bb) # get angle of rotation, apply rotation to dd1, ff1, gg1
+        dd = pPointP(pntOnLineP(kk, dd1, lineLengthP(kk, dd1), rotation = angle))
+        ff = pPointP(pntOnLineP(kk, ff1, lineLengthP(kk, ff1), rotation = angle))
+        gg = pPointP(pntOnLineP(kk, gg1, lineLengthP(kk, gg1), rotation = angle))
+        # yoke
+        rr = pPointP(pntOnLineP(ff, dd, lineLengthP(ff, aa)/4.)) # center yoke
+        ss = pPointP(pntOnLineP(gg, kk, lineLengthP(gg, kk)/4.)) # outseam yoke
+        # dart
+        pnt = pMidpointP(ff, gg) # midpoint of line ff, gg
+        angle = angleOfLineP(ff, gg) + angleOfDegree(90) # angle of dart, perpendicular to ff, gg
+        tt = pPoint(pnt.x,  pnt.y + .75*CM)
+        uu = pPointP(pntFromDistanceAndAngleP(midpoint, lineLengthP(ff, dd)/2.0), angle) # dart point, || to center seam, halfway b/w ff (waist) & dd (top of curve)
+        vv = pPointP(pntOnLineP(tt, ff, 1.25*CM)) # dart inside leg
+        ww = pPointP(pntOnLineP(tt, gg))
+
+
+
+        # back waist control points
+        BW2_c1 = cPointP(B, 'BW2_c1', pntFromDistanceAndAngleP(BW1, lineLengthP(BW1, BW2)/3.0, angleOfLineP(j, BW1) + angleOfDegree(90)))
+        BW2_c2 = cPointP(B, 'BW2_c2', pntFromDistanceAndAngleP(BW2, lineLengthP(BW1, BW2)/3.0, angleOfLineP(f, BW2) - angleOfDegree(90)))
+        BW5_c1 = cPointP(B, 'BW5_c1', pntFromDistanceAndAngleP(BW4, lineLengthP(BW4, BW5)/3.0, angleOfLineP(f, BW4) + angleOfDegree(90)))
+        BW5_c2 = cPointP(B, 'BW5_c2', pntFromDistanceAndAngleP(BW5, lineLengthP(BW4, BW5)/3.0, angleOfLineP(i, BW5) - angleOfDegree(90)))
+        u2_c1 = cPointP(B, 'u2_c1', pntFromDistanceAndAngleP(t2, lineLengthP(t2, u2)/3.0, angleOfLineP(t2, BW1) + angleOfDegree(90))) # b/w t2 & u2
+        u2_c2 = cPointP(B, 'u2_c2', pntFromDistanceAndAngleP(u2, lineLengthP(t2, u2)/3.0, angleOfLineP(u2, BW2) - angleOfDegree(90))) # b/w t2 & u2
+        w2_c1 = cPointP(B, 'w2_c1', pntFromDistanceAndAngleP(v2, lineLengthP(v2, w2)/3.0, angleOfLineP(f, v2) + angleOfDegree(90))) # b/w v2 & w2
+        w2_c2 = cPointP(B, 'w2_c2', pntFromDistanceAndAngleP(w2, lineLengthP(v2, w2)/3.0, angleOfLineP(w2, BW5) - angleOfDegree(90))) # b/w v2 & w2       
         
+        # back dart BD
+        pnt1 = rPointP(B, 'pnt1', pntIntersectLinesP(ff, gg, BW2, BW2_c2)) # where sewn dart fold should cross waistline before folding
+        pnt2 = rPointP(B, 'pnt2', pntFromDistanceAndAngleP(BW4, lineLengthP(BW4, pnt1), angleOfLineP(BW2, pnt1) + angleOfVectorP(c, f, d)))
+        pnt3 = rPointP(B, 'pnt3', pntIntersectLinesP(f, pnt1, BW4, pnt2))
+        BW3 = rPointP(B, 'BW3', pntOnLineP(f, c, lineLengthP(f, pnt3))) # extend dart center up to make sewn dart fold cross waistline
+        BD1 = rPointP(B, 'BD1', f) # dart point
+        BD2 = rPointP(B, 'BD2', pntOffLineP(d, BD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
+        BD3 = rPointP(B, 'BD3', pntOffLineP(e, BD1, SEAM_ALLOWANCE)) # outside dart at cuttingline    
         
-        pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
-        c = pPoint(pnt.x, pnt.y + (1/4.0)*IN) # dart midline at waist
-        d = pPoint(c.x + frontDartWidth/2.0, c.y) # dart inside at waist
-        e = pPoint(c.x - frontDartWidth/2.0, c.y) # dart outside at waist
-        f = pPoint(c.x, c.y + frontDartLength) # dart point
-        angle = angleOfLineP(f, d) + angleOfVectorP(c, f, d)
-        g = pntFromDistanceAndAngleP(f, frontDartLength, angle) # on angle of sewn dart fold, after folded toward center
+        #pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
+        #c = pPoint(pnt.x, pnt.y + (1/4.0)*IN) # dart midline at waist
+        #d = pPoint(c.x + frontDartWidth/2.0, c.y) # dart inside at waist
+        #e = pPoint(c.x - frontDartWidth/2.0, c.y) # dart outside at waist
+        #f = pPoint(c.x, c.y + frontDartLength) # dart point
+        #angle = angleOfLineP(f, d) + angleOfVectorP(c, f, d)
+        #g = pntFromDistanceAndAngleP(f, frontDartLength, angle) # on angle of sewn dart fold, after folded toward center
 
-        h = pPoint(center, rise/2.0) # center front 'pivot' point from crotch curve to front fly
-        i = pPoint(side, hip) # side hip
-        j = pPoint(center, hip) # center hip
-        k = pPoint(side, rise) # side rise
-        l = pPoint(center, rise) # center rise
-        m = pntFromDistanceAndAngleP(l, (1.25*IN), angleOfDegree(315.0)) # center crotch curve
-        n = pPoint(l.x + cd.front_crotch_extension, rise) # center crotch point
-        o = pPoint(creaseLine - frontKneeWidth/2.0, knee) # inside knee
-        p = pPoint(creaseLine + frontKneeWidth/2.0, knee) # outside knee
-        q = pPoint(creaseLine - frontHemWidth/2.0, hem) # inside hem
-        r = pPoint(creaseLine + frontHemWidth/2.0, hem) # outside hem
-
-        pnt1 = pntOnLineP(a, h, waistBand)
-        pnt2 = pntOnLineP(d, f, waistBand)
-        pnt3 = pntOnLineP(e, f, waistBand)
-        pnt4 = pntOnLineP(b, i, waistBand)
-        t1 = pntIntersectLinesP(pnt1, pnt2, a, h) # waistBand at center
-        u1 = pntIntersectLinesP(pnt1, pnt2, d, f) # waistBand at inside dart
-        v1 = pntIntersectLinesP(pnt3, pnt4, e, f) # waistBand at outside dart
-        w1 = pntIntersectLinesP(pnt3, pnt4, b, i) # waistBand at side
-
-        Side = rPoint(A, 'Side', side, top)
-        Center = rPoint(A, 'Center', center, top)
-        Inseam = rPoint(A, 'Inseam', width, top)
-
+        
+       
         # front waist AW
-        AW1 = rPointP(A, 'AW1', a) # center waist
-        AW2 = rPointP(A, 'AW2', d) # inside dart
-        AW4 = rPointP(A, 'AW4', e) # outside dart
-        AW5 = rPointP(A, 'AW5', b) # side waist
         # front waist control points
         AW2_c1 = cPointP(A, 'AW2_c1', pntFromDistanceAndAngleP(AW1, lineLengthP(AW1, AW2)/3.0, angleOfLineP(j, AW1) - angleOfDegree(90))) # b/w AW1 & AW2
         AW2_c2 = cPointP(A, 'AW2_c2', pntFromDistanceAndAngleP(AW2, lineLengthP(AW1, AW2)/3.0, angleOfLineP(f, AW2) + angleOfDegree(90))) # b/w AW1 & AW2
