@@ -241,7 +241,7 @@ def degreeOfAngle(angle):
 
 def angleOfDegree(degree):
     return degree * math.pi/180.0
-
+    
 def angleOfSlope(rise, run):
     """Accepts rise, run inputs and returns angle in radians. Uses atan2.   """
     return math.atan2(rise, run )
