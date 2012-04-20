@@ -32,21 +32,23 @@ class PatternDesign():
         patternNumber = 'WS010-xj1-1' # mandatory
         doc = setupPattern(self, cd, printer, companyName, designerName, patternName, patternNumber)
 
-        riseLine = cd.side_rise + (1*IN) # 1" ease
-        hipLine = (2/3.0) * riseLine
+        riseLine = cd.side_rise + (1*IN) # 1" sitting ease from hipline to riseline
+        hipLine = cd.front_hip_length # don't add 1" extra
         hemLine = riseLine + cd.inseam
-        kneeLine = riseLine + cd.inseam/2.0 - (1.0 * IN)
-        seamEase = (1/8.0) * IN
-        waistLine = (1.0 * IN) # Jeans waist is 1" lower than actual waist
-        frontDartWidth = (1/2.0) * IN
-        frontDartLength = (1/3.0) * hipLine
-        backDartWidth = (3/4.0) * IN
-        backDartLength = (2/3.0) * hipLine
-        waistBand = 1.0 * IN  # Height of waistBand
-        backKneeWidth = 10.0 * IN
-        backHemWidth = 8.0 * IN
-        frontKneeWidth = 8.0 * IN
-        frontHemWidth = 7.0 * IN
+        kneeLine = riseLine + cd.inseam/2. - (1*IN) # kneeline is 1" above midleg
+        # TODO - choose if using thick fabric
+        #seamEase = (1/16.0) * IN # 1/16" seam ease for thick fabric, 0 if not 
+        seamEase = 0
+        waistLine = (1*IN) # Jeans waist is 1" lower than actual waist
+        frontDartWidth = 0.5*IN
+        frontDartLength = hipLine/2.
+        backDartWidth = 0.75*IN
+        backDartLength = hipLine*2/3.
+        waistBand = 1*IN  # Height of waistBand
+        backKneeWidth = 10*IN
+        backHemWidth = 8*IN
+        frontKneeWidth = 8*IN
+        frontHemWidth = 7*IN
 
         # pattern object
         pants = Pattern('pants')
@@ -58,22 +60,35 @@ class PatternDesign():
         pants.add(PatternPiece('pattern', 'front', letter='A', fabric=2, interfacing=0, lining=0))
         A = pants.front
 
-        top = 0.0
-        side = 0.0
+        top = 0.001 # can't use 0 in some calculations
+        side = 0.001
         center = max(cd.front_waist_arc, cd.front_hip_arc)
         width = center + cd.front_crotch_extension
         creaseLine = width/2.0
+        TOPLEFT = pPoint(side, top)
+        TOPRIGHT = pPoint(center, top)
 
-        a = pPoint(center, waistLine) # center waist
-        b = pPoint(center - cd.front_waist_arc - frontDartWidth - 2*seamEase, top) # side waist
-        pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0) # dart center at waist along line ab
-        c = pPoint(pnt.x, pnt.y + (1/4.0)*IN)
+        #a = pPoint(center, waistLine) # center waist
+        a = pPoint(center, riseLine - cd.front_rise - 1*IN) # center waist
+        #b = pPoint(center - cd.front_waist_arc - frontDartWidth - 2*seamEase, top) # side waist        
+        radius = cd.front_waist_arc + frontDartWidth
+        Solution = pntIntersectLineCircleP(a, radius, TOPLEFT,  TOPRIGHT) # returns pnt.intersections, pnt.p1, pnt.p2
+        if Solution.intersections == 1:
+            b = Solution.p1
+        elif Solution.intersections == 2:
+            if Solution.p1.x < a.x :
+                b = Solution.p1
+            else:
+                b = Solution.p2
+        #TODO - change angle of dart to be perpendicular to line ab
+        #pnt = pMidpointP(a, b) # dart center at waist along line ab
+        #c = pPoint(pnt.x, pnt.y + 0.25*IN) # lower dart center by 1/4in
+        c = pPointP(pMidpointP(a, b)) # dart center at waist along line ab
         d = pPoint(c.x + frontDartWidth/2.0, c.y) # dart inside at waist
         e = pPoint(c.x - frontDartWidth/2.0, c.y) # dart outside at waist
         f = pPoint(c.x, c.y + frontDartLength) # dart point
         angle = angleOfLineP(f, d) + angleOfVectorP(c, f, d)
         g = pntFromDistanceAndAngleP(f, frontDartLength, angle) # on angle of sewn dart fold, after folded toward center
-
         h = pPoint(center, riseLine/2.0) # center front 'pivot' point from crotch curve to front fly
         i = pPoint(side, hipLine) # side hip
         j = pPoint(center, hipLine) # center hip
@@ -123,12 +138,12 @@ class PatternDesign():
         AD2 = rPointP(A, 'AD2', pntOffLineP(d, AD1, SEAM_ALLOWANCE)) # inside dart at cuttingline
         AD3 = rPointP(A, 'AD3', pntOffLineP(e, AD1, SEAM_ALLOWANCE)) # outside dart at cuttingline
         # front side seam AS
-        AS1 = rPointP(A, 'AS1', i) # use side hip
+        AS1 = rPointP(A, 'AS1', i) 
         AS2 = rPointP(A, 'AS2', o)
         AS3 = rPointP(A, 'AS3', q)
         # front side seam control points cAS
         # control points next to AS1 form a vertical line at AS1.x, control point nearest AS2 is along line of hem to knee so that seam curves continuously into straight seam from knee to hem
-        distance = lineLengthP(AS1, AW5)/3.0
+        distance = lineLengthP(AS1, AW5)/4.0 # shorter control point line = flatter curve between waist & hip
         AS1_c2 = cPoint(A, 'AS1_c2', AS1.x, AS1.y - distance) # b/w AW5 & AS1
         angle = angleOfLineP(AW5, AS1_c2)
         AS1_c1 = cPointP(A, 'AS1_c1', pntFromDistanceAndAngleP(AW5, distance, angle)) # b/w AW5 & AS1
@@ -188,10 +203,10 @@ class PatternDesign():
         pants.add(PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0))
         B = pants.back
 
-        top = 0.0
-        crotch = 0.0
-        center = seamEase + cd.back_crotch_extension
-        width = center + (max(cd.back_hip_arc, cd.back_waist_arc) + seamEase)
+        top = 0.001
+        crotch = 0.001
+        center = cd.back_crotch_extension
+        width = center + max(cd.back_hip_arc, cd.back_waist_arc)
         side = width
         creaseLine = width/2.0
 
@@ -201,12 +216,12 @@ class PatternDesign():
         Side = rPointP(B, 'Side', Width)
 
         a = pPoint(center + (1+(1/8.))*IN, top - (1.*IN)) # center waist
-        b = pPoint(center + cd.back_waist_arc + backDartWidth + 2*seamEase, top) # side waist
+        b = pPoint(center + cd.back_waist_arc + backDartWidth, top) # side waist
         pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0)
         c = pPoint(pnt.x, pnt.y + (1/4.0)*IN) # dart center at waist along line ab
         d = pPoint(c.x - backDartWidth/2.0, c.y) # dart inside at waist
         e = pPoint(c.x + backDartWidth/2.0, c.y) # dart outside at waist
-        f = pPoint(c.x, c.y + frontDartLength) # dart point
+        f = pPoint(c.x, c.y + backDartLength) # dart point
         angle = angleOfLineP(f, d) - angleOfVectorP(c, f, d)
         g = pntFromDistanceAndAngleP(f, backDartLength, angle) # on angle of sewn dart fold, after folded toward center
 
@@ -260,7 +275,7 @@ class PatternDesign():
         BS3 = rPointP(B, 'BS3', r) # outside hem
         # back side seam control points
         # control points at hip are vertical
-        distance = lineLengthP(BS1, BW5)/3.0
+        distance = lineLengthP(BS1, BW5)/4.0# shorter control point line = flatter curve between waist & hip
         BS1_c2 = cPoint(B, 'BS1_c2', BS1.x, BS1.y - distance) # b/w BW5 & BS1
         angle = angleOfLineP(BW5, BS1_c2)
         BS1_c1 = cPointP(B, 'BS1_c1', pntFromDistanceAndAngleP(BW5, distance, angle)) # b/w BW5 & BS1
