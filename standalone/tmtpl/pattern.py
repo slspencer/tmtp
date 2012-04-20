@@ -378,6 +378,7 @@ def midPointP(p1, p2, n=0.5):
 
 def pMidpoint(x1, y1, x2, y2, n=0.5):
     '''Accepts x1,y1,x2,y2 and 0<n<1, returns pnt'''
+    #TODO - fix nomenclature of functions - pMidPointP should be pntMidpointP, etc...or pMidpointP - for all functions
     pnt=Pnt()
     pnt.x, pnt.y=midPoint(x1, y1, x2, y2, n)
     return pnt
@@ -537,6 +538,8 @@ def pntIntersectLineCircleP(C, r, P1, P2):
     Returns an object P with number of intersection points, and up to two coordinate pairs.
     Based on paulbourke.net/geometry/sphereline/sphere_line_intersection.py, written in Python 3.2 by Campbell Barton
     """
+    #TODO - switch order of parameters C,r,P1,P2 to P1,P2,C,r
+    #TODO - add test parameter to determine which intersection should be used
 
     def square(f):
         return f * f
