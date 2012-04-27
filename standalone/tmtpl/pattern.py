@@ -23,7 +23,7 @@ import math
 import json
 import string
 import re
-from math import sin, cos, pi
+from math import sin, cos, pi, sqrt
 
 from pysvg.filter import *
 from pysvg.gradient import *
@@ -263,6 +263,7 @@ def angleOfVectorP(p1, v, p2):
     #L3 = lineLengthP(p2, p3)
     #return math.acos((L1**2 + L2**2 - L3**2)/(2 * L1 * L2))
     return abs(angleOfLineP(v, p1) - angleOfLineP(v, p2))
+    
 
 # ----------------...Calculate points with Angle and Slope..------------------------------
 
@@ -540,6 +541,7 @@ def pntIntersectLineCircleP(C, r, P1, P2):
     """
     #TODO - switch order of parameters C,r,P1,P2 to P1,P2,C,r
     #TODO - add test parameter to determine which intersection should be used
+    #TODO - doesn't work on P1-P2 vertical line - CRASHES!!!!!!
 
     def square(f):
         return f * f
@@ -551,18 +553,15 @@ def pntIntersectLineCircleP(C, r, P1, P2):
     #
     # This function returns a pointer array which first index indicates
     # the number of intersection points, followed by coordinate pairs.
-
+    
     P, p1, p2 = Pnt(),  Pnt(),  Pnt()
     intersections = 0
-
     a = square(P2.x - P1.x) + square(P2.y - P1.y)
     b = (2.0 * ((P2.x - P1.x) * (P1.x - C.x)) + ((P2.y - P1.y) * (P1.y - C.y)))
     c = (square(C.x) + square(C.y) + square(P1.x) + square(P1.y) - (2.0 * (C.x * P1.x + C.y * P1.y )) -
             square(r))
-    print 'c =', c
 
     i = b * b - 4.0 * a * c
-    print 'i =', i
 
     if i < 0.0:
         print 'no intersections'
@@ -596,36 +595,57 @@ def pntIntersectLineCircleP(C, r, P1, P2):
 def intersectCircleCircle(x0, y0, r0, x1, y1, r1):
     """
     Accepts data for two circles x1, y1, r1, x2, y2, r2
-    Returns one or two x, y pairs where circles intersect
+    Returns xi,yi,xi_prime,yi_prime pairs where circles intersect, and intersections = number of intersections
+    example: returns ax,ay,bx,by,intersections
     """
     d = lineLength(x0, y0, x1, y1) # distance b/w circle centers
     dx, dy = (x1 - x0), (y1 - y0) # negate y b/c canvas increases top to bottom
     if (d == 0):
         print 'center of both circles are the same...intersectCircleCircle()'
+        intersections = 0
     elif (d > (r0 + r1)):
         print 'circles do not intersect ...intersectCircleCircle()'
+        intersections = 0
     elif (d < abs(r0 - r1)):
         print 'one circle is within the other ...intersectCircleCircle()'
+        intersections = 0
     else:
         #'I' is the point where the line through the circle centers crosses the line between the intersection points, creating 2 right triangles
           a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d)
+          intersections = 2
     x2 = x0 + (dx * a/d)
     y2 = y0 + (dy * a/d)
     h = math.sqrt((r0*r0) - (a*a))
     rx = -dy * (h/d)
-    ry = dx * (h/d)
+    ry = dx * (h/d) 
     xi = x2 + rx
     xi_prime = x2 - rx
     yi = y2 + ry
     yi_prime = y2 - ry
-    return xi, yi, xi_prime, yi_prime
+    return xi, yi, xi_prime, yi_prime, intersections
 
 def intersectCircleCircleP(C1, r1, C2, r2):
     """
     Accepts C1,r1,C2,r2 where C1 & C2 are point objects
-    Returns P1 & P2 where the two circles intersect
+    Returns x1,y1,x2,y2 where the two circles intersect
     """
     return intersectCircleCircle(C1.x, C1.y, r1, C2.x, C2.y, r2)
+    
+def pntIntersectCircleCircleP(C1, r1, C2, r2):
+    """
+    Accepts C1,r1,C2,r2 where C1 & C2 are point objects
+    Returns an object P, where P.intersections = number of intersections, and P.p1 & P.p2are point objects where the two circles intersect
+    """
+    P, p1, p2 = Pnt(),  Pnt(),  Pnt()
+    intersections = 0
+    x1, y1, x2, y2, intersections = intersectCircleCircle(C1.x, C1.y, r1, C2.x, C2.y, r2)
+    p1 = Pnt(x1, y1)
+    p2 = Pnt(x2, y2)
+    P.intersections = intersections
+    P.p1 = p1
+    P.p2 = p2
+    return P    
+    
 
 # ----------------...Calculate control points..------------------------------
 
