@@ -200,6 +200,9 @@ class PatternDesign():
         addCuttingLine(A, cuttingLine)
 
         # pants Back 'B'
+        #TODO - change angle of dart to be perpendicular to waistline
+        #TODO - use side_rise and back_rise to create reference grid
+        #TODO - use back_hip_length and crotch waist-to-waist measurements
         pants.add(PatternPiece('pattern', 'back', letter='B', fabric=2, interfacing=0, lining=0))
         B = pants.back
 
