@@ -24,7 +24,7 @@
 #import re
 
 import math
-from pattern import Point, lineLengthP, pointAlongLine, pointFromDistanceAndAngle, angleFromSlope
+from pattern import Point, lineLengthP, pntOnLine, pntFromDistanceAndAngle
 from tmtpl.constants import *
 
 
@@ -91,7 +91,7 @@ def GetCurveControlPoints(name, knots):
 
         pnt = Point('reference', '%s-scp%d' % (name, scpnum), styledef = 'controlpoint_style')
         pnt.x = 2 * firstControlPoints[0].x - knots[0].x
-        pnt.y = 2 *	firstControlPoints[0].y - knots[0].y
+        pnt.y = 2 * firstControlPoints[0].y - knots[0].y
         secondControlPoints[0] = pnt
         scpnum = scpnum + 1
         return (firstControlPoints, secondControlPoints)
@@ -180,12 +180,12 @@ def FudgeControlPoints(knots, fcp, scp, percentage):
 
         # Now calculate the desired length and change the control point locations
         dll = lll * percentage
-        x, y = pointAlongLine(knots[i].x, knots[i].y, fcp[i].x, fcp[i].y, dll, rotation = 0)
+        x, y = pntOnLine(knots[i].x, knots[i].y, fcp[i].x, fcp[i].y, dll, rotation = 0)
         fcp[i].x = x
         fcp[i].y = y
 
         dll = lll * percentage
-        x, y = pointAlongLine(knots[i+1].x, knots[i+1].y, scp[i].x, scp[i].y, dll, rotation = 0)
+        x, y = pntOnLine(knots[i+1].x, knots[i+1].y, scp[i].x, scp[i].y, dll, rotation = 0)
         scp[i].x = x
         scp[i].y = y
 
