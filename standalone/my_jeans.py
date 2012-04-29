@@ -59,7 +59,7 @@ class PatternDesign():
 
         top = 0.0
         side = 0.0
-        center =  cd.front_hip_arc
+        center =  cd.front_hip_width*0.5
         width = center + cd.front_crotch_extension
         creaseLine = width/2.0
 
@@ -247,7 +247,7 @@ class PatternDesign():
         top = 0.0
         crotch = 0.0
         center = seamEase + cd.back_crotch_extension
-        width = center + cd.back_hip_arc + seamEase
+        width = center + cd.back_hip_width*0.5 + seamEase
         side = width
         creaseLine = width/2.0
 
@@ -257,7 +257,7 @@ class PatternDesign():
         Side = rPointP(B, 'Side', Width)
 
         a = pPoint(center + (1+(1/8.))*IN, top - (1.*IN)) # center waist
-        b = pPoint(center + cd.back_waist_arc + backDartWidth + 2*seamEase, top) # side waist
+        b = pPoint(center + cd.back_waist_width*0.5 + backDartWidth + 2*seamEase, top) # side waist
         pnt = pntOnLineP(a, b, lineLengthP(a, b)/2.0)
         c = pPoint(pnt.x, pnt.y + (1/4.0)*IN) # dart center at waist along line ab
         d = pPoint(c.x - backDartWidth/2.0, c.y) # dart inside at waist
@@ -378,7 +378,7 @@ class PatternDesign():
         C = pants.Waistfacing
 
         top = 0.0
-        width = cd.front_waist_arc + cd.back_waist_arc
+        width = cd.front_waist_width*0.5 + cd.back_waist_width*0.5
 
         # Waistfacing front center section
         # lower section
