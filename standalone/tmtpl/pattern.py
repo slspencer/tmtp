@@ -598,7 +598,10 @@ def intersectCircleCircle(x0, y0, r0, x1, y1, r1):
     Returns xi,yi,xi_prime,yi_prime pairs where circles intersect, and intersections = number of intersections
     example: returns ax,ay,bx,by,intersections
     """
+    print 'ro', r0
+    print 'r1', r1
     d = lineLength(x0, y0, x1, y1) # distance b/w circle centers
+    print 'd', d
     dx, dy = (x1 - x0), (y1 - y0) # negate y b/c canvas increases top to bottom
     if (d == 0):
         print 'center of both circles are the same...intersectCircleCircle()'
@@ -608,6 +611,8 @@ def intersectCircleCircle(x0, y0, r0, x1, y1, r1):
         intersections = 0
     elif (d < abs(r0 - r1)):
         print 'one circle is within the other ...intersectCircleCircle()'
+        print 'r0 - r1 =',  (r0 - r1), abs(r0 - r1)
+        print 'd < abs(r0 - r1)?',  (d<abs(r0 - r1))
         intersections = 0
     else:
         #'I' is the point where the line through the circle centers crosses the line between the intersection points, creating 2 right triangles
