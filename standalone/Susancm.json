@@ -76,12 +76,12 @@
               "type":"float",
               "gui_text":"Back Bust Width"
               },
-      "front_chest_narrow_width": {
+      "front_across_chest_width": {
               "value":"38",
               "type":"float",
               "gui_text":"Front Narrow Chest Width-->Narrowest point between arms across front"
               },
-      "front_chest_narrow_height": {
+      "front_across_chest_height": {
               "value":"8.5",
               "type":"float",
               "gui_text":"Front Narrow Chest Height"
@@ -192,8 +192,8 @@
                 "type":"float",
                 "gui_text":"Front Waist, Side-to-Side"
                 },
-      "front_waist_arc": {
-              "value":"21.75",
+      "front_waist_width": {
+              "value":"43.5",
               "type":"float",
               "gui_text":"Front Waist Arc, Center-to-Side"
               },
@@ -207,8 +207,8 @@
                 "type":"float",
                 "gui_text":"Front Waist, Side-to-Side"
                 },
-      "back_waist_arc": {
-            "value":"21.75",
+      "back_waist_width": {
+            "value":"43.5",
               "type":"float",
               "gui_text":"Back Waist Arc, Center-to-Side"
               },
@@ -228,8 +228,8 @@
               "type":"float",
               "gui_text":"Front Hip, Side-to-Side"
               },              
-      "front_hip_arc": {
-              "value":"28",
+      "front_hip_width": {
+              "value":"51",
               "type":"float",
               "gui_text":"Front Hip Arc, Center-to-Side"
               },
@@ -243,8 +243,8 @@
               "type":"float",
               "gui_text":"Back Hip, Side-to-Side"
               },              
-        "back_hip_arc": {
-                "value":"31",
+        "back_hip_width": {
+                "value":"62",
               "type":"float",
               "gui_text":"Back Hip Arc, Center-to-Side"
               },
