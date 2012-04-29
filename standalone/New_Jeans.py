@@ -94,8 +94,8 @@ class PatternDesign():
 		HEMLINE=RISELINE + cd.inside_leg
 		KNEELINE=RISELINE+(abs(HEMLINE-RISELINE)/2.0)-(1.0*IN)
 
-		FRONT_WAIST_ARC=(cd.front_waist_arc)
-		FRONT_HIP_ARC=(cd.front_hip_arc)
+		FRONT_WAIST_ARC=(cd.front_waist_width*0.5)
+		FRONT_HIP_ARC=(cd.front_hip_width*0.5)
 		BACK_WAIST_ARC=(cd.waist_circumference - (2*FRONT_WAIST_ARC))/2.0
 		BACK_WAIST_WIDTH=(BACK_WAIST_ARC)
 		BACK_HIP_ARC=(cd.hip_circumference - (2*FRONT_HIP_ARC))/2.0
