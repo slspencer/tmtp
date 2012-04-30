@@ -47,7 +47,7 @@
               },
 
       "bust_circumference": {
-              "value":"103",
+              "value":"98.5",
               "type":"float",
               "gui_text":"Bust Circumference"
               },
@@ -67,7 +67,7 @@
               "gui_text":"Front Bust Points Distance"
               },
       "back_bust_width": {
-              "value":"49.5",
+              "value":"44.5",
               "type":"float",
               "gui_text":"Back Bust Width"
               },
@@ -77,7 +77,7 @@
               "gui_text":"Back Bust Width"
               },
       "front_across_chest_width": {
-              "value":"38",
+              "value":"41.5",
               "type":"float",
               "gui_text":"Front Narrow Chest Width-->Narrowest point between arms across front"
               },
@@ -86,12 +86,12 @@
               "type":"float",
               "gui_text":"Front Narrow Chest Height"
               },
-        "back_chest_narrow_width": {
+        "back_across_chest_width": {
               "value":"38",
               "type":"float",
               "gui_text":"Back Narrow Chest Width --> Narrowest point between arms across back"
               },
-      "back_chest_narrow_height": {
+      "back_across_chest_height": {
               "value":"16.5",
               "type":"float",
               "gui_text":"Chest Narrow Height - from Nape to Back Chest Narrow line"
@@ -183,17 +183,17 @@
               },
 
       "waist_circumference": {
-              "value":"87",
+              "value":"88.5",
               "type":"float",
               "gui_text":"Waist Circumference"
               },
         "front_waist": {
-                "value":"43.5",
+                "value":"47.5",
                 "type":"float",
                 "gui_text":"Front Waist, Side-to-Side"
                 },
       "front_waist_width": {
-              "value":"43.5",
+              "value":"47.5",
               "type":"float",
               "gui_text":"Front Waist Arc, Center-to-Side"
               },
@@ -203,12 +203,12 @@
               "gui_text":"Front Waist Length"
               },     
         "back_waist": {
-                "value":"43.5",
+                "value":"41.0",
                 "type":"float",
                 "gui_text":"Front Waist, Side-to-Side"
                 },
       "back_waist_width": {
-            "value":"43.5",
+            "value":"41.0",
               "type":"float",
               "gui_text":"Back Waist Arc, Center-to-Side"
               },
