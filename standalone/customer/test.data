@@ -1,0 +1,597 @@
+    - measureunit: 
+        longname:Units of measurement, inches (in) or centimeters (cm) 
+        type:choice
+        output:option
+        choices:cm, inches
+        value:cm
+ 
+Neck:
+    - neck_circumference: 
+        longname:Neck Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 36
+        increment: 1
+        decimals: 1              
+    - neck_width: 
+        longname:Neck Width
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 13.97
+        increment: 1
+        decimals: 1
+ 
+Underarm: 
+    - underarm_circumference: 
+        longname:Underarm Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 96
+        increment: 1
+        decimals: 1              
+    - front_underarm_width: 
+        longname:Front Underarm Width
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 45.5
+        increment: 1
+        decimals: 1              
+    - front_underarm_height: 
+        longname:Front Underarm Height
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 13
+        increment: 1
+        decimals: 1              
+    - back_underarm_width: 
+        longname:Back Underarm Width            
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 50.5
+        increment: 1
+        decimals: 1                        
+    - back_underarm_height: 
+        longname:Back Underarm Height
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 18.5
+        increment: 1
+        decimals: 1
+
+Bust/Chest:
+    -  chest_circumference: 
+        longname:Bust Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 103
+        increment: 1
+        decimals: 1                  
+    - front_chest_width: 
+        longname:Front Chest Width--Widest point across Chest/Bust
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 53.5
+        increment: 1
+        decimals: 1              
+    - front_chest_height: 
+        longname:Chest Height
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 19.5
+        increment: 1
+        decimals: 1               
+    - front_chest_points_distance: 
+        longname:Front Chest Points Distance
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 20
+        increment: 1
+        decimals: 1               
+    - back_chest_height: 
+        longname:Back Chest Width
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 19.5
+        increment: 1
+        decimals: 1                     
+    - front_across_chest_width: 
+        longname:Front Across Chest Width-->Narrowest point across back chest=widest point of back armscye
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 35.5
+        increment: 1
+        decimals: 1               
+    - front_across_chest_height: 
+        longname:Front Across Chest Height
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 8.5
+        increment: 1
+        decimals: 1               
+    - back_across_chest: 
+        longname:Width of narrowest point between Armscyes across Back
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 26.5
+        increment: 1
+        decimals: 1               
+    - back_across_chest_height: 
+        longname:From Nape to Back Across Chest Width line
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 16.5
+        increment: 1
+        decimals: 1 
+ 
+Waist:
+    - waist_circumference:
+        longname:Waist Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 89
+        increment: 1
+        decimals: 1          
+    - front_waist:
+        longname:Front Waist Width
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 53
+        increment: 1
+        decimals: 1        
+    - front_waist_length: 
+        longname:Front Waist Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 40
+        increment: 1
+        decimals: 1  
+    - back_waist_length: 
+        longname:Center Back Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 41.5
+        increment: 1
+        decimals: 1   
+
+Hip:
+    - hip_circumference: 
+        longname:Hip Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 113
+        increment: 1
+        decimals: 1
+    - front_hip: 
+        longname:Front Hip, Side to Side
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 51
+        increment: 1
+        decimals: 1              
+    - front_hip_length: 
+        longname:Front Hip Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 20.5
+        increment: 1
+        decimals: 1
+    - back_hip_length: 
+        longname:Hip Height
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 23
+        increment: 1
+        decimals: 1              
+    - side_hip_length: 
+        longname:Hip Height
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 25
+        increment: 1
+        decimals: 1              
+    - pelvic_distance:
+        longname:Distance between pelvic bones
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 20
+        increment: 1
+        decimals: 1
+        
+Rise:
+    - front_rise: 
+        longname:Front Rise
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value:24.5
+        increment: 1
+        decimals: 1              
+    - side_rise: 
+        longname:Side Rise
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 26.5
+        increment: 1
+        decimals: 1
+    - back_rise: 
+        longname:Back Rise
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 29
+        increment: 1
+        decimals: 1   
+  
+Crotch:
+    - crotch_length
+        longname:Crotch Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 75
+        increment: 1
+        decimals: 1 
+    - front_crotch_length
+        longname:Crotch Front Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 32
+        increment: 1
+        decimals: 1     
+    - crotch_extension
+        longname:Crotch Depth
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 18
+        increment: 1
+        decimals: 1     
+    - front_crotch_extension: 
+        longname:Crotch Front Deptch
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 5.05
+        increment: 1
+        decimals: 1              
+               
+Shoulder:
+    - shoulder: 
+        longname:Shoulder Seam length - Neck to highest point at end of shoulder
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 14.5
+        increment: 1
+        decimals: 1              
+ 
+Side:
+    - side: 
+        longname:Side Seam Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 20.5
+        increment: 1
+        decimals: 1              
+ 
+Armscye:
+    - armscye_height: 
+        longname:Armscye Height
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 16.5
+        increment: 1
+        decimals: 1         
+    - armscye_width: 
+        longname:Armsye Height 
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 15
+        increment: 1
+        decimals: 1            
+ 
+Arm:
+    - overarm_length: 
+        longname:Overarm Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 59
+        increment: 1
+        decimals: 1          
+    - underarm_length: 
+        longname:Underarm Length
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 49.5
+        increment: 1
+        decimals: 1        
+    - arm_circumference: 
+        longname:Arm Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 29
+        increment: 1
+        decimals: 1              
+    - elbow_circumference: 
+        longname:Elbow Circumferenc
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 27
+        increment: 1
+        decimals: 1              
+    - wrist_circumference: 
+        longname:Wrist Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 15.5
+        increment: 1
+        decimals: 1              
+    - hand_circumference: 
+        longname:Hand Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 21
+        increment: 1
+        decimals: 1            
+  
+
+Leg:
+    - outseam: 
+        longname:Outside Leg length--> Waist to Floor
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 110
+        increment: 1
+        decimals: 1              
+    - inseam: 
+        longname:Inside Leg length-->Crotch to Floor
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 80
+        increment: 1
+        decimals: 1 
+
+Thigh:        
+    - thigh_circumference: 
+        longname:Thigh Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 66.5
+        increment: 1
+        decimals: 1     
+    - front_thigh_width: 
+        longname:Front Thigh Width (Inseam to Outseam)
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 28
+        increment: 1
+        decimals: 1 
+    - front_thigh_in: 
+        longname:Front Thigh Width In (creaseline to inseam)
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 13.5
+        increment: 1
+        decimals: 1 
+    - front_thigh_width_out: 
+        longname:Front Thigh Width Out (creaseline to outseam)
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 15.5
+        increment: 1
+        decimals: 1 
+    - back_thigh_width: 
+        longname:Back Thigh Width (Inseam to Outseam)
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 38.5
+        increment: 1
+        decimals: 1 
+    - back_thigh_width_in: 
+        longname:Back Thigh Width in (creaseline to inseam)
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 18
+        increment: 1
+        decimals: 1                    
+    - back_thigh_width_out: 
+        longname:Back Thigh Width Out (creaseline to outseam)
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 20.5
+        increment: 1
+        decimals: 1
+  
+Knee/Calve/Ankle/Foot :
+    - knee_circumference: 
+        longname:Knee Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 44
+        increment: 1
+        decimals: 1               
+    - calve_circumference: 
+        longname:Calve Circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 39
+        increment: 1
+        decimals: 1              
+    - ankle_circumference: 
+        longname:Ankle circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 23
+        increment: 1
+        decimals: 1           
+    - foot_circumference: 
+        longname:Foot circumference
+        type: number
+        output: option_with_value
+        unit: cm
+        min: 1
+        max: 1000
+        value: 30
+        increment: 1
+        decimals: 1              
+              
+    
