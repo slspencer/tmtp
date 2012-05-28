@@ -42,12 +42,10 @@
     },
     "foldline_style": {
         "fill": "none",
-        "stroke": "green",
+        "stroke": "darkgreen",
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
-        "stroke-width": "3",
-        "stroke-dasharray": "6,6",
-        "stroke-dashoffset": "0"
+        "stroke-width": "6"
     },
     "grainline_style": {
         "fill": "none",
@@ -81,6 +79,13 @@
         "stroke-miterlimit": "4",
         "stroke-width": "4"
     },
+    "markingline_style": {
+        "fill": "none",
+        "stroke": "lightgreen",
+        "stroke-linejoin": "miter",
+        "stroke-miterlimit": "4",
+        "stroke-width": "5"
+    },    
     "placement_style": {
         "fill": "none",
         "stroke": "gray",
