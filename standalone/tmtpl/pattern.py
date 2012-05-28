@@ -153,6 +153,12 @@ def stitchLinePath( name, label,  pathSVG, transform = '' ):
     Creates stitch line on pattern layer, other than cuttingline, seamline, or hemline
     """
     return Path('pattern', name, label, pathSVG, 'dartline_style',transform)
+    
+def foldLinePath(name, label, pathSVG, transform='' ):
+    """
+    Creates fold line on pattern layer, other than dartline, cuttingline, seamline, or hemline
+    """
+    return Path('pattern', name, label, pathSVG, 'foldline_style', transform)
 
 def grainLinePath(name, label, pnt1, pnt2,  transform=''):
     """
@@ -211,10 +217,18 @@ def addCuttingLine(parent, path):
 def addGrainLine(parent, pnt1, pnt2):
     parent.add(grainLinePath('grainline', parent.name + ' Grainline', pnt1, pnt2))
     return
+    
+def addFoldLine(parent, path):
+    parent.add(foldLinePath('foldline', parent.name + ' Foldline', path))
+    return    
 
 def addDartLine(parent, path):
     parent.add(Path('pattern', 'dartline', parent.name + ' Dartline', path, 'dartline_style'))
     return
+    
+def addMarkingLine(parent, path):
+    parent.add(Path('pattern', 'markingline', parent.name + ' Markingline', path, 'markingline_style'))
+    return    
 
 # ----------------...Calculate Angle and Slope..------------------------------
 
@@ -377,14 +391,14 @@ def midPointP(p1, p2, n=0.5):
     '''Accepts p1 & p2 and 0<n<1, returns x, y'''
     return midPoint(p1.x,  p1.y,  p2.x,  p2.y, n)
 
-def pMidpoint(x1, y1, x2, y2, n=0.5):
+def pntMidPoint(x1, y1, x2, y2, n=0.5):
     '''Accepts x1,y1,x2,y2 and 0<n<1, returns pnt'''
     #TODO - fix nomenclature of functions - pMidPointP should be pntMidpointP, etc...or pMidpointP - for all functions
     pnt=Pnt()
     pnt.x, pnt.y=midPoint(x1, y1, x2, y2, n)
     return pnt
 
-def pMidpointP( p1, p2, n=0.5):
+def pntMidPointP( p1, p2, n=0.5):
     '''Accepts p1 & p2 and 0<n<1, returns p3'''
     pnt=Pnt()
     pnt.x,  pnt.y = midPoint(p1.x,  p1.y, p2.x,  p2.y, n)
@@ -392,19 +406,33 @@ def pMidpointP( p1, p2, n=0.5):
 
 # ----------------...Calculate intercepts given x or y..------------------------------
 
-def getYOnLineAtX(x, p1, p2):
-    #on line p1-p2, find x given y
-    m=(p1.y - p2.y)/(p1.x-p2.x)
-    b=p2.y - (m*p2.x)
-    y=(x*m)-b
-    return (x, y)
+def pntOnLineAtXP(p1, p2, x):
+    #on line p1-p2,  given x find y
+    pnt = Pnt()
+    pnt.x = x
+    if (p1.x == p2.x): # vertical line
+        print  'infinite values of y on vertical line'
+        return None
+    else:
+        m = (p1.y - p2.y)/(p1.x-p2.x)
+        b = p2.y - (m*p2.x)
+        pnt.y = (x*m)-b
+        return pnt
 
-def getXOnLineAtY(y, p1, p2):
+def pntOnLineAtYP(p1, p2, y):
     #on line p1-p2, find x given y
-    m=(p1.y - p2.y)/(p1.x-p2.x)
-    b=p2.y - (m*p2.x)
-    x=(y - b)/m
-    return (x, y)
+    pnt = Pnt()
+    pnt.y = y
+    if (p1.y == p2.y) and (p1.y != y): # if horizontal line, and value y is different than horizontal line's y
+        print 'y = ', y,' not on line'
+        return None
+    elif (p1.x != p2.x): # if not vertical line
+        m = (p1.y - p2.y)/(p1.x-p2.x)
+        b = p2.y - (m*p2.x)
+        pnt.x = (y - b)/m
+    else: # if vertical line
+        pnt.x = p1.x
+    return pnt
 
 # ----------------...Calculate length..------------------------------
 
@@ -416,7 +444,63 @@ def lineLength(xstart, ystart, xend, yend):
 def lineLengthP(p1, p2):
     """Accepts two point objects and returns distance between the points"""
     return lineLength(p1.x, p1.y, p2.x, p2.y)
+    
+def curveLength(curve, t=100):
+    # accepts curve array with minimum 3 Pnt objects p with p.x & p.y values
+    # curve array can have multiple curve segements - 1st item will be a curve knot with no control points
+    # 2nd through last items will have .c1, .c2, and .knot Pnt() objects
+    # minimum number of items in curve array is 2 (1st & 2nd knots; 2nd knot has control points .c1 & .c2) where curve[0] is the first knot & curve[1] is the 2nd knot.
+    # adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.html
+    
+    numberOfDivisions = t # number of interpolations to calculate within each curve segment 
+    maxPoint = numberOfDivisions + 1
 
+    curveLength = 0.0 
+    # for each curve segment, get segmentLength & add to curveLength
+    j = 0
+    while (j <= (len(curve)  - 4)):  # 4 points per segment
+        segmentLength = 0.0
+        interpolatedPoints = interpolateCurveSegment(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], t) # P0,P1,P2,P3  -- other vocabulary: knot1, controlpoint1, controlpoint2, knot2
+        # for each interpolated line segment, get lineLength & add to segmentLength     
+        previousPoint = interpolatedPoints[0]  
+        i = 1         
+        while (i <= maxPoint):
+                p = interpolatedPoints[i/maxPoint] # use trunc() to force division result to be integer
+                segmentLength = segmentLength + lineLengthP(previousPoint, p)
+                previousPoint = p
+                i = i + 1
+        curveLength = curveLength + segmentLength
+        j = j + 3 # skip j up to P3 of the current curve segment
+
+def interpolateCurveSegment(P0, P1, P2, P3, t):
+    # accepts curve points P0,P1,P2,P3 & number of interpolations t from curveLength()
+    # P0 - knot point 1, P1 - control point 1, P2 - control point 2, P3 - knot point 2
+    # adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.htm
+
+    # calculate coefficients for two knot points (x0,y0) & (x3,y3) ;     (x1,y1) & (x2,y2) are the controlpoints. 
+    A = P3.x - (3*P2.x) + (3*P1.x) - P0.x
+    B = (3*P2.x) - (6*P1.x) + (3*P0.x)
+    C = (3*P1.x) - (3*P0.x)
+    D = P0.x
+
+    E = P3.y - (3*P2.y) + (3*P1.y) - P0.y
+    F = (3*P2.y) - (6*P1.y) + (3*P0.y)
+    G = (3*P1.y) - (3*P0.y)
+    H = P0.y
+    
+    # calculate interpolated point x & y
+    interpolatedPoints = []    
+    i = 0     
+    while (i < t):     
+            x = A*(i**3) + B*(i**2) + C*i + D
+            y = E*(i**3) + F*(i**2) + G*i + H
+            interpolatedPoints.append(Pnt(x, y))
+            print interpolatedPoints[i].x,  interpolatedPoints[i].y
+            i = i + 1
+    return interpolatedPoints
+ 
+
+        
 # ----------------...Calculate intersections..------------------------------
 
 def xyIntersectLines2(L1x1, L1y1, L1x2, L1y2, L2x1, L2y1, L2x2, L2y2):
@@ -650,6 +734,34 @@ def pntIntersectCircleCircleP(C1, r1, C2, r2):
     P.p1 = p1
     P.p2 = p2
     return P    
+    
+def pntOnCircleY(C, r, y):
+    """
+    Finds points one or two points on circle where P.y = y
+    Accepts circle center point object C, radius r, and value y
+    Returns an object P with number of intersection points, and up to two coordinate pairs.
+    Based on paulbourke.net/geometry/sphereline/sphere_line_intersection.py, written in Python 3.2 by Campbell Barton
+    """
+  
+    P1, P2 = Pnt(), Pnt()
+    P1.x, P1.y = 0.0, y
+    P2.x, P2.y = 1.0, y
+    
+    return pntIntersectLineCircleP(C, r, P1, P2)    
+    
+def pntOnCircleX(C, r, x):
+    """
+    Finds points one or two points on circle where p.x = x
+    Accepts circle center point object C, radius r, and value x
+    Returns an object P with number of intersection points, and up to two coordinate pairs.
+    Based on paulbourke.net/geometry/sphereline/sphere_line_intersection.py, written in Python 3.2 by Campbell Barton
+    """
+  
+    P1, P2 = Pnt(), Pnt()
+    P1.x, P1.y = x, 0.0
+    P2.x, P2.y = x, 1.0
+    
+    return pntIntersectLineCircleP(C, r, P1, P2)   
     
 
 # ----------------...Calculate control points..------------------------------
