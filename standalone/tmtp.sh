@@ -1,4 +1,3 @@
-cd ./src/tmtp/standalone/
 
 #./mkpattern --tooltips --client=./customer/Susancm.json --pattern=New_Jeans2.py --styles=tmtp_styles.json foo.svg
 #./mkpattern --tooltips --client=./customer/Susancm.json --pattern=my_jeans.py --styles=tmtp_styles.json foo.svg
