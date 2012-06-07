@@ -446,56 +446,62 @@ def lineLengthP(p1, p2):
     return lineLength(p1.x, p1.y, p2.x, p2.y)
     
 def curveLength(curve, t=100):
-    # accepts curve array with minimum 3 Pnt objects p with p.x & p.y values
-    # curve array can have multiple curve segements - 1st item will be a curve knot with no control points
-    # 2nd through last items will have .c1, .c2, and .knot Pnt() objects
-    # minimum number of items in curve array is 2 (1st & 2nd knots; 2nd knot has control points .c1 & .c2) where curve[0] is the first knot & curve[1] is the 2nd knot.
-    # adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.html
+    '''
+    Accepts curve array with minimum 3 Pnt objects p with p.x & p.y values
+    Curve array can have multiple curve segements - 1st item will be a curve knot with no control points
+    2nd through last items will have .c1, .c2, and .knot Pnt() objects
+    Minimum number of items in curve array is 2 (1st & 2nd knots; 2nd knot has control points .c1 & .c2) where curve[0] is the first knot & curve[1] is the 2nd knot.
+    Adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.html
+    '''
     
-    numberOfDivisions = t # number of interpolations to calculate within each curve segment 
+    numberOfDivisions = t # number of interpolations to calculate within each curve 
     maxPoint = numberOfDivisions + 1
 
-    curveLength = 0.0 
     # for each curve segment, get segmentLength & add to curveLength
+    curveLength = 0.0     
     j = 0
-    while (j <= (len(curve)  - 4)):  # 4 points per segment
+    while (j <= (len(curve)  - 4)):  # 4 points per segment P0 P1 P2 P3, j can't go higher than the 1st point of the last curve (len(curve) - 3), plus subtract 1st P0 in curve array - it's an extra point that doesn't an overlap with another curve.
         segmentLength = 0.0
-        interpolatedPoints = interpolateCurveSegment(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], t) # P0,P1,P2,P3  -- other vocabulary: knot1, controlpoint1, controlpoint2, knot2
-        # for each interpolated line segment, get lineLength & add to segmentLength     
+        interpolatedPoints = interpolateCurveSegment(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], t) 
         previousPoint = interpolatedPoints[0]  
-        i = 1         
-        while (i <= maxPoint):
-                p = interpolatedPoints[i/maxPoint] # use trunc() to force division result to be integer
+        i = 1 
+        while (i <= t):
+                p = interpolatedPoints[i] 
                 segmentLength = segmentLength + lineLengthP(previousPoint, p)
                 previousPoint = p
                 i = i + 1
         curveLength = curveLength + segmentLength
-        j = j + 3 # skip j up to P3 of the current curve segment
+        j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve 
+    return curveLength
 
 def interpolateCurveSegment(P0, P1, P2, P3, t):
-    # accepts curve points P0,P1,P2,P3 & number of interpolations t from curveLength()
-    # P0 - knot point 1, P1 - control point 1, P2 - control point 2, P3 - knot point 2
-    # adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.htm
-
-    # calculate coefficients for two knot points (x0,y0) & (x3,y3) ;     (x1,y1) & (x2,y2) are the controlpoints. 
+    ''' 
+    Accepts curve points P0,P1,P2,P3 & number of interpolations t from curveLength()
+    P0 - knot point 1, P1 - control point 1, P2 - control point 2, P3 - knot point 2
+    Adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.htm
+    '''
+    
+    # calculate coefficients for two knot points P0 & P3 ;     P1 & P2 are the controlpoints. 
+    # x coefficients
     A = P3.x - (3*P2.x) + (3*P1.x) - P0.x
     B = (3*P2.x) - (6*P1.x) + (3*P0.x)
     C = (3*P1.x) - (3*P0.x)
     D = P0.x
-
+    # y coefficients
     E = P3.y - (3*P2.y) + (3*P1.y) - P0.y
     F = (3*P2.y) - (6*P1.y) + (3*P0.y)
     G = (3*P1.y) - (3*P0.y)
     H = P0.y
     
-    # calculate interpolated point x & y
+    # calculate interpolated points
     interpolatedPoints = []    
-    i = 0     
-    while (i < t):     
-            x = A*(i**3) + B*(i**2) + C*i + D
-            y = E*(i**3) + F*(i**2) + G*i + H
+    maxPoint = float(t)
+    i = 0
+    while ( i <= t):
+            j = i/maxPoint # j can't be an integer, i/t is an integer..always 0.
+            x = A*(j**3) + B*(j**2) + C*j + D
+            y = E*(j**3) + F*(j**2) + G*j + H
             interpolatedPoints.append(Pnt(x, y))
-            print interpolatedPoints[i].x,  interpolatedPoints[i].y
             i = i + 1
     return interpolatedPoints
  
