@@ -445,30 +445,23 @@ def lineLengthP(p1, p2):
     """Accepts two point objects and returns distance between the points"""
     return lineLength(p1.x, p1.y, p2.x, p2.y)
     
-def curveLength(curve, t=100):
+def curveLength(curve, n=100):
     '''
-    Accepts curve array with minimum 3 Pnt objects p with p.x & p.y values
-    Curve array can have multiple curve segements - 1st item will be a curve knot with no control points
-    2nd through last items will have .c1, .c2, and .knot Pnt() objects
-    Minimum number of items in curve array is 2 (1st & 2nd knots; 2nd knot has control points .c1 & .c2) where curve[0] is the first knot & curve[1] is the 2nd knot.
+    Accepts curve array with a minimum of four Pnt objects P0,P1,P2,P3 (knot1, controlpoint1,controlpoint2,knot2).
+    Each curve after the first will use P3 from the previous curve as it's P0, and use it's own P1,P2,P3
+    n is the number to subdivide each curve for calculating the interpolated points and curve length.
     Adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.html
     '''
     
-    numberOfDivisions = t # number of interpolations to calculate within each curve 
-    maxPoint = numberOfDivisions + 1
-
-    # for each curve segment, get segmentLength & add to curveLength
     curveLength = 0.0     
     j = 0
-    while (j <= (len(curve)  - 4)):  # 4 points per segment P0 P1 P2 P3, j can't go higher than the 1st point of the last curve (len(curve) - 3), plus subtract 1st P0 in curve array - it's an extra point that doesn't an overlap with another curve.
+    while (j <= (len(curve)  - 4)):  # for each curve, get segmentLength & add to curveLength
+        interpolatedPoints = interpolateCurveSegment(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], n)  #interpolate this curve
+        # add up lengths between the interpolated points
         segmentLength = 0.0
-        interpolatedPoints = interpolateCurveSegment(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], t) 
-        previousPoint = interpolatedPoints[0]  
         i = 1 
-        while (i <= t):
-                p = interpolatedPoints[i] 
-                segmentLength = segmentLength + lineLengthP(previousPoint, p)
-                previousPoint = p
+        while (i <= n): 
+                segmentLength = segmentLength + lineLengthP(interpolatedPoints[i-1], interpolatedPoints[i]) #length from previous point to current point
                 i = i + 1
         curveLength = curveLength + segmentLength
         j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve 
