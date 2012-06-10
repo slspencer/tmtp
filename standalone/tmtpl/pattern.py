@@ -23,6 +23,7 @@ import math
 import json
 import string
 import re
+import random
 from math import sin, cos, pi, sqrt
 
 from pysvg.filter import *
@@ -153,7 +154,7 @@ def stitchLinePath( name, label,  pathSVG, transform = '' ):
     Creates stitch line on pattern layer, other than cuttingline, seamline, or hemline
     """
     return Path('pattern', name, label, pathSVG, 'dartline_style',transform)
-    
+
 def foldLinePath(name, label, pathSVG, transform='' ):
     """
     Creates fold line on pattern layer, other than dartline, cuttingline, seamline, or hemline
@@ -217,18 +218,18 @@ def addCuttingLine(parent, path):
 def addGrainLine(parent, pnt1, pnt2):
     parent.add(grainLinePath('grainline', parent.name + ' Grainline', pnt1, pnt2))
     return
-    
+
 def addFoldLine(parent, path):
     parent.add(foldLinePath('foldline', parent.name + ' Foldline', path))
-    return    
+    return
 
 def addDartLine(parent, path):
     parent.add(Path('pattern', 'dartline', parent.name + ' Dartline', path, 'dartline_style'))
     return
-    
+
 def addMarkingLine(parent, path):
     parent.add(Path('pattern', 'markingline', parent.name + ' Markingline', path, 'markingline_style'))
-    return    
+    return
 
 # ----------------...Calculate Angle and Slope..------------------------------
 
@@ -255,7 +256,7 @@ def degreeOfAngle(angle):
 
 def angleOfDegree(degree):
     return degree * math.pi/180.0
-    
+
 def angleOfSlope(rise, run):
     """Accepts rise, run inputs and returns angle in radians. Uses atan2.   """
     return math.atan2(rise, run )
@@ -277,7 +278,7 @@ def angleOfVectorP(p1, v, p2):
     #L3 = lineLengthP(p2, p3)
     #return math.acos((L1**2 + L2**2 - L3**2)/(2 * L1 * L2))
     return abs(angleOfLineP(v, p1) - angleOfLineP(v, p2))
-    
+
 
 # ----------------...Calculate points with Angle and Slope..------------------------------
 
@@ -497,10 +498,83 @@ def interpolateCurveSegment(P0, P1, P2, P3, t):
             interpolatedPoints.append(Pnt(x, y))
             i = i + 1
     return interpolatedPoints
- 
 
-        
-# ----------------...Calculate intersections..------------------------------
+def interpolateBezierCurve(P0, P1, P2, P3, t=100):
+
+    '''
+    Accepts parameters for one bezier curve as P0, P1, P2, P3 where P0 & P3 are knot points, and P1 & P2 are control points
+    Returns curvePoints[] array of interpolated points along curve
+    based on work by Gernot Hoffmann - http://www.antigrain.com/research/bezier_interpolation/index.html
+    '''
+
+    curvePoints = []
+    NUM_STEPS = t - 1
+
+    x0, y0 = P0.x, P0.y
+    x1, y1 = P1.x, P1.y
+    x2, y2 = P2.x, P2.y
+    x3, y3 = P3.x, P3.y
+
+    dx0 = x1 - x0
+    dy0 = y1 - y0
+    dx1 = x2 - x1
+    dy1 = y2 - y1
+    dx2 = x3 - x2
+    dy2 = y3 - y2
+
+    subdiv_step  = 1.0 / (NUM_STEPS + 1)
+    subdiv_step2 = subdiv_step*subdiv_step
+    subdiv_step3 = subdiv_step*subdiv_step*subdiv_step
+
+    pre1 = 3.0 * subdiv_step
+    pre2 = 3.0 * subdiv_step2
+    pre4 = 6.0 * subdiv_step2
+    pre5 = 6.0 * subdiv_step3
+
+    tmp1x = x0 - x1 * 2.0 + x2
+    tmp1y = y0 - y1 * 2.0 + y2
+
+    tmp2x = (x1 - x2)*3.0 - x0 + x3
+    tmp2y = (y1 - y2)*3.0 - y0 + y3
+
+    fx = x0
+    fy = y0
+
+    dfx = (x1 - x0)*pre1 + tmp1x*pre2 + tmp2x*subdiv_step3
+    dfy = (y1 - y0)*pre1 + tmp1y*pre2 + tmp2y*subdiv_step3
+
+    ddfx = tmp1x*pre4 + tmp2x*pre5
+    ddfy = tmp1y*pre4 + tmp2y*pre5
+
+    dddfx = tmp2x*pre5
+    dddfy = tmp2y*pre5
+
+    pnt = Pnt(x0, y0)
+    curvePoints.append(pnt) # 1st point is 1st knot P0
+    print '0', curvePoints[0].x,  curvePoints[0].y
+    #step = NUM_STEPS
+    i = 1
+    while (i <= NUM_STEPS):
+        fx   = fx + dfx
+        fy   = fy + dfy
+        dfx  = dfx + ddfx
+        dfy  = dfy + ddfy
+        ddfx = ddfx + dddfx
+        ddfy = ddfy + dddfy
+        pnt = Pnt(fx, fy)
+        curvePoints.append(pnt)
+        print i, curvePoints[i].x,  curvePoints[i].y
+        i = i + 1
+
+
+    pnt = Pnt(x3, y3)
+    curvePoints.append(pnt) # Last point is 2nd knot P3
+    print i, curvePoints[i].x,  curvePoints[i].y
+
+
+    return curvePoints
+
+# ----------------...Calculate intersections...------------------------------
 
 def xyIntersectLines2(L1x1, L1y1, L1x2, L1y2, L2x1, L2y1, L2x2, L2y2):
     L1startx = float(L1x1)
@@ -636,7 +710,7 @@ def pntIntersectLineCircleP(C, r, P1, P2):
     #
     # This function returns a pointer array which first index indicates
     # the number of intersection points, followed by coordinate pairs.
-    
+
     P, p1, p2 = Pnt(),  Pnt(),  Pnt()
     intersections = 0
     a = square(P2.x - P1.x) + square(P2.y - P1.y)
@@ -705,7 +779,7 @@ def intersectCircleCircle(x0, y0, r0, x1, y1, r1):
     y2 = y0 + (dy * a/d)
     h = math.sqrt((r0*r0) - (a*a))
     rx = -dy * (h/d)
-    ry = dx * (h/d) 
+    ry = dx * (h/d)
     xi = x2 + rx
     xi_prime = x2 - rx
     yi = y2 + ry
@@ -718,7 +792,7 @@ def intersectCircleCircleP(C1, r1, C2, r2):
     Returns x1,y1,x2,y2 where the two circles intersect
     """
     return intersectCircleCircle(C1.x, C1.y, r1, C2.x, C2.y, r2)
-    
+
 def pntIntersectCircleCircleP(C1, r1, C2, r2):
     """
     Accepts C1,r1,C2,r2 where C1 & C2 are point objects
@@ -732,8 +806,8 @@ def pntIntersectCircleCircleP(C1, r1, C2, r2):
     P.intersections = intersections
     P.p1 = p1
     P.p2 = p2
-    return P    
-    
+    return P
+
 def pntOnCircleY(C, r, y):
     """
     Finds points one or two points on circle where P.y = y
@@ -741,13 +815,13 @@ def pntOnCircleY(C, r, y):
     Returns an object P with number of intersection points, and up to two coordinate pairs.
     Based on paulbourke.net/geometry/sphereline/sphere_line_intersection.py, written in Python 3.2 by Campbell Barton
     """
-  
+
     P1, P2 = Pnt(), Pnt()
     P1.x, P1.y = 0.0, y
     P2.x, P2.y = 1.0, y
-    
-    return pntIntersectLineCircleP(C, r, P1, P2)    
-    
+
+    return pntIntersectLineCircleP(C, r, P1, P2)
+
 def pntOnCircleX(C, r, x):
     """
     Finds points one or two points on circle where p.x = x
@@ -755,13 +829,13 @@ def pntOnCircleX(C, r, x):
     Returns an object P with number of intersection points, and up to two coordinate pairs.
     Based on paulbourke.net/geometry/sphereline/sphere_line_intersection.py, written in Python 3.2 by Campbell Barton
     """
-  
+
     P1, P2 = Pnt(), Pnt()
     P1.x, P1.y = x, 0.0
     P2.x, P2.y = x, 1.0
-    
-    return pntIntersectLineCircleP(C, r, P1, P2)   
-    
+
+    return pntIntersectLineCircleP(C, r, P1, P2)
+
 
 # ----------------...Calculate control points..------------------------------
 
