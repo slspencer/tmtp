@@ -3,21 +3,18 @@
 # This file is part of the tmtp (Tau Meta Tau Physica) project.
 # For more information, see http://www.sew-brilliant.org/
 #
-# Copyright (C) 2010, 2011 Susan Spencer and Steve Conklin
+# Copyright (C) 2010, 2011, 2012 Susan Spencer and Steve Conklin
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# (at your option) any later version. Attribution must be given in 
+# all derived works.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 #
 # This is a standalone pattern generator which is part of the tmtp
 # project. It encapsulates the framework needed to generate an svg
@@ -295,7 +292,6 @@ class AppTemplate(StdApp):
         self.markerdefs = markers.markerlist
 
         # TODO load any user-defined markers
-
         # Now we load the actual design, which is in the form of a python module
         try:
             mod_name,file_ext = path.splitext(path.split(self.cfg['pattern_file'])[-1])

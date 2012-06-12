@@ -1,22 +1,28 @@
 #!/usr/bin/env python
 # Gridtest.py
-# Grid Test
 #
+# This file is part of the tmtp (Tau Meta Tau Physica) project.
+# For more information, see http://www.sew-brilliant.org/
+#
+# Copyright (C) 2010, 2011, 2012  Susan Spencer and Steve Conklin
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version. Attribution must be given in 
+# all derived works.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # This is a test pattern design distributed as part of the tmtp
 # open fashion design project. Use this grid to test the accuracy of your
 # printout.It contains one 20cm grid and one 8in grid
 #
-# In order to allow designers to control the licensing of their fashion
-# designs, this file is not licensed under the GPL but may be used
-# in any manner commercial or otherwise, with or without attribution.
-#
-# Designers retain ownership of designs developed with tmtp software,
-# but may choose to release any of their designs under a creative commons license:
-#  http://creativecommons.org/
-#
-#
-#
-
 
 
 from tmtpl.constants import *

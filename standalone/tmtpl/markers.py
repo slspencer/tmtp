@@ -1,6 +1,23 @@
+#!/usr/bin/python
 #
-# These markers originally from the inkscape source
+# This file is part of the tmtp (Tau Meta Tau Physica) project.
+# For more information, see http://www.sew-brilliant.org/
 #
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version. Attribution must be given in 
+# all derived works.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Attribution Notice: These markers originally came from the inkscape source
 # http://inkscape.org/
 #
 
@@ -149,7 +166,7 @@ class markers():
       <path transform="scale(0.8) translate(7,0)" style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none" d="M 0,-7.0710768 L -7.0710894,0 L 0,7.0710589 L 7.0710462,0 L 0,-7.0710768 z "/>
     </marker>""",
             'end':"""
-	<marker style="overflow:visible" id="DiamondLend" refX="0.0" refY="0.0" orient="auto" inkscape:stockid="DiamondLend">       
+    <marker style="overflow:visible" id="DiamondLend" refX="0.0" refY="0.0" orient="auto" inkscape:stockid="DiamondLend">       
       <path transform="scale(0.8) translate(-7,0)" style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none" d="M 0,-7.0710768 L -7.0710894,0 L 0,7.0710589 L 7.0710462,0 L 0,-7.0710768 z "/>
     </marker>"""
             },
