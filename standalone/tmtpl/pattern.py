@@ -435,6 +435,42 @@ def pntOnLineAtYP(p1, p2, y):
     else: # if vertical line
         pnt.x = p1.x
     return pnt
+    
+def pntsOnCurveAtX(curveArray,  x):
+    '''
+    Accepts an array 'curveArray' of bezier curves. Each bezier curve consists of  P0, P1, P2, P3 [eg knot1, controlpoint1, controlpoint2, knot2].
+    P3 of one curve is P0 of the next curve. Minimum of one bezier curve in curveArray.
+    Accepts value of x to find on curve.
+    Returns array 'intersections' which contains y values of each intersection found in order from 1st to last bezier curve in curveArray.
+    ''' 
+    intersections = []
+    xlist, ylist = []
+    pnt = Pnt()
+    j = 0
+    while (j <= (len(curveArray)  - 4)):  # for each bezier curve in curveArray
+    
+        interpolatedPoints = interpolateCurve(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], n)  #interpolate this bezier curve
+
+        # get min & max for x & y for this bezier curve from its interpolated points 
+        i = 0
+        while (i < len(interpolatedPoints)):  
+            xlist.append(interpolatedPoints[i].x)
+            ylist.append(interpolatedPoints[i].y)
+            i = i + 1
+        xmin, ymin, xmax, ymax = min(xlist),  min(ylist),  max(xlist),  max(ylist)
+
+        i = 0
+        if (x in range(xmin, xmax)):
+            while (i < (len(interpolatedPoints) - 1)):
+                if (x in range(interpolatedPoints[i].x, interpolatedPoints[i+1].x)):
+                    pnt = pntOnLineAtX(interpolatedPoints[i], interpolatedPoints[i+1], x)
+                    intersections.append(pnt)
+                i = i + 1
+                
+        j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve   
+        
+    return intersections
+    
 
 # ----------------...Calculate length..------------------------------
 
@@ -458,7 +494,7 @@ def curveLength(curve, n=100):
     curveLength = 0.0     
     j = 0
     while (j <= (len(curve)  - 4)):  # for each curve, get segmentLength & add to curveLength
-        interpolatedPoints = interpolateCurveSegment(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], n)  #interpolate this curve
+        interpolatedPoints = interpolateCurve(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], n)  #interpolate this curve
         # add up lengths between the interpolated points
         segmentLength = 0.0
         i = 1 
@@ -469,7 +505,7 @@ def curveLength(curve, n=100):
         j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve 
     return curveLength
 
-def interpolateCurveSegment(P0, P1, P2, P3, t):
+def interpolateCurve(P0, P1, P2, P3, t):
     ''' 
     Accepts curve points P0,P1,P2,P3 & number of interpolations t from curveLength()
     P0 - knot point 1, P1 - control point 1, P2 - control point 2, P3 - knot point 2
