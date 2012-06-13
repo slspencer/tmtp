@@ -24,16 +24,6 @@
 import sys
 import json
 
-from pysvg.filter import *
-from pysvg.gradient import *
-from pysvg.linking import *
-from pysvg.script import *
-from pysvg.shape import *
-from pysvg.structure import *
-from pysvg.style import *
-from pysvg.text import *
-from pysvg.builders import *
-
 from constants import *
 
 # Define globals
