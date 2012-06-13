@@ -21,14 +21,15 @@
 
 import json
 
-from pysvg.filter import *
-from pysvg.gradient import *
-from pysvg.linking import *
-from pysvg.script import *
-from pysvg.shape import *
-from pysvg.structure import *
-from pysvg.style import *
-from pysvg.text import *
+#import pysvg.filter as PF
+#import pysvg.gradient as PG
+#import pysvg.linking as PL
+#import pysvg.script as PSC
+#import pysvg.shape as PSH
+#import pysvg.structure as PST
+#import pysvg.style as PSTY
+#import pysvg.text as PT
+
 from pysvg.builders import *
 
 from constants import *
