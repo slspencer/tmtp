@@ -30,7 +30,8 @@ import json
 #import pysvg.style as PSTY
 #import pysvg.text as PT
 
-from pysvg.builders import *
+#from pysvg.builders import *
+import pysvg.builders as PB
 
 from constants import *
 from patternbase import pBase
@@ -88,11 +89,11 @@ class Document(pBase):
                 self.displayed_groups.append(groupname)
 
         # create the base document
-        sz = svg()
+        sz = PB.svg()
 
         if 'tooltips' in self.cfg:
             # add the scripting we need to handle events
-            sc = script()
+            sc = PB.script()
             sc.set_xlink_href('tmtp_mouse.js')
             sc.set_xlink_type('text/ecmascript')
             sz.addElement(sc)
@@ -174,7 +175,7 @@ class Document(pBase):
 
         # Add any markers that we will need later
         if len(self.markers):
-            pdefs = defs()
+            pdefs = PB.defs()
             for mname in self.markers:
                 #print 'Adding marker %s' % mname
                 if type(self.markerdefs[mname]) is str:
@@ -215,7 +216,7 @@ class Document(pBase):
                     print 'Group %s is not enabled for display' % dictname
                 continue
 
-            wg = g()
+            wg = PB.g()
             self.groups[dictname] = wg
             # Set the ID to the group name
             wg.set_id(dictname)
@@ -260,7 +261,7 @@ class TitleBlock(pBase):
         md = self.mkgroupdict()
 
         # TODO make the text parts configurable
-        tbg = g()
+        tbg = PB.g()
         tbg.set_id(self.id)
         # this is a bit cheesy
         text_space =  ( int(self.styledefs[self.stylename]['font-size']) * 1.1 )
@@ -305,7 +306,7 @@ class TestGrid(pBase):
         md = self.mkgroupdict()
 
         # TODO make the text parts configurable
-        tbg = g()
+        tbg = PB.g()
         tbg.set_id(self.id)
 
         """
@@ -314,9 +315,9 @@ class TestGrid(pBase):
     
         CMW = self.centimeters*CM_TO_PX
         INW = self.inches*IN_TO_PX
-        tgps=path()
+        tgps = PB.path()
     
-        gstyle = StyleBuilder(self.styledefs[self.stylename])
+        gstyle = PB.StyleBuilder(self.styledefs[self.stylename])
         tgps.set_style(gstyle.getStyle())
         tgps.set_id(self.name)
         #t.setAttribute('transform', trans)

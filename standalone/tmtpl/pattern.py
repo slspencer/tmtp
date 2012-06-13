@@ -36,6 +36,7 @@ from math import sin, cos, pi, sqrt
 #from pysvg.style import *
 #from pysvg.text import *
 #from pysvg.builders import *
+import pysvg.builders as PB
 
 from constants import *
 from utils import debug
@@ -1316,7 +1317,7 @@ class PatternPiece(pBase):
         for child_group, members in childlist.items():
             #print 'Group ', child_group, ' in PatternPiece->svg'
 
-            my_group = g()
+            my_group = PB.g()
 
             grpid = self.id + '.' + child_group
             my_group.set_id(grpid)
@@ -1409,8 +1410,8 @@ class Point(pBase):
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
 
-        pstyle = StyleBuilder(self.styledefs[self.sdef])
-        p = circle(self.x, self.y, self.size)
+        pstyle =  PB.StyleBuilder(self.styledefs[self.sdef])
+        p = PB.circle(self.x, self.y, self.size)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
         if 'tooltips' in self.cfg:
@@ -1507,8 +1508,8 @@ class Line(pBase):
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
 
-        pstyle = StyleBuilder(self.styledefs[self.sdef])
-        p = line(self.xstart, self.ystart, self.xend, self.yend)
+        pstyle =  PB.StyleBuilder(self.styledefs[self.sdef])
+        p = PB.line(self.xstart, self.ystart, self.xend, self.yend)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
         for attrname, attrvalue in self.attrs.items():
@@ -1607,7 +1608,7 @@ class Path(pBase):
             # an empty dict to hold our svg elements
             md = self.mkgroupdict()
 
-            pstyle = StyleBuilder(self.styledefs[self.sdef])
+            pstyle =  PB.StyleBuilder(self.styledefs[self.sdef])
 
             self.pathSVG.set_id(self.id)
             self.pathSVG.set_style(pstyle.getStyle())
@@ -1669,7 +1670,7 @@ class TextBlock(pBase):
         md = self.mkgroupdict()
 
         # create the text first
-        tg = g()
+        tg = PB.g()
         tg.set_id(self.id)
         x = self.x
         y = self.y
