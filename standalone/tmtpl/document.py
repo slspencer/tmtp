@@ -357,5 +357,5 @@ class TestGrid(pBase):
             tgps.appendLineToPath(startin_x + INW, y, relative=False)
             i=i + 1
     
-            md[self.groupname].append(tbg)
+        md[self.groupname].append(tbg)
         return md
