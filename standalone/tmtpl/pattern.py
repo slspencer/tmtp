@@ -83,6 +83,8 @@ def cPointP(parent, id, pnt, transform=''):
     '''Accepts parent object, id, point object (can be from another calculation), and optional transform.
     Returns object of class Point. Creates SVG blue open dot on reference layer for control point in bezier curves.'''
     return cPoint(parent, id, pnt.x, pnt.y, transform='')
+    
+    
 
 # ----------------...Add Points to Paths..------------------------------
 
@@ -1386,7 +1388,6 @@ class Point(pBase):
 
         self.groupname = group
         self.name = name
-        self.textid = False # for debugging TODO make this available
         self.sdef = styledef
         self.x       = x
         self.y       = y
@@ -1422,11 +1423,10 @@ class Point(pBase):
             p.setAttribute(attrname, attrvalue)
         md[self.groupname].append(p)
 
-        if self.textid:
-            txtlabel = self.id + '.text'
-            txttxt = self.name
-            txt = self.generateText(self.x+3, self.y, txtlabel, txttxt, 'point_text_style')
-            md[self.groupname].append(txt)
+        txtlabel = self.id + '.text'
+        txttxt = self.name
+        txt = self.generateText(self.x, self.y - 25, txtlabel, txttxt, 'point_text_style')
+        md[self.groupname].append(txt)
 
         return md
 
@@ -1636,6 +1636,7 @@ class Path(pBase):
             return xmin, ymin, xmax, ymax
         else:
             return None, None, None, None
+    
 
 class TextBlock(pBase):
     """
