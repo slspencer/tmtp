@@ -106,10 +106,10 @@
         "stroke-width": "1"
     },
     "point_text_style": {
-        "fill": "#000000",
+        "fill": "darkblue",
         "fill-opacity": "1.0",
-        "font-size": "15",
-        "font-style": "normal",
+        "font-size": "30",
+        "font-style": "italic",
         "font-weight": "normal",
         "stroke": "none",
         "text-align": "right",
