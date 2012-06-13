@@ -1,3 +1,0 @@
-# intersectLineCurve.py
-
-def intersectLineCurve(
