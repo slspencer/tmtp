@@ -27,19 +27,19 @@ import re
 import random
 from math import sin, cos, pi, sqrt
 
-from pysvg.filter import *
-from pysvg.gradient import *
-from pysvg.linking import *
-from pysvg.script import *
-from pysvg.shape import *
-from pysvg.structure import *
-from pysvg.style import *
-from pysvg.text import *
-from pysvg.builders import *
+#from pysvg.filter import *
+#from pysvg.gradient import *
+#from pysvg.linking import *
+#from pysvg.script import *
+#from pysvg.shape import *
+#from pysvg.structure import *
+#from pysvg.style import *
+#from pysvg.text import *
+#from pysvg.builders import *
 
 from constants import *
 from utils import debug
-from patternbase import pBase
+#from patternbase import pBase
 from document import *
 
 # ---- Pattern methods ----------------------------------------
