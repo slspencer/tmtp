@@ -19,7 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>..
 
-from pysvg.builders import *
+#from pysvg.builders import *
+import pysvg.builders as PB
 
 class pBase(object):
     """
@@ -83,9 +84,9 @@ class pBase(object):
         Generate a text element with the defined style
         """
         # in this class because it needs the styledefs
-        tstyle = StyleBuilder(self.styledefs[styledef])
+        tstyle = PB.StyleBuilder(self.styledefs[styledef])
 
-        t = text(string, x, y)
+        t = PB.text(string, x, y)
         t.set_style(tstyle.getStyle())
         t.set_id(label)
         t.setAttribute('transform', trans)
