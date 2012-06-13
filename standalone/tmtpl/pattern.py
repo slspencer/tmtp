@@ -1182,9 +1182,9 @@ class Pattern(pBase):
         parts = {}
         for chld in self.children:
             if isinstance(chld, PatternPiece):
-                'Pattern.py calling ', chld.name, '.boundingBox()'
+                print 'Pattern.py calling ', chld.name, '.boundingBox()'
                 xlo, ylo, xhi, yhi = chld.boundingBox()
-                'Pattern.py -', chld.name, '.boundingBox() returned info[xlo]:', xlo, 'info[ylo]:', ylo, 'info[xhi]:', xhi, 'info[yhi]:', yhi
+                print 'Pattern.py -', chld.name, '.boundingBox() returned info[xlo]:', xlo, 'info[ylo]:', ylo, 'info[xhi]:', xhi, 'info[yhi]:', yhi
                 parts[chld] = {}
                 parts[chld]['xlo'] = xlo
                 parts[chld]['ylo'] = ylo
@@ -1192,6 +1192,7 @@ class Pattern(pBase):
                 parts[chld]['yhi'] = yhi
 
         # our available paper width is reduced by twice the border
+        print self.cfg['paper_width']
         pg_width = self.cfg['paper_width'] - (2 * self.cfg['border'])
         if 'verbose' in self.cfg:
             print 'Autolayout:'
