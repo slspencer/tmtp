@@ -1166,6 +1166,18 @@ class Pnt():
         self.y = y
         self.name = ''
 
+class Letter():
+    '''Called when creating a new pattern piece object.
+    Accepts x,y, and font size. Returns an object with .x, .y, & .fontsize children.
+    <PatternPiece>.name holds the pattern piece letter e.g. A,B,C...
+    <PatternPiece>.letter.x, <PatternPiece>.letter.y, and <PatternPiece>.letter.fontsize
+    determine placement & size of <PatternPiece>.name on the drawn pattern piece in the svg document'''
+    def __init__(self, letter_id, x=0.0, y=0.0, fontsize=0):
+        self.id = letter_id
+        self.x = x
+        self.y = y
+        self.fontsize = fontsize
+
 class Pattern(pBase):
     """
     Create an instance of Pattern class, eg - jacket, pants, corset, which will contain the set of pattern piece objects - eg  jacket.back, pants.frontPocket, corset.stayCover
@@ -1215,7 +1227,7 @@ class Pattern(pBase):
         index_by_letter = {}
         letters = []
         for pp, info in parts.items():
-            letter = pp.letter
+            letter = pp.letter.id
             if letter in index_by_letter:
                 raise ValueError('The same Pattern Piece letter <%s> is used on more than one pattern piece' % letter)
             index_by_letter[letter] = pp
@@ -1286,14 +1298,14 @@ class PatternPiece(pBase):
     Create an instance of the PatternPiece class, eg jacket.back, pants.frontPocket, corset.stayCover will contain the set of seams and all other pattern piece info,
     eg - jacket.back.seam.shoulder, jacket.back.grainline,  jacket.back.interfacing
     """
-    def __init__(self, group, name, letter = '?', fabric = 0, interfacing = 0, lining = 0):
+    def __init__(self, group, name, letter_id = '?', fabric = 0, interfacing = 0, lining = 0):
         self.name = name
         self.groupname = group
         self.width = 0
         self.height = 0
         self.labelx = 0
         self.labely = 0
-        self.letter = letter
+        self.letter = Letter(letter_id, 0.0, 0.0, 0) # Init letter.id, letter.x, letter.y, & letter.fontsize. Final x,y,fontsize values are assigned in the design file.
         self.fabric = fabric
         self.interfacing = interfacing
         self.lining = lining
@@ -1351,7 +1363,7 @@ class PatternPiece(pBase):
         text.append('Designer: %s' % mi['designerName'])
         text.append('Client: %s' % self.cfg['clientdata'].customername)
         text.append(mi['patternNumber'])
-        text.append('Pattern Piece %s' % self.letter)
+        text.append('Pattern Piece %s' % self.letter.id)
         if self.fabric > 0:
             text.append('Cut %d Fabric' % self.fabric)
         if self.interfacing > 0:

@@ -49,7 +49,7 @@ class pBase(object):
         of the child to include the 'dotted path' fo all ancestors
         """
         if (hasattr(self, 'letter')):
-           newid = self.letter + '.' + obj.name
+           newid = self.letter.id + '.' + obj.name
         else:
             newid =  self.id + '.' + obj.name
 
