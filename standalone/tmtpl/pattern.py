@@ -8,7 +8,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version. Attribution must be given in 
+# (at your option) any later version. Attribution must be given in
 # all derived works.
 #
 # This program is distributed in the hope that it will be useful,
@@ -83,8 +83,8 @@ def cPointP(parent, id, pnt, transform=''):
     '''Accepts parent object, id, point object (can be from another calculation), and optional transform.
     Returns object of class Point. Creates SVG blue open dot on reference layer for control point in bezier curves.'''
     return cPoint(parent, id, pnt.x, pnt.y, transform='')
-    
-    
+
+
 
 # ----------------...Add Points to Paths..------------------------------
 
@@ -438,25 +438,25 @@ def pntOnLineAtYP(p1, p2, y):
     else: # if vertical line
         pnt.x = p1.x
     return pnt
-    
+
 def pntsOnCurveAtX(curveArray,  x):
     '''
     Accepts an array 'curveArray' of bezier curves. Each bezier curve consists of  P0, P1, P2, P3 [eg knot1, controlpoint1, controlpoint2, knot2].
     P3 of one curve is P0 of the next curve. Minimum of one bezier curve in curveArray.
     Accepts value of x to find on curve.
     Returns array 'intersections' which contains y values of each intersection found in order from 1st to last bezier curve in curveArray.
-    ''' 
+    '''
     intersections = []
     xlist, ylist = []
     pnt = Pnt()
     j = 0
     while (j <= (len(curveArray)  - 4)):  # for each bezier curve in curveArray
-    
+
         interpolatedPoints = interpolateCurve(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], n)  #interpolate this bezier curve
 
-        # get min & max for x & y for this bezier curve from its interpolated points 
+        # get min & max for x & y for this bezier curve from its interpolated points
         i = 0
-        while (i < len(interpolatedPoints)):  
+        while (i < len(interpolatedPoints)):
             xlist.append(interpolatedPoints[i].x)
             ylist.append(interpolatedPoints[i].y)
             i = i + 1
@@ -469,11 +469,11 @@ def pntsOnCurveAtX(curveArray,  x):
                     pnt = pntOnLineAtX(interpolatedPoints[i], interpolatedPoints[i+1], x)
                     intersections.append(pnt)
                 i = i + 1
-                
-        j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve   
-        
+
+        j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve
+
     return intersections
-    
+
 
 # ----------------...Calculate length..------------------------------
 
@@ -485,7 +485,7 @@ def lineLength(xstart, ystart, xend, yend):
 def lineLengthP(p1, p2):
     """Accepts two point objects and returns distance between the points"""
     return lineLength(p1.x, p1.y, p2.x, p2.y)
-    
+
 def curveLength(curve, n=100):
     '''
     Accepts curve array with a minimum of four Pnt objects P0,P1,P2,P3 (knot1, controlpoint1,controlpoint2,knot2).
@@ -493,29 +493,29 @@ def curveLength(curve, n=100):
     n is the number to subdivide each curve for calculating the interpolated points and curve length.
     Adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.html
     '''
-    
-    curveLength = 0.0     
+
+    curveLength = 0.0
     j = 0
     while (j <= (len(curve)  - 4)):  # for each curve, get segmentLength & add to curveLength
         interpolatedPoints = interpolateCurve(curve[j], curve[j + 1], curve[j + 2], curve[j + 3], n)  #interpolate this curve
         # add up lengths between the interpolated points
         segmentLength = 0.0
-        i = 1 
-        while (i <= n): 
+        i = 1
+        while (i <= n):
                 segmentLength = segmentLength + lineLengthP(interpolatedPoints[i-1], interpolatedPoints[i]) #length from previous point to current point
                 i = i + 1
         curveLength = curveLength + segmentLength
-        j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve 
+        j = j + 3 # skip j up to P3 of the current curve to be used as P0 start of next curve
     return curveLength
 
 def interpolateCurve(P0, P1, P2, P3, t):
-    ''' 
+    '''
     Accepts curve points P0,P1,P2,P3 & number of interpolations t from curveLength()
     P0 - knot point 1, P1 - control point 1, P2 - control point 2, P3 - knot point 2
     Adapted from http://www.planetclegg.com/projects/WarpingTextToSplines.htm
     '''
-    
-    # calculate coefficients for two knot points P0 & P3 ;     P1 & P2 are the controlpoints. 
+
+    # calculate coefficients for two knot points P0 & P3 ;     P1 & P2 are the controlpoints.
     # x coefficients
     A = P3.x - (3*P2.x) + (3*P1.x) - P0.x
     B = (3*P2.x) - (6*P1.x) + (3*P0.x)
@@ -526,9 +526,9 @@ def interpolateCurve(P0, P1, P2, P3, t):
     F = (3*P2.y) - (6*P1.y) + (3*P0.y)
     G = (3*P1.y) - (3*P0.y)
     H = P0.y
-    
+
     # calculate interpolated points
-    interpolatedPoints = []    
+    interpolatedPoints = []
     maxPoint = float(t)
     i = 0
     while ( i <= t):
@@ -1636,7 +1636,6 @@ class Path(pBase):
             return xmin, ymin, xmax, ymax
         else:
             return None, None, None, None
-    
 
 class TextBlock(pBase):
     """
@@ -1665,6 +1664,7 @@ class TextBlock(pBase):
         generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
+
             print 'svg() called for TextBlock ID ', self.id
 
         # an empty dict to hold our svg elements
