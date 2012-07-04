@@ -42,14 +42,15 @@ class pBase(object):
 
     def __init__(self):
         self.children = []
+        self.parent=None
 
     def add(self, obj):
         """
         Add a class instance to parent, while setting the id
         of the child to include the 'dotted path' fo all ancestors
         """
-        if (hasattr(self, 'letter')):
-           newid = self.letter.id + '.' + obj.name
+        if (hasattr(self, 'lettertext')):
+            newid = self.lettertext + '.' + obj.name
         else:
             newid =  self.id + '.' + obj.name
 
@@ -59,6 +60,7 @@ class pBase(object):
         self.ids.append(newid)
 
         obj.id =newid
+        obj.parent=self
 
         setattr(self, obj.name, obj)
         self.children.append(obj)
@@ -95,8 +97,13 @@ class pBase(object):
 
     def svg(self):
         """
-        Return all the SVG created by every pattern piece in the pattern
+        Return all the SVG created by this object and all its children, recursively.
+
+        The dictionaries returned by svg() look like this:
+        dict { groupname1 : [svgelement1, svgelement2, . . .], groupname2 : [svgelement3, svgelement4, . . .]}
+        where svg elements are pySVG objects
         """
+
         #
         # We need to be able to have multiple groups, and have svg elements collected
         # in those groups.
@@ -118,24 +125,22 @@ class pBase(object):
         # into a new group svg element, and only that element is in the list passed up
         # to the parent for the group that the pattern piece belongs to.
         #
-        # The dictionaries returned by scg() look like this:
-        #
-        # dict { groupname1 : [svgelement1, svgelement2, . . .], groupname2 : [svgelement3, svgelement4, . . .]}
-        #
-        # where svg elements are pySVG objects
-        #
         #
         md = {}
         if self.debug:
             print "svg() called in ", self.name
+        # create empty lists for each group in the document
         for groupname in self.groups:
             md[groupname] = []
 
+        # now recursively call svg() for each of my children
         for child in self.children:
             if self.debug:
                 print 'Processing child ', child.name
+            # If the child has a method to generate svg, call it
             if child.svg:
                 cd = child.svg()
+                # Now append everything in each group from the child to my list for that group
                 for grpnm, glist in cd.items():
                     for svgitem in glist:
                         md[grpnm].append(svgitem)

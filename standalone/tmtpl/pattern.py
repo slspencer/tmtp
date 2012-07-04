@@ -41,6 +41,7 @@ import pysvg.builders as PB
 from constants import *
 from utils import debug
 #from patternbase import pBase
+from support import ScaleAboutPointTransform
 from document import *
 
 # ---- Pattern methods ----------------------------------------
@@ -83,8 +84,6 @@ def cPointP(parent, id, pnt, transform=''):
     '''Accepts parent object, id, point object (can be from another calculation), and optional transform.
     Returns object of class Point. Creates SVG blue open dot on reference layer for control point in bezier curves.'''
     return cPoint(parent, id, pnt.x, pnt.y, transform='')
-
-
 
 # ----------------...Add Points to Paths..------------------------------
 
@@ -1069,7 +1068,6 @@ def boundingBox(path):
 
     return xmin, ymin, xmax, ymax
 
-
 def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
     """
     Take a set of points representing a bounding box, and
@@ -1082,10 +1080,6 @@ def transformBoundingBox(xmin, ymin, xmax, ymax, transform):
     new_xmax, new_ymax = transformPoint(xmax, ymax, transform)
     return new_xmin, new_ymin, new_xmax, new_ymax
 
-
-
-
-
 def extractMarkerId(markertext):
     # Regex -
     # <marker id=\"grainline_mk\"\nviewBox=
@@ -1093,8 +1087,6 @@ def extractMarkerId(markertext):
     m = re.search('(\s+id\s*=\s*\"\w+\")', markertext, re.I)
     mid = m.group(0).split('"')[1]
     return mid
-
-
 
 # ----------------...Connect 2 objects together using 2 points each...------------------------------
 
@@ -1166,18 +1158,6 @@ class Pnt():
         self.y = y
         self.name = ''
 
-class Letter():
-    '''Called when creating a new pattern piece object.
-    Accepts x,y, and font size. Returns an object with .x, .y, & .fontsize children.
-    <PatternPiece>.name holds the pattern piece letter e.g. A,B,C...
-    <PatternPiece>.letter.x, <PatternPiece>.letter.y, and <PatternPiece>.letter.fontsize
-    determine placement & size of <PatternPiece>.name on the drawn pattern piece in the svg document'''
-    def __init__(self, letter_id, x=0.0, y=0.0, fontsize=0):
-        self.id = letter_id
-        self.x = x
-        self.y = y
-        self.fontsize = fontsize
-
 class Pattern(pBase):
     """
     Create an instance of Pattern class, eg - jacket, pants, corset, which will contain the set of pattern piece objects - eg  jacket.back, pants.frontPocket, corset.stayCover
@@ -1227,7 +1207,7 @@ class Pattern(pBase):
         index_by_letter = {}
         letters = []
         for pp, info in parts.items():
-            letter = pp.letter.id
+            letter = pp.lettertext
             if letter in index_by_letter:
                 raise ValueError('The same Pattern Piece letter <%s> is used on more than one pattern piece' % letter)
             index_by_letter[letter] = pp
@@ -1288,24 +1268,25 @@ class Pattern(pBase):
         return
 
     def svg(self):
+        # Automatically change pattern piece locations as needed
         self.autolayout()
+        # Now call the base class method to assemble the SVG for all my children
         return pBase.svg(self)
-
-
 
 class PatternPiece(pBase):
     """
-    Create an instance of the PatternPiece class, eg jacket.back, pants.frontPocket, corset.stayCover will contain the set of seams and all other pattern piece info,
+    Create an instance of the PatternPiece class, eg jacket.back, pants.frontPocket, corset.stayCover
+    which will contain the set of seams and all other pattern piece info,
     eg - jacket.back.seam.shoulder, jacket.back.grainline,  jacket.back.interfacing
     """
-    def __init__(self, group, name, letter_id = '?', fabric = 0, interfacing = 0, lining = 0):
+    def __init__(self, group, name, letter = '?', fabric = 0, interfacing = 0, lining = 0):
         self.name = name
         self.groupname = group
         self.width = 0
         self.height = 0
         self.labelx = 0
         self.labely = 0
-        self.letter = Letter(letter_id, 0.0, 0.0, 0) # Init letter.id, letter.x, letter.y, & letter.fontsize. Final x,y,fontsize values are assigned in the design file.
+        self.lettertext = letter
         self.fabric = fabric
         self.interfacing = interfacing
         self.lining = lining
@@ -1320,24 +1301,27 @@ class PatternPiece(pBase):
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
 
+        # generate the label from information which is part of the pattern piece
         self.makeLabel()
 
         # We pass back everything but our layer untouched
         # For our layer, we bundle up all the children's SVG
         # and place it within a group that has our id
 
-        childlist = pBase.svg(self) # returns all children
+        childlist = pBase.svg(self) # call the base class method to return all children SVG to be drawn
 
         for child_group, members in childlist.items():
             #print 'Group ', child_group, ' in PatternPiece->svg'
 
+            # create a new pySVG group for each child
             my_group = PB.g()
 
             grpid = self.id + '.' + child_group
             my_group.set_id(grpid)
+            # child group gets all my attributes
             for attrname, attrvalue in self.attrs.items():
                 my_group.setAttribute(attrname, attrvalue)
-
+            # and all the items in the child group
             for cgitem in childlist[child_group]:
                 my_group.addElement(cgitem)
 
@@ -1349,6 +1333,15 @@ class PatternPiece(pBase):
             childlist[child_group] = my_group_list
 
         return childlist
+
+    def setLetter(self, x=None, y=None, style='default_letter_text_style', text=None, scaleby=None):
+        # text=None is a flag to get the letter from the pattern piece at draw time
+        if scaleby is not None:
+            tform = ScaleAboutPointTransform(x, y, scaleby)
+        else:
+            tform=''
+        tb = TextBlock('pattern', 'letter', None, x, y, text, textstyledef = style, transform=tform)
+        self.add(tb)
 
     def makeLabel(self):
         """
@@ -1363,12 +1356,13 @@ class PatternPiece(pBase):
         text.append('Designer: %s' % mi['designerName'])
         text.append('Client: %s' % self.cfg['clientdata'].customername)
         text.append(mi['patternNumber'])
-        text.append('Pattern Piece %s' % self.letter.id)
+        text.append('Pattern Piece %s' % self.lettertext)
         if self.fabric > 0:
             text.append('Cut %d Fabric' % self.fabric)
         if self.interfacing > 0:
             text.append('Cut %d Interfacing' % self.interfacing)
 
+        #def __init__(group, name, headline, x, y, text, textstyledef = 'default_textblock_text_style', boxstyledef = None, transform = ''):
         tb = TextBlock('pattern', 'info', 'Headline', self.label_x, self.label_y, text, 'default_textblock_text_style', 'textblock_box_style')
         self.add(tb)
 
@@ -1676,7 +1670,6 @@ class TextBlock(pBase):
         generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
-
             print 'svg() called for TextBlock ID ', self.id
 
         # an empty dict to hold our svg elements
@@ -1687,14 +1680,26 @@ class TextBlock(pBase):
         tg.set_id(self.id)
         x = self.x
         y = self.y
-        # this is a bit cheesy
-        spacing  =  ( int(self.styledefs[self.textsdef]['font-size']) * 1.2 )
-        line = 1
-        for line in self.text:
-            label = self.id + '.line' + str(line)
-            txt = self.generateText(x, y, label, line, self.textsdef)
-            y = y + spacing
+
+        if self.text is None:
+            if self.debug:
+                print '  TextBlock special case for pattern letter, getting text from parent'
+            label = self.id + '.letterline'
+            # TODO possibly check type of parent object to make sure it's a PatternPiece
+            txt = self.generateText(x, y, label, self.parent.lettertext, self.textsdef)
             tg.addElement(txt)
+        else:
+            # this is a bit cheesy
+            spacing  =  ( int(self.styledefs[self.textsdef]['font-size']) * 1.2 )
+            line = 1
+            for line in self.text:
+                label = self.id + '.line' + str(line)
+                txt = self.generateText(x, y, label, line, self.textsdef)
+                y = y + spacing
+                tg.addElement(txt)
+
+        # if headline is None, then don't print it or space for it
+        # if boxstyledef is none, then no box
 
         # TODO getting element sizes is note yet supported in pySVG,
         # so we'll do the outline box and headline later

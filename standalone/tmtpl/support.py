@@ -189,6 +189,11 @@ def NewLayer(name,  parent, object_type):
     self.layer.set( 'id', name + '_'+ object_type  ) #id shows up in xml as layer name
     return self.layer
 
+def ScaleAboutPointTransform(x, y, scale):
+    sx = scale
+    sy = scale
+    return "matrix(%f, 0, 0, %f, %f, %f)" % (sx, sy, x-(sx*x), y-(sy*y))
+
 def DrawPath(parent, pathdefinition, pathtype, name, trans = ''):
 
     if ( pathtype == 'reference' )    :
