@@ -106,23 +106,23 @@
               "value":"50",
               "type":"float",
               "gui_text":"Front Shoulder Height - from Neck side to Waistline down Front"
-              },   
+              },
       "front_shoulder_width": {
               "value":"43.5",
               "type":"float",
               "gui_text":"Front Shoulder Width - from Shoulder tip to Shoulder tip across Front"
-              },                 
+              },
         "back_shoulder_height": {
               "value":"47",
               "type":"float",
               "gui_text":"Back Shoulder Height - from Neck side to Waistline down Back"
-              },  
+              },
       "back_shoulder_width": {
               "value":"43.5",
               "type":"float",
               "gui_text":"Back Shoulder Width - from Shoulder tip to Shoulder tip across Back"
-              },                
-              
+              },
+
       "side": {
               "value":"20.5",
               "type":"float",
@@ -133,13 +133,13 @@
               "value":"16.5",
               "type":"float",
               "gui_text":"Armsye Height"
-              },        
+              },
       "armscye_width": {
               "value":"15",
               "type":"float",
               "gui_text":"Armsye Width"
-              },                      
- 
+              },
+
       "overarm_length": {
               "value":"59",
               "type":"float",
@@ -154,13 +154,13 @@
               "value":"2",
               "type":"float",
               "gui_text":"Arm Circumference"
-              },              
+              },
       "arm_sleevecap_width": {
               "value":"19.5",
               "type":"float",
               "gui_text"
               :"Arm Sleevecap Width - from Back Chest Narrow Point to Front Chest Narrow Point around top of arm"
-              },              
+              },
       "arm_circumference": {
               "value":"29",
               "type":"float",
@@ -195,87 +195,127 @@
       "front_waist_width": {
               "value":"47.5",
               "type":"float",
-              "gui_text":"Front Waist Arc, Center-to-Side"
+              "gui_text":"Front Waist Width, Side-to-Side"
               },
      "front_waist_length": {
             "value":"42.5",
               "type":"float",
               "gui_text":"Front Waist Length"
-              },     
-        "back_waist": {
+              },
+     "front_1_waist_width": {
+              "value":"50.0",
+              "type":"float",
+              "gui_text":"Front Waist Width, 2.5 cm down from Natural Waist, Side-to-Side"
+              },
+     "front_1_waist_length": {
+              "value":"2.5",
+              "type":"float",
+              "gui_text":"2.5 cm"
+              },
+     "front_2_waist_width": {
+              "value":"52.0",
+              "type":"float",
+              "gui_text":"Front Waist Width, 5.0 cm down from Natural Waist, Side-to-Side"
+              },
+     "front_2_waist_length": {
+              "value":"5.0",
+              "type":"float",
+              "gui_text":"5.0 cm"
+              },
+     "back_waist": {
                 "value":"41.0",
                 "type":"float",
-                "gui_text":"Front Waist, Side-to-Side"
+                "gui_text":"Back Waist, Side-to-Side"
                 },
-      "back_waist_width": {
+     "back_waist_width": {
             "value":"41.0",
               "type":"float",
-              "gui_text":"Back Waist Arc, Center-to-Side"
+              "gui_text":"Back Waist Width, Side-to-Side"
               },
      "back_waist_length": {
             "value":"41.5",
               "type":"float",
-              "gui_text":"Center Back Length"
+              "gui_text":"Center Back Length from Nape to Waistline"
               },
-               
-      "hip_circumference": {
+     "back_1_waist_width": {
+              "value":"43.5",
+              "type":"float",
+              "gui_text":"Back Waist Width, 2.5 cm down from Natural Waist, Side-to-Side"
+              },
+     "back_1_waist_length": {
+              "value":"2.5",
+              "type":"float",
+              "gui_text":"2.5 cm"
+              },
+     "back_2_waist_width": {
+              "value":"45.5",
+              "type":"float",
+              "gui_text":"Back Waist Width, 5.0 cm down from Natural Waist, Side-to-Side"
+              },
+     "back_2_waist_length": {
+              "value":"5.0",
+              "type":"float",
+              "gui_text":"5.0 cm"
+              },
+
+     "hip_circumference": {
               "value":"113",
               "type":"float",
               "gui_text":"Hip Circumference"
               },
-      "front_hip": {
+     "front_hip": {
               "value":"51",
               "type":"float",
               "gui_text":"Front Hip, Side-to-Side"
-              },              
-      "front_hip_width": {
+              },
+     "front_hip_width": {
               "value":"51",
               "type":"float",
               "gui_text":"Front Hip Arc, Center-to-Side"
               },
-      "front_hip_length": {
+     "front_hip_length": {
               "value":"20.5",
               "type":"float",
               "gui_text":"Front Hip Length"
               },
-        "back_hip": {
-                "value":"62",
+     "back_hip": {
+              "value":"62",
               "type":"float",
               "gui_text":"Back Hip, Side-to-Side"
-              },              
-        "back_hip_width": {
-                "value":"62",
+              },
+     "back_hip_width": {
+              "value":"62",
               "type":"float",
               "gui_text":"Back Hip Arc, Center-to-Side"
               },
-      "back_hip_length": {
+     "back_hip_length": {
                 "value":"23",
               "type":"float",
               "gui_text":"Back Hip Height"
               },
-      "side_hip_length": {
-                "value":"25",
+     "side_hip_length": {
+              "value":"25",
               "type":"float",
               "gui_text":"Hip Height"
               },
-      "pelvic_distance":{
+
+    "pelvic_distance":{
              "value":"20",
              "type":"float",
              "gui_text":"Distance between pelvic bones"
-             },              
+             },
 
-
-        "front_rise": {
+    "front_rise": {
               "value":"24.5",
               "type":"float",
               "gui_text":"Front Rise"
               },
-        "side_rise": {
+    "side_rise": {
               "value":"26.5",
               "type":"float",
               "gui_text":"Side Rise"
               },
-        "back_rise": {
+    "back_rise": {
               "value":"29",
               "type":"float",
               "gui_text":"Rise"
@@ -290,7 +330,7 @@
               "value":"32",
               "type":"float",
               "gui_text":"Crotch Length Front - Front Waist to lowest point of crotch"
-              },   
+              },
     "back_crotch_length": {
               "value":"43",
               "type":"float",
@@ -301,7 +341,7 @@
               "type":"float",
               "gui_text":"Crotch Front Extension"
               },
-      "back_crotch_extension": {
+    "back_crotch_extension": {
               "value":"12.5",
               "type":"float",
               "gui_text":"Crotch Back Extension"
@@ -318,8 +358,7 @@
               "gui_text":"Inside Leg length-->Crotch to Floor"
               },
 
-
-       "thigh_circumference": {
+      "thigh_circumference": {
               "value":"66.5",
               "type":"float",
               "gui_text":"Thigh Circumference"
@@ -340,6 +379,11 @@
               "value":"44",
               "type":"float",
               "gui_text":"Knee Circumference"
+              },
+      "knee_length": {
+              "value":"17.5",
+              "type":"float",
+              "gui_text":"Knee Length = Inseam/2.0 - 2.54cm (rounded up to nearest .5cm)"
               },
       "calve_circumference": {
               "value":"39",
