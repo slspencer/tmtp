@@ -40,6 +40,17 @@
         "text-anchor": "start",
         "vertical-align": "top"
     },
+    "default_letter_text_style": {
+        "fill": "#000000",
+        "fill-opacity": "1.0",
+        "font-size": "24",
+        "font-style": "normal",
+        "font-weight": "normal",
+        "stroke": "none",
+        "text-align": "right",
+        "text-anchor": "start",
+        "vertical-align": "top"
+    },
     "foldline_style": {
         "fill": "none",
         "stroke": "darkgreen",
@@ -150,6 +161,17 @@
         "stroke": "none",
         "text-align": "right",
         "text-anchor": "right",
+        "vertical-align": "top"
+    },
+    "letter_text_style": {
+        "fill": "#000000",
+        "fill-opacity": "1.0",
+        "font-size": "24",
+        "font-style": "normal",
+        "font-weight": "normal",
+        "stroke": "none",
+        "text-align": "right",
+        "text-anchor": "start",
         "vertical-align": "top"
     },
     "tooltip_text_style": {
