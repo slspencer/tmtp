@@ -63,26 +63,26 @@ def pPointP(pnt1):
 
 def rPoint(parent, id, x, y, transform=''):
     '''Accepts parent object, id, x, y, & optional transform.
-    Returns object of class Point. Creates SVG red dot on reference layer for pattern calculation point.'''
+    Returns object of class Point. Creates SVG red dot in reference group for pattern calculation point.'''
     pnt = Point('reference', id, x, y, 'point_style', transform)
     parent.add(pnt)
     return pnt
 
 def rPointP(parent, id, pnt, transform=''):
     '''Accepts parent object, id, point object (can be from another calculation), and optional transform.
-    Returns object of class Point. Creates SVG red dot on reference layer for pattern calculation point.'''
+    Returns object of class Point. Creates SVG red dot in reference group for pattern calculation point.'''
     return rPoint(parent, id, pnt.x, pnt.y, transform='')
 
 def cPoint(parent, id, x, y, transform=''):
     '''Accepts parent object, id, x, y, and optional transform. Returns object of class Point.
-    Creates SVG blue open dot on reference layer to display control point in bezier curves.'''
+    Creates SVG blue open dot in reference group to display control point in bezier curves.'''
     pnt = Point('reference', id,  x,  y,  'controlpoint_style', transform)
     parent.add(pnt)
     return pnt
 
 def cPointP(parent, id, pnt, transform=''):
     '''Accepts parent object, id, point object (can be from another calculation), and optional transform.
-    Returns object of class Point. Creates SVG blue open dot on reference layer for control point in bezier curves.'''
+    Returns object of class Point. Creates SVG blue open dot in reference group for control point in bezier curves.'''
     return cPoint(parent, id, pnt.x, pnt.y, transform='')
 
 # ----------------...Add Points to Paths..------------------------------
@@ -129,44 +129,44 @@ def quadraticCurveP(pathSVG, control1, point, transform=''):
 
 def gridPath(name, label, pathSVG, transform = ''):
     """
-    Creates grid paths on reference layer
+    Creates grid paths in reference group
     """
     return Path('reference', name, label, pathSVG, 'gridline_style', transform)
 
 def cuttingLinePath(name, label, pathSVG, transform = ''):
     """
-    Creates Cuttingline path on pattern layer
+    Creates Cuttingline path in pattern group
     """
     return Path('pattern', name, label, pathSVG, 'cuttingline_style', transform)
 
 def seamLinePath(name, label, pathSVG, transform = ''):
     """
-    Creates Seamline path on pattern layer
+    Creates Seamline path in pattern group
     """
     return Path('pattern', name, label, pathSVG, 'seamline_style', transform)
 
 def patternLinePath(name, label, pathSVG, transform = ''):
     """
     Accepts name, label, svg path, transform. Returns path object using 'dartline_style'.
-    Creates pattern line path on pattern layer, other than cuttingline, seamline, or hemline - used for darts, etc.
+    Creates pattern line path in pattern group, other than cuttingline, seamline, or hemline - used for darts, etc.
     """
     return Path('pattern', name, label, pathSVG, 'dartline_style', transform)
 
 def stitchLinePath( name, label,  pathSVG, transform = '' ):
     """
-    Creates stitch line on pattern layer, other than cuttingline, seamline, or hemline
+    Creates stitch line in pattern group, other than cuttingline, seamline, or hemline
     """
     return Path('pattern', name, label, pathSVG, 'dartline_style',transform)
 
 def foldLinePath(name, label, pathSVG, transform='' ):
     """
-    Creates fold line on pattern layer, other than dartline, cuttingline, seamline, or hemline
+    Creates fold line in pattern group, other than dartline, cuttingline, seamline, or hemline
     """
     return Path('pattern', name, label, pathSVG, 'foldline_style', transform)
 
 def grainLinePath(name, label, pnt1, pnt2,  transform=''):
     """
-    Creates grain line on pattern layer
+    Creates grain line in pattern group
     """
     if (transform == '') :
         x1, y1 = pnt1.x,  pnt1.y
@@ -1304,8 +1304,8 @@ class PatternPiece(pBase):
         # generate the label from information which is part of the pattern piece
         self.makeLabel()
 
-        # We pass back everything but our layer untouched
-        # For our layer, we bundle up all the children's SVG
+        # We pass back everything but our group untouched
+        # For the group we're in, we bundle up all the children's SVG
         # and place it within a group that has our id
 
         childlist = pBase.svg(self) # call the base class method to return all children SVG to be drawn
