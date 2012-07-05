@@ -10,6 +10,9 @@
 
 * Come up with better way to space and handle multi-line text
 
+* DrawPath doesn't use the style definitions, and it should. The
+styles are hard-coded.
+
 == Features/Fixes ==
 
 * Add ability to define seam offsets and draw cutting line
