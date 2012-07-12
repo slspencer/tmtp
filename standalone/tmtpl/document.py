@@ -38,7 +38,7 @@ from patternbase import pBase
 
 class Document(pBase):
     """
-    This is the container that everything else goes into. The svg ir drawn by calling
+    This is the base container that everything else goes into. The svg is drawn by calling
     the draw() method on the document, which creates the svg document, then the groups
     within that and calls the svg() methods on each item to be drawn
     """
@@ -61,7 +61,7 @@ class Document(pBase):
     def draw(self):
 
         # the user may have specified on the command line to draw groups that
-        # aren't present in the file. If so, print a warning and remove those.
+        # aren't present in the file. If not present, print a warning and remove those groups from the self.displayed_groups list.
         todelete = []
         for gpname in self.displayed_groups:
             if gpname not in self.groups:
@@ -72,27 +72,27 @@ class Document(pBase):
 
         # any sanity checks on configuration before drawing go here
         if 'border' not in self.cfg:
-            self.cfg['border'] = 0.0
+            self.cfg['border'] = 2.5*CM_TO_PX
 
         # if there are no groups in the list of ones to draw, then default to all of them
         if len(self.displayed_groups) == 0:
             for groupname in self.groups:
                 self.displayed_groups.append(groupname)
 
-        # create the base document
+        # create the base pysvg object
         sz = PB.svg()
 
         if 'tooltips' in self.cfg:
-            # add the scripting we need to handle events
+            # If --tooltips specified in mkpattern command line options
+            # create pysvg script class object
             sc = PB.script()
             sc.set_xlink_href('tmtp_mouse.js')
             sc.set_xlink_type('text/ecmascript')
+            # Add script object elements to pysvg base object
             sz.addElement(sc)
             sz.set_onload('init(evt)')
 
-            #
-            # Add the tooltip text element
-            #
+            # Add the tooltip text element. Start it hidden at upper left with 'ToolTip' as it's displayable string.
             ttel = self.generateText(0, 0, 'tooltip', 'ToolTip', 'tooltip_text_style')
             ttel.setAttribute('visibility', 'hidden')
             sz.addElement(ttel)
@@ -101,11 +101,11 @@ class Document(pBase):
         mi = self.cfg['metainfo']
         for lbl in ['companyName', 'designerName', 'patternname', 'patternNumber']:
             if lbl in mi:
-                self.attrs[lbl] = mi[lbl]
+                self.attrs[lbl] = mi[lbl] # adds the self.cfg metainfo dictionary items to self.attrs so they will be written to the svg document.
 
-        self.attrs['client-name'] = self.cfg['clientdata'].customername
+        self.attrs['client-name'] = self.cfg['clientdata'].customername # Add customername to self.attrs so it can be written to the svg document.
 
-        # adjust any attributes in the list
+        # Writes border values to the svg document, in case they were adjusted in self.cfg[] in the design
         self.attrs['margin-bottom'] = str(self.cfg['border'])
         self.attrs['margin-left'] = str(self.cfg['border'])
         self.attrs['margin-right'] = str(self.cfg['border'])
@@ -164,25 +164,27 @@ class Document(pBase):
 #     inkscape:window-y="29"
 #     inkscape:window-maximized="0" />\n""")
 
-        # Add any markers that we will need later
+        # If any markers used, add marker definitions to the svg document so they can be referenced within the svg document
+        # two types of markers -- plain is a string, dictionary has more than one marker
+        # each marker has a start & end, with optional mid
         if len(self.markers):
-            pdefs = PB.defs()
+            pdefs = PB.defs() # Create pysvg builder defs class object
             for mname in self.markers:
                 #print 'Adding marker %s' % mname
                 if type(self.markerdefs[mname]) is str:
                     # this is just a plain marker, append it
-                    pdefs.appendTextContent(self.markerdefs[mname])
+                    pdefs.appendTextContent(self.markerdefs[mname]) # append marker def to pdfs[]
                 elif type(self.markerdefs[mname]) is dict:
                     # contains a dict of marks
-                    for submrk in self.markerdefs[mname]:
+                    for submrk in self.markerdefs[mname]: # append each marker in the marker dictionary to pdefs[]
                         # always has start and end, may also have mid
                         pdefs.appendTextContent(self.markerdefs[mname][submrk])
                 else:
                     print mname, 'marker is an unexpected type ***************'
 
-            sz.addElement(pdefs)
+            sz.addElement(pdefs) # write pdefs to pysvg base object
 
-        # Recursively get everything to draw
+        # Recursively get everything to draw. svgdict[] will contain everything that will be written to the svg document.
         svgdict = self.svg()
 
         # Add/modify the transform so that the whole pattern piece originates at 0,0 and is offset by border
