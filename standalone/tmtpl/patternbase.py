@@ -27,26 +27,26 @@ class pBase(object):
     Base class for all pattern classes which generate SVG
     """
 
-    # A dictionary (list) of groups to create in the svg document, such as 'pattern' group and 'reference' group.
+    # A Baseclass dictionary (list) of groups to create in the svg document, such as 'pattern' group and 'reference' group.
     groups = {}
-    # A list of ids to create in the svg document. Used to check that no duplicate id's are created.
+    # A Baseclass list of ids to create in the svg document. Used to check that no duplicate id's are created.
     ids = []
-    # A list of groups that will be visible in the svg document per the user via the mkpattern commandline options.
+    # A Baseclass list of groups that will be visible in the svg document per the user via the mkpattern commandline options.
     displayed_groups = []
-    # Value for debug set manually by programmer for additional debug statements for pBase objects only.
+    # Baseclass value for debug set manually by programmer for additional debug statements for pBase objects only.
     debug = False
-    # Dictionaries containing the styledef, markerdef, & cfg statements loaded from the styledefs.json file by the mkpattern commandline.
+    # Baseclass Dictionaries containing the styledef, markerdef, & cfg statements loaded from the styledefs.json file by the mkpattern commandline.
     styledefs = {}
     markerdefs = {}
     cfg = {}
-    # A list containing the markers used in the current pattern, to create in the svg document.
+    # Baseclass list containing the markers used in the current pattern, to create these markers in the svg document.
     markers = []
 
 
     def __init__(self):
         # Each instance of this class keeps a list of its children. Initial list is empty.
         self.children = []
-        # Each instance of this class keeps a list of its parent.  Initial value is None.
+        # Each instance of this class keeps a reference to its parent.  Initial value is None.
         self.parent = None
 
     def add(self, child):
@@ -54,6 +54,7 @@ class pBase(object):
         Add a child object to parent, while setting the id
         of the child to include the 'dotted path' fo all ancestors
         """
+        # Create an id for child object
         # if self is a pattern piece then it has a lettertext attribute, and the child's svg id is <self.lettertext>.<child.name>,
         if (hasattr(self, 'lettertext')):
             newid = self.lettertext + '.' + child.name
@@ -61,20 +62,24 @@ class pBase(object):
             # otherwise the child's svg id is <child.name>
             newid =  self.id + '.' + child.name
 
-        # Check to make sure we don't have any duplicate IDs
+        # Check id to make sure this is not a duplicate id
         if newid in self.ids:
             raise ValueError("The name %s is used in more than one pattern object" % newid)
-        self.ids.append(newid) # Add child id to the ids[] list
-        child.id = newid # Set child's id value to newid
-        child.parent = self  # Set child's parent value to current self object
 
-        setattr(self, child.name, child)
-        self.children.append(child)
+        # Add child id to the baseclass ids list
+        self.ids.append(newid)
+
+        child.id = newid # Set child's id value to newid string
+        child.parent = self  # Set child's parent to refer to current self object
+
+        setattr(self, child.name, child) # TODO: comment what this does ???
+        self.children.append(child) # Appends child to current self's children list
+
         try:
             if child.groupname not in self.groups:
-                self.groups[child.groupname] = None
+                self.groups[child.groupname] = None #If group does not exist, add group name to self's group dictionary with null reference.
         except AttributeError:
-            pass
+            pass # don't throw an error
         return
 
     def mkgroupdict(self):
@@ -82,8 +87,11 @@ class pBase(object):
         Return a dictionary containing keys for all the groups
         which are defined
         """
+        # Creates a new dictionary that contains all the groups from the Baseclass groups dictionary.
+        # This dictionary contains an empty list for each group. These lists are used in creating the SVG document.
         td = {}
         for k, v in self.groups.items():
+            # Add group to new dictionary & the group is now an empty list
             td[k] = []
         return td
 
@@ -103,7 +111,8 @@ class pBase(object):
 
     def svg(self):
         """
-        Return all the SVG created by this object and all its children, recursively.
+        Creates the svg data.
+        Returns all the SVG created by this object and all its children, recursively.
 
         The dictionaries returned by svg() look like this:
         dict { groupname1 : [svgelement1, svgelement2, . . .], groupname2 : [svgelement3, svgelement4, . . .]}
@@ -132,12 +141,12 @@ class pBase(object):
         # to the parent for the group that the pattern piece belongs to.
         #
         #
-        md = {}
+        md = {} # create local mydictionary
         if self.debug:
             print "svg() called in ", self.name
-        # create empty lists for each group in the document
+        # create empty lists for each group in the base document
         for groupname in self.groups:
-            md[groupname] = []
+            md[groupname] = [] # append groupname as an empty list
 
         # now recursively call svg() for each of my children
         for child in self.children:
@@ -147,9 +156,9 @@ class pBase(object):
             if child.svg:
                 cd = child.svg()
                 # Now append everything in each group from the child to my list for that group
-                for grpnm, glist in cd.items():
-                    for svgitem in glist:
-                        md[grpnm].append(svgitem)
+                for grpnm, glist in cd.items(): # for each group
+                    for svgitem in glist:       # for each item in group
+                        md[grpnm].append(svgitem) # append item to mydictionary's list for that group
         return md
 
     def boundingBox(self, grouplist = None):
