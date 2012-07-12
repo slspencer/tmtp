@@ -27,13 +27,13 @@ class pBase(object):
     Base class for all pattern classes which generate SVG
     """
 
-    #
-    # A list of groups into which the svg output is collected, such as 'pattern'
-    # and 'reference' These are grouped so that display of the reference group
-    # can be turned on and off
+    # A dictionary (list) of groups to create in the svg document, such as 'pattern' group and 'reference' group.
     groups = {}
+    # A list of ids to create in the svg document. Used to check that no duplicate id's are created.
     ids = []
+    # A list of groups that will be visible in the svg document per the user via the mkpattern commandline options.
     displayed_groups = []
+    # Value for debug set manually by programmer for additional debug statements for pBase objects only.
     debug = False
     styledefs = {}
     markerdefs = {}
