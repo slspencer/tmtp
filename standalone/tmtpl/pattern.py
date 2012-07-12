@@ -1306,35 +1306,36 @@ class PatternPiece(pBase):
 
         # We pass back everything but our group untouched
         # For the group we're in, we bundle up all the children's SVG
-        # and place it within a group that has our id
+        # and place it within a group that has our ids
 
-        children_grouplist = pBase.svg(self) # call the base class svg method which returns a dictionary of all groups to be drawn
+        child_group_dict = pBase.svg(self) # call the base class svg method on this pattern piece. Returns a dictionary of all groups to be drawn
 
-        for child_group_name, members in children_grouplist.items(): # for each group used in the pattern piece
+        for child_group_name, members in child_group_dict.items(): # for each group used in this pattern piece
             if self.debug:
                 print '++ Group ==', child_group_name, ' in pattern.PatternPiece.svg()'
 
             # create a local temporary pySVG group object
-            pp_group = PB.g()
+            temp_group = PB.g()
             # assign group a unique id
             grpid = self.id + '.' + child_group_name
-            pp_group.set_id(grpid)
+            temp_group.set_id(grpid)
 
             # group gets all patternpiece's attributes
             for attrname, attrvalue in self.attrs.items():
-                pp_group.setAttribute(attrname, attrvalue)
+                temp_group.setAttribute(attrname, attrvalue)
             # and all patternpiece's child elements
-            for cgitem in children_grouplist[child_group_name]:
-                pp_group.addElement(cgitem)
+            for cgitem in child_group_dict[child_group_name]:
+                temp_group.addElement(cgitem)
 
-            # now we replace the list of items in that group that we got
+            # now we replace the list of items in the group returned
             # from the children with our one svg item, which is a group
             # that contains them all
-            pp_group_list = []
-            pp_group_list.append(pp_group)
-            children_grouplist[child_group_name] = pp_group_list
+            # Adding
+            temp_group_list = []
+            temp_group_list.append(temp_group)
+            child_group_dict[child_group_name] = temp_group_list
 
-        return children_grouplist
+        return child_group_dict
 
     def setLetter(self, x=None, y=None, style='default_letter_text_style', text=None, scaleby=None):
         # text=None is a flag to get the letter from the pattern piece at draw time
