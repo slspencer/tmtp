@@ -40,7 +40,7 @@ class Document(pBase):
     """
     This is the base container that everything else goes into. The svg is drawn by calling
     the draw() method on the document, which creates the svg document, then the groups
-    within that and calls the svg() methods on each item to be drawn
+    within that and calls the getsvg() methods on each item to be drawn
     """
     def __init__(self, prog_cfg, name = 'UnnamedDocument', attributes = None):
         self.name = name
@@ -185,7 +185,7 @@ class Document(pBase):
             sz.addElement(pdefs) # write pdefs to pysvg base object
 
         # Recursively get everything to draw. svgdict[] will contain everything that will be written to the svg document.
-        svgdict = self.svg()
+        svgdict = self.getsvg()
 
         # Add/modify the transform so that the whole pattern piece originates at 0,0 and is offset by border
         xlo, ylo, xhi, yhi = self.boundingBox()
@@ -246,9 +246,9 @@ class TitleBlock(pBase):
         # Title Blocks don't have children. If this changes, change the svg method also.
         raise RuntimeError('The TitleBlock class can not have children')
 
-    def svg(self):
+    def getsvg(self):
         if self.debug:
-            print 'svg() called for titleblock ID ', self.id
+            print 'getsvg() called for titleblock ID ', self.id
 
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
@@ -291,9 +291,9 @@ class TestGrid(pBase):
         # Test Grids don't have children. If this changes, change the svg method also.
         raise RuntimeError('The TestGrid class can not have children')
 
-    def svg(self):
+    def getsvg(self):
         if self.debug:
-            print 'svg() called for TestGrid ID ', self.id
+            print 'getsvg() called for TestGrid ID ', self.id
 
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()

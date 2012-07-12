@@ -1267,11 +1267,11 @@ class Pattern(pBase):
             print 'Autolayout END'
         return
 
-    def svg(self):
+    def getsvg(self):
         # Automatically change pattern piece locations as needed
         self.autolayout()
         # Now call the base class method to assemble the SVG for all my children
-        return pBase.svg(self)
+        return pBase.getsvg(self)
 
 class PatternPiece(pBase):
     """
@@ -1294,21 +1294,21 @@ class PatternPiece(pBase):
         self.attrs['transform'] = ''
         pBase.__init__(self)
 
-    def svg(self):
+    def getsvg(self):
         """
         generate the svg for this patternpiece and return it in a dictionary of groups which contain the svg objects
         """
         if self.debug:
-            print 'svg() called for PatternPiece ID ', self.id
+            print 'getsvg() called for PatternPiece ID ', self.id
 
         # generate the label from information which is part of the pattern piece
         self.makeLabel()
 
-        child_group_dict = pBase.svg(self) # call the baseclass svg method on this pattern piece. Returns a dictionary of all groups to be drawn.
+        child_group_dict = pBase.getsvg(self) # call the baseclass svg method on this pattern piece. Returns a dictionary of all groups to be drawn.
 
         for child_group_name, members in child_group_dict.items(): # for each group used in this pattern piece
             if self.debug:
-                print '++ Group ==', child_group_name, ' in pattern.PatternPiece.svg()'
+                print '++ Group ==', child_group_name, ' in pattern.PatternPiece.getsvg()'
 
             # create a temporary pySVG group object
             temp_group = PB.g()
@@ -1404,12 +1404,12 @@ class Point(pBase):
         # Points don't have children. If this changes, change the svg and boundingbox methods also.
         raise RuntimeError('The Point class can not have children')
 
-    def svg(self):
+    def getsvg(self):
         """
         generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
-            print 'svg() called for Point ID ', self.id
+            print 'getsvg() called for Point ID ', self.id
 
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
@@ -1501,12 +1501,12 @@ class Line(pBase):
         # Lines don't have children. If this changes, change the svg method also.
         raise RuntimeError('The Line class can not have children')
 
-    def svg(self):
+    def getsvg(self):
         """
         generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
-            print 'svg() called for Line ID ', self.id
+            print 'getsvg() called for Line ID ', self.id
 
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
@@ -1600,12 +1600,12 @@ class Path(pBase):
         # Paths don't have children. If this changes, change the svg method also.
         raise RuntimeError('The Path class can not have children')
 
-    def svg(self):
+    def getsvg(self):
         """
         generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
-            print 'svg() called for Line ID ', self.id
+            print 'getsvg() called for Line ID ', self.id
 
         try:
             # an empty dict to hold our svg elements
@@ -1662,12 +1662,12 @@ class TextBlock(pBase):
         # Text Blocks don't have children. If this changes, change the svg method also.
         raise RuntimeError('The TextBlock class can not have children')
 
-    def svg(self):
+    def getsvg(self):
         """
         generate the svg for this item and return it as a pysvg object
         """
         if self.debug:
-            print 'svg() called for TextBlock ID ', self.id
+            print 'getsvg() called for TextBlock ID ', self.id
 
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()

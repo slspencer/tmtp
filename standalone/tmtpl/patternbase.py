@@ -109,12 +109,12 @@ class pBase(object):
 
         return t
 
-    def svg(self):
+    def getsvg(self):
         """
         Creates the svg data.
         Returns all the SVG created by this object and all its children, recursively.
 
-        The dictionaries returned by svg() look like this:
+        The dictionaries returned by getsvg() look like this:
         dict { groupname1 : [svgelement1, svgelement2, . . .], groupname2 : [svgelement3, svgelement4, . . .]}
         where svg elements are pySVG objects
         """
@@ -143,18 +143,18 @@ class pBase(object):
         #
         md = {} # create local mydictionary
         if self.debug:
-            print "svg() called in ", self.name
+            print "getsvg() called in ", self.name
         # create empty lists for each group in the base document
         for groupname in self.groups:
             md[groupname] = [] # append groupname as an empty list
 
-        # now recursively call svg() for each of my children
+        # now recursively call getsvg() for each of my children
         for child in self.children:
             if self.debug:
                 print 'Processing child ', child.name
             # If the child has a method to generate svg, call it
-            if child.svg:
-                cd = child.svg()
+            if child.getsvg:
+                cd = child.getsvg()
                 # Now append everything in each group from the child to my list for that group
                 for grpnm, glist in cd.items(): # for each group
                     for svgitem in glist:       # for each item in group
