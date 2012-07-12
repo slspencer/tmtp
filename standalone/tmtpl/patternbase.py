@@ -35,38 +35,44 @@ class pBase(object):
     displayed_groups = []
     # Value for debug set manually by programmer for additional debug statements for pBase objects only.
     debug = False
+    # Dictionaries containing the styledef, markerdef, & cfg statements loaded from the styledefs.json file by the mkpattern commandline.
     styledefs = {}
     markerdefs = {}
-    markers = []
     cfg = {}
+    # A list containing the markers used in the current pattern, to create in the svg document.
+    markers = []
+
 
     def __init__(self):
+        # Each instance of this class keeps a list of its children. Initial list is empty.
         self.children = []
-        self.parent=None
+        # Each instance of this class keeps a list of its parent.  Initial value is None.
+        self.parent = None
 
-    def add(self, obj):
+    def add(self, child):
         """
-        Add a class instance to parent, while setting the id
+        Add a child object to parent, while setting the id
         of the child to include the 'dotted path' fo all ancestors
         """
+        # if self is a pattern piece then it has a lettertext attribute, and the child's svg id is <self.lettertext>.<child.name>,
         if (hasattr(self, 'lettertext')):
-            newid = self.lettertext + '.' + obj.name
+            newid = self.lettertext + '.' + child.name
         else:
-            newid =  self.id + '.' + obj.name
+            # otherwise the child's svg id is <child.name>
+            newid =  self.id + '.' + child.name
 
         # Check to make sure we don't have any duplicate IDs
         if newid in self.ids:
             raise ValueError("The name %s is used in more than one pattern object" % newid)
-        self.ids.append(newid)
+        self.ids.append(newid) # Add child id to the ids[] list
+        child.id = newid # Set child's id value to newid
+        child.parent = self  # Set child's parent value to current self object
 
-        obj.id =newid
-        obj.parent=self
-
-        setattr(self, obj.name, obj)
-        self.children.append(obj)
+        setattr(self, child.name, child)
+        self.children.append(child)
         try:
-            if obj.groupname not in self.groups:
-                self.groups[obj.groupname] = None
+            if child.groupname not in self.groups:
+                self.groups[child.groupname] = None
         except AttributeError:
             pass
         return
