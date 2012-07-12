@@ -40,8 +40,6 @@ import pysvg.builders as PB
 
 from constants import *
 from utils import debug
-#from patternbase import pBase
-from support import ScaleAboutPointTransform
 from document import *
 
 # ---- Pattern methods ----------------------------------------
@@ -946,6 +944,16 @@ def transformPoint(x, y, transform=''):
 
     return x, y
 
+# ----------------...create a scaling transform..------------------------------
+
+def scaleAboutPointTransform(x, y, scale):
+    """
+    Return an SVG transform that scales about a specific x,y coordinate
+    """
+    sx = scale
+    sy = scale
+    return "matrix(%f, 0, 0, %f, %f, %f)" % (sx, sy, x-(sx*x), y-(sy*y))
+
 # ----------------...Calculate bounding box..------------------------------
 
 def boundingBox(path):
@@ -1334,7 +1342,7 @@ class PatternPiece(pBase):
     def setLetter(self, x=None, y=None, style='default_letter_text_style', text=None, scaleby=None):
         # text=None is a flag to get the letter from the pattern piece at draw time
         if scaleby is not None:
-            tform = ScaleAboutPointTransform(x, y, scaleby)
+            tform = scaleAboutPointTransform(x, y, scaleby)
         else:
             tform=''
         tb = TextBlock('pattern', 'letter', None, x, y, text, textstyledef = style, transform=tform)
