@@ -8,7 +8,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version. Attribution must be given in 
+# (at your option) any later version. Attribution must be given in
 # all derived works.
 #
 # This program is distributed in the hope that it will be useful,
@@ -35,15 +35,6 @@ import pysvg.builders as PB
 
 from constants import *
 from patternbase import pBase
-
-class docInfo():
-    """
-    Holds document information such as Company name, design name and number, designer, etc
-    Formats the title block for the printed document
-    """
-    def __init__(self):
-
-        return
 
 class Document(pBase):
     """
@@ -312,25 +303,25 @@ class TestGrid(pBase):
         """
         Creates two TestGrids at top of pattern --> 20cm & 8in
         """
-    
+
         CMW = self.centimeters*CM_TO_PX
         INW = self.inches*IN_TO_PX
         tgps = PB.path()
-    
+
         gstyle = PB.StyleBuilder(self.styledefs[self.stylename])
         tgps.set_style(gstyle.getStyle())
         tgps.set_id(self.name)
         #t.setAttribute('transform', trans)
-    
-    
+
+
         tbg.addElement(tgps)
-    
+
         #Points
         start_x, start_y = self.x, self.y
         startcm_x, startcm_y = start_x,  start_y
         startin_x, startin_y = start_x + CMW + 5*CM_TO_PX,  start_y
         #self.attrs['transform']='translate(' + str(-x)+', '+ str(-y) + ')'
-    
+
         # centimeter grid
         i=0
         while (i<=self.centimeters): # vertical lines
@@ -344,7 +335,7 @@ class TestGrid(pBase):
             tgps.appendMoveToPath(startcm_x, y, relative=False)
             tgps.appendLineToPath(startcm_x + CMW, y, relative=False)
             i=i + 1
-    
+
         # inch grid
         i=0
         while (i<=self.inches): #vertical
@@ -358,6 +349,6 @@ class TestGrid(pBase):
             tgps.appendMoveToPath(startin_x, y, relative=False)
             tgps.appendLineToPath(startin_x + INW, y, relative=False)
             i=i + 1
-    
+
         md[self.groupname].append(tbg)
         return md
