@@ -1296,7 +1296,7 @@ class PatternPiece(pBase):
 
     def svg(self):
         """
-        generate the svg for this item and return it as a pysvg object
+        generate the svg for this patternpiece and return it in a dictionary of groups which contain the svg objects
         """
         if self.debug:
             print 'svg() called for PatternPiece ID ', self.id
@@ -1304,35 +1304,29 @@ class PatternPiece(pBase):
         # generate the label from information which is part of the pattern piece
         self.makeLabel()
 
-        # We pass back everything but our group untouched
-        # For the group we're in, we bundle up all the children's SVG
-        # and place it within a group that has our ids
-
-        child_group_dict = pBase.svg(self) # call the base class svg method on this pattern piece. Returns a dictionary of all groups to be drawn
+        child_group_dict = pBase.svg(self) # call the baseclass svg method on this pattern piece. Returns a dictionary of all groups to be drawn.
 
         for child_group_name, members in child_group_dict.items(): # for each group used in this pattern piece
             if self.debug:
                 print '++ Group ==', child_group_name, ' in pattern.PatternPiece.svg()'
 
-            # create a local temporary pySVG group object
+            # create a temporary pySVG group object
             temp_group = PB.g()
-            # assign group a unique id
+            # assign temp group a unique id
             grpid = self.id + '.' + child_group_name
             temp_group.set_id(grpid)
 
-            # group gets all patternpiece's attributes
+            # temp group gets all patternpiece's attributes
             for attrname, attrvalue in self.attrs.items():
                 temp_group.setAttribute(attrname, attrvalue)
             # and all patternpiece's child elements
             for cgitem in child_group_dict[child_group_name]:
                 temp_group.addElement(cgitem)
 
-            # now we replace the list of items in the group returned
-            # from the children with our one svg item, which is a group
-            # that contains them all
-            # Adding
+            # Add temp group to a temp list (list will have only one item)
             temp_group_list = []
             temp_group_list.append(temp_group)
+            # Replace dictionary entry for this group with the temp list
             child_group_dict[child_group_name] = temp_group_list
 
         return child_group_dict
