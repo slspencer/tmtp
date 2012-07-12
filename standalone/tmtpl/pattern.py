@@ -1129,8 +1129,8 @@ def connectObjects(connector_pnts, old_pnts):
 def setupPattern(pattern_design, clientData, printer, companyName, designerName, patternName, patternNumber):
         pattern_design.cfg['clientdata'] = clientData
         if (printer == '36" wide carriage plotter'):
-            pattern_design.cfg['paper_width'] = (36 * IN)
-        pattern_design.cfg['border'] = (5*CM)
+            pattern_design.cfg['paper_width'] = (36.0*IN)
+        pattern_design.cfg['border'] = (2.5*CM)
         BORDER = pattern_design.cfg['border']
         metainfo = {'companyName': companyName,  #mandatory
                     'designerName': designerName,#mandatory
@@ -1308,31 +1308,33 @@ class PatternPiece(pBase):
         # For the group we're in, we bundle up all the children's SVG
         # and place it within a group that has our id
 
-        childlist = pBase.svg(self) # call the base class method to return all children SVG to be drawn
+        children_grouplist = pBase.svg(self) # call the base class svg method which returns a dictionary of all groups to be drawn
 
-        for child_group, members in childlist.items():
-            #print 'Group ', child_group, ' in PatternPiece->svg'
+        for child_group_name, members in children_grouplist.items(): # for each group used in the pattern piece
+            if self.debug:
+                print '++ Group ==', child_group_name, ' in pattern.PatternPiece.svg()'
 
-            # create a new pySVG group for each child
-            my_group = PB.g()
+            # create a local temporary pySVG group object
+            pp_group = PB.g()
+            # assign group a unique id
+            grpid = self.id + '.' + child_group_name
+            pp_group.set_id(grpid)
 
-            grpid = self.id + '.' + child_group
-            my_group.set_id(grpid)
-            # child group gets all my attributes
+            # group gets all patternpiece's attributes
             for attrname, attrvalue in self.attrs.items():
-                my_group.setAttribute(attrname, attrvalue)
-            # and all the items in the child group
-            for cgitem in childlist[child_group]:
-                my_group.addElement(cgitem)
+                pp_group.setAttribute(attrname, attrvalue)
+            # and all patternpiece's child elements
+            for cgitem in children_grouplist[child_group_name]:
+                pp_group.addElement(cgitem)
 
             # now we replace the list of items in that group that we got
             # from the children with our one svg item, which is a group
             # that contains them all
-            my_group_list = []
-            my_group_list.append(my_group)
-            childlist[child_group] = my_group_list
+            pp_group_list = []
+            pp_group_list.append(pp_group)
+            children_grouplist[child_group_name] = pp_group_list
 
-        return childlist
+        return children_grouplist
 
     def setLetter(self, x=None, y=None, style='default_letter_text_style', text=None, scaleby=None):
         # text=None is a flag to get the letter from the pattern piece at draw time
