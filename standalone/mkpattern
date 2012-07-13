@@ -88,7 +88,7 @@ class Cmdline:
     #
     def usage(self, defaults):
         stdo("    Usage:                                                                                   \n")
-        stdo("        %s [--verbose] [--config=<cfg file>] --pattern=<pattern file> --styles=<styles file> --client=<client file> [--debug=[dump]] outfile \n" % self.cfg['app_name'])
+        stdo("        %s [--verbose] [--config=<cfg file>] --pattern=<pattern file> --styles=<styles file> --client=<client file> [--debug=[dump|prints]] outfile \n" % self.cfg['app_name'])
         stdo("                                                                                             \n")
         stdo("    Options:                                                                                 \n")
         stdo("        --help           Prints this text.                                                   \n")
@@ -115,7 +115,7 @@ class Cmdline:
         stdo("        --client=<client file>                                                               \n")
         stdo("                         The full path to the client data file to use.                       \n")
         stdo("                                                                                             \n")
-        stdo("        --debug=[dump]                                                                       \n")
+        stdo("        --debug=[dump|prints]                                                                       \n")
         stdo("                         Performs additional output related to the option enabled and        \n")
         stdo("                         the application defined support for the option.                     \n")
         stdo("                                                                                             \n")
@@ -267,8 +267,6 @@ class AppTemplate(StdApp):
             if "dump" in debug:
                 dbgdump = True
                 print "Debug: dump enabled"
-        else:
-            dbgdump = False
 
         # open the client file and read the data
         client = Client(self.cfg['client_file'])

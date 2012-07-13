@@ -56,7 +56,16 @@ class Document(pBase):
         # if any print groups specified, aset up the internal list
         if 'print_groups' in self.cfg:
             self.displayed_groups = self.cfg['print_groups'].split(',')
+
+        # if debug prints have been requested, enable them
+        if self.cfg.has_key('debug'):
+            debugstr = self.cfg['debug']
+            if "prints" in debugstr:
+                pBase.debug = True
+                print "Debug: prints enabled"
+
         pBase.__init__(self)
+
 
     def draw(self):
 
