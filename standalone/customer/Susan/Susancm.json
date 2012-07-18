@@ -19,6 +19,16 @@
               "type":"float",
               "gui_text":"Neck Width"
               },
+      "front_neck_height": {
+              "value":"10",
+              "type":"float",
+              "gui_text":"Neck Width"
+              },
+      "back_neck_height": {
+              "value":"3",
+              "type":"float",
+              "gui_text":"Neck Width"
+              },
 
       "underarm_circumference": {
               "value":"99.5",
