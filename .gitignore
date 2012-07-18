@@ -16,6 +16,8 @@ standalone/Math/
 jj_catmull/
 standalone/tmtpl/repl.sh
 standalone/tmtpl/TODO.txt
+standalone/customer/Susan/*.svg
+standalone/customer/Susan/*.pdf
 
 
 
