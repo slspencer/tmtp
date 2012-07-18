@@ -3,7 +3,7 @@
 # This file is part of the tmtp (Tau Meta Tau Physica) project.
 # For more information, see http://www.sew-brilliant.org/
 #
-# Copyright (C) 2010, 2011, 2012  Susan Spencer and Steve Conklin
+# Copyright (C) 2010, 2011, 2012 Susan Spencer and Steve Conklin
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,24 +19,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#import sys
 import math
-#import json
 import string
 import re
 import random
 from math import sin, cos, pi, sqrt
 
-#from pysvg.filter import *
-#from pysvg.gradient import *
-#from pysvg.linking import *
-#from pysvg.script import *
-#from pysvg.shape import *
-#from pysvg.structure import *
-#from pysvg.style import *
-#from pysvg.text import *
-#from pysvg.builders import *
-import pysvg.builders as PB
+import pysvg.builders as PYB
 
 from constants import *
 from utils import debug
@@ -49,19 +38,20 @@ from document import *
 # ----------------...Create Points..------------------------------
 
 def pPoint(x, y):
-    '''Accepts x,y and returns an object of class Pnt - Does not create an SVG point'''
+    '''Undrawn point to use in pattern calculations.
+    Accepts x,y and returns an object of class Pnt. Does not create an SVG point'''
     pnt = Pnt(x, y)
     return pnt
 
 def pPointP(pnt1):
     '''Accepts an object of class Point or Pnt (can be from another calculation).
-    Returns an object of class Pnt - Does not create an SVG point'''
+    Returns an object of class Pnt - Does not create an SVG point.'''
     pnt = Pnt(pnt1.x, pnt1.y)
     return pnt
 
 def rPoint(parent, id, x, y, transform=''):
-    '''Accepts parent object, id, x, y, & optional transform.
-    Returns object of class Point. Creates SVG red dot in reference group for pattern calculation point.'''
+    '''Accepts parent object, id, x, y, & optional transform. Returns object of class Point.
+    Creates SVG red dot in reference group for pattern calculation point.'''
     pnt = Point('reference', id, x, y, 'point_style', transform)
     parent.add(pnt)
     return pnt
@@ -258,15 +248,17 @@ def degreeOfAngle(angle):
 def angleOfDegree(degree):
     return degree * math.pi/180.0
 
-def angleOfSlope(rise, run):
-    """Accepts rise, run inputs and returns angle in radians. Uses atan2.   """
+def angleOfSlope(x1, y1, x2, y2):
+    """Accepts two sets of coordinates x1, y1, x2, y2 inputs and returns angle in radians. Uses atan2.   """
+    rise = y2 - y1
+    run = x2 - x1
     return math.atan2(rise, run )
 
 def angleOfSlopeP(pnt1, pnt2):
-    return angleOfSlope(pnt2.y - pnt1.y, pnt2.x - pnt1.x)
+    return angleOfSlope(pnt1.x, pnt1.y, pnt2.x, pnt2.y)
 
 def angleOfLine(x1, y1, x2, y2):
-    """ Accepts two sets of coordinates and returns the angle of the vector between them. Uses atan2.   """
+    """ Accepts two sets of coordinates x1, y1, x2, y2 and returns the angle of the vector between them. Uses atan2.   """
     return math.atan2(y2 - y1, x2 - x1)
 
 def angleOfLineP(p1, p2):
@@ -317,6 +309,15 @@ def xyOnLine(x1, y1, x2, y2, distance, rotation = 0):
     y = (distance * math.sin(angle)) + y1
     return (x, y)
 
+def xyOnLineP(p1, p2, distance, rotation = 0):
+    """
+    Accepts two points p1, p2 and an optional rotation angle
+    Returns x, y values on the line measured from p1
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    x, y = xyOnLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+    return (x, y)
+
 def pntOnLine(x1, y1, x2, y2, distance, rotation = 0):
     """
     Accepts x1,y1,x2,y2 and an optional rotation angle
@@ -326,15 +327,6 @@ def pntOnLine(x1, y1, x2, y2, distance, rotation = 0):
     pnt = Pnt()
     pnt.x, pnt.y = xyOnLine(x1, y1, x2, y2, distance, rotation)
     return pnt
-
-def xyOnLineP(p1, p2, distance, rotation = 0):
-    """
-    Accepts two points p1, p2 and an optional rotation angle
-    Returns x, y values on the line measured from p1
-    the point is optionally rotated about the first point by the rotation angle in degrees
-    """
-    x, y = xyOnLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
-    return (x, y)
 
 def pntOnLineP(p1, p2, distance, rotation = 0):
     """
@@ -354,6 +346,15 @@ def xyOffLine(x1, y1, x2, y2, distance, rotation = 0):
     (x, y) = xyOnLine(x1, y1, x2, y2, -distance, rotation)
     return (x, y)
 
+def xyOffLineP(p1, p2, distance, rotation = 0):
+    """
+    Accepts two point objects and an optional rotation angle, returns x, y
+    Returns x, y values away from the line, measured from p1, away from p2
+    the point is optionally rotated about the first point by the rotation angle in degrees
+    """
+    (x, y) = xyOffLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
+    return (x, y)
+
 def pntOffLine(x1, y1, x2, y2, distance, rotation = 0):
     """
     Accepts x1,y1,x2,y2 and an optional rotation angle
@@ -364,46 +365,37 @@ def pntOffLine(x1, y1, x2, y2, distance, rotation = 0):
     pnt.x, pnt.y = xyOffLine(x1, y1, x2, y2, distance, rotation)
     return pnt
 
-def xyOffLineP(p1, p2, distance, rotation = 0):
-    """
-    Accepts two point objects and an optional rotation angle, returns x, y
-    Returns x, y values away from the line, measured from p1, away from p2
-    the point is optionally rotated about the first point by the rotation angle in degrees
-    """
-    (x, y) = xyOffLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
-    return (x, y)
-
 def pntOffLineP(p1, p2, distance, rotation = 0):
     """
     Accepts two points and an optional rotation angle
     Returns a point object pnt, measured from p1, away from p2
     the point is optionally rotated about the first point by the rotation angle in degrees
     """
-    pnt=Pnt()
+    pnt = Pnt()
     pnt.x, pnt.y = xyOffLine(p1.x, p1.y, p2.x, p2.y, distance, rotation)
     return pnt
 
 # ----------------...Calculate Midpoints on line..------------------------------
 
-def midPoint(x1, y1, x2, y2, n=0.5):
+def xyMidPoint(x1, y1, x2, y2, n=0.5):
     '''Accepts x1,y1,x2,y2 and 0<n<1, returns x,y'''
     return (x1 + x2)*n,  (y1 + y2)*n
 
-def midPointP(p1, p2, n=0.5):
+def xyMidPointP(p1, p2, n=0.5):
     '''Accepts p1 & p2 and 0<n<1, returns x, y'''
-    return midPoint(p1.x,  p1.y,  p2.x,  p2.y, n)
+    return xyMidPoint(p1.x,  p1.y,  p2.x,  p2.y, n)
 
 def pntMidPoint(x1, y1, x2, y2, n=0.5):
     '''Accepts x1,y1,x2,y2 and 0<n<1, returns pnt'''
     #TODO - fix nomenclature of functions - pMidPointP should be pntMidpointP, etc...or pMidpointP - for all functions
-    pnt=Pnt()
-    pnt.x, pnt.y=midPoint(x1, y1, x2, y2, n)
+    pnt = Pnt()
+    pnt.x, pnt.y = xyMidPoint(x1, y1, x2, y2, n)
     return pnt
 
 def pntMidPointP( p1, p2, n=0.5):
     '''Accepts p1 & p2 and 0<n<1, returns p3'''
-    pnt=Pnt()
-    pnt.x,  pnt.y = midPoint(p1.x,  p1.y, p2.x,  p2.y, n)
+    pnt = Pnt()
+    pnt.x,  pnt.y = xyMidPointP(p1, p2, n)
     return pnt
 
 # ----------------...Calculate intercepts given x or y..------------------------------
@@ -540,6 +532,7 @@ def interpolateCurve(P0, P1, P2, P3, t):
 # ----------------...Calculate intersections...------------------------------
 
 def xyIntersectLines2(L1x1, L1y1, L1x2, L1y2, L2x1, L2y1, L2x2, L2y2):
+    """ Accepts coords for endpoints of 2 lines: L1x1,L1y1,L1x2,L1y2, L2x1,L2y1,L2x2,L2y2. Returns x,y of intersection"""
     L1startx = float(L1x1)
     L1starty = float(L1y1)
     L1endx = float(L1x2)
@@ -574,13 +567,12 @@ def xyIntersectLines2(L1x1, L1y1, L1x2, L1y2, L2x1, L2y1, L2x2, L2y2):
             y = (L1m * x) + L1b # arbitrary choice, could have used L2m & L2b
     return x, y
 
-def intersectLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
+def xyIntersectLines_notinuse(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2):
     """
     Find intersection between two lines. Accepts 8 values (begin & end for 2 lines), returns x & y values.
     Intersection does not have to be within the supplied line segments
+    Returns x,y
     """
-    # TODO this can be improved
-
     # Find point x,y where m1*x+b1=m2*x + b2
     # m = (ystart1-y2)/(xstart1-xend1) --> find slope for each line
     # y = mx + b --> b = y - mx  --> find b for each line
@@ -624,7 +616,7 @@ def intersectLines(xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend
         y = (m1 * x) + b1 # arbitrary choice, could have used y = m2*x + b2
     return x, y
 
-def intersectLinesP(p1, p2, p3, p4):
+def xyIntersectLinesP(p1, p2, p3, p4):
     """
     Find intersection between two lines. Accepts 4 point objects, Returns x, y values
     Intersection does not have to be within the supplied line segments
@@ -655,11 +647,10 @@ def pntIntersectLinesP(p1, p2, p3, p4):
 def pntIntersectLineCircleP(C, r, P1, P2):
     """
     Finds intersection of a line segment and a circle.
-    Accepts circle center point object C, radius r, and two line point objects P1 & P2
+    Accepts circle center point object C, radius r, and two points P1 & P2 on line
     Returns an object P with number of intersection points, and up to two coordinate pairs.
     Based on paulbourke.net/geometry/sphereline/sphere_line_intersection.py, written in Python 3.2 by Campbell Barton
     """
-    #TODO - switch order of parameters C,r,P1,P2 to P1,P2,C,r
     #TODO - add test parameter to determine which intersection should be used
     #TODO - doesn't work on P1-P2 vertical line - CRASHES!!!!!!
 
@@ -716,7 +707,7 @@ def intersectCircleCircle(x0, y0, r0, x1, y1, r1):
     """
     Accepts data for two circles x1, y1, r1, x2, y2, r2
     Returns xi,yi,xi_prime,yi_prime pairs where circles intersect, and intersections = number of intersections
-    example: returns ax,ay,bx,by,intersections
+    example: returns ax,ay, bx,by, number of intersections {0|1|2} --> ax,ay and bx,by are empty when intersections=0, and  bx,by is empty when intersections=1
     """
     print 'ro', r0
     print 'r1', r1
@@ -749,7 +740,7 @@ def intersectCircleCircle(x0, y0, r0, x1, y1, r1):
     yi_prime = y2 - ry
     return xi, yi, xi_prime, yi_prime, intersections
 
-def intersectCircleCircleP(C1, r1, C2, r2):
+def xyIntersectCircleCircleP(C1, r1, C2, r2):
     """
     Accepts C1,r1,C2,r2 where C1 & C2 are point objects
     Returns x1,y1,x2,y2 where the two circles intersect
@@ -759,7 +750,7 @@ def intersectCircleCircleP(C1, r1, C2, r2):
 def pntIntersectCircleCircleP(C1, r1, C2, r2):
     """
     Accepts C1,r1,C2,r2 where C1 & C2 are point objects
-    Returns an object P, where P.intersections = number of intersections, and P.p1 & P.p2are point objects where the two circles intersect
+    Returns an object P, where P.intersections = number of intersections, and P.p1 & P.p2 are point objects where the two circles intersect
     """
     P, p1, p2 = Pnt(),  Pnt(),  Pnt()
     intersections = 0
@@ -771,7 +762,7 @@ def pntIntersectCircleCircleP(C1, r1, C2, r2):
     P.p2 = p2
     return P
 
-def pntOnCircleY(C, r, y):
+def pntOnCircleAtY(C, r, y):
     """
     Finds points one or two points on circle where P.y = y
     Accepts circle center point object C, radius r, and value y
@@ -785,7 +776,7 @@ def pntOnCircleY(C, r, y):
 
     return pntIntersectLineCircleP(C, r, P1, P2)
 
-def pntOnCircleX(C, r, x):
+def pntOnCircleAtX(C, r, x):
     """
     Finds points one or two points on circle where p.x = x
     Accepts circle center point object C, radius r, and value x
@@ -1138,7 +1129,7 @@ def setupPattern(pattern_design, clientData, printer, companyName, designerName,
         pattern_design.cfg['clientdata'] = clientData
         if (printer == '36" wide carriage plotter'):
             pattern_design.cfg['paper_width'] = (36.0*IN)
-        pattern_design.cfg['border'] = (2.5*CM)
+        pattern_design.cfg['border'] = (6.0*CM)
         BORDER = pattern_design.cfg['border']
         metainfo = {'companyName': companyName,  #mandatory
                     'designerName': designerName,#mandatory
@@ -1319,7 +1310,7 @@ class PatternPiece(pBase):
                 print '++ Group ==', child_group_name, ' in pattern.PatternPiece.getsvg()'
 
             # create a temporary pySVG group object
-            temp_group = PB.g()
+            temp_group = PYB.g()
             # assign temp group a unique id
             grpid = self.id + '.' + child_group_name
             temp_group.set_id(grpid)
@@ -1422,8 +1413,8 @@ class Point(pBase):
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
 
-        pstyle =  PB.StyleBuilder(self.styledefs[self.sdef])
-        p = PB.circle(self.x, self.y, self.size)
+        pstyle =  PYB.StyleBuilder(self.styledefs[self.sdef])
+        p = PYB.circle(self.x, self.y, self.size)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
         if 'tooltips' in self.cfg:
@@ -1519,8 +1510,8 @@ class Line(pBase):
         # an empty dict to hold our svg elements
         md = self.mkgroupdict()
 
-        pstyle =  PB.StyleBuilder(self.styledefs[self.sdef])
-        p = PB.line(self.xstart, self.ystart, self.xend, self.yend)
+        pstyle =  PYB.StyleBuilder(self.styledefs[self.sdef])
+        p = PYB.line(self.xstart, self.ystart, self.xend, self.yend)
         p.set_style(pstyle.getStyle())
         p.set_id(self.id)
         for attrname, attrvalue in self.attrs.items():
@@ -1619,7 +1610,7 @@ class Path(pBase):
             # an empty dict to hold our svg elements
             md = self.mkgroupdict()
 
-            pstyle =  PB.StyleBuilder(self.styledefs[self.sdef])
+            pstyle =  PYB.StyleBuilder(self.styledefs[self.sdef])
 
             self.pathSVG.set_id(self.id)
             self.pathSVG.set_style(pstyle.getStyle())
@@ -1681,7 +1672,7 @@ class TextBlock(pBase):
         md = self.mkgroupdict()
 
         # create the text first
-        tg = PB.g()
+        tg = PYB.g()
         tg.set_id(self.id)
         x = self.x
         y = self.y
