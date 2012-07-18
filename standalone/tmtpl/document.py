@@ -21,17 +21,7 @@
 
 import json
 
-#import pysvg.filter as PF
-#import pysvg.gradient as PG
-#import pysvg.linking as PL
-#import pysvg.script as PSC
-#import pysvg.shape as PSH
-#import pysvg.structure as PST
-#import pysvg.style as PSTY
-#import pysvg.text as PT
-
-#from pysvg.builders import *
-import pysvg.builders as PB
+import pysvg.builders as PYB
 
 from constants import *
 from patternbase import pBase
@@ -81,7 +71,7 @@ class Document(pBase):
 
         # any sanity checks on configuration before drawing go here
         if 'border' not in self.cfg:
-            self.cfg['border'] = 2.5*CM_TO_PX
+            self.cfg['border'] = 6.0*CM_TO_PX
 
         # if there are no groups in the list of ones to draw, then default to all of them
         if len(self.displayed_groups) == 0:
@@ -89,12 +79,12 @@ class Document(pBase):
                 self.displayed_groups.append(groupname)
 
         # create the base pysvg object
-        sz = PB.svg()
+        sz = PYB.svg()
 
         if 'tooltips' in self.cfg:
             # If --tooltips specified in mkpattern command line options
             # create pysvg script class object
-            sc = PB.script()
+            sc = PYB.script()
             sc.set_xlink_href('tmtp_mouse.js')
             sc.set_xlink_type('text/ecmascript')
             # Add script object elements to pysvg base object
@@ -177,7 +167,7 @@ class Document(pBase):
         # two types of markers -- plain is a string, dictionary has more than one marker
         # each marker has a start & end, with optional mid
         if len(self.markers):
-            pdefs = PB.defs() # Create pysvg builder defs class object
+            pdefs = PYB.defs() # Create pysvg builder defs class object
             for mname in self.markers:
                 #print 'Adding marker %s' % mname
                 if type(self.markerdefs[mname]) is str:
@@ -218,7 +208,7 @@ class Document(pBase):
                     print 'Group %s is not enabled for display' % dictname
                 continue
 
-            wg = PB.g()
+            wg = PYB.g()
             self.groups[dictname] = wg
             # Set the ID to the group name
             wg.set_id(dictname)
@@ -263,7 +253,7 @@ class TitleBlock(pBase):
         md = self.mkgroupdict()
 
         # TODO make the text parts configurable
-        tbg = PB.g()
+        tbg = PYB.g()
         tbg.set_id(self.id)
         # this is a bit cheesy
         text_space =  ( int(self.styledefs[self.stylename]['font-size']) * 1.1 )
@@ -308,7 +298,7 @@ class TestGrid(pBase):
         md = self.mkgroupdict()
 
         # TODO make the text parts configurable
-        tbg = PB.g()
+        tbg = PYB.g()
         tbg.set_id(self.id)
 
         """
@@ -317,9 +307,9 @@ class TestGrid(pBase):
 
         CMW = self.centimeters*CM_TO_PX
         INW = self.inches*IN_TO_PX
-        tgps = PB.path()
+        tgps = PYB.path()
 
-        gstyle = PB.StyleBuilder(self.styledefs[self.stylename])
+        gstyle = PYB.StyleBuilder(self.styledefs[self.stylename])
         tgps.set_style(gstyle.getStyle())
         tgps.set_id(self.name)
         #t.setAttribute('transform', trans)
