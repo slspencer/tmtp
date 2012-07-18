@@ -14,5 +14,8 @@ standalone/extrafiles/
 standalone/json/
 standalone/Math/
 jj_catmull/
+standalone/tmtpl/repl.sh
+standalone/tmtpl/TODO.txt
+
 
 
