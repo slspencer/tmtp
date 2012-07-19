@@ -1134,10 +1134,8 @@ def setupPattern(pattern_design, clientData, printer, companyName, designerName,
                     'preserveAspectRatio' : "xMidYMid meet",
                     }
         doc = Document(pattern_design.cfg, name = 'document', attributes = docattrs)
-        TB = TitleBlock('notes', 'titleblock', 0.0, 0.0, stylename = 'titleblock_text_style')
-        doc.add(TB)
-        TG = TestGrid('notes', 'testgrid', pattern_design.cfg['paper_width']/5.0, 0.0, stylename = 'cuttingline_style')
-        doc.add(TG)
+        doc.add(TitleBlock('notes', 'titleblock', 0.0, 0.0, stylename = 'titleblock_text_style'))
+        doc.add(TestGrid('notes', 'testgrid', pattern_design.cfg['paper_width']/3.0, 0.0, stylename = 'cuttingline_style'))
         return doc
 
 # ---- Pattern Classes ----------------------------------------
