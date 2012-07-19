@@ -123,6 +123,8 @@ class PatternDesign():
         Ag2 = rPoint(A, 'Ag2', Ag1.x, b.y - 2*IN)
         # label points
         A.label_x,  A.label_y = h.x, h.y + 2*IN
+        # Set letter location and size
+        A.setLetter(Ag1.x + 8*CM, (Ag1.y + Ag2.y)/3.0, scaleby=7.0)
         # grid path
         grid = path()
         addToPath(grid, 'M', b, 'L', e, 'L', f, 'L', g, 'M', c, 'L', d, 'M', j, 'L', k, 'M', o, 'L', p,  'M', m, 'L', n,  'M', m, 'L', d)
@@ -195,6 +197,8 @@ class PatternDesign():
         Bg2 = rPoint(B, 'Bg2', Bg1.x, bb.y - 2*IN)
         # label points
         B.label_x,  B.label_y = hh.x, hh.y + 2*IN
+        # Set letter location and size
+        B.setLetter(Bg1.x - 7*CM, (Bg1.y + Bg2.y)/3.0, scaleby=7.0)
         # dartline
         dartLine = path()
         addToPath(dartLine, 'M', dart1.i, 'L', dart1.a, 'L', dart1.o)
