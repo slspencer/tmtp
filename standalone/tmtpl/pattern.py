@@ -677,7 +677,6 @@ def pntIntersectLineCircleP(C, r, P1, P2):
     if i < 0.0:
         print 'no intersections'
     elif i == 0.0:
-        print 'one intersection'
         # one intersection
         intersections = 1
         mu = -b / (2.0 * a)
@@ -685,18 +684,15 @@ def pntIntersectLineCircleP(C, r, P1, P2):
 
     elif i > 0.0:
         # two intersections
-        print 'two intersections'
         intersections = 2
 
         # first intersection
         mu1 = (-b + math.sqrt(i)) / (2.0 * a)
         p1.x,  p1.y = P1.x + mu1 * (P2.x - P1.x), P1.y + mu1 * (P2.y - P1.y)
-        print 'mu1:', mu1
 
         # second intersection
         mu2 = (-b - math.sqrt(i)) / (2.0 * a)
         p2.x, p2.y = P1.x + mu2 * (P2.x - P1.x), P1.y + mu2 * (P2.y - P1.y)
-        print 'mu2:', mu2
 
     P.intersections = intersections
     P.p1 = p1
@@ -709,21 +705,17 @@ def intersectCircleCircle(x0, y0, r0, x1, y1, r1):
     Returns xi,yi,xi_prime,yi_prime pairs where circles intersect, and intersections = number of intersections
     example: returns ax,ay, bx,by, number of intersections {0|1|2} --> ax,ay and bx,by are empty when intersections=0, and  bx,by is empty when intersections=1
     """
-    print 'ro', r0
-    print 'r1', r1
+
     d = lineLength(x0, y0, x1, y1) # distance b/w circle centers
-    print 'd', d
     dx, dy = (x1 - x0), (y1 - y0) # negate y b/c canvas increases top to bottom
     if (d == 0):
-        print 'center of both circles are the same...intersectCircleCircle()'
+        #center of both circles are the same
         intersections = 0
     elif (d > (r0 + r1)):
-        print 'circles do not intersect ...intersectCircleCircle()'
+        #circles do not intersect
         intersections = 0
     elif (d < abs(r0 - r1)):
-        print 'one circle is within the other ...intersectCircleCircle()'
-        print 'r0 - r1 =',  (r0 - r1), abs(r0 - r1)
-        print 'd < abs(r0 - r1)?',  (d<abs(r0 - r1))
+        #one circle is within the other
         intersections = 0
     else:
         #'I' is the point where the line through the circle centers crosses the line between the intersection points, creating 2 right triangles
@@ -895,13 +887,13 @@ def transformPoint(x, y, transform=''):
         elif trtype == 'skewX':
             sx = float(trparts[1].strip())
             # now do the thing
-            print 'skewX transform not handled yet'
+            #TODO: skewX transform not handled yet
             raise NotImplementedError
 
         elif trtype == 'skewY':
             sy = float(trparts[1].strip())
             # now do the thing
-            print 'skewY not handled yet'
+            #TODO: skewY not handled yet
             raise NotImplementedError
 
         elif trtype == 'rotate':
@@ -916,7 +908,7 @@ def transformPoint(x, y, transform=''):
             except IndexError:
                 ry = 0
             # now do the thing
-            print 'rotate not handled yet'
+            #TODO: rotate not handled yet
             raise NotImplementedError
 
         elif trtype == 'matrix':
@@ -927,10 +919,10 @@ def transformPoint(x, y, transform=''):
             me = float(trparts[3].strip())
             mf = float(trparts[3].strip())
             # now do the thing
-            print 'matrix not handled yet'
+            #TODO: matrix not handled yet
             raise NotImplementedError
         else:
-            print 'Unexpected transformation %s' % trtype
+            #TODO: Unexpected transformation %s' % trtype
             raise ValueError
 
     return x, y
@@ -1176,9 +1168,9 @@ class Pattern(pBase):
         parts = {}
         for chld in self.children:
             if isinstance(chld, PatternPiece):
-                print 'Pattern.py calling ', chld.name, '.boundingBox()'
+                #print 'Pattern.py calling ', chld.name, '.boundingBox()'
                 xlo, ylo, xhi, yhi = chld.boundingBox()
-                print 'Pattern.py -', chld.name, '.boundingBox() returned info[xlo]:', xlo, 'info[ylo]:', ylo, 'info[xhi]:', xhi, 'info[yhi]:', yhi
+                #print 'Pattern.py -', chld.name, '.boundingBox() returned info[xlo]:', xlo, 'info[ylo]:', ylo, 'info[xhi]:', xhi, 'info[yhi]:', yhi
                 parts[chld] = {}
                 parts[chld]['xlo'] = xlo
                 parts[chld]['ylo'] = ylo
@@ -1186,7 +1178,7 @@ class Pattern(pBase):
                 parts[chld]['yhi'] = yhi
 
         # our available paper width is reduced by twice the border
-        print self.cfg['paper_width']
+        #print self.cfg['paper_width']
         pg_width = self.cfg['paper_width'] - (2 * self.cfg['border'])
         if 'verbose' in self.cfg:
             print 'Autolayout:'
@@ -1230,7 +1222,7 @@ class Pattern(pBase):
 
             if pp_width > pg_width:
                 print 'Error: Pattern piece <%s> is too wide to print on page width' % pp.name
-                # TODO -figure out something smarter
+                # TODO: -figure out something smarter
                 ## raise
 
             if next_x + pp_width > pg_width:
