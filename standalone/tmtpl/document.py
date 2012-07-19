@@ -198,8 +198,8 @@ class Document(pBase):
         ysize = (yhi - ylo) + (2.0 * self.cfg['border'])
         sz.set_height(ysize)
         sz.set_width(xsize)
-        print 'document height = ', ysize
-        print 'document width = ', xsize
+        #print 'document height = ', ysize
+        #print 'document width = ', xsize
 
         for dictname, dictelements in svgdict.items():
             if self.debug:
