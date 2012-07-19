@@ -1427,7 +1427,11 @@ class Point(pBase):
 
         txtlabel = self.id + '.text'
         txttxt = self.name
-        txt = self.generateText(self.x, self.y - 25, txtlabel, txttxt, 'point_text_style')
+        if '_c' in txttxt:
+            txtstyle = 'control_point_text_style'
+        else:
+            txtstyle = 'point_text_style'
+        txt = self.generateText(self.x, self.y - 25, txtlabel, txttxt, txtstyle)
         md[self.groupname].append(txt)
 
         return md
