@@ -96,7 +96,7 @@
         "stroke-linejoin": "miter",
         "stroke-miterlimit": "4",
         "stroke-width": "5"
-    },    
+    },
     "placement_style": {
         "fill": "none",
         "stroke": "gray",
@@ -113,13 +113,24 @@
     },
     "controlpoint_style": {
         "fill": "none",
-        "stroke": "blue",
+        "stroke": "gray",
         "stroke-width": "1"
     },
     "point_text_style": {
         "fill": "darkblue",
         "fill-opacity": "1.0",
         "font-size": "30",
+        "font-style": "italic",
+        "font-weight": "normal",
+        "stroke": "none",
+        "text-align": "right",
+        "text-anchor": "right",
+        "vertical-align": "top"
+    },
+    "control_point_text_style": {
+        "fill": "gray",
+        "fill-opacity": "1.0",
+        "font-size": "25",
         "font-style": "italic",
         "font-weight": "normal",
         "stroke": "none",
