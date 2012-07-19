@@ -19,7 +19,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-echo On
 
 TMTP_BASE=$PWD
 PATTERN_BASE=$TMTP_BASE/patterns
@@ -35,7 +34,6 @@ function FileName () {
     FILE=${PATTERN##*/}
     FILE=${FILE%%.*}
     FILE="$CUSTOMER_DIR/$FILE-$D"
-    echo $FILE
 
     return;
 }
@@ -68,10 +66,7 @@ function CustomerMenu () {
 
     # Display menu and interact based on the user's input
     CUSTOMER_NAME="$(kdialog --title "Select A Customer Directory, Then Select Their Measurement File:" --getopenfilename $CUSTOMER_BASE '*.json')"
-    echo $CUSTOMER_NAME
-
     CUSTOMER_DIR=${CUSTOMER_NAME%/*}
-    echo $CUSTOMER_DIR
     # The output file will be saved into $CUSTOMER_DIR with date & time, etc.
 
     return;
@@ -81,7 +76,6 @@ function PatternMenu () {
 
     # Select Pattern File
     PATTERN="$(kdialog --title "Select A Pattern:" --getopenfilename $PATTERN_BASE '*.py')"
-    echo $PATTERN
 
     return;
     }
