@@ -69,8 +69,8 @@ class PatternDesign():
         cd = self.cd
         self.cfg['clientdata'] = cd
 
-        self.cfg['paper_width']  = ( 36 * in_to_pt )
-        self.cfg['border']       = ( 5*cm_to_pt )        # document borders
+        self.cfg['paper_width']  = ( 36 * IN_TO_PT )
+        self.cfg['border']       = ( 5*CM_TO_PT )        # document borders
 
         border = self.cfg['border']
 
@@ -106,7 +106,7 @@ class PatternDesign():
         part = PatternPiece('pattern', 'parta', letter = 'A', fabric = 1, interfacing = 0, lining = 0)
         tp.add(part)
         # 12 x 12 inch square
-        tw = 12.0 * in_to_pt
+        tw = 12.0 * IN_TO_PT
         path_svg = path()
         part.add(Path('pattern', 'path', 'Path for part A', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)
@@ -123,7 +123,7 @@ class PatternDesign():
         part = PatternPiece('pattern', 'partb', letter = 'B', fabric = 1, interfacing = 0, lining = 0)
         tp.add(part)
         # 12 x 12 inch square
-        tw = 12.0 * in_to_pt
+        tw = 12.0 * IN_TO_PT
         path_svg = path()
         part.add(Path('pattern', 'path', 'Path for part B', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)
@@ -140,7 +140,7 @@ class PatternDesign():
         part = PatternPiece('pattern', 'partc', letter = 'C', fabric = 1, interfacing = 0, lining = 0)
         tp.add(part)
         # 18 x 18 inch square
-        tw = 18.0 * in_to_pt
+        tw = 18.0 * IN_TO_PT
         path_svg = path()
         part.add(Path('pattern', 'path', 'Path for part C', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)

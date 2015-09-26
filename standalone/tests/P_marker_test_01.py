@@ -71,8 +71,8 @@ class PatternDesign():
         cd = self.cd
         self.cfg['clientdata'] = cd
 
-        self.cfg['paper_width']  = ( 36 * in_to_pt )
-        self.cfg['border']       = ( 5*cm_to_pt )        # document borders
+        self.cfg['paper_width']  = ( 36 * IN_TO_PT )
+        self.cfg['border']       = ( 5*CM_TO_PT )        # document borders
 
         border = self.cfg['border']
 
@@ -110,8 +110,8 @@ class PatternDesign():
         part = PatternPiece('pattern', 'parta', letter = 'A', fabric = 1, interfacing = 0, lining = 0)
         tp.add(part)
         # 24 x 24 inch square
-        tw = 24.0 * in_to_pt
-        th = 56.0 * in_to_pt
+        tw = 24.0 * IN_TO_PT
+        th = 56.0 * IN_TO_PT
         path_svg = path()
         part.add(Path('pattern', 'path', 'Path for part A', path_svg, 'seamline_style'))
         path_svg.appendMoveToPath(0, 0, relative = False)
@@ -120,8 +120,8 @@ class PatternDesign():
         path_svg.appendLineToPath(-1.0 * tw, 0, relative = True)
         path_svg.appendLineToPath(0, -1.0 * th, relative = True)
         # set the label location. Somday this should be automatic
-        part.label_x = 1.0 * in_to_pt
-        part.label_y = 1.0 * in_to_pt
+        part.label_x = 1.0 * IN_TO_PT
+        part.label_y = 1.0 * IN_TO_PT
         # Now draw some lines with each of the markers we have
 
         sml = []
@@ -132,9 +132,9 @@ class PatternDesign():
         sml.sort()
 
         # Line locations
-        x1 = 6.0 * in_to_pt
-        y1 = 6.0 * in_to_pt
-        x2 = 20.0 * in_to_pt
+        x1 = 6.0 * IN_TO_PT
+        y1 = 6.0 * IN_TO_PT
+        x2 = 20.0 * IN_TO_PT
         y2 = y1
 
         for mrk in sml:
@@ -143,10 +143,10 @@ class PatternDesign():
             aline.setMarker(mrk, start = True, end = True)
             part.add(aline)
             if mrk == "Distance":
-                y1 = y1 + 3.0 * in_to_pt
+                y1 = y1 + 3.0 * IN_TO_PT
                 y2 = y1
             else:
-                y1 = y1 + 1.0 * in_to_pt
+                y1 = y1 + 1.0 * IN_TO_PT
                 y2 = y1
 
         # end of pattern piece
