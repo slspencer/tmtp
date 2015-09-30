@@ -25,7 +25,7 @@
 #import re
 
 import math
-from pattern import Point, lineLengthP, pntOnLine, pntFromDistanceAndAngle
+from pattern import Point, lineLengthP, pntOnLine, pntFromDistanceAndAngle, moveP
 from tmtpl.constants import *
 
 
@@ -196,4 +196,16 @@ def FudgeControlPoints(knots, fcp, scp, percentage):
     return (fcp, scp)
 
 
+
+def curveThroughPoints(name, path_svg, pointlist):
+  fcp, scp = GetCurveControlPoints(name, pointlist)
+  if False:
+      for i in range(0, len(fcp)):
+          print '  point: %f %f' % (pointlist[i].x / IN_TO_PT, pointlist[i].y / IN_TO_PT)
+          print '    fcp: %f %f' % (fcp[i].x / IN_TO_PT, fcp[i].y / IN_TO_PT)
+          print '    scp: %f %f' % (scp[i].x / IN_TO_PT, scp[i].y / IN_TO_PT)
+      print '  point: %f %f' % (pointlist[-1].x / IN_TO_PT, pointlist[-1].y / IN_TO_PT)
+  moveP(path_svg, pointlist[0])
+  for i in range (1, len(pointlist)):
+      path_svg.appendCubicCurveToPath(fcp[i-1].x, fcp[i-1].y, scp[i-1].x, scp[i-1].y, pointlist[i].x, pointlist[i].y,  relative = False)
 
