@@ -286,18 +286,24 @@ class PatternDesign():
         wrist_pt = offsetPoint(base_pt, self.half_wrist + 0.5 *
                               IN_TO_PX, self.cd.overarm_length - 1 * IN_TO_PX)
         lineP(path_svg, pPoint(base_pt.x, wrist_pt.y))
-
-        armscye_length = self.front_armscye_length + self.back_armscye_length
-        print "Current armscye length: ", armscye_length
-        for step in xrange(0, 10):
-            cap_pt, control1, control2, extended_underarm_pt, sleeve_cap_length = self.draftSleeveCap(base_pt, wrist_pt, step * IN_TO_PX / 4)
-            print "Bicep offset ", step / 4.0, " sleeve cap length: ", sleeve_cap_length, 
+        armscye_length = (self.front_armscye_length + self.back_armscye_length) / 2
+        print "Current armscye length: ", armscye_length * 2
+        min_diff = 10000
+        keep_step = 0
+        for step in xrange(0, 20):
+            cap_pt, control1, control2, extended_underarm_pt, sleeve_cap_length = self.draftSleeveCap(base_pt, wrist_pt, step * IN_TO_PX / 8)
+            print "Bicep offset ", step / 4.0, " sleeve cap length: ", sleeve_cap_length * 2, (armscye_length - sleeve_cap_length) / IN_TO_PX
+            tmp_diff = abs(sleeve_cap_length - armscye_length)
+            if tmp_diff < min_diff:
+                keep_step = step
+                min_diff = tmp_diff
             if (sleeve_cap_length >= armscye_length and sleeve_cap_length <= (armscye_length + 0.5 * IN_TO_PX)):
                 print "Sleeve cap OK"
                 break
             elif (sleeve_cap_length < armscye_length):
                 print "Sleeve cap too small"
-        
+        cap_pt, control1, control2, extended_underarm_pt, sleeve_cap_length = self.draftSleeveCap(base_pt, wrist_pt, keep_step * IN_TO_PX / 16)
+            
         # Draw the cap now that we're happy with it
         moveP(path_svg, extended_underarm_pt)
         cubicCurveP(path_svg, control1, control2, base_pt)        
