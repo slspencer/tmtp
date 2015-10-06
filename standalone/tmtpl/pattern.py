@@ -59,6 +59,12 @@ def pPointP(pnt1):
     pnt = Pnt(pnt1.x, pnt1.y)
     return pnt
 
+def offsetPoint(p, xOffset, yOffset):
+    '''Accepts an object of class Point or Pnt, and an X and Y offset.
+    Returns an object of class Pnt at the specified offset from the first point.
+    Does not create an SVG point.'''
+    return Pnt(p.x + xOffset, p.y + yOffset)
+
 def rPoint(parent, id, x, y, transform=''):
     '''Accepts parent object, id, x, y, & optional transform.
     Returns object of class Point. Creates SVG red dot on reference layer for pattern calculation point.'''
@@ -243,7 +249,7 @@ def slopeOfLine(x1, y1, x2, y2):
         m = None
     return m
 
-def slopeOfLineP(P1, p2):
+def slopeOfLineP(p1, p2):
     """ Accepts two point objects and returns the slope """
     if ((p2.x - p1.x) <> 0):
         m = (p2.y - p1.y)/(p2.x - p1.x)
@@ -1167,6 +1173,28 @@ def connectObjects(connector_pnts, old_pnts):
                 i=i+1
 
         return r_pnts
+
+# ---- New utility functions for review ------------------------------------------------
+
+# Returns the new intersection point on the line defined by p1 and p2
+# that's perpendicular to p3
+def squareLine(p1, p2, p3):
+  # Get the slope of the current waist-to-hip line, then calculate
+  # 90 degrees = negative reciprocal
+  perpendicular_slope = - 1 / slopeOfLineP(p1, p2)
+  # Find the point on the waist-hip line that intersects the
+  # line starting from the 2/3 point with the perpendicular
+  # slope
+  newX = p3.x + 5 * IN_TO_PX
+  newY = p3.y + 5 * IN_TO_PX * perpendicular_slope
+  return pntIntersectLinesP(p3, pPoint(newX, newY), p1, p2)
+  
+def drawCenteredDart(path_svg, apex, dart_width, dart_depth):
+     moveP(path_svg, apex)
+     path_svg.appendLineToPath(0, dart_depth, relative = True)
+     path_svg.appendLineToPath(-dart_width / 2, -dart_depth, relative = True)
+     path_svg.appendMoveToPath(dart_width / 2, dart_depth, relative = True)
+     path_svg.appendLineToPath(dart_width / 2, -dart_depth, relative = True)
 
 # ---- Set up pattern document with design info ----------------------------------------
 def setupPattern(pattern_design, clientData, printer, companyName, designerName, patternName, patternNumber):

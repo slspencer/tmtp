@@ -10,13 +10,16 @@ $ git clone git@github.com:sconklin/tmtp.git
 
 2. == Get the required pySVG python library ==
 
-From this page:
+Note: pySVG 0.2.2 is incompatible, so use version 0.2.1. You can
+install it with PIP using:
+
+$ pip install pySVG==0.2.1
+
+Alternatively, you can install pySVG from this page:
 
 http://code.google.com/p/pysvg/downloads/list
 
-Download the file pysvg-0.2.1.zip
-
-Unzip it and install it:
+Download the file pysvg-0.2.1.zip. Unzip it and install it:
 
 $ unzip pysvg-0.2.1.zip
 $ cd pysvg-0.2.1/
@@ -25,7 +28,7 @@ $ sudo python setup.py install
 3. == Test it ==
 
 $ cd ../tmtp/standalone
-$ ./mkpattern --verbose --client=pdata-pants1.json --pattern=SamplePattern_Pants1.py --styles=tmtp_styles.json foo.svg
+$ ./mkpattern --verbose --client=tests/testdata.json --pattern=tests/P_layout_test.py --styles=tests/test_styles.json foo.svg
 
 If this completes without error, everything is probably good.
 You can look at the output file, foo.svg to see what it
@@ -33,4 +36,8 @@ looks like
 
 ***** For Windows *****
 
-Need this
+1. Install python 2.7 from https://www.python.org/downloads/
+2. Add the python executable directory to your path.
+3. At the command prompt, run "pip install pysvg==0.2.1"
+4. cd tmtp\standalone
+5. python mkpattern --verbose --client=tests\testdata.json --pattern=tests\P_layout_test.py --styles=tests\test_styles.json foo.svg

@@ -50,7 +50,7 @@ class pBase(object):
         if (hasattr(self, 'letter')):
            newid = self.letter + '.' + obj.name
         else:
-            newid =  self.id + '.' + obj.name
+           newid = self.id + '.' + obj.name
 
         # Check to make sure we don't have any duplicate IDs
         if newid in self.ids:
